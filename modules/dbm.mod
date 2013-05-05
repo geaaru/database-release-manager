@@ -51,6 +51,8 @@ dbm_long_help () {
    echo -en "\tshow_scripts            Show scripts.\n"
    echo -en "\tshow_rel_dep            Show release dependencies.\n"
    echo -en "\tshow_inhibit_scripts    Show inhibited scripts.\n"
+   echo -en "\tinsert_inhibit_script   Insert a new inhibit script relationship.\n"
+   echo -en "\tremove_inhibit_script   Remove an inhibit script relationship.\n"
    echo -en "\tinsert_release          Insert a new release.\n"
    echo -en "\tinsert_script_type      Insert a new script type.\n"
    echo -en "\tinsert_rel_dep          Insert a new release dependency.\n"
@@ -77,6 +79,8 @@ dbm_show_help () {
    echo -en "\tshow_scripts            Show scripts.\n"
    echo -en "\tshow_rel_dep            Show release dependencies.\n"
    echo -en "\tshow_inhibit_scripts    Show inhibited scripts.\n"
+   echo -en "\tinsert_inhibit_script   Insert a new inhibit script relationship.\n"
+   echo -en "\tremove_inhibit_script   Remove an inhibit script relationship.\n"
    echo -en "\tinsert_release          Insert a new release.\n"
    echo -en "\tinsert_script_type      Insert a new script type.\n"
    echo -en "\tinsert_rel_dep          Insert a new release dependency.\n"
@@ -185,7 +189,7 @@ dbm_show_scripts () {
       creation_date=`echo $row | awk '{split($0,a,"|"); print a[8]}'`
       update_date=`echo $row | awk '{split($0,a,"|"); print a[9]}'`
 
-      if [ ${#filename} -eq 10 ] ; then
+      if [ ${#filename} -lt 16 ] ; then
         filename_tab="\t\t"
       else
         filename_tab="\t"
@@ -310,7 +314,7 @@ dbm_show_inhibit_scripts () {
 
     echo -en "======================================================================================\n"
     echo -en "\e[1;33mID_SCRIPT\e[m\t"
-    echo -en "\e[1;32mID_RELEASE_FROM\e[m\t"
+    echo -en "\e[1;32mID_RELEASE_FROM\e[m\t\t"
     echo -en "\e[1;31mID_RELEASE_TO\e[m\t"
     echo -en "\e[1;34mCREATION_DATE\e[m\n"
     echo -en "======================================================================================\n"
@@ -326,8 +330,8 @@ dbm_show_inhibit_scripts () {
       creation_date=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
 
       echo -en "\e[1;33m${id_script}\e[m\t\t"
-      echo -en "\e[1;32m${id_release_from}\e[m\t"
-      echo -en "\e[1;31m${id_release_to}\e[m\t"
+      echo -en "\e[1;32m${id_release_from}\e[m\t\t\t"
+      echo -en "\e[1;31m${id_release_to}\e[m\t\t"
       echo -en "\e[1;34m${creation_date}\e[m\n"
 
     done
@@ -695,6 +699,70 @@ dbm_remove_rel_dep () {
   return $result
 }
 
+dbm_insert_inhibit_script () {
+
+  local result=1
+  local query=""
+  local id_rel_query_to=""
+  local id_rel_query_from=""
+
+  # Shift first two input param
+  shift 2
+
+  _dbm_check_inhibit_script_args "$@" || return $result
+
+  id_rel_query_to="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_TO')"
+  id_rel_query_from="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_FROM')"
+
+  query="INSERT INTO ScriptRelInhibitions (id_script,id_release_from,id_release_to,creation_date) \
+    VALUES ($DBM_SCRIPT_ID, ${id_rel_query_from}, ${id_rel_query_to}, DATETIME('now'))"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+  ans=$?
+
+  if [ x"$ans" = x"0" ] ; then
+    echo "Record insert correctly."
+  fi
+
+  result=$ans
+
+  return $result
+}
+
+dbm_remove_inhibit_script () {
+
+  local result=1
+  local query=1
+  local id_rel_query_to=""
+  local id_rel_query_from=""
+
+  # Shift first two input param
+  shift 2
+
+  _dbm_check_inhibit_script_args "$@" || return $result
+
+  id_rel_query_to="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_TO')"
+  id_rel_query_from="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_FROM')"
+
+  query="DELETE FROM ScriptRelInhibitions \
+    WHERE id_script = $DBM_SCRIPT_ID \
+    AND id_release_from = ${id_rel_query_from} \
+    AND id_release_to = ${id_rel_query_to}"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+  ans=$?
+
+  if [ x"$ans" = x"0" ] ; then
+    echo "Record removed correctly."
+  fi
+
+  result=$ans
+
+  return $result
+}
+
+
+
 ##################################################################
 # Internal functions
 ##################################################################
@@ -959,6 +1027,58 @@ _dbm_check_rm_script_args () {
 
   if [ -z "$DBM_SCRIPT_ID" ] ; then
     echo "Missing Script Id."
+    return 1
+  fi
+
+  return 0
+}
+
+_dbm_check_inhibit_script_args () {
+
+  [[ $DEBUG ]] && echo -en "(_dbm_check_ins_inhibit_script_args args: $@)\n"
+
+  # Reinitialize opt index position
+  OPTIND=1
+  while getopts "i:n:t:f:h" opts "$@" ; do
+    case $opts in
+
+      i) DBM_SCRIPT_ID="$OPTARG";;
+      n) DBM_REL_NAME="$OPTARG";;
+      t) DBM_REL_VERSION_TO="$OPTARG";;
+      f) DBM_REL_VERSION_FROM="$OPTARG";;
+      h)
+        echo -en "[-n name]               Release Name.\n"
+        echo -en "[-i id_script]          Script Id.\n"
+        echo -en "[-t version_to]         Release version target of the installation.\n"
+        echo -en "[-f version_from]       Release version source of the installation.\n"
+        return 1
+        ;;
+
+    esac
+  done
+
+  if [ -z "$DBM_SCRIPT_ID" ] ; then
+    echo "Missing Script Id."
+    return 1
+  fi
+
+  if [ -z "$DBM_REL_NAME" ] ; then
+    echo "Missing Release Name."
+    return 1
+  fi
+
+  if [ -z "$DBM_REL_VERSION_TO" ] ; then
+    echo "Missing Release version that has a dependency."
+    return 1
+  fi
+
+  if [ -z "$DBM_REL_VERSION_FROM" ] ; then
+    echo "Missing Release version needed on target."
+    return 1
+  fi
+
+  if [ "$DBM_REL_VERSION_FROM" == "$DBM_REL_VERSION_TO" ] ; then
+    echo "Both version are equal. Error."
     return 1
   fi
 

@@ -6,7 +6,7 @@
 # License: GPL 2.0
 #------------------------------------------------
 VERSION="0.1"
-CONFIG_FILE=/home/geaaru/Projects/database-release-manager/dbrm.conf
+CONFIG_FILE=/home/geaaru/Projects/database-release-manager/drm/etc/dbrm.conf
 CONFIG_FILE_STUB=$CONFIG_FILE #TODO replace this with a stub file from /usr/share directory
 
 # Insert config file data
