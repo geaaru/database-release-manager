@@ -10,7 +10,7 @@ dbm_authors="Geaaru"
 dbm_creation_date="May 5, 2013"
 dbm_version="0.1"
 
-dbm_schema=/home/geaaru/Projects/database-release-manager/etc/dbm_sqlite_schema.sql
+dbm_schema=/home/geaaru/Projects/database-release-manager/etc/dbm_sqlite_schema.sql # TODO Replace this with a placeholder for configure/autotools
 
 dbm_version() {
    echo -en "Version: ${dbm_version}\n"
@@ -523,7 +523,7 @@ dbm_update_script () {
     if [ $upd_elems -eq 0 ] ; then
       query_sub="SET id_order = '$DBM_SCRIPT_ID_ORDER'"
     else
-      query_sub="${query_sub}, directory = '$DBM_SCRIPT_ID_ORDER'"
+      query_sub="${query_sub}, id_order = '$DBM_SCRIPT_ID_ORDER'"
     fi
 
     let upd_elems++

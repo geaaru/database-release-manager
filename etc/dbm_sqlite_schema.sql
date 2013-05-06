@@ -57,6 +57,17 @@ CREATE TABLE ScriptRelInhibitions (
   FOREIGN KEY(id_release_to)   REFERENCES Releases(id_release)
 );
 
+CREATE TABLE ScriptRelDedicated (
+  id_script        INTEGER NOT NULL,
+  id_release_from  INTEGER NOT NULL,
+  id_release_to    INTEGER NOT NULL,
+  creation_date    DATE    NOT NULL,
+  PRIMARY KEY(id_script, id_release_from, id_release_to),
+  FOREIGN KEY(id_script)       REFERENCES Scripts(id_script),
+  FOREIGN KEY(id_release_from) REFERENCES Releases(id_release),
+  FOREIGN KEY(id_release_to)   REFERENCES Releases(id_release)
+);
+
 INSERT INTO DatabaseAdapters (adapter, descr) VALUES('oracle', 'Oracle Database Adapter');
 INSERT INTO DatabaseAdapters (adapter, descr) VALUES('mariadb', 'MySQL/MariaDb Database Adapter');
 INSERT INTO DatabaseAdapters (adapter, descr) VALUES('sqlite', 'SQLite Database Adapter');
