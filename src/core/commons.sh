@@ -13,6 +13,27 @@ error_handled () {
    fi
 }
 
+error_generate () {
+
+  echo -en "$1\n"
+  exit 1
+
+}
+
+check_var () {
+
+  local var=$1
+
+  eval v=\$$var
+
+  if [ -z $v ] ; then
+    return 1
+  fi
+
+  return 0
+}
+
+
 # return 0   yes
 # return 1   no
 # return 2   empty
@@ -32,4 +53,4 @@ confirmation_question () {
    return 1
 }
 
-
+# vim: syn=sh filetype=sh

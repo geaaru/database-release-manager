@@ -12,22 +12,6 @@ dbm_version="0.1"
 
 dbm_schema=/home/geaaru/Projects/database-release-manager/etc/dbm_sqlite_schema.sql
 
-#dbm_init() {
-#}
-
-dbm_post_init () {
-
-  # Check if exists DRM_DB
-  [[ $DEBUG ]] && echo "(dbm_post_init: Check if is present sqlite internal db file: $DRM_DB)"
-  if [[ ! -e $DRM_DB ]] ; then
-
-    [[ $DEBUG ]] && echo "(dbm_post_init: Create sqlite internal db file: $DRM_DB)"
-    _sqlite_create -c "$DRM_DB" -s "$dbm_schema" || error_handled "Error on create $DRM_DB file."
-
-  fi
-
-}
-
 dbm_version() {
    echo -en "Version: ${dbm_version}\n"
 
@@ -1083,6 +1067,22 @@ _dbm_check_inhibit_script_args () {
   fi
 
   return 0
+}
+
+#_dbm_init() {
+#}
+
+_dbm_post_init () {
+
+  # Check if exists DRM_DB
+  [[ $DEBUG ]] && echo "(dbm_post_init: Check if is present sqlite internal db file: $DRM_DB)"
+  if [[ ! -e $DRM_DB ]] ; then
+
+    [[ $DEBUG ]] && echo "(dbm_post_init: Create sqlite internal db file: $DRM_DB)"
+    _sqlite_create -c "$DRM_DB" -s "$dbm_schema" || error_handled "Error on create $DRM_DB file."
+
+  fi
+
 }
 
 # vim: syn=sh filetype=sh

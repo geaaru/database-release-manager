@@ -6,7 +6,8 @@
 # License: GPL 2.0
 #------------------------------------------------
 VERSION="0.1"
-CONFIG_FILE=/home/geaaru/Projects/database-release-manager/drm/etc/dbrm.conf
+CONFIG_FILE=/home/geaaru/Projects/database-release-manager/etc/dbrm.conf # TODO Replace with placeholder
+DBRM_CORE_FILES_DIR=/home/geaaru/Projects/database-release-manager/src/core/ # TODO Replace this with a placeholder to replace with configure/autotools
 CONFIG_FILE_STUB=$CONFIG_FILE #TODO replace this with a stub file from /usr/share directory
 
 # Insert config file data
@@ -14,7 +15,7 @@ CONFIG_FILE_STUB=$CONFIG_FILE #TODO replace this with a stub file from /usr/shar
 
 # If already present OVERRIDE_LOCAL_CONFIG_FILE
 # variable i use environment variable.
-if [ -e $OVERRIDE_LOCAL_CONFIG_FILE ] ; then
+if [[ ! -z $OVERRIDE_LOCAL_CONFIG_FILE && -e $OVERRIDE_LOCAL_CONFIG_FILE ]] ; then
   . $OVERRIDE_LOCAL_CONFIG_FILE
   [[ $DEBUG ]] && echo -en "dbrm: Override LOCAL_CONFIG_FILE with: $OVERRIDE_LOCAL_CONFIG_FILE\n"
 
@@ -39,7 +40,10 @@ if [ -z $MODULES_DIR ] ; then
    MODULES_DIR="."
 fi
 
-. $MODULES_DIR/mod-utils.sh
+# Load core scripts
+for f in $DBRM_CORE_FILES_DIR/*.sh ; do
+  . $f
+done
 
 #######################################################
 # Functions                                           #
@@ -113,10 +117,10 @@ main () {
    # Load modules
    for mod in $MODULES_DIR/*.mod ; do
       . $mod
-      if type -t ${name}_init > /dev/null ; then
+      if type -t _${name}_init > /dev/null ; then
 
          [[ $DEBUG ]] && echo "Call init method of the module $name"
-         ${name}_init
+         _${name}_init
       fi
       version=`${name}_version`
       [[ $DEBUG ]] && echo "Loaded module $name $version"
@@ -129,10 +133,10 @@ main () {
 
    # Call post_init function of all modules
    for name in $modules ; do
-     if type -t ${name}_post_init > /dev/null ; then
+     if type -t _${name}_post_init > /dev/null ; then
 
          [[ $DEBUG ]] && echo "Call post_init method of the module $name"
-         ${name}_post_init
+         _${name}_post_init
 
      fi
    done
