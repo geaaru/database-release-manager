@@ -187,8 +187,9 @@ _sqlite_create () {
 
 _sqlite_query () {
   local result=1
+  local pragma="PRAGMA foreign_keys = ON; "
 
-  [[ $DEBUG ]] && echo -en "(_sqlite_query: $@)\n"
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_sqlite_query: $@)\n"
 
   _sqlite_check_args "$@" || error_handled ""
 
@@ -197,9 +198,19 @@ _sqlite_query () {
 
   _sqlite_check_db || error_handled ""
 
+  if [[ ! -z "$SQLITEDB_INIT_SESSION" ]] ; then
+    if [ "$SQLITEDB_INIT_SESSION" == " " ] ; then
+      pragma=""
+    else
+      pragma="$SQLITEDB_INIT_SESSION"
+    fi
+  fi
 
-  _sqlite_ans="$(sqlite3 $SQLITEDB "PRAGMA foreign_keys = ON; $SQLITE_QUERY")"
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_sqlite_query execute: sqlite3 $SQLITEDB \"$pragma $SQLITE_QUERY\"\n"
+  _sqlite_ans="$(sqlite3 $SQLITEDB "${pragma}${SQLITE_QUERY}")"
   result=$?
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_sqlite_query ans:\n$_sqlite_ans\n)\n"
 
   return $result
 }

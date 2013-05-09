@@ -35,9 +35,13 @@ dbm_long_help () {
    echo -en "\tshow_scripts            Show scripts.\n"
    echo -en "\tshow_rel_dep            Show release dependencies.\n"
    echo -en "\tshow_inhibit_scripts    Show inhibited scripts.\n"
+   echo -en "\tshow_rel_ded_scripts    Show release dedicated scripts.\n"
    echo -en "\tinsert_inhibit_script   Insert a new inhibit script relationship.\n"
    echo -en "\tremove_inhibit_script   Remove an inhibit script relationship.\n"
+   echo -en "\tinsert_ded_script       Insert a new release dedicated script relationship.\n"
+   echo -en "\tremove_ded_script       Remove a release dedicated script relationship.\n"
    echo -en "\tinsert_release          Insert a new release.\n"
+   echo -en "\tmove_release            Move release position.\n"
    echo -en "\tinsert_script_type      Insert a new script type.\n"
    echo -en "\tinsert_rel_dep          Insert a new release dependency.\n"
    echo -en "\tremove_rel_dep          Remove release dependency.\n"
@@ -63,9 +67,13 @@ dbm_show_help () {
    echo -en "\tshow_scripts            Show scripts.\n"
    echo -en "\tshow_rel_dep            Show release dependencies.\n"
    echo -en "\tshow_inhibit_scripts    Show inhibited scripts.\n"
+   echo -en "\tshow_rel_ded_scripts    Show release dedicated scripts.\n"
    echo -en "\tinsert_inhibit_script   Insert a new inhibit script relationship.\n"
    echo -en "\tremove_inhibit_script   Remove an inhibit script relationship.\n"
+   echo -en "\tinsert_ded_script       Insert a new release dedicated script relationship.\n"
+   echo -en "\tremove_ded_script       Remove a release dedicated script relationship.\n"
    echo -en "\tinsert_release          Insert a new release.\n"
+   echo -en "\tmove_release            Move release position.\n"
    echo -en "\tinsert_script_type      Insert a new script type.\n"
    echo -en "\tinsert_rel_dep          Insert a new release dependency.\n"
    echo -en "\tremove_rel_dep          Remove release dependency.\n"
@@ -89,14 +97,15 @@ dbm_show_releases () {
 
     _sqlite_query -c "$DRM_DB" -q "SELECT id_release,name,version,release_date,creation_date,update_date,id_order,db_adapter FROM Releases ORDER BY id_order ASC" || error_handled "Unexpected error!"
 
-    echo -en "======================================================================================\n"
+    echo -en "==============================================================================================================\n"
     echo -en "\e[1;33mID\e[m\t"
     echo -en "\e[1;34mRELEASE_DATE\e[m\t\t"
     echo -en "\e[1;35mVERSION\e[m\t"
     echo -en "\e[1;36mUPDATE_DATE\e[m\t\t"
-    echo -en "\e[1;31mADAPTER\e[m\t"
+    echo -en "\e[1;31mADAPTER\e[m\t\t"
+    echo -en "\e[1;32mID_ORDER\e[m\t"
     echo -en "\e[1;37mNAME\e[m\n"
-    echo -en "======================================================================================\n"
+    echo -en "==============================================================================================================\n"
 
     IFS=$'\n'
     for row in $_sqlite_ans ; do
@@ -119,11 +128,12 @@ dbm_show_releases () {
       fi
 
       echo -en "\e[1;33m${id_release}\e[m\t"
-      echo -en "\e[1;34m${release_date}${release_date_tab}"
-      echo -en "\e[m\e[1;35m${version}\e[m\t"
+      echo -en "\e[1;34m${release_date}${release_date_tab}\e[m"
+      echo -en "\e[1;35m${version}\e[m\t"
       echo -en "\e[1;36m${update_date}\e[m\t"
-      echo -en "\e[1;31m${db_adapter}\e[m"
-      echo -en "\t\e[1;37m${name}\e[m\n"
+      echo -en "\e[1;31m${db_adapter}\e[m\t\t"
+      echo -en "\e[1;32m${id_order}\e[m\t\t"
+      echo -en "\e[1;37m${name}\e[m\n"
 
     done
     unset IFS
@@ -330,6 +340,52 @@ dbm_show_inhibit_scripts () {
   return 0
 }
 
+dbm_show_rel_ded_scripts () {
+
+  _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM ScriptRelDedicated" || error_handled "Unexpected error!"
+
+  local n_r=$_sqlite_ans
+
+  [[ $DEBUG ]] && echo -en "N. ScriptRelDedicated: $n_r\n"
+
+  if [ x$n_r != x0 ] ; then
+
+    _sqlite_query -c "$DRM_DB" -q "SELECT id_script,id_release_from,id_release_to,creation_date FROM ScriptRelDedicated ORDER BY id_script,id_release_to,id_release_from ASC" || error_handled "Unexpected error!"
+
+    echo -en "======================================================================================\n"
+    echo -en "\e[1;33mID_SCRIPT\e[m\t"
+    echo -en "\e[1;32mID_RELEASE_FROM\e[m\t\t"
+    echo -en "\e[1;31mID_RELEASE_TO\e[m\t"
+    echo -en "\e[1;34mCREATION_DATE\e[m\n"
+    echo -en "======================================================================================\n"
+
+    IFS=$'\n'
+    for row in $_sqlite_ans ; do
+
+      #[[ $DEBUG ]] && echo "ROW = ${row}"
+
+      id_script=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      id_release_from=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+      id_release_to=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+      creation_date=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+
+      echo -en "\e[1;33m${id_script}\e[m\t\t"
+      echo -en "\e[1;32m${id_release_from}\e[m\t\t\t"
+      echo -en "\e[1;31m${id_release_to}\e[m\t\t"
+      echo -en "\e[1;34m${creation_date}\e[m\n"
+
+    done
+    unset IFS
+
+  else
+
+    echo -en "No scripts available.\n"
+
+  fi
+
+  return 0
+}
+
 
 dbm_show_adapters  () {
 
@@ -372,6 +428,139 @@ dbm_show_adapters  () {
   return 0
 }
 
+dbm_move_release () {
+
+  local result=1
+  local query=""
+  local id_rel_to=""
+  local id_rel_from=""
+  local id_order=""
+  local id_order_to=""
+  local create_tmp_table=""
+  local where_moved_record=""
+  local insert2tmp=""
+  local delete_rel=""
+
+  # Shift first two input param
+  shift 2
+
+  _dbm_check_move_release_args "$@" || return $result
+
+  _dbm_check_if_exist_rel "$DBM_REL_NAME" "$DBM_REL_VERSION_TO" || return $result
+  _dbm_check_if_exist_rel "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM" || return $result
+
+  # Retrive id order of the release from
+  _dbm_retrieve_field_rel "id_order" "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM"
+  id_order=$_sqlite_ans
+
+  # Retrieve id order of the release to
+  _dbm_retrieve_field_rel "id_order" "$DBM_REL_NAME" "$DBM_REL_VERSION_TO"
+  id_order_to=$_sqlite_ans
+
+  # Retrieve id release from
+  _dbm_retrieve_field_rel "id_release" "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM"
+  id_rel_from=$_sqlite_ans
+
+  # Retrieve id release to
+  _dbm_retrieve_field_rel "id_release" "$DBM_REL_NAME" "$DBM_REL_VERSION_TO"
+  id_rel_to=$_sqlite_ans
+
+  _dbm_get_table_schema 'Releases'
+  create_tmp_table="$(echo "$_sqlite_ans" | sed 's/TABLE Releases/TABLE ReleasesTemp/')"
+
+  if [ $DBM_AFTER -eq 1 ] ; then
+
+    if [ $id_order_to -lt $id_order ] ; then
+
+      where_moved_record="WHERE ( id_order > $id_order_to AND id_order < $id_order )"
+
+      insert2tmp="INSERT INTO ReleasesTemp
+        SELECT id_release,name,version,release_date,creation_date,update_date,$id_order_to+1 as id_order,db_adapter
+        FROM Releases WHERE id_release = $id_rel_from ;
+        INSERT INTO ReleasesTemp
+        SELECT id_release,name,version,release_date,creation_date,update_date,id_order+1 as id_order,db_adapter
+        FROM Releases $where_moved_record "
+      # POST: Move yet release_from to Temporary table
+
+    else
+
+      where_moved_record="WHERE id_order > $id_order "
+      # POST: Move yet release_from to Temporary table
+
+      insert2tmp="INSERT INTO ReleasesTemp
+        SELECT id_release,name,version,release_date,creation_date,update_date,id_order-1 as id_order,db_adapter
+        FROM Releases WHERE id_order > $id_order AND id_order <= $id_order_to ;
+        INSERT INTO ReleasesTemp
+        SELECT id_release,name,version,release_date,creation_date,update_date,id_order as id_order,db_adapter
+        FROM Releases WHERE id_order > $id_order_to ;
+        INSERT INTO ReleasesTemp
+        SELECT id_release,name,version,release_date,creation_date,update_date,$id_order_to as id_order,db_adapter
+        FROM Releases WHERE id_release = $id_rel_from "
+
+    fi
+
+    t="after"
+
+    result=0
+
+  else
+
+    if [ $id_order_to -lt $id_order ] ; then
+
+      where_moved_record="WHERE id_order < $id_order AND id_order >= $id_order_to "
+
+      insert2tmp="INSERT INTO ReleasesTemp
+        SELECT id_release,name,version,release_date,creation_date,update_date,id_order+1 as id_order,db_adapter
+        FROM Releases $where_moved_record ;
+        INSERT INTO ReleasesTemp
+        SELECT id_release,name,version,release_date,creation_date,update_date,$id_order_to as id_order,db_adapter
+        FROM Releases WHERE id_release = $id_rel_from "
+      # POST: Move yet release_from to Temporary table
+
+
+    else
+
+      where_moved_record="WHERE id_order < $id_order_to AND id_order > $id_order "
+
+      insert2tmp="INSERT INTO ReleasesTemp
+        SELECT id_release,name,version,release_date,creation_date,update_date,id_order-1 as id_order,db_adapter
+        FROM Releases $where_moved_record ;
+        INSERT INTO ReleasesTemp
+        SELECT id_release,name,version,release_date,creation_date,update_date,$id_order_to-1 as id_order,db_adapter
+        FROM Releases WHERE id_release = $id_rel_from "
+      # POST: Move yet release_from to Temporary table
+
+    fi
+
+    t="before"
+    result=0
+
+  fi
+
+  delete_rel="DELETE FROM Releases $where_moved_record OR id_order = $id_order"
+
+  # Disable PRAGMA options
+  SQLITEDB_INIT_SESSION=" "
+
+  query="DROP TABLE IF EXISTS ReleasesTemp ;
+    $create_tmp_table ;
+    ${insert2tmp} ;
+    ${delete_rel} ;
+    INSERT INTO Releases SELECT id_release,name,version,release_date,creation_date,DATETIME('now'),id_order,db_adapter FROM ReleasesTemp;
+    DROP TABLE ReleasesTemp "
+
+  #  SELECT * FROM ReleasesTemp ;
+  #  SELECT '-'  ;
+  #  SELECT * FROM Releases ;
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error on update id_order fields."
+
+  # Re-enable PRAGMA options
+  unset SQLITEDB_INIT_SESSION
+
+  echo -en "Moved correctly $DBM_REL_NAME v.$DBM_REL_VERSION_FROM ${t} v.$DBM_REL_VERSION_TO.\n"
+
+  return $result
+}
 
 dbm_insert_release () {
 
@@ -713,6 +902,36 @@ dbm_insert_inhibit_script () {
   return $result
 }
 
+dbm_insert_ded_script () {
+
+  local result=1
+  local query=""
+  local id_rel_query_to=""
+  local id_rel_query_from=""
+
+  # Shift first two input param
+  shift 2
+
+  _dbm_check_inhibit_script_args "$@" || return $result
+
+  id_rel_query_to="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_TO')"
+  id_rel_query_from="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_FROM')"
+
+  query="INSERT INTO ScriptRelDedicated (id_script,id_release_from,id_release_to,creation_date) \
+    VALUES ($DBM_SCRIPT_ID, ${id_rel_query_from}, ${id_rel_query_to}, DATETIME('now'))"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+  ans=$?
+
+  if [ x"$ans" = x"0" ] ; then
+    echo "Record insert correctly."
+  fi
+
+  result=$ans
+
+  return $result
+}
+
 dbm_remove_inhibit_script () {
 
   local result=1
@@ -729,6 +948,38 @@ dbm_remove_inhibit_script () {
   id_rel_query_from="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_FROM')"
 
   query="DELETE FROM ScriptRelInhibitions \
+    WHERE id_script = $DBM_SCRIPT_ID \
+    AND id_release_from = ${id_rel_query_from} \
+    AND id_release_to = ${id_rel_query_to}"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+  ans=$?
+
+  if [ x"$ans" = x"0" ] ; then
+    echo "Record removed correctly."
+  fi
+
+  result=$ans
+
+  return $result
+}
+
+dbm_remove_ded_script () {
+
+  local result=1
+  local query=1
+  local id_rel_query_to=""
+  local id_rel_query_from=""
+
+  # Shift first two input param
+  shift 2
+
+  _dbm_check_inhibit_script_args "$@" || return $result
+
+  id_rel_query_to="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_TO')"
+  id_rel_query_from="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_FROM')"
+
+  query="DELETE FROM ScriptRelDedicated \
     WHERE id_script = $DBM_SCRIPT_ID \
     AND id_release_from = ${id_rel_query_from} \
     AND id_release_to = ${id_rel_query_to}"
@@ -1017,9 +1268,65 @@ _dbm_check_rm_script_args () {
   return 0
 }
 
+
+_dbm_check_move_release_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_ins_inhibit_script_args args: $@)\n"
+
+  DBM_BEFORE=0
+  DBM_AFTER=0
+
+  # Reinitialize opt index position
+  OPTIND=1
+  while getopts "b:n:a:r:h" opts "$@" ; do
+    case $opts in
+
+      n) DBM_REL_NAME="$OPTARG";;
+      b) DBM_BEFORE=1
+         DBM_REL_VERSION_TO="$OPTARG";;
+      a) DBM_AFTER=1
+         DBM_REL_VERSION_TO="$OPTARG";;
+      r) DBM_REL_VERSION_FROM="$OPTARG";;
+      h)
+        echo -en "[-r version_from]       Release version.\n"
+        echo -en "[-n name]               Release Name.\n"
+        echo -en "[-a version_to]         After release version_to.\n"
+        echo -en "[-b version_to]         Before release version_to.\n"
+        echo -en "\n"
+        echo -en "Example: -n 'Project1' -r '0.1.1' -a '0.1.0' (Release 0.1.1 after release 0.1.0)\n"
+        return 1
+        ;;
+
+    esac
+  done
+
+  if [ -z "$DBM_REL_NAME" ] ; then
+    echo "Missing Release Name."
+    return 1
+  fi
+
+  if [ -z "$DBM_REL_VERSION_FROM" ] ; then
+    echo "Missing Release version."
+    return 1
+  fi
+
+  if [[ $DBM_BEFORE == 1 && $DBM_AFTER == 1 ]] ; then
+    echo "Both after and before are used. Error."
+    return 1
+  fi
+
+  if [[ $DBM_BEFORE == 0 && $DBM_AFTER == 0 ]] ; then
+    echo "Missing -a or -b parameter."
+    return 1
+  fi
+
+  return 0
+
+}
+
 _dbm_check_inhibit_script_args () {
 
-  [[ $DEBUG ]] && echo -en "(_dbm_check_ins_inhibit_script_args args: $@)\n"
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_ins_inhibit_script_args args: $@)\n"
 
   # Reinitialize opt index position
   OPTIND=1
@@ -1083,6 +1390,124 @@ _dbm_post_init () {
 
   fi
 
+}
+
+# return 0 if exists
+# return 1 if not exists
+_dbm_check_if_exist_rel () {
+
+  local rel_name="$1"
+  local rel_version="$2"
+
+  local query="SELECT COUNT(1) AS res FROM Releases WHERE name = '$rel_name' AND version = '$rel_version'"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+  if [ x"$_sqlite_ans" != x"1" ] ; then
+    error_generate "Invalid version $rel_version."
+  fi
+
+  return 0
+}
+
+_dbm_retrieve_script_data () {
+
+  local id_script="$1"
+  local set_variables="$2"
+
+  local query="
+    SELECT s.id_script,s.filename,s.type,
+           s.active,s.directory,s.id_release,
+           s.id_order,
+           r.name,
+           r.version,
+           r.db_adapter,
+           s.creation_date,s.update_date
+    FROM Scripts s, Releases r
+    WHERE id_script = $id_script
+    AND s.id_release = r.id_release"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_generate "Unexpected error on retrieve data of the script $id_script"
+
+  if [ x"$_sqlite_ans" != x"1" ] ; then
+    error_generate "Error on retrive data of the script $id_script."
+  fi
+
+  if [ ! -z "$set_variables" ] ; then
+
+    DBM_SCRIPT_ID=`echo $_sqlite_ans | awk '{split($0,a,"|"); print a[1]}'`
+    DBM_SCRIPT_FILENAME=`echo $_sqlite_ans | awk '{split($0,a,"|"); print a[2]}'`
+    DBM_SCRIPT_TYPE=`echo $_sqlite_ans | awk '{split($0,a,"|"); print a[3]}'`
+    DBM_SCRIPT_ACTIVE=`echo $_sqlite_ans | awk '{split($0,a,"|"); print a[4]}'`
+    DBM_SCRIPT_DIR=`echo $_sqlite_ans | awk '{split($0,a,"|"); print a[5]}'`
+    DBM_SCRIPT_ID_RELEASE=`echo $_sqlite_ans | awk '{split($0,a,"|"); print a[6]}'`
+    DBM_SCRIPT_ID_ORDER=`echo $_sqlite_ans | awk '{split($0,a,"|"); print a[7]}'`
+    DBM_SCRIPT_REL_NAME=`echo $_sqlite_ans | awk '{split($0,a,"|"); print a[8]}'`
+    DBM_SCRIPT_REL_VERSION=`echo $_sqlite_ans | awk '{split($0,a,"|"); print a[9]}'`
+    DBM_SCRIPT_ADAPTER=`echo $_sqlite_ans | awk '{split($0,a,"|"); print a[10]}'`
+
+  fi
+
+  return 0
+}
+
+
+# return 0 if exists
+# return 1 if not exists
+_dbm_check_if_exist_id_script () {
+
+  local id_script="$1"
+  local query="SELECT COUNT(1) AS res FROM Scripts WHERE id_script = $id_script"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+  if [ x"$_sqlite_ans" != x"1" ] ; then
+    error_generate "Invalid id_script $id_script."
+  fi
+
+  return 0
+}
+
+_dbm_retrieve_field_rel () {
+
+  local field="$1"
+  local rel_name="$2"
+  local rel_version="$3"
+
+  local query="SELECT $field FROM Releases WHERE name = '$rel_name' AND version = '$rel_version'"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+  if [ x"$_sqlite_ans" == x"" ] ; then
+    [[ $DEBUG && $DEBUG == true ]] && \
+      echo -en "Error on retrieve field $field for release $rel_name and version $rel_version\n"
+    error_generate "Invalid version $rel_version."
+  fi
+
+  return 0
+}
+
+_dbm_get_table_schema () {
+
+  local table="$1"
+
+  local query=".schema $table"
+
+  # Disable PRAGMA options
+  SQLITEDB_INIT_SESSION=" "
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+  # Re-enable PRAGMA options
+  unset SQLITEDB_INIT_SESSION
+
+  if [ x"$_sqlite_ans" == x"" ] ; then
+    [[ $DEBUG && $DEBUG == true ]] && \
+      echo -en "Error on retrieve schema of the table $table.\n"
+    error_generate "Unexpected error on retrive schema of the table $table!"
+  fi
+
+  return 0
 }
 
 # vim: syn=sh filetype=sh

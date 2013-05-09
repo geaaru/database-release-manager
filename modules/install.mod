@@ -53,35 +53,70 @@ install_show_installable () {
 
   local result=1
   local query=""
-  local id_rel_query_to=""
-  local id_rel_query_from=""
+  local id_rel_to=""
+  local id_order=""
+  local id_order_to=""
+  local id_rel_from=""
 
   # Shift first two input param
   shift 2
 
   _install_check_show_installable_args "$@" || return $result
 
-  id_rel_query_to="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_TO')"
-  id_rel_query_from="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_FROM')"
+  _dbm_check_if_exist_rel "$DBM_REL_NAME" "$DBM_REL_VERSION_TO" || return $result
+  _dbm_check_if_exist_rel "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM" || return $result
 
-  query="SELECT id_script,filename,type,directory,id_release FROM Scripts \
-        WHERE id_script NOT IN (\
-           select sri.id_script \
-           from ScriptRelInhibitions sri, Releases rf, Releases rt, Releases ro \
-           where rf.id_release = ${id_rel_query_from} and rt.id_release = ${id_rel_query_to} \
-           and ro.id_order >= rf.id_order and ro.id_order <= rt.id_order \
-           and (sri.id_release_from = ro.id_release or sri.id_release_to = ro.id_release) \
-           group by sri.id_script \
-        ) \
-        AND id_script IN ( \
-              select srd.id_script \
-              from ScriptRelDedicated srd, Releases rf, Releases rt, Releases ro \
-              where rf.id_release = ${id_rel_query_from} and rt.id_release = ${id_rel_query_to} \
-              and ro.id_order >= rf.id_order and ro.id_order <= rt.id_order \
-              and (srd.id_release_from = ro.id_release or srd.id_release_to = ro.id_release) \
-              group by srd.id_script \
-           ) \
-        ) AND active = 1 \
+  # Retrieve id release from
+  _dbm_retrieve_field_rel "id_release" "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM"
+  id_rel_from=$_sqlite_ans
+
+  # Retrieve id release to
+  _dbm_retrieve_field_rel "id_release" "$DBM_REL_NAME" "$DBM_REL_VERSION_TO"
+  id_rel_to=$_sqlite_ans
+
+  # Retrive id order of the release from
+  _dbm_retrieve_field_rel "id_order" "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM"
+  id_order=$_sqlite_ans
+
+  # Retrieve id order of the release to
+  _dbm_retrieve_field_rel "id_order" "$DBM_REL_NAME" "$DBM_REL_VERSION_TO"
+  id_order_to=$_sqlite_ans
+
+  if [ $id_order -gt $id_order_to ] ; then
+    error_generate "Currently downgrade it isn't supported! Maybe in the future this will change!"
+  fi
+
+  query="SELECT id_script,filename,type,directory,id_release,id_order
+        FROM Scripts
+        WHERE id_script NOT IN (
+           SELECT sri.id_script
+           FROM ScriptRelInhibitions sri, Releases rf, Releases rt, Releases ro
+           WHERE rf.id_release = ${id_rel_from} AND rt.id_release = ${id_rel_to}
+           AND ro.id_order >= rf.id_order AND ro.id_order <= rt.id_order
+           AND (sri.id_release_from = ro.id_release OR sri.id_release_to = ro.id_release)
+           GROUP BY sri.id_script
+        )
+        AND id_script NOT IN (
+              SELECT srd.id_script
+              FROM ScriptRelDedicated srd, Releases rf, Releases rt, Releases ro
+              WHERE rf.id_release = ${id_rel_from} AND rt.id_release = ${id_rel_to}
+              AND ro.id_order >= rf.id_order AND ro.id_order <= rt.id_order
+              AND (srd.id_release_from = ro.id_release OR srd.id_release_to = ro.id_release)
+              GROUP BY srd.id_script
+           )
+        AND active = 1
+        UNION
+        SELECT id_script,filename,type,directory,id_release,id_order
+        FROM Scripts
+        WHERE id_script IN (
+              SELECT srd.id_script
+              FROM ScriptRelDedicated srd, Releases rf, Releases rt, Releases ro
+              WHERE rf.id_release = ${id_rel_from} AND rt.id_release = ${id_rel_to}
+              AND ro.id_order >= rf.id_order AND ro.id_order <= rt.id_order
+              AND (srd.id_release_from = ro.id_release OR srd.id_release_to = ro.id_release)
+              GROUP BY srd.id_script
+        )
+        AND active = 1
         ORDER BY id_release,id_order"
 
   _sqlite_query -c "$DRM_DB" -q "${query}" || error_handled "Unexpected error!"
