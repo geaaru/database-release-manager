@@ -88,11 +88,11 @@ commons_oracle_check_sqlplus () {
 # return 1 on error
 commons_oracle_check_connection () {
 
-  if [ -z $SQLPLUS ] ; then
+  if [ -z "$SQLPLUS" ] ; then
     return 1
   fi
 
-  if [ -z $sqlplus_auth ] ; then
+  if [ -z "$sqlplus_auth" ] ; then
     return 1
   fi
 
@@ -591,40 +591,19 @@ commons_oracle_download_create_export_trigger() {
 
 # return 1 on error
 # return 0 on success
-commons_oracle_compile_upgrade_script() {
-
-  local packagedir=$1
-  local dbversion=$2
-
-  _logfile_write "Start compilation of update script for v. $dbversion" || return 1
-
-  SQLPLUS_OUTPUT=""
-
-  sqlplus_file "SQLPLUS_OUTPUT" "$packagedir/update_script/update_$dbversion.sql"
-  local ans=$?
-
-  _logfile_write "$SQLPLUS_OUTPUT" || return 1
-
-  _logfile_write "End compilation of update script for v. $dbversion with result $ans" || return 1
-
-  return $ans
-}
-
-# return 1 on error
-# return 0 on success
 commons_oracle_compile_file() {
 
   local f=$1
   local msg=$2
 
   if [ ! -e $f ] ; then
-    _logfile_write "File $f not found." || return 1
+    _logfile_write "(oracle) File $f not found." || return 1
     return 1
   fi
 
-  _logfile_write "Start compilation: $msg" || return 1
+  _logfile_write "(oracle) Start compilation: $msg" || return 1
 
-  echo "Start compilation: $msg"
+  echo "(oracle) Start compilation: $msg"
 
   SQLPLUS_OUTPUT=""
 
@@ -633,9 +612,9 @@ commons_oracle_compile_file() {
 
   _logfile_write "$SQLPLUS_OUTPUT" || return 1
 
-  _logfile_write "End compilation (result => $ans): $msg" || return 1
+  _logfile_write "(oracle) End compilation (result => $ans): $msg" || return 1
 
-  echo -en "End compilation (result => $ans): $msg\n"
+  echo -en "(oracle) End compilation (result => $ans): $msg\n"
 
   return $ans
 
@@ -696,7 +675,7 @@ commons_oracle_compile_all_from_dir () {
   local ex_f=""
   local exc=0
 
-  _logfile_write "Start compilation $msg_head: $msg" || return 1
+  _logfile_write "(oracle) Start compilation $msg_head: $msg" || return 1
 
   for i in $directory/*.sql ; do
 
@@ -716,7 +695,7 @@ commons_oracle_compile_all_from_dir () {
         if [ "$ex_f" == "$f" ] ; then
           exc=1
 
-          _logfile_write "Exclude file $fb for user request."
+          _logfile_write "(oracle) Exclude file $fb for user request."
 
           break
         fi
@@ -734,7 +713,7 @@ commons_oracle_compile_all_from_dir () {
 
   done # end for
 
-  _logfile_write "End compilation $msg_head: $msg" || return 1
+  _logfile_write "(oracle) End compilation $msg_head: $msg" || return 1
 
   return 0
 

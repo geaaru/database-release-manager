@@ -64,7 +64,7 @@ oracle_test_connection () {
 
   _oracle_check_status
 
-  _oracle_help_message="do_help"
+  _oracle_help_message="print_help"
 
   _oracle_connections_args "$@" || error_handled ""
 
@@ -98,7 +98,7 @@ oracle_compile () {
 
   _oracle_compile || error_handled ""
 
-  echo -en "Download operation successfull.\n"
+  echo -en "Compile operation successfull.\n"
 
   return 0
 }
@@ -140,13 +140,13 @@ _oracle_init () {
 
     [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_init: Check requirements of the oracle module.)\n"
 
-    commons_oracle_check_tnsnames $LOCAL_DIR || error_handled "Invalid TNS_ADMIN variable"
-    commons_oracle_check_sqlplus || error_handled ""
-
     check_var "ORACLE_USER" || error_handled "You must define ORACLE_USER variable on configuration file."
     check_var "ORACLE_PWD"  || error_handled "You must define ORACLE_PWD variable on configuration file."
     check_var "ORACLE_SID"  || error_handled "You must define ORACLE_SID variable on configuration file."
     check_var "ORACLE_DIR"  || error_handled "You must define ORACLE_DIR variable on configuration file."
+
+    commons_oracle_check_tnsnames $LOCAL_DIR || error_handled "Invalid TNS_ADMIN variable"
+    commons_oracle_check_sqlplus || error_handled ""
 
     [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_init: All requirements are present. Continue my work.)\n"
 
@@ -190,9 +190,9 @@ _oracle_connections_args () {
       -t) TNS_ADMIN="$2";shift;;
       -h)
         if [ ! -z "$_oracle_help_message" ] ; then
-          echo -en "[-S oracle_sid]         Oracle SID (or set ORACLE_SID on configuration file).\n"
-          echo -en "[-P oracle_pwd]         Oracle Password (or set ORACLE_PWD on configuration file).\n"
-          echo -en "[-U oracle_user]        Oracle Username (or set ORACLE_USER on configuration file).\n"
+          echo -en "[-S oracle_sid]         Override Oracle SID (or set ORACLE_SID on configuration file).\n"
+          echo -en "[-P oracle_pwd]         Override Oracle Password (or set ORACLE_PWD on configuration file).\n"
+          echo -en "[-U oracle_user]        Override Oracle schema/user (or set ORACLE_USER on configuration file).\n"
           echo -en "[-t tnsadmin_path]      Override TNS_ADMIN variable with path of the file tnsnames.ora.\n"
           echo -en "[-D oracle_dir]         Directory where save/retrieve packages/views/functions, etc..\n"
           echo -en "                        (or set ORACLE_DIR on configuration file). \n"
@@ -335,7 +335,7 @@ _oracle_compile_args () {
   ORACLE_COMPILE_VIEW=""
   ORACLE_COMPILE_ID_SCRIPT=""
   ORACLE_COMPILE_FILE=""
-  ORACLE_COMPILE_FILES_EXCLUDED=""
+  local ORACLE_COMPILE_EXC_RCVD=0
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -385,7 +385,12 @@ _oracle_compile_args () {
         shift
         ;;
       --exclude)
-        ORACLE_COMPILE_FILES_EXCLUDED="$ORACLE_COMPILE_FILES_EXCLUDED $2"
+        if [ $ORACLE_COMPILE_EXC_RCVD -eq 0 ] ; then
+          ORACLE_COMPILE_FILES_EXCLUDED="$2"
+          ORACLE_COMPILE_EXC_RCVD=1
+        else
+          ORACLE_COMPILE_FILES_EXCLUDED="$ORACLE_COMPILE_FILES_EXCLUDED $2"
+        fi
         shift
         ;;
       -h)
@@ -518,7 +523,7 @@ _oracle_compile () {
 
     if [ $ORACLE_COMPILE_ALL_VIEWS -eq 1 ] ; then
 
-      commons_oracle_compile_all_views "" || error_handled "Error on compile all functions."
+      commons_oracle_compile_all_views "" || error_handled "Error on compile all views."
 
     else
 

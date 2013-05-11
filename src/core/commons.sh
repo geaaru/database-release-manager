@@ -33,6 +33,25 @@ check_var () {
   return 0
 }
 
+escape_var () {
+
+  local name="$1"
+
+  eval v=\$$name
+
+  v="$(echo "$v" | sed -e 's/\/\\\//g' -e 's/\&/\\\&/g' -e 's/\`/\\\`/g' )"
+
+  echo "----"
+  echo "$v"
+  echo "----"
+
+  set -f
+  eval "$name=\$v"a
+  set +f
+
+  return 0
+}
+
 
 # return 0   yes
 # return 1   no

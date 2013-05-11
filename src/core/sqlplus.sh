@@ -40,7 +40,7 @@ EOF
 
   local ans=$?
 
-  [[ $DEBUG && $DEBUG == true ]] && echo "Compile $f ==> $v ($ans)"
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "Compile $f ==> $v ($ans)\n"
 
   #v=`echo $v | sed 's/\n/\r/g'`
   eval "$var=\$v"

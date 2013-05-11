@@ -119,11 +119,15 @@ main () {
       . $mod
       if type -t _${name}_init > /dev/null ; then
 
-         [[ $DEBUG ]] && echo "Call init method of the module $name"
+         [[ $DEBUG && $DEBUG == true ]] && echo "Call init method of the module $name"
          _${name}_init
       fi
-      version=`${name}_version`
-      [[ $DEBUG ]] && echo "Loaded module $name $version"
+      if type -t ${name}_version > /dev/null ; then
+        version=`${name}_version`
+      else
+        version="N.A."
+      fi
+      [[ $DEBUG && $DEBUG == true ]] && echo "Loaded module $name $version"
       modules="$modules $name"
    done
 
