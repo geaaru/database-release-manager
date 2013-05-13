@@ -39,15 +39,9 @@ escape_var () {
 
   eval v=\$$name
 
-  v="$(echo "$v" | sed -e 's/\/\\\//g' -e 's/\&/\\\&/g' -e 's/\`/\\\`/g' )"
+  v="$(echo "$v" | sed -e 's/\//\\\//g' -e 's:\\:\\\\:g' -e 's/\&/\\\&/g' -e 's:`:\\\`:g' )"
 
-  echo "----"
-  echo "$v"
-  echo "----"
-
-  set -f
-  eval "$name=\$v"a
-  set +f
+  eval "$name=\$v"
 
   return 0
 }

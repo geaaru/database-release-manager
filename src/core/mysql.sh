@@ -71,6 +71,53 @@ EOF
 
 }
 
+
+# Compile a file
+# and save output to input variable
+# $1 => Variable name where is save output
+# $2 => File to compile
+#
+# return 0 on success
+# return 1 on error
+mysql_source_file () {
+
+  local var=$1
+  local f=$2
+  local avoid_tmz=$3
+  local v=""
+  local opts="-N"
+
+  local tz="SET time_zone = '$MARIADB_TMZ';"
+  if [[ ! -z "$avoid_tmz" && x"$avoid_tmz" == x"1" ]] ; then
+    tz=""
+  fi
+  local sql="$(cat $f)"
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "Execute sql:\n$sql\n"
+
+
+  if [ -n "$MARIADB_SHOW_COLUMNS" ] ; then
+    opts=""
+  fi
+
+  v=$($MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth 2>&1 <<EOF
+$tz
+source $f;
+EOF
+)
+
+  local ans=$?
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "Compile $f ==> $v ($ans)\n"
+
+  eval "$var=\$v"
+  #read -r "$var" <<< "$v"
+
+  return $ans
+
+}
+
+
 mysql_cmd_4var () {
 
   set -f

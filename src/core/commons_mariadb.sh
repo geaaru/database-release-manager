@@ -256,6 +256,23 @@ commons_mariadb_count_functions () {
   return $MYSQL_OUTPUT
 }
 
+commons_mariadb_count_triggers () {
+
+  local cmd="
+    SELECT COUNT(1) AS CNT
+    FROM INFORMATION_SCHEMA.TRIGGERS
+    WHERE TRIGGERS_SCHEMA = '$MARIADB_DB';"
+
+  mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || error_handled ""
+
+  if [ -z "$MYSQL_OUTPUT" ] ; then
+    error_generate "Error on count triggers."
+  fi
+
+  return $MYSQL_OUTPUT
+}
+
+
 # return 1 if not exists
 # return 0 if exists
 commons_mariadb_check_if_exist_procedure () {
@@ -310,6 +327,33 @@ commons_mariadb_check_if_exist_function () {
   return $result
 }
 
+
+# return 1 if not exists
+# return 0 if exists
+commons_mariadb_check_if_exist_trigger () {
+
+  local result=1
+  local name="$1"
+  local errmsg="Error on check if exists trigger $name."
+  local cmd="
+    SELECT COUNT(1) AS CNT
+    FROM INFORMATION_SCHEMA.TRIGGERS
+    WHERE TRIGGERS_SCHEMA = '$MARIADB_DB'
+    AND TRIGGER_NAME = '$name' ;"
+
+  mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || return $result
+
+  if [ -z "$MYSQL_OUTPUT" ] ; then
+    error_generate "$errmsg"
+  fi
+
+  if [ x"$MYSQL_OUTPUT" == x"1" ] ; then
+    result=0
+  fi
+
+  return $result
+}
+
 commons_mariadb_download_procedure () {
 
   local name="${1/.sql/}"
@@ -342,6 +386,8 @@ commons_mariadb_download_procedure () {
     WHERE name = '$name' AND db = '$MARIADB_DB';"
 
   mysql_cmd_4var "PROCEDURE_BODY" "$query" || return $result
+
+  escape_var "PROCEDURE_BODY"
 
   local out="
 USE \`DB_NAME\`;
@@ -394,6 +440,8 @@ commons_mariadb_download_function () {
 
   mysql_cmd_4var "FUNCTION_BODY" "$query" || return $result
 
+  escape_var "FUNCTION_BODY"
+
   local out="
 USE \`DB_NAME\`;
 DROP 'FUNCTION' IF EXISTS `$name`;
@@ -404,6 +452,59 @@ $MYSQL_OUTPUT
 $FUNCTION_BODY"
 
   unset FUNCTION_BODY
+
+  echo -en "$out" > $f
+
+  return 0
+}
+
+commons_mariadb_download_trigger () {
+
+  local result=1
+  local name="${1/.sql/}"
+  name=`basename $name`
+
+  local triggersdir="${MARIADB_DIR}/triggers"
+  local f="$triggersdir/$name.sql"
+
+  commons_mariadb_check_if_exist_trigger "$name" || error_handled "Function $name not found."
+
+  if [ ! -e "$functionsdir" ] ; then
+    mkdir "$functionsdir"
+  fi
+
+  [ -f "$f" ] && rm -f "$f"
+
+  local query="
+    SELECT CONCAT('CREATE FUNCTION \`$name\` (', param_list, ') RETURNS ', returns)
+    FROM mysql.proc
+    WHERE name = '$name' AND db = '$MARIADB_DB';"
+
+  mysql_cmd_4var "MYSQL_OUTPUT" "$query" || return $result
+
+  if [ -z "$MYSQL_OUTPUT" ] ; then
+    error_generate "Error on download trigger params of the trigger $name."
+  fi
+
+  query="
+    SELECT body
+    FROM mysql.proc
+    WHERE name = '$name' AND db = '$MARIADB_DB';"
+
+  mysql_cmd_4var "TRIGGER_BODY" "$query" || return $result
+
+  escape_var "TRIGGER_BODY"
+
+  local out="
+USE \`DB_NAME\`;
+DROP 'FUNCTION' IF EXISTS `$name`;
+
+DELIMITER \$\$
+USE \`DB_NAME\`\$\$
+$MYSQL_OUTPUT
+$TRIGGER_BODY"
+
+  unset TRIGGER_BODY
 
   echo -en "$out" > $f
 
