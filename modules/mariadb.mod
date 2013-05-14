@@ -29,8 +29,9 @@ mariadb_long_help () {
    echo -en "\tshow_help               Show command list.\n"
    echo -en "\tversion                 Show module version.\n"
    echo -en "\ttest_connection         Test connection versus database.\n"
-   echo -en "\tdownload                Download packages/triggers/views/etc.\n"
-   echo -en "\tcompile                 Compile packages/triggers/views/etc.\n"
+   echo -en "\tdownload                Download procedures/triggers/views/etc.\n"
+   echo -en "\tcompile                 Compile procedures/triggers/views/etc.\n"
+   echo -en "\tshow                    Show procedures/triggers/views/etc.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -45,8 +46,9 @@ mariadb_show_help () {
    echo -en "\tshow_help               Show command list.\n"
    echo -en "\tversion                 Show module version.\n"
    echo -en "\ttest_connection         Test connection versus database.\n"
-   echo -en "\tdownload                Download packages/triggers/views/etc.\n"
-   echo -en "\tcompile                 Compile packages/triggers/views/etc.\n"
+   echo -en "\tdownload                Download procedures/triggers/views/etc.\n"
+   echo -en "\tcompile                 Compile procedures/triggers/views/etc.\n"
+   echo -en "\tshow                    Show procedures/triggers/views/etc.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -71,6 +73,83 @@ mariadb_test_connection () {
   commons_mariadb_check_connection || error_handled "MySQL client was unable to connect to DB with supplied credentials."
 
   echo -en "Connected to $MARIADB_DB with user $MARIADB_USER correctly.\n"
+
+  return 0
+}
+
+mariadb_show () {
+
+  local n_rec=0
+  local name=""
+  local table=""
+  local action=""
+  local event=""
+
+  # Shift first two input param
+  shift 2
+
+  _mariadb_check_status
+
+  _mariadb_help_message="print_help"
+
+  _mariadb_connections_args "$@"
+
+  _mariadb_show_args "$@" || error_handled ""
+
+  mysql_set_auth_var "$MARIADB_DB" "$MARIADB_USER" "$MARIADB_PWD" "$MARIADB_HOST"
+
+  commons_mariadb_check_connection || error_handled "MySQL client was unable to connect to DB with supplied credentials."
+
+  if [ $MARIADB_SHOW_ALL -eq 1 ] ; then
+
+    echo -en "======================================================================================\n"
+    echo -en "\e[1;34mProcedures:\e[m\n"
+    echo -en "======================================================================================\n"
+    _mariadb_show_f_p "procedures"
+    echo -en "\n"
+
+    echo -en "======================================================================================\n"
+    echo -en "\e[1;32mFunctions:\e[m\n"
+    echo -en "======================================================================================\n"
+    _mariadb_show_f_p "functions"
+    echo -en "\n"
+
+    _mariadb_show_triggers
+    echo -en "\n"
+
+    _mariadb_show_views
+    echo -en "\n"
+
+  else
+
+    # Show procedures
+    if [ $MARIADB_SHOW_ALL_PROCEDURES -eq 1 ] ; then
+
+      _mariadb_show_f_p "procedures"
+
+    fi
+
+    # Show routines
+    if [ $MARIADB_SHOW_ALL_FUNCTIONS -eq 1 ] ; then
+
+      _mariadb_show_f_p "functions"
+
+    fi
+
+    # Show triggers
+    if [ $MARIADB_SHOW_ALL_TRIGGERS -eq 1 ] ; then
+
+      _mariadb_show_triggers
+
+    fi
+
+    if [ $MARIADB_SHOW_ALL_VIEWS -eq 1 ] ; then
+
+      _mariadb_show_views
+
+    fi
+
+  fi
 
   return 0
 }
@@ -256,7 +335,7 @@ _mariadb_compile_args () {
   while [ $# -gt 0 ] ; do
     case "$1" in
 
-      -S|-U|-P|-D|--database|--timezone|--conn-options)
+      -S|-H|-U|-P|-D|--database|--timezone|--conn-options)
         shift
         # do nothing
         ;;
@@ -360,13 +439,13 @@ _mariadb_download_args () {
   while [ $# -gt 0 ] ; do
     case "$1" in
 
-      -S|-U|-P|-D)
+      -S|-H|-U|-P|-D|--database|--timezone|--conn-options)
         shift
         # do nothing
         ;;
 
-      --all-packages)
-        MARIADB_DOWNLOAD_ALL_PACKAGES=1
+      --all-procedures)
+        MARIADB_DOWNLOAD_ALL_PROCEDURES=1
         ;;
       --all-triggers)
         MARIADB_DOWNLOAD_ALL_TRIGGERS=1
@@ -424,6 +503,83 @@ _mariadb_download_args () {
   return 0
 }
 
+_mariadb_show_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_show_args args: $@)\n"
+
+  local short_options="d:U:P:hH:D:t:"
+  local long_options="database: timezone: conn-options:" # connection long options
+  long_options="$long_options triggers functions procedures views all"
+
+  set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
+
+  if [ $# -lt 2 ] ; then # is there at least one param (--)
+    _mariadb_show_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_download_args: Found $# params)\n"
+
+  MARIADB_SHOW_ALL=0
+  MARIADB_SHOW_ALL_PROCEDURES=0
+  MARIADB_SHOW_ALL_TRIGGERS=0
+  MARIADB_SHOW_ALL_FUNCTIONS=0
+  MARIADB_SHOW_ALL_VIEWS=0
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -S|-H|-U|-P|-D|--database|--timezone|--conn-options)
+        shift
+        # do nothing
+        ;;
+
+      --procedures)
+        MARIADB_SHOW_ALL_PROCEDURES=1
+        ;;
+      --triggers)
+        MARIADB_SHOW_ALL_TRIGGERS=1
+        ;;
+      --functions)
+        MARIADB_SHOW_ALL_FUNCTIONS=1
+        ;;
+      --views)
+        MARIADB_SHOW_ALL_VIEWS=1
+        ;;
+      --all)
+        MARIADB_SHOW_ALL=1
+        ;;
+
+      -h)
+        _mariadb_show_help
+        return 1
+        ;;
+      --)
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+
+    esac
+
+    shift
+  done
+
+  return 0
+}
+
+_mariadb_show_help () {
+
+  echo -en "[--procedures]           Show list of procedures name present on database.\n"
+  echo -en "[--triggers]             Show list of trigger name present on database.\n"
+  echo -en "[--functions]            Show list of functions name present on database.\n"
+  echo -en "[--views]                Show list of view name present on database.\n"
+  echo -en "[--all]                  Show list of all procedures, triggers, functions and views present on database.\n"
+
+  return 0
+
+}
+
 _mariadb_compile_help () {
 
   echo -en "[--all-procedures]       Compile all procedures present under MARIADB_DIR subdirectories.\n"
@@ -432,7 +588,7 @@ _mariadb_compile_help () {
   echo -en "[--all-views]            Compile all views present on MARIADB_DIR subdirectories.\n"
   echo -en "[--all]                  Compile all procedures, triggers, functions and views present under\n"
   echo -en "                         MARIADB_DIR subdirectories.\n"
-  echo -en "[--procedure name]       Compile a particular package under MARIADB_DIR/packages directory.\n"
+  echo -en "[--procedure name]       Compile a particular procedure under MARIADB_DIR/procedures directory.\n"
   echo -en "[--trigger name]         Compile a particular trigger under MARIADB_DIR/triggers directory.\n"
   echo -en "[--function name]        Compile a particular function under MARIADB_DIR/functions directory.\n"
   echo -en "[--view name]            Compile a particular view under MARIADB_DIR/views directory.\n"
@@ -665,6 +821,121 @@ _mariadb_download () {
     fi
 
   fi # end $MARIADB_DOWNLOAD_ALL
+
+  return 0
+}
+
+_mariadb_show_triggers () {
+
+  local n_rec=0
+  local name=""
+  local table=""
+  local action=""
+  local event=""
+
+  commons_mariadb_count_triggers
+  n_rec=$?
+
+  if [ $n_rec -eq 0 ] ; then
+    echo -en "======================================================================================\n"
+    echo -en "\e[1;35mTriggers:\e[m\n"
+    echo -en "======================================================================================\n"
+    echo -en "No triggers available.\n"
+  else
+
+    commons_mariadb_get_triggers_list || error_handled "Error on get triggers name list."
+    echo -en "======================================================================================\n"
+    echo -en "\e[1;33mTRIGGER_NAME\e[m\t\t"
+    echo -en "\e[1;32mTABLE\e[m\t"
+    echo -en "\e[1;31mACTION\e[m\t"
+    echo -en "\e[1;34mEVENT\e[m\n"
+    echo -en "======================================================================================\n"
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      name=`echo $row | awk '{split($0,a," "); print a[1]}'`
+      table=`echo $row | awk '{split($0,a," "); print a[2]}'`
+      action=`echo $row | awk '{split($0,a," "); print a[3]}'`
+      event=`echo $row | awk '{split($0,a," "); print a[4]}'`
+
+      echo -en "\e[1;33m${name}\e[m\t\t"
+      echo -en "\e[1;32m${table}\e[m\t"
+      echo -en "\e[1;31m${action}\e[m\t"
+      echo -en "\e[1;34m${event}\e[m\n"
+
+    done
+    unset IFS
+
+
+  fi
+
+
+  return 0
+
+}
+
+_mariadb_show_views () {
+
+  local n_rec=0
+  local name=""
+  local updatable=""
+
+  commons_mariadb_count_views
+  n_rec=$?
+
+  if [ $n_rec -eq 0 ] ; then
+    echo -en "======================================================================================\n"
+    echo -en "\e[1;31mViews:\e[m\n"
+    echo -en "======================================================================================\n"
+    echo -en "No views available.\n"
+  else
+
+    commons_mariadb_get_views_list || error_handled "Error on get views name list."
+    echo -en "======================================================================================\n"
+    echo -en "\e[1;33mVIEW_NAME\e[m\t\t"
+    echo -en "\e[1;32mIS_UPDATABLE\e[m\n"
+    echo -en "======================================================================================\n"
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      name=`echo $row | awk '{split($0,a," "); print a[1]}'`
+      updatable=`echo $row | awk '{split($0,a," "); print a[2]}'`
+
+      echo -en "\e[1;33m${name}\e[m\t\t\t"
+      echo -en "\e[1;34m${updatable}\e[m\n"
+
+    done
+    unset IFS
+
+
+  fi
+
+  return 0
+}
+
+_mariadb_show_f_p () {
+
+  local n_rec=0
+  local target="$1"
+
+  commons_mariadb_count_${target}
+  n_rec=$?
+
+  if [ $n_rec -eq 0 ] ; then
+    echo -en "No ${target} available.\n"
+  else
+
+    commons_mariadb_get_${target}_list || error_handled "Error on get $target name list."
+
+    for row in $_mariadb_ans ; do
+
+      echo "$row"
+
+    done
+
+  fi
 
   return 0
 }

@@ -15,8 +15,8 @@ mysql_set_auth_var () {
   local host=$4
   local v_host=""
 
-  if [ ! -z $host ] ; then
-    v_host="-h $host"
+  if [ ! -z "$host" ] ; then
+    v_host="--host $host"
   fi
 
   export mysql_auth="$v_host -u $user --password=$pwd $db"
@@ -45,7 +45,7 @@ mysql_file () {
   if [[ ! -z "$avoid_tmz" && x"$avoid_tmz" == x"1" ]] ; then
     tz=""
   fi
-  local sql="$(cat $f)"
+  local sql="$(cat $f | sed -e 's:`DB_NAME`:`'$MARIADB_DB'`:g' )"
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "Execute sql:\n$sql\n"
 
@@ -136,6 +136,9 @@ mysql_cmd_4var () {
   if [ -n "$MARIADB_SHOW_COLUMNS" ] ; then
     opts=""
   fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "Connection options: $MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth\n"
+
   v=$($MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth 2>&1 <<EOF
 $tz
 $cmd;
@@ -146,13 +149,13 @@ EOF
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "$cmd ==> $v ($ans)\n"
 
-  if [[ $ans -eq 0 && -z $v ]] ; then
-    return 1
-  fi
+  if [[ $ans -eq 0 && -n "$v" ]] ; then
 
-  if [[ -n $rm_ln ]] ; then
+    if [[ -n $rm_ln ]] ; then
 
-    v=`echo $v | sed 's/\n//g'`
+      v=`echo $v | sed 's/\n//g'`
+
+    fi
 
   fi
 

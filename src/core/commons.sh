@@ -46,6 +46,21 @@ escape_var () {
   return 0
 }
 
+escape2oct_var () {
+
+  local name="$1"
+
+  eval v=\$$name
+
+  # TODO: Handle replace through input params selection
+  v="$(echo "$v" | sed -e 's:\/:\\057:g' -e 's:`:\\0140:g' )"
+  #v="$(echo "$v" | sed -e 's:\\n:\\012:g' -e 's:\/:\\057:g' -e 's:\\:\\0134:g' -e 's:`:\\0140:g' )"
+  #v="$(echo "$v" | sed -e 's:\\n:\\012:g' -e 's:\/:\\057:g' -e 's:\\:\\0134:g' -e 's:`:\\0140:g' )"
+
+  eval "$name=\$v"
+
+  return 0
+}
 
 # return 0   yes
 # return 1   no

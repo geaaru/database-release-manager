@@ -158,6 +158,47 @@ install_show_installable () {
   return 0
 }
 
+install_install () {
+
+  local result=1
+  local query=""
+  local id_rel_to=""
+  local id_order=""
+  local id_order_to=""
+  local id_rel_from=""
+
+  # Shift first two input param
+  shift 2
+
+  _install_check_show_installable_args "$@" || return $result
+
+  _dbm_check_if_exist_rel "$DBM_REL_NAME" "$DBM_REL_VERSION_TO" || return $result
+  _dbm_check_if_exist_rel "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM" || return $result
+
+  # Retrieve id release from
+  _dbm_retrieve_field_rel "id_release" "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM"
+  id_rel_from=$_sqlite_ans
+
+  # Retrieve id release to
+  _dbm_retrieve_field_rel "id_release" "$DBM_REL_NAME" "$DBM_REL_VERSION_TO"
+  id_rel_to=$_sqlite_ans
+
+  # Retrive id order of the release from
+  _dbm_retrieve_field_rel "id_order" "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM"
+  id_order=$_sqlite_ans
+
+  # Retrieve id order of the release to
+  _dbm_retrieve_field_rel "id_order" "$DBM_REL_NAME" "$DBM_REL_VERSION_TO"
+  id_order_to=$_sqlite_ans
+
+  if [ $id_order -gt $id_order_to ] ; then
+    error_generate "Currently downgrade it isn't supported! Maybe in the future this will change!"
+  fi
+
+
+
+}
+
 ##################################################################
 # Internal functions
 ##################################################################

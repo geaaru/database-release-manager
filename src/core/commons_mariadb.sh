@@ -97,14 +97,12 @@ commons_mariadb_compile_file () {
   local f=$1
   local msg=$2
 
-  echo "FILE = $f"
-
   if [ ! -e $f ] ; then
     _logfile_write "(mariadb) File $f not found." || return 1
     return 1
   fi
 
-  _logfile_write "(mariadb) Start compilation: $msg" || return 1
+  _logfile_write "(mariadb) Start compilation (file $f): $msg" || return 1
 
   echo "(mariadb) Start compilation: $msg"
 
@@ -115,7 +113,7 @@ commons_mariadb_compile_file () {
 
   _logfile_write "\n$MYSQL_OUTPUT" || return 1
 
-  _logfile_write "(mariadb) End compilation (result => $ans): $msg" || return 1
+  _logfile_write "(mariadb) End compilation (file $f, result => $ans): $msg" || return 1
 
   echo -en "(mariadb) End compilation (result => $ans): $msg\n"
 
@@ -261,12 +259,31 @@ commons_mariadb_count_triggers () {
   local cmd="
     SELECT COUNT(1) AS CNT
     FROM INFORMATION_SCHEMA.TRIGGERS
-    WHERE TRIGGERS_SCHEMA = '$MARIADB_DB';"
+    WHERE TRIGGER_SCHEMA = '$MARIADB_DB'
+    AND ACTION_TIMING IN ('BEFORE', 'AFTER')
+    AND EVENT_MANIPULATION IN ('INSERT', 'UPDATE')
+    AND ACTION_STATEMENT IS NOT NULL;"
 
   mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || error_handled ""
 
   if [ -z "$MYSQL_OUTPUT" ] ; then
     error_generate "Error on count triggers."
+  fi
+
+  return $MYSQL_OUTPUT
+}
+
+commons_mariadb_count_views () {
+
+  local cmd="
+    SELECT COUNT(1) AS CNT
+    FROM INFORMATION_SCHEMA.VIEWS
+    WHERE TABLE_SCHEMA = '$MARIADB_DB';"
+
+  mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" "" "1" || error_handled ""
+
+  if [ -z "$MYSQL_OUTPUT" ] ; then
+    error_generate "Error on count views."
   fi
 
   return $MYSQL_OUTPUT
@@ -312,7 +329,7 @@ commons_mariadb_check_if_exist_function () {
     FROM INFORMATION_SCHEMA.ROUTINES
     WHERE ROUTINE_SCHEMA = '$MARIADB_DB'
     AND ROUTINE_TYPE = 'FUNCTION'
-    AND ROUTINE_NAME = '$name' ;"
+    AND ROUTINE_NAME = '$name'"
 
   mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || return $result
 
@@ -327,6 +344,99 @@ commons_mariadb_check_if_exist_function () {
   return $result
 }
 
+# return 1 if not exists
+# return 0 if exists
+commons_mariadb_check_if_exist_view () {
+
+  local result=1
+  local name="$1"
+  local errmsg="Error on check if exists view $name."
+  local cmd="
+    SELECT COUNT(1) AS CNT
+    FROM INFORMATION_SCHEMA.VIEWS
+    WHERE TABLE_SCHEMA = '$MARIADB_DB'
+    AND TABLE_NAME = '$name' ;"
+
+  mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || return $result
+
+  if [ -z "$MYSQL_OUTPUT" ] ; then
+    error_generate "$errmsg"
+  fi
+
+  if [ x"$MYSQL_OUTPUT" == x"1" ] ; then
+    result=0
+  fi
+
+  return $result
+}
+
+# Save on _mariadb_ans list of record
+# Return 1 on error
+# Return 0 on success
+commons_mariadb_get_triggers_list () {
+
+  local result=1
+  local cmd="
+    SELECT TRIGGER_NAME, EVENT_OBJECT_TABLE, ACTION_TIMING, EVENT_MANIPULATION
+    FROM INFORMATION_SCHEMA.TRIGGERS
+    WHERE TRIGGER_SCHEMA = '$MARIADB_DB'
+    AND ACTION_TIMING IN ('BEFORE', 'AFTER')
+    AND EVENT_MANIPULATION IN ('INSERT', 'UPDATE')
+    AND ACTION_STATEMENT IS NOT NULL
+    ORDER BY EVENT_OBJECT_TABLE, ACTION_ORDER;"
+
+  mysql_cmd_4var "_mariadb_ans" "$cmd" || return $result
+
+  return 0
+}
+
+# Save on _mariadb_ans list of record
+# Return 1 on error
+# Return 0 on success
+commons_mariadb_get_procedures_list () {
+
+  local cmd="
+    SELECT ROUTINE_NAME
+    FROM INFORMATION_SCHEMA.ROUTINES
+    WHERE ROUTINE_SCHEMA = '$MARIADB_DB'
+    AND ROUTINE_TYPE = 'PROCEDURE';"
+
+  mysql_cmd_4var "_mariadb_ans" "$cmd" || return 1
+
+  return 0
+}
+
+# Save on _mariadb_ans list of record
+# Return 1 on error
+# Return 0 on success
+commons_mariadb_get_functions_list () {
+
+  local cmd="
+    SELECT ROUTINE_NAME
+    FROM INFORMATION_SCHEMA.ROUTINES
+    WHERE ROUTINE_SCHEMA = '$MARIADB_DB'
+    AND ROUTINE_TYPE = 'FUNCTION';"
+
+  mysql_cmd_4var "_mariadb_ans" "$cmd" || return 1
+
+  return 0
+}
+
+# Save on _mariadb_ans list of record
+# Return 1 on error
+# Return 0 on success
+commons_mariadb_get_views_list () {
+
+  local cmd="
+    SELECT TABLE_NAME, IS_UPDATABLE
+    FROM INFORMATION_SCHEMA.VIEWS
+    WHERE TABLE_SCHEMA = '$MARIADB_DB';"
+
+  mysql_cmd_4var "_mariadb_ans" "$cmd" || return 1
+
+  return 0
+}
+
 
 # return 1 if not exists
 # return 0 if exists
@@ -338,8 +448,11 @@ commons_mariadb_check_if_exist_trigger () {
   local cmd="
     SELECT COUNT(1) AS CNT
     FROM INFORMATION_SCHEMA.TRIGGERS
-    WHERE TRIGGERS_SCHEMA = '$MARIADB_DB'
-    AND TRIGGER_NAME = '$name' ;"
+    WHERE TRIGGER_SCHEMA = '$MARIADB_DB'
+    AND TRIGGER_NAME = '$name' 
+    AND ACTION_TIMING IN ('BEFORE', 'AFTER')
+    AND EVENT_MANIPULATION IN ('INSERT', 'UPDATE')
+    AND ACTION_STATEMENT IS NOT NULL;"
 
   mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || return $result
 
@@ -370,9 +483,14 @@ commons_mariadb_download_procedure () {
   [ -f "$f" ] && rm -f "$f"
 
   local query="
-    SELECT CONCAT('CREATE PROCEDURE \`$name\` (', param_list, ')')
-    FROM mysql.proc
-    WHERE name = '$name' AND db = '$MARIADB_DB';"
+    SELECT CONCAT('CREATE PROCEDURE \`$name\` (', param_list, ')',
+                  CASE R.IS_DETERMINISTIC WHEN 'NO' THEN '' ELSE '\nDETERMINISTIC' END
+           ) AS SCRIPT
+    FROM mysql.proc M,
+         INFORMATION_SCHEMA.ROUTINES R
+    WHERE name = '$name' AND db = '$MARIADB_DB'
+    AND R.ROUTINE_NAME = name
+    AND R.ROUTINE_SCHEMA = db;"
 
   mysql_cmd_4var "MYSQL_OUTPUT" "$query" || return $result
 
@@ -387,16 +505,17 @@ commons_mariadb_download_procedure () {
 
   mysql_cmd_4var "PROCEDURE_BODY" "$query" || return $result
 
-  escape_var "PROCEDURE_BODY"
+  #escape_var "PROCEDURE_BODY"
 
   local out="
 USE \`DB_NAME\`;
-DROP 'PROCEDURE' IF EXISTS \`$name\`;
+DROP PROCEDURE IF EXISTS \`$name\`;
 
 DELIMITER \$\$
 USE \`DB_NAME\`\$\$
 $MYSQL_OUTPUT
-$PROCEDURE_BODY"
+$PROCEDURE_BODY
+"
 
   unset PROCEDURE_BODY
 
@@ -423,9 +542,15 @@ commons_mariadb_download_function () {
   [ -f "$f" ] && rm -f "$f"
 
   local query="
-    SELECT CONCAT('CREATE FUNCTION \`$name\` (', param_list, ') RETURNS ', returns)
-    FROM mysql.proc
-    WHERE name = '$name' AND db = '$MARIADB_DB';"
+    SELECT CONCAT('CREATE FUNCTION \`$name\` (', param_list, ') RETURNS ', returns,
+                  CASE R.IS_DETERMINISTIC WHEN 'NO' THEN '' ELSE '\nDETERMINISTIC' END
+           ) AS SCRIPT
+    FROM mysql.proc M,
+         INFORMATION_SCHEMA.ROUTINES R
+    WHERE name = '$name'
+    AND db = '$MARIADB_DB'
+    AND R.ROUTINE_NAME = name
+    AND R.ROUTINE_SCHEMA = db;"
 
   mysql_cmd_4var "MYSQL_OUTPUT" "$query" || return $result
 
@@ -440,16 +565,17 @@ commons_mariadb_download_function () {
 
   mysql_cmd_4var "FUNCTION_BODY" "$query" || return $result
 
-  escape_var "FUNCTION_BODY"
+  #escape_var "FUNCTION_BODY"
 
   local out="
 USE \`DB_NAME\`;
-DROP 'FUNCTION' IF EXISTS `$name`;
+DROP FUNCTION IF EXISTS \`$name\`;
 
 DELIMITER \$\$
 USE \`DB_NAME\`\$\$
 $MYSQL_OUTPUT
-$FUNCTION_BODY"
+$FUNCTION_BODY
+"
 
   unset FUNCTION_BODY
 
@@ -467,18 +593,21 @@ commons_mariadb_download_trigger () {
   local triggersdir="${MARIADB_DIR}/triggers"
   local f="$triggersdir/$name.sql"
 
-  commons_mariadb_check_if_exist_trigger "$name" || error_handled "Function $name not found."
+  commons_mariadb_check_if_exist_trigger "$name" || error_handled "Trigger $name not found or not supported."
 
-  if [ ! -e "$functionsdir" ] ; then
-    mkdir "$functionsdir"
+  if [ ! -e "$triggersdir" ] ; then
+    mkdir "$triggersdir"
   fi
 
   [ -f "$f" ] && rm -f "$f"
 
   local query="
-    SELECT CONCAT('CREATE FUNCTION \`$name\` (', param_list, ') RETURNS ', returns)
-    FROM mysql.proc
-    WHERE name = '$name' AND db = '$MARIADB_DB';"
+    SELECT CONCAT('CREATE TRIGGER \`$name\`',
+           ACTION_TIMING, ' ', EVENT_MANIPULATION, ' ON \`', EVENT_OBJECT_TABLE,
+           '\`\nFOR EACH ROW\n',
+           ACTION_STATEMENT, ';')
+    FROM INFORMATION_SCHEMA.TRIGGERS
+    WHERE TRIGGER_NAME = '$name' AND TRIGGER_SCHEMA = '$MARIADB_DB';"
 
   mysql_cmd_4var "MYSQL_OUTPUT" "$query" || return $result
 
@@ -486,27 +615,190 @@ commons_mariadb_download_trigger () {
     error_generate "Error on download trigger params of the trigger $name."
   fi
 
-  query="
-    SELECT body
-    FROM mysql.proc
-    WHERE name = '$name' AND db = '$MARIADB_DB';"
-
-  mysql_cmd_4var "TRIGGER_BODY" "$query" || return $result
-
-  escape_var "TRIGGER_BODY"
-
   local out="
 USE \`DB_NAME\`;
-DROP 'FUNCTION' IF EXISTS `$name`;
+DROP TRIGGER IF EXISTS \`$name\`;
 
 DELIMITER \$\$
 USE \`DB_NAME\`\$\$
 $MYSQL_OUTPUT
-$TRIGGER_BODY"
+"
 
-  unset TRIGGER_BODY
+  unset MYSQL_BODY
 
   echo -en "$out" > $f
+
+  return 0
+}
+
+commons_mariadb_download_view () {
+
+  local result=1
+  local name="${1/.sql/}"
+  name=`basename $name`
+
+  local viewsdir="${MARIADB_DIR}/views"
+  local f="$viewsdir/$name.sql"
+
+  commons_mariadb_check_if_exist_view "$name" || error_handled "View $name not found or not supported."
+
+  if [ ! -e "$viewsdir" ] ; then
+    mkdir "$viewsdir"
+  fi
+
+  [ -f "$f" ] && rm -f "$f"
+
+  local query="
+    SELECT CONCAT('CREATE OR REPLACE VIEW \`$name\`\nAS ',
+           VIEW_DEFINITION,
+           ';\n')
+    FROM INFORMATION_SCHEMA.VIEWS
+    WHERE TABLE_NAME = '$name' AND TABLE_SCHEMA = '$MARIADB_DB';"
+
+  mysql_cmd_4var "MYSQL_OUTPUT" "$query" || return $result
+
+  if [ -z "$MYSQL_OUTPUT" ] ; then
+    error_generate "Error on download views data of the view $name."
+  fi
+
+  local out="
+$MYSQL_OUTPUT
+"
+
+  unset MYSQL_BODY
+
+  echo -en "$out" > $f
+
+  return 0
+}
+
+commons_mariadb_download_all_views () {
+
+  local n_rec=0
+  local name=""
+
+  commons_mariadb_count_views
+  n_rec=$?
+
+  if [ $n_rec -gt 0 ] ; then
+
+    commons_mariadb_get_views_list || error_handled "Error on get views name list."
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      name=`echo $row | awk '{split($0,a," "); print a[1]}'`
+
+      unset IFS
+      commons_mariadb_download_view "$name"
+      if [ $? -ne 0 ] ; then
+        echo -en "Error on download view $name ($i of $n_rec).\n"
+      else
+        echo -en "Download view $name ($i of $n_rec).\n"
+      fi
+      IFS=$'\n'
+
+    done
+    unset IFS
+
+
+  fi
+
+  return 0
+}
+
+commons_mariadb_download_all_procedures () {
+
+  local n_rec=0
+  local i=1
+
+  commons_mariadb_count_procedures
+  n_rec=$?
+
+  if [ $n_rec -gt 0 ] ; then
+
+    commons_mariadb_get_procedures_list || error_handled "Error on get procedures name list."
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      unset IFS
+      commons_mariadb_download_procedure "$row"
+      if [ $? -ne 0 ] ; then
+        echo -en "Error on download procedure $row ($i of $n_rec).\n"
+      else
+        echo -en "Download procedure $row correctly ($i of $n_rec).\n"
+      fi
+      let i++
+      IFS=$'\n'
+
+    done
+    unset IFS
+
+  fi
+
+  return 0
+}
+
+commons_mariadb_download_all_functions () {
+
+  local n_rec=0
+
+  commons_mariadb_count_functions
+  n_rec=$?
+
+  if [ $n_rec -gt 0 ] ; then
+
+    commons_mariadb_get_functions_list || error_handled "Error on get functions name list."
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      unset IFS
+      commons_mariadb_download_function "$row"
+      if [ $? -ne 0 ] ; then
+        echo -en "Error on download function $row ($i of $n_rec).\n"
+      else
+        echo -en "Download function $row correctly ($i of $n_rec).\n"
+      fi
+      IFS=$'\n'
+
+    done
+    unset IFS
+
+  fi
+
+  return 0
+}
+
+commons_mariadb_download_all_triggers () {
+
+  local n_rec=0
+  local name=""
+
+  commons_mariadb_count_triggers
+  n_rec=$?
+
+  if [ $n_rec -gt 0 ] ; then
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      name=`echo $row | awk '{split($0,a," "); print a[1]}'`
+
+      unset IFS
+      commons_mariadb_download_trigger "$name"
+      if [ $? -ne 0 ] ; then
+        echo -en "Error on download trigger $name ($i of $n_rec).\n"
+      else
+        echo -en "Download trigger $name ($i of $n_rec).\n"
+      fi
+      IFS=$'\n'
+
+    done
+    unset IFS
+
+  fi
 
   return 0
 }
