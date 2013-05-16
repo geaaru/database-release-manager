@@ -48,6 +48,8 @@ dbm_long_help () {
    echo -en "\tinsert_script           Insert a new script.\n"
    echo -en "\tupdate_script           Update a script by Id.\n"
    echo -en "\tremove_script           Remove script.\n"
+   echo -en "\tshow_branches           Show branches.\n"
+   echo -en "\tinsert_branch           Insert a new branch.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -80,7 +82,9 @@ dbm_show_help () {
    echo -en "\tinsert_script           Insert a new script.\n"
    echo -en "\tupdate_script           Update a script by Id.\n"
    echo -en "\tremove_script           Remove script.\n"
-   echo -en "===========================================================================\n"
+   echo -en "\tshow_branches           Show branches.\n"
+   echo -en "\tinsert_branch           Insert a new branch.\n"
+    echo -en "===========================================================================\n"
 
    return 0
 }
@@ -95,7 +99,7 @@ dbm_show_releases () {
 
   if [ x$n_rel != x0 ] ; then
 
-    _sqlite_query -c "$DRM_DB" -q "SELECT id_release,name,version,release_date,creation_date,update_date,id_order,db_adapter FROM Releases ORDER BY id_order ASC" || error_handled "Unexpected error!"
+    _sqlite_query -c "$DRM_DB" -q "SELECT id_release,name,version,release_date,creation_date,update_date,id_order,db_adapter,id_branch FROM Releases ORDER BY id_order ASC" || error_handled "Unexpected error!"
 
     echo -en "==============================================================================================================\n"
     echo -en "\e[1;33mID\e[m\t"
@@ -104,6 +108,7 @@ dbm_show_releases () {
     echo -en "\e[1;36mUPDATE_DATE\e[m\t\t"
     echo -en "\e[1;31mADAPTER\e[m\t\t"
     echo -en "\e[1;32mID_ORDER\e[m\t"
+    echo -en "\e[1;38mBRANCH\e[m\t"
     echo -en "\e[1;37mNAME\e[m\n"
     echo -en "==============================================================================================================\n"
 
@@ -120,6 +125,7 @@ dbm_show_releases () {
       update_date=`echo $row | awk '{split($0,a,"|"); print a[6]}'`
       id_order=`echo $row | awk '{split($0,a,"|"); print a[7]}'`
       db_adapter=`echo $row | awk '{split($0,a,"|"); print a[8]}'`
+      id_branch=`echo $row | awk '{split($0,a,"|"); print a[9]}'`
 
       if [ ${#release_date} -eq 10 ] ; then
         release_date_tab="\t\t"
@@ -133,6 +139,7 @@ dbm_show_releases () {
       echo -en "\e[1;36m${update_date}\e[m\t"
       echo -en "\e[1;31m${db_adapter}\e[m\t\t"
       echo -en "\e[1;32m${id_order}\e[m\t\t"
+      echo -en "\e[1;38m${id_branch}\e[m\t"
       echo -en "\e[1;37m${name}\e[m\n"
 
     done
@@ -475,10 +482,10 @@ dbm_move_release () {
       where_moved_record="WHERE ( id_order > $id_order_to AND id_order < $id_order )"
 
       insert2tmp="INSERT INTO ReleasesTemp
-        SELECT id_release,name,version,release_date,creation_date,update_date,$id_order_to+1 as id_order,db_adapter
+        SELECT id_release,name,version,release_date,creation_date,update_date,$id_order_to+1 as id_order,db_adapter,id_branch
         FROM Releases WHERE id_release = $id_rel_from ;
         INSERT INTO ReleasesTemp
-        SELECT id_release,name,version,release_date,creation_date,update_date,id_order+1 as id_order,db_adapter
+        SELECT id_release,name,version,release_date,creation_date,update_date,id_order+1 as id_order,db_adapter,id_branch
         FROM Releases $where_moved_record "
       # POST: Move yet release_from to Temporary table
 
@@ -488,13 +495,13 @@ dbm_move_release () {
       # POST: Move yet release_from to Temporary table
 
       insert2tmp="INSERT INTO ReleasesTemp
-        SELECT id_release,name,version,release_date,creation_date,update_date,id_order-1 as id_order,db_adapter
+        SELECT id_release,name,version,release_date,creation_date,update_date,id_order-1 as id_order,db_adapter,id_branch
         FROM Releases WHERE id_order > $id_order AND id_order <= $id_order_to ;
         INSERT INTO ReleasesTemp
-        SELECT id_release,name,version,release_date,creation_date,update_date,id_order as id_order,db_adapter
+        SELECT id_release,name,version,release_date,creation_date,update_date,id_order as id_order,db_adapter,id_branch
         FROM Releases WHERE id_order > $id_order_to ;
         INSERT INTO ReleasesTemp
-        SELECT id_release,name,version,release_date,creation_date,update_date,$id_order_to as id_order,db_adapter
+        SELECT id_release,name,version,release_date,creation_date,update_date,$id_order_to as id_order,db_adapter,id_branch
         FROM Releases WHERE id_release = $id_rel_from "
 
     fi
@@ -574,13 +581,14 @@ dbm_insert_release () {
 
   if [ -z "$DBM_REL_ORDER" ] ; then
 
-    query="INSERT INTO Releases (name,version,release_date,db_adapter,creation_date,update_date,id_order) \
+    query="INSERT INTO Releases (name,version,release_date,db_adapter,creation_date,update_date,id_order, id_branch) \
       VALUES ('$DBM_REL_NAME', '$DBM_REL_VERSION' ,$DBM_REL_DATE,'$DBM_REL_ADAPTER',DATETIME('now'),DATETIME('now'), \
-      (SELECT T.ID FROM (SELECT MAX(ID_RELEASE)+1 AS ID, 1 AS T from Releases UNION SELECT 1 AS ID, 0 AS T) T WHERE ID IS NOT NULL ORDER BY T.T DESC LIMIT 1))"
+      (SELECT T.ID FROM (SELECT MAX(ID_RELEASE)+1 AS ID, 1 AS T from Releases UNION SELECT 1 AS ID, 0 AS T) T WHERE ID IS NOT NULL ORDER BY T.T DESC LIMIT 1)
+       , $DBM_REL_BRANCH)"
 
   else
-    query="INSERT INTO Releases (name,version,release_date,db_adapter,creation_date,update_date,id_order) \
-      VALUES ('$DBM_REL_NAME','$DBM_REL_VERSION',$DBM_REL_DATE,'$DBM_REL_ADAPTER',DATETIME('now'),DATETIME('now'), $DBM_REL_ORDER) "
+    query="INSERT INTO Releases (name,version,release_date,db_adapter,creation_date,update_date,id_order, id_branch) \
+      VALUES ('$DBM_REL_NAME','$DBM_REL_VERSION',$DBM_REL_DATE,'$DBM_REL_ADAPTER',DATETIME('now'),DATETIME('now'), $DBM_REL_ORDER, $DBM_REL_BRANCH) "
   fi
 
   _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
@@ -996,6 +1004,89 @@ dbm_remove_ded_script () {
   return $result
 }
 
+dbm_show_branches () {
+
+  _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM Branches" || error_handled "Unexpected error!"
+
+  local n_rec=$_sqlite_ans
+  local creation_date=""
+  local update_date=""
+
+  [[ $DEBUG ]] && echo -en "N. Branches: $n_rec\n"
+
+  if [ x$n_rec != x0 ] ; then
+
+    _sqlite_query -c "$DRM_DB" -q "SELECT id_branch,name,creation_date,update_date FROM Branches ORDER BY id_branch ASC" || error_handled "Unexpected error!"
+
+    echo -en "==============================================================================================================\n"
+    echo -en "\e[1;33mID\e[m\t"
+    echo -en "\e[1;34mCREATION_DATE\e[m\t\t"
+    echo -en "\e[1;36mUPDATE_DATE\e[m\t\t"
+    echo -en "\e[1;37mNAME\e[m\n"
+    echo -en "==============================================================================================================\n"
+
+    IFS=$'\n'
+    for row in $_sqlite_ans ; do
+
+      #[[ $DEBUG ]] && echo "ROW = ${row}"
+
+      id_branch=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      name=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+      creation_date=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+      update_date=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+
+      if [ ${#creation_date} -eq 10 ] ; then
+        creation_date_tab="\t\t"
+      else
+        creation_date_tab="\t"
+      fi
+
+      if [ ${#update_date} -eq 10 ] ; then
+        update_date_tab="\t\t"
+      else
+        update_date_tab="\t"
+      fi
+
+      echo -en "\e[1;33m${id_branch}\e[m\t"
+      echo -en "\e[1;34m${creation_date}${creation_date_tab}\e[m"
+      echo -en "\e[1;35m${update_date}${update_date_tab}\e[m"
+      echo -en "\e[1;37m${name}\e[m\n"
+
+    done
+    unset IFS
+
+  else
+    echo -en "No branches available.\n"
+  fi
+
+  return 0
+}
+
+dbm_insert_branch () {
+
+  local result=1
+  local query=""
+
+  # Shift first two input param
+  shift 2
+
+  _dbm_check_ins_bra_args "$@" || return $result
+
+  query="INSERT INTO Branches (name,creation_date,update_date) \
+         VALUES ('$DBM_BRA_NAME', DATETIME('now'),DATETIME('now'))"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+  ans=$?
+
+  if [ x"$ans" = x"0" ] ; then
+    echo "Branches $DBM_BRA_NAME insert correctly."
+  fi
+
+  result=$ans
+
+  return $result
+}
+
 
 
 ##################################################################
@@ -1006,9 +1097,11 @@ _dbm_check_ins_rel_args () {
 
   [[ $DEBUG ]] && echo -en "(_dbm_check_ins_rel_args args: $@)\n"
 
+  DBM_REL_BRANCH=0
+
   # Reinitialize opt index position
   OPTIND=1
-  while getopts "n:d:v:o:ha:" opts "$@" ; do
+  while getopts "n:d:v:o:a:b:h" opts "$@" ; do
     case $opts in
 
       n) DBM_REL_NAME="$OPTARG";;
@@ -1016,12 +1109,14 @@ _dbm_check_ins_rel_args () {
       v) DBM_REL_VERSION="$OPTARG";;
       o) DBM_REL_ORDER="$OPTARG";;
       a) DBM_REL_ADAPTER="$OPTARG";;
+      b) DBM_REL_BRANCH="$OPTARG";;
       h)
         echo -en "[-n name]               Release Name.\n"
         echo -en "[-d YYYY-MM-DD]         Release Date. (Use now if not available)\n"
         echo -en "[-v version]            Release Version\n"
         echo -en "[-a adapter]            Release Adapter (default is Oracle).\n"
         echo -en "[-o id_order]           Release Id Order (optional).\n"
+        echo -en "[-b id_branch]          Release Id Branch (default main {0}).\n"
         return 1
         ;;
 
@@ -1046,6 +1141,40 @@ _dbm_check_ins_rel_args () {
   if [ -z "$DBM_REL_VERSION" ] ; then
     echo "Missing Release Verion"
     return 1
+  fi
+
+  return 0
+}
+
+_dbm_check_ins_bra_args () {
+
+  [[ $DEBUG ]] && echo -en "(_dbm_check_ins_bra_args args: $@)\n"
+
+  # Reinitialize opt index position
+  OPTIND=1
+  while getopts "n:d:v:o:a:b:h" opts "$@" ; do
+    case $opts in
+
+      n) DBM_BRA_NAME="$OPTARG";;
+      d) DBM_BRA_DATE="$OPTARG";;
+      h)
+        echo -en "[-n name]               Branch Name.\n"
+        echo -en "[-d YYYY-MM-DD]         Branch Date. (Use now if not available)\n"
+        return 1
+        ;;
+
+    esac
+  done
+
+  if [ -z "$DBM_BRA_NAME" ] ; then
+    echo "Missing Release Name"
+    return 1
+  fi
+
+  if [ -z "$DBM_BRA_DATE" ] ; then
+    DBM_BRA_DATE="DATETIME('now')"
+  else
+    DBM_BRA_DATE="'$DBM_REL_DATE'"
   fi
 
   return 0
@@ -1509,5 +1638,7 @@ _dbm_get_table_schema () {
 
   return 0
 }
+
+
 
 # vim: syn=sh filetype=sh

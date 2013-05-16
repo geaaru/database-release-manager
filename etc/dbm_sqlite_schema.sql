@@ -19,8 +19,17 @@ CREATE TABLE Releases (
    update_date     DATE NOT NULL,
    id_order        INTEGER UNIQUE NOT NULL,
    db_adapter      TEXT NOT NULL,
+   id_branch       INTEGER NOT NULL DEFAULT 0,
    CONSTRAINT uc_name_version UNIQUE(name, version),
-   FOREIGN KEY(db_adapter) REFERENCES DatabaseAdapters(adapter)
+   FOREIGN KEY(db_adapter) REFERENCES DatabaseAdapters(adapter),
+   FOREIGN KEY(id_branch) REFERENCES Branches(id_branch)
+);
+
+CREATE TABLE Branches (
+   id_branch       INTEGER PRIMARY KEY AUTOINCREMENT,
+   name            TEXT UNIQUE NOT NULL,
+   creation_date   DATE NOT NULL,
+   update_date     DATE NOT NULL
 );
 
 CREATE TABLE ReleasesDependencies (
