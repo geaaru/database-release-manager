@@ -595,15 +595,16 @@ commons_oracle_compile_file() {
 
   local f=$1
   local msg=$2
+  local f_base=$(basename "$f")
 
   if [ ! -e $f ] ; then
     _logfile_write "(oracle) File $f not found." || return 1
     return 1
   fi
 
-  _logfile_write "(oracle) Start compilation: $msg" || return 1
+  _logfile_write "(oracle) Start compilation (file $f_base): $msg" || return 1
 
-  echo "(oracle) Start compilation: $msg"
+  echo "(oracle) Start compilation (file $f_base): $msg"
 
   SQLPLUS_OUTPUT=""
 
@@ -612,9 +613,9 @@ commons_oracle_compile_file() {
 
   _logfile_write "$SQLPLUS_OUTPUT" || return 1
 
-  _logfile_write "(oracle) End compilation (result => $ans): $msg" || return 1
+  _logfile_write "(oracle) End compilation (file $f_base, result => $ans): $msg" || return 1
 
-  echo -en "(oracle) End compilation (result => $ans): $msg\n"
+  echo -en "(oracle) End compilation (file $f_base, result => $ans): $msg\n"
 
   return $ans
 

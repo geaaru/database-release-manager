@@ -19,7 +19,7 @@ CREATE TABLE Releases (
    update_date     DATE NOT NULL,
    id_order        INTEGER UNIQUE NOT NULL,
    db_adapter      TEXT NOT NULL,
-   id_branch       INTEGER NOT NULL DEFAULT 0,
+   id_branch       INTEGER NOT NULL DEFAULT 1,
    CONSTRAINT uc_name_version UNIQUE(name, version),
    FOREIGN KEY(db_adapter) REFERENCES DatabaseAdapters(adapter),
    FOREIGN KEY(id_branch) REFERENCES Branches(id_branch)
@@ -92,5 +92,7 @@ INSERT INTO ScriptTypes (code, descr) VALUES('function', 'Function definition sc
 INSERT INTO ScriptTypes (code, descr) VALUES('procedure', 'Procedure definition script');
 INSERT INTO ScriptTypes (code, descr) VALUES('view', 'View definition script');
 INSERT INTO ScriptTypes (code, descr) VALUES('package', 'Package definition script');
+
+INSERT INTO Branches (name, creation_date, update_date) VALUES ('master', DATETIME('now'), DATETIME('now'));
 
 COMMIT;

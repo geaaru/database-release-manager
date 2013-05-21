@@ -42,12 +42,14 @@ dbm_long_help () {
    echo -en "\tremove_ded_script       Remove a release dedicated script relationship.\n"
    echo -en "\tinsert_release          Insert a new release.\n"
    echo -en "\tmove_release            Move release position.\n"
+   echo -en "\tupdate_release          Update release position.\n"
    echo -en "\tinsert_script_type      Insert a new script type.\n"
    echo -en "\tinsert_rel_dep          Insert a new release dependency.\n"
    echo -en "\tremove_rel_dep          Remove release dependency.\n"
    echo -en "\tinsert_script           Insert a new script.\n"
    echo -en "\tupdate_script           Update a script by Id.\n"
    echo -en "\tremove_script           Remove script.\n"
+   echo -en "\tmove_script             Move script.\n"
    echo -en "\tshow_branches           Show branches.\n"
    echo -en "\tinsert_branch           Insert a new branch.\n"
    echo -en "---------------------------------------------------------------------------\n"
@@ -76,12 +78,14 @@ dbm_show_help () {
    echo -en "\tremove_ded_script       Remove a release dedicated script relationship.\n"
    echo -en "\tinsert_release          Insert a new release.\n"
    echo -en "\tmove_release            Move release position.\n"
+   echo -en "\tupdate_release          Update release position.\n"
    echo -en "\tinsert_script_type      Insert a new script type.\n"
    echo -en "\tinsert_rel_dep          Insert a new release dependency.\n"
    echo -en "\tremove_rel_dep          Remove release dependency.\n"
    echo -en "\tinsert_script           Insert a new script.\n"
    echo -en "\tupdate_script           Update a script by Id.\n"
    echo -en "\tremove_script           Remove script.\n"
+   echo -en "\tmove_script             Move script.\n"
    echo -en "\tshow_branches           Show branches.\n"
    echo -en "\tinsert_branch           Insert a new branch.\n"
     echo -en "===========================================================================\n"
@@ -164,16 +168,16 @@ dbm_show_scripts () {
 
     _sqlite_query -c "$DRM_DB" -q "SELECT id_script,filename,type,active,directory,id_release,id_order,creation_date,update_date FROM Scripts ORDER BY id_release,id_order ASC" || error_handled "Unexpected error!"
 
-    echo -en "======================================================================================\n"
+    echo -en "===================================================================================================================================\n"
     echo -en "\e[1;33mID\e[m\t"
-    echo -en "\e[1;34mFILENAME\e[m\t\t"
     echo -en "\e[1;35mTYPE\e[m\t\t"
-    echo -en "\e[1;36mACTIVE\e[m\t\t"
-    echo -en "\e[1;31mDIRECTORY\e[m\t"
+    echo -en "\e[1;36mACTIVE\e[m\t"
+    echo -en "\e[1;31mDIRECTORY\e[m\t\t"
     echo -en "\e[1;37mID_RELEASE\e[m\t"
     echo -en "\e[1;32mID_ORDER\e[m\t"
-    echo -en "\e[1;33mUPDATE_DATE\e[m\n"
-    echo -en "======================================================================================\n"
+    echo -en "\e[1;33mUPDATE_DATE\e[m\t\t"
+    echo -en "\e[1;34mFILENAME\e[m\n"
+    echo -en "===================================================================================================================================\n"
 
     IFS=$'\n'
     for row in $_sqlite_ans ; do
@@ -190,20 +194,26 @@ dbm_show_scripts () {
       creation_date=`echo $row | awk '{split($0,a,"|"); print a[8]}'`
       update_date=`echo $row | awk '{split($0,a,"|"); print a[9]}'`
 
-      if [ ${#filename} -lt 16 ] ; then
-        filename_tab="\t\t"
+      if [ ${#s_type} -lt 8 ] ; then
+        type_tab="\t\t"
       else
-        filename_tab="\t"
+        type_tab="\t"
+      fi
+
+      if [ ${#directory} -lt 11 ] ; then
+        dir_tab="\t\t"
+      else
+        dir_tab="\t"
       fi
 
       echo -en "\e[1;33m${id_script}\e[m\t"
-      echo -en "\e[1;34m${filename}${filename_tab}\e[m"
-      echo -en "\e[1;35m${s_type}\e[m\t"
-      echo -en "\e[1;36m${active}\e[m\t\t"
-      echo -en "\e[1;31m${directory}\e[m\t"
+      echo -en "\e[1;35m${s_type}${type_tab}\e[m"
+      echo -en "\e[1;36m${active}\e[m\t"
+      echo -en "\e[1;31m${directory}${dir_tab}\e[m"
       echo -en "\e[1;37m${id_release}\e[m\t\t"
       echo -en "\e[1;32m${id_order}\e[m\t\t"
-      echo -en "\e[1;33m${update_date}\e[m\n"
+      echo -en "\e[1;33m${update_date}\e[m\t"
+      echo -en "\e[1;34m${filename}\e[m\n"
 
     done
     unset IFS
@@ -569,26 +579,112 @@ dbm_move_release () {
   return $result
 }
 
+dbm_update_release () {
+
+  local result=1
+  local query="UPDATE Releases SET "
+  local count=0
+
+  # Shift first two input param
+  shift 2
+
+  _dbm_check_upd_release_args "$@" || return $result
+
+  if [ -n "$DBM_REL_NAME" ] ; then
+
+    query="$query name = '${DBM_REL_NAME}'"
+    let count++
+
+  fi
+
+  if [ -n "$DBM_REL_DATE" ] ; then
+
+    if [ $count -eq 0 ] ; then
+      query="$query release_date = '${DBM_REL_DATE}'"
+    else
+      query="$query , release_date = '${DBM_REL_DATE}'"
+    fi
+    let count++
+
+  fi
+
+  if [ -n "$DBM_REL_VERSION" ] ; then
+
+    if [ $count -eq 0 ] ; then
+      query="$query version = '${DBM_REL_VERSION}'"
+    else
+      query="$query , version = '${DBM_REL_VERSION}'"
+    fi
+    let count++
+
+  fi
+
+  if [ -n "$DBM_REL_ADAPTER" ] ; then
+
+    if [ $count -eq 0 ] ; then
+      query="$query db_adapter = '${DBM_REL_ADAPTER}'"
+    else
+      query="$query , db_adapter = '${DBM_REL_ADAPTER}'"
+    fi
+    let count++
+
+  fi
+
+  if [ -n "$DBM_REL_BRANCH" ] ; then
+
+    if [ $count -eq 0 ] ; then
+      query="$query id_branch = ${DBM_REL_BRANCH}"
+    else
+      query="$query , id_branch = ${DBM_REL_BRANCH}"
+    fi
+
+  fi
+
+  query="$query WHERE id_release = $DBM_REL_ID"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Error on update release $DBM_REL_ID."
+  ans=$?
+
+  if [ x"$ans" = x"0" ] ; then
+    echo "Release $DBM_REL_ID updated correctly."
+    result=0
+  fi
+
+  return $result
+}
+
 dbm_insert_release () {
 
   local result=1
   local query=""
+  local id_branch=""
 
   # Shift first two input param
   shift 2
 
   _dbm_check_ins_rel_args "$@" || return $result
 
+  if [ -z "$DBM_REL_BRANCH" ] ; then
+
+    id_branch="(SELECT id_branch FROM Branches WHERE name = 'master')"
+
+  else
+
+    _dbm_check_if_exist_id_branch "$DBM_REL_BRANCH"
+    id_branch="$DBM_REL_BRANCH"
+
+  fi
+
   if [ -z "$DBM_REL_ORDER" ] ; then
 
     query="INSERT INTO Releases (name,version,release_date,db_adapter,creation_date,update_date,id_order, id_branch) \
       VALUES ('$DBM_REL_NAME', '$DBM_REL_VERSION' ,$DBM_REL_DATE,'$DBM_REL_ADAPTER',DATETIME('now'),DATETIME('now'), \
       (SELECT T.ID FROM (SELECT MAX(ID_RELEASE)+1 AS ID, 1 AS T from Releases UNION SELECT 1 AS ID, 0 AS T) T WHERE ID IS NOT NULL ORDER BY T.T DESC LIMIT 1)
-       , $DBM_REL_BRANCH)"
+       , $id_branch)"
 
   else
     query="INSERT INTO Releases (name,version,release_date,db_adapter,creation_date,update_date,id_order, id_branch) \
-      VALUES ('$DBM_REL_NAME','$DBM_REL_VERSION',$DBM_REL_DATE,'$DBM_REL_ADAPTER',DATETIME('now'),DATETIME('now'), $DBM_REL_ORDER, $DBM_REL_BRANCH) "
+      VALUES ('$DBM_REL_NAME','$DBM_REL_VERSION',$DBM_REL_DATE,'$DBM_REL_ADAPTER',DATETIME('now'),DATETIME('now'), $DBM_REL_ORDER, $id_branch) "
   fi
 
   _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
@@ -1097,8 +1193,6 @@ _dbm_check_ins_rel_args () {
 
   [[ $DEBUG ]] && echo -en "(_dbm_check_ins_rel_args args: $@)\n"
 
-  DBM_REL_BRANCH=0
-
   # Reinitialize opt index position
   OPTIND=1
   while getopts "n:d:v:o:a:b:h" opts "$@" ; do
@@ -1116,7 +1210,7 @@ _dbm_check_ins_rel_args () {
         echo -en "[-v version]            Release Version\n"
         echo -en "[-a adapter]            Release Adapter (default is Oracle).\n"
         echo -en "[-o id_order]           Release Id Order (optional).\n"
-        echo -en "[-b id_branch]          Release Id Branch (default main {0}).\n"
+        echo -en "[-b id_branch]          Release Id Branch (default master branch {1}).\n"
         return 1
         ;;
 
@@ -1397,6 +1491,74 @@ _dbm_check_rm_script_args () {
   return 0
 }
 
+_dbm_check_upd_release_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_update_release_args args: $@)\n"
+
+  DBM_REL_NAME_UPD=0
+  DBM_REL_DATE_UPD=0
+  DBM_REL_VERSION_UPD=0
+  DBM_REL_ADAPTER_UPD=0
+  DBM_REL_BRANCH_UPD=0
+
+  # Reinitialize opt index position
+  OPTIND=1
+  while getopts "b:n:d:a:v:i:h" opts "$@" ; do
+    case $opts in
+
+      n)
+        DBM_REL_NAME="$OPTARG"
+        DBM_REL_NAME_UPD=1
+        ;;
+      d)
+        DBM_REL_DATE="$OPTARG"
+        DBM_REL_DATE_UPD=1
+        ;;
+      v)
+        DBM_REL_VERSION="$OPTARG"
+        DBM_REL_VERSION_UPD=1
+        ;;
+      a)
+        DBM_REL_ADAPTER="$OPTARG"
+        DBM_REL_ADAPTER_UPD=1
+        ;;
+      b)
+        DBM_REL_BRANCH="$OPTARG"
+        DBM_REL_BRANCH_UPD=1
+        ;;
+      i)
+        DBM_REL_ID="$OPTARG"
+        ;;
+      h)
+        echo -en "[-n name]               Release Name.\n"
+        echo -en "[-d YYYY-MM-DD]         Release Date.\n"
+        echo -en "[-v version]            Release Version\n"
+        echo -en "[-a adapter]            Release Adapter.\n"
+        echo -en "[-b id_branch]          Id Branch.\n"
+        echo -en "[-i id_release]         Id Release to update.\n"
+        echo -en "\n"
+        return 1
+        ;;
+
+    esac
+  done
+
+  if [ -z "$DBM_REL_ID" ] ; then
+    echo "Missing Release Id."
+    return 1
+  fi
+
+  if [[ $DBM_REL_NAME_UPD -eq 0 && $DBM_REL_DATE_UPD -eq 0 &&
+        $DBM_REL_VERSION_UPD -eq 0 && $DBM_REL_ADAPTER_UPD -eq 0 &&
+        $DBM_REL_BRANCH_UPD -eq 0 ]] ; then
+
+    echo -en "No fields to update.\n"
+    return 1
+
+  fi
+
+  return 0
+}
 
 _dbm_check_move_release_args () {
 
@@ -1592,6 +1754,22 @@ _dbm_check_if_exist_id_script () {
 
   if [ x"$_sqlite_ans" != x"1" ] ; then
     error_generate "Invalid id_script $id_script."
+  fi
+
+  return 0
+}
+
+# return 0 if exists
+# generate error if doesn't exits.
+_dbm_check_if_exist_id_branch () {
+
+  local id_branch="$1"
+  local query="SELECT COUNT(1) AS res FROM Branches WHERE id_branch = $id_branch"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+  if [ x"$_sqlite_ans" != x"1" ] ; then
+    error_generate "Invalid id_branch $id_branch."
   fi
 
   return 0

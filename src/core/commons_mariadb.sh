@@ -96,15 +96,16 @@ commons_mariadb_compile_file () {
 
   local f=$1
   local msg=$2
+  local f_base=$(basename "$f")
 
   if [ ! -e $f ] ; then
     _logfile_write "(mariadb) File $f not found." || return 1
     return 1
   fi
 
-  _logfile_write "(mariadb) Start compilation (file $f): $msg" || return 1
+  _logfile_write "(mariadb) Start compilation (file $f_base): $msg" || return 1
 
-  echo "(mariadb) Start compilation: $msg"
+  echo "(mariadb) Start compilation (file $f_base): $msg"
 
   MYSQL_OUTPUT=""
 
@@ -113,9 +114,9 @@ commons_mariadb_compile_file () {
 
   _logfile_write "\n$MYSQL_OUTPUT" || return 1
 
-  _logfile_write "(mariadb) End compilation (file $f, result => $ans): $msg" || return 1
+  _logfile_write "(mariadb) End compilation (file $f_base, result => $ans): $msg" || return 1
 
-  echo -en "(mariadb) End compilation (result => $ans): $msg\n"
+  echo -en "(mariadb) End compilation (file $f_base, result => $ans): $msg\n"
 
   return $ans
 
