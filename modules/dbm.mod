@@ -1742,6 +1742,30 @@ _dbm_retrieve_script_data () {
   return 0
 }
 
+_dbm_retrieve_first_release () {
+
+  local name="$1"
+
+  local query="
+    SELECT r.id_release,
+           r.version
+    FROM Releases r
+    WHERE r.name = '$name'
+    ORDER BY r.id_order
+    LIMIT 1
+  "
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_generate "Unexpected error on retrieve first release for project $name"
+
+  if [ -z "$_sqlite_ans" ] ; then
+    error_generate "No release found for project $name"
+  fi
+
+  DBM_REL_ID_RELEASE=`echo $_sqlite_ans | awk '{split($0,a,"|"); print a[1]}'`
+  DBM_REL_VERSION=`echo $_sqlite_ans | awk '{split($0,a,"|"); print a[2]}'`
+
+  return 0
+}
 
 # return 0 if exists
 # return 1 if not exists

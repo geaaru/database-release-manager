@@ -20,6 +20,7 @@ CREATE TABLE Releases (
    id_order        INTEGER UNIQUE NOT NULL,
    db_adapter      TEXT NOT NULL,
    id_branch       INTEGER NOT NULL DEFAULT 1,
+   directory       TEXT NOT NULL DEFAULT '.',
    CONSTRAINT uc_name_version UNIQUE(name, version),
    FOREIGN KEY(db_adapter) REFERENCES DatabaseAdapters(adapter),
    FOREIGN KEY(id_branch) REFERENCES Branches(id_branch)
