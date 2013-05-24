@@ -1,0 +1,7 @@
+-- $Id$ --
+
+ * May 24, 2013:
+  - added column directory to Releases table:
+     ALTER TABLE Releases ADD COLUMN directory       TEXT NOT NULL DEFAULT '.'
+
+
