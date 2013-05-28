@@ -98,14 +98,29 @@ dbm_show_releases () {
   _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM Releases" || error_handled "Unexpected error!"
 
   local n_rel=$_sqlite_ans
+  local id_release=""
+  local name=""
+  local version=""
+  local release_date=""
+  local creation_date=""
+  local update_date=""
+  local id_order=""
+  local db_adapter=""
+  local id_branch=""
+  local directory=""
+  local query="
+    SELECT id_release,name,version,release_date,
+           creation_date,update_date,id_order,
+           db_adapter,id_branch,directory
+    FROM Releases ORDER BY id_order ASC"
 
   [[ $DEBUG ]] && echo -en "N. Releases: $n_rel\n"
 
   if [ x$n_rel != x0 ] ; then
 
-    _sqlite_query -c "$DRM_DB" -q "SELECT id_release,name,version,release_date,creation_date,update_date,id_order,db_adapter,id_branch FROM Releases ORDER BY id_order ASC" || error_handled "Unexpected error!"
+    _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
 
-    echo -en "==============================================================================================================\n"
+    echo -en "==============================================================================================================================\n"
     echo -en "\e[1;33mID\e[m\t"
     echo -en "\e[1;34mRELEASE_DATE\e[m\t\t"
     echo -en "\e[1;35mVERSION\e[m\t"
@@ -113,8 +128,9 @@ dbm_show_releases () {
     echo -en "\e[1;31mADAPTER\e[m\t\t"
     echo -en "\e[1;32mID_ORDER\e[m\t"
     echo -en "\e[1;38mBRANCH\e[m\t"
+    echo -en "\e[1;33mDIRECTORY\e[m\t"
     echo -en "\e[1;37mNAME\e[m\n"
-    echo -en "==============================================================================================================\n"
+    echo -en "==============================================================================================================================\n"
 
     IFS=$'\n'
     for row in $_sqlite_ans ; do
@@ -130,6 +146,7 @@ dbm_show_releases () {
       id_order=`echo $row | awk '{split($0,a,"|"); print a[7]}'`
       db_adapter=`echo $row | awk '{split($0,a,"|"); print a[8]}'`
       id_branch=`echo $row | awk '{split($0,a,"|"); print a[9]}'`
+      directory=`echo $row | awk '{split($0,a,"|"); print a[10]}'`
 
       if [ ${#release_date} -eq 10 ] ; then
         release_date_tab="\t\t"
@@ -144,6 +161,7 @@ dbm_show_releases () {
       echo -en "\e[1;31m${db_adapter}\e[m\t\t"
       echo -en "\e[1;32m${id_order}\e[m\t\t"
       echo -en "\e[1;38m${id_branch}\e[m\t"
+      echo -en "\e[1;33m${directory}\e[m\t\t"
       echo -en "\e[1;37m${name}\e[m\n"
 
     done
