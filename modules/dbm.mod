@@ -218,7 +218,7 @@ dbm_show_scripts () {
         type_tab="\t"
       fi
 
-      if [ ${#directory} -lt 11 ] ; then
+      if [ ${#directory} -lt 15 ] ; then
         dir_tab="\t\t"
       else
         dir_tab="\t"
@@ -655,7 +655,17 @@ dbm_update_release () {
     else
       query="$query , id_branch = ${DBM_REL_BRANCH}"
     fi
+    let count++
 
+  fi
+
+  if [ -n "$DBM_REL_DIR" ] ; then
+
+    if [ $count -eq 0 ] ; then
+      query="$query directory = '${DBM_REL_DIR}'"
+    else
+      query="$query , directory = '${DBM_REL_DIR}'"
+    fi
   fi
 
   query="$query WHERE id_release = $DBM_REL_ID"
@@ -695,14 +705,26 @@ dbm_insert_release () {
 
   if [ -z "$DBM_REL_ORDER" ] ; then
 
-    query="INSERT INTO Releases (name,version,release_date,db_adapter,creation_date,update_date,id_order, id_branch) \
-      VALUES ('$DBM_REL_NAME', '$DBM_REL_VERSION' ,$DBM_REL_DATE,'$DBM_REL_ADAPTER',DATETIME('now'),DATETIME('now'), \
-      (SELECT T.ID FROM (SELECT MAX(ID_RELEASE)+1 AS ID, 1 AS T from Releases UNION SELECT 1 AS ID, 0 AS T) T WHERE ID IS NOT NULL ORDER BY T.T DESC LIMIT 1)
-       , $id_branch)"
+    query="INSERT INTO Releases
+      (name,version,release_date,db_adapter,creation_date,
+       update_date,id_order, id_branch,directory)
+      VALUES
+      ('$DBM_REL_NAME', '$DBM_REL_VERSION' ,$DBM_REL_DATE,'$DBM_REL_ADAPTER',DATETIME('now'),
+       DATETIME('now'),
+       (SELECT T.ID FROM (
+        SELECT MAX(ID_RELEASE)+1 AS ID, 1 AS T from Releases
+        UNION SELECT 1 AS ID, 0 AS T
+        ) T
+       WHERE ID IS NOT NULL ORDER BY T.T DESC LIMIT 1),
+       $id_branch, '$DBM_REL_DIR')"
 
   else
-    query="INSERT INTO Releases (name,version,release_date,db_adapter,creation_date,update_date,id_order, id_branch) \
-      VALUES ('$DBM_REL_NAME','$DBM_REL_VERSION',$DBM_REL_DATE,'$DBM_REL_ADAPTER',DATETIME('now'),DATETIME('now'), $DBM_REL_ORDER, $id_branch) "
+    query="INSERT INTO Releases
+      (name,version,release_date,db_adapter,creation_date,
+       update_date,id_order, id_branch)
+      VALUES
+      ('$DBM_REL_NAME','$DBM_REL_VERSION',$DBM_REL_DATE,'$DBM_REL_ADAPTER',DATETIME('now'),
+       DATETIME('now'), $DBM_REL_ORDER, $id_branch, '$DBM_REL_DIR')"
   fi
 
   _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
@@ -1207,28 +1229,51 @@ dbm_insert_branch () {
 # Internal functions
 ##################################################################
 
+_dbm_ins_rel_help () {
+
+  echo -en "[-n name]               Release Name.\n"
+  echo -en "[-d YYYY-MM-DD]         Release Date. (Use now if not available)\n"
+  echo -en "[-v version]            Release Version\n"
+  echo -en "[-a adapter]            Release Adapter (default is Oracle).\n"
+  echo -en "[-o id_order]           Release Id Order (optional).\n"
+  echo -en "[-b id_branch]          Release Id Branch (default master branch {1}).\n"
+  echo -en "[-dir directory]        Release directory (default is [.]).\n"
+  echo -en "\n"
+
+  return 0
+}
+
 _dbm_check_ins_rel_args () {
 
   [[ $DEBUG ]] && echo -en "(_dbm_check_ins_rel_args args: $@)\n"
 
-  # Reinitialize opt index position
-  OPTIND=1
-  while getopts "n:d:v:o:a:b:h" opts "$@" ; do
-    case $opts in
+  local short_options="n:d:v:o:a:b:h"
+  local long_options="dir:"
 
-      n) DBM_REL_NAME="$OPTARG";;
-      d) DBM_REL_DATE="$OPTARG";;
-      v) DBM_REL_VERSION="$OPTARG";;
-      o) DBM_REL_ORDER="$OPTARG";;
-      a) DBM_REL_ADAPTER="$OPTARG";;
-      b) DBM_REL_BRANCH="$OPTARG";;
+  set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
+
+
+  if [ $# -lt 2 ] ; then
+    _dbm_ins_rel_help
+    return 1
+  fi
+
+  while [ $# -gt 0 ] ; do
+    case $1 in
+
+      n) DBM_REL_NAME="$2"    ;shift;;
+      d) DBM_REL_DATE="$2"    ;shift;;
+      v) DBM_REL_VERSION="$2" ;shift;;
+      o) DBM_REL_ORDER="$2"   ;shift;;
+      a) DBM_REL_ADAPTER="$2" ;shift;;
+      b) DBM_REL_BRANCH="$2"  ;shift;;
+      --) ;;
+      --dir)
+        DBM_REL_DIR="$2"
+        shift
+        ;;
       h)
-        echo -en "[-n name]               Release Name.\n"
-        echo -en "[-d YYYY-MM-DD]         Release Date. (Use now if not available)\n"
-        echo -en "[-v version]            Release Version\n"
-        echo -en "[-a adapter]            Release Adapter (default is Oracle).\n"
-        echo -en "[-o id_order]           Release Id Order (optional).\n"
-        echo -en "[-b id_branch]          Release Id Branch (default master branch {1}).\n"
+        _dbm_ins_rel_help
         return 1
         ;;
 
@@ -1248,6 +1293,10 @@ _dbm_check_ins_rel_args () {
 
   if [ -z "$DBM_REL_ADAPTER" ] ; then
     DBM_REL_ADAPTER="oracle";
+  fi
+
+  if [ -z "$DBM_REL_DIR" ] ; then
+    DBM_REL_DIR="."
   fi
 
   if [ -z "$DBM_REL_VERSION" ] ; then
@@ -1509,6 +1558,20 @@ _dbm_check_rm_script_args () {
   return 0
 }
 
+_dbm_upd_release_help () {
+
+  echo -en "[-n name]               Release Name.\n"
+  echo -en "[-d YYYY-MM-DD]         Release Date.\n"
+  echo -en "[-v version]            Release Version\n"
+  echo -en "[-a adapter]            Release Adapter.\n"
+  echo -en "[-b id_branch]          Id Branch.\n"
+  echo -en "[-i id_release]         Id Release to update.\n"
+  echo -en "[--dir directory]       Directory to update.\n"
+  echo -en "\n"
+
+  return 0
+}
+
 _dbm_check_upd_release_args () {
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_update_release_args args: $@)\n"
@@ -1518,43 +1581,64 @@ _dbm_check_upd_release_args () {
   DBM_REL_VERSION_UPD=0
   DBM_REL_ADAPTER_UPD=0
   DBM_REL_BRANCH_UPD=0
+  DBM_REL_DIR_UPD=0
 
-  # Reinitialize opt index position
-  OPTIND=1
-  while getopts "b:n:d:a:v:i:h" opts "$@" ; do
-    case $opts in
+  local short_options="b:n:d:a:v:i:h"
+  local long_options="dir:"
 
-      n)
-        DBM_REL_NAME="$OPTARG"
+  set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
+
+
+  if [ $# -lt 2 ] ; then
+    _dbm_upd_release_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_compile_args: Found $# params)\n"
+
+  while [ $# -gt 0 ] ; do
+    case $1 in
+
+      -n)
+        DBM_REL_NAME="$2"
         DBM_REL_NAME_UPD=1
+        shift
         ;;
-      d)
-        DBM_REL_DATE="$OPTARG"
+      -d)
+        DBM_REL_DATE="$2"
         DBM_REL_DATE_UPD=1
+        shift
         ;;
-      v)
-        DBM_REL_VERSION="$OPTARG"
+      -v)
+        DBM_REL_VERSION="$2"
         DBM_REL_VERSION_UPD=1
+        shift
         ;;
-      a)
-        DBM_REL_ADAPTER="$OPTARG"
+      -a)
+        DBM_REL_ADAPTER="$2"
         DBM_REL_ADAPTER_UPD=1
+        shift
         ;;
-      b)
-        DBM_REL_BRANCH="$OPTARG"
+      -b)
+        DBM_REL_BRANCH="$2"
         DBM_REL_BRANCH_UPD=1
+        shift
         ;;
-      i)
-        DBM_REL_ID="$OPTARG"
+      -i)
+        DBM_REL_ID="$2"
+        shift
         ;;
-      h)
-        echo -en "[-n name]               Release Name.\n"
-        echo -en "[-d YYYY-MM-DD]         Release Date.\n"
-        echo -en "[-v version]            Release Version\n"
-        echo -en "[-a adapter]            Release Adapter.\n"
-        echo -en "[-b id_branch]          Id Branch.\n"
-        echo -en "[-i id_release]         Id Release to update.\n"
-        echo -en "\n"
+      -h)
+        _dbm_upd_release_help
+        return 1
+        ;;
+      --)
+        DBM_REL_DIR="$2"
+        DBM_REL_DIR_UPD=1
+        shift
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
         return 1
         ;;
 
@@ -1568,7 +1652,7 @@ _dbm_check_upd_release_args () {
 
   if [[ $DBM_REL_NAME_UPD -eq 0 && $DBM_REL_DATE_UPD -eq 0 &&
         $DBM_REL_VERSION_UPD -eq 0 && $DBM_REL_ADAPTER_UPD -eq 0 &&
-        $DBM_REL_BRANCH_UPD -eq 0 ]] ; then
+        $DBM_REL_BRANCH_UPD -eq 0 && $DBM_REL_DIR_UPD -eq 0 ]] ; then
 
     echo -en "No fields to update.\n"
     return 1
