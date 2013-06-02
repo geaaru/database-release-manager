@@ -1223,6 +1223,19 @@ dbm_insert_branch () {
   return $result
 }
 
+dbm_move_script () {
+
+  local result=1
+
+  # Shift first two input param
+  shift 2
+
+  _dbm_check_move_script_args "$@" || return $result
+
+
+
+  return $result
+}
 
 
 ##################################################################
@@ -1250,34 +1263,39 @@ _dbm_check_ins_rel_args () {
   local short_options="n:d:v:o:a:b:h"
   local long_options="dir:"
 
-  set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
-
+  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
 
   if [ $# -lt 2 ] ; then
     _dbm_ins_rel_help
     return 1
   fi
 
-  while [ $# -gt 0 ] ; do
-    case $1 in
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_ins_rel_args: Found $# params)\n"
 
-      n) DBM_REL_NAME="$2"    ;shift;;
-      d) DBM_REL_DATE="$2"    ;shift;;
-      v) DBM_REL_VERSION="$2" ;shift;;
-      o) DBM_REL_ORDER="$2"   ;shift;;
-      a) DBM_REL_ADAPTER="$2" ;shift;;
-      b) DBM_REL_BRANCH="$2"  ;shift;;
-      --) ;;
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -n) DBM_REL_NAME="$2"    ;shift;;
+      -d) DBM_REL_DATE="$2"    ;shift;;
+      -v) DBM_REL_VERSION="$2" ;shift;;
+      -o) DBM_REL_ORDER="$2"   ;shift;;
+      -a) DBM_REL_ADAPTER="$2" ;shift;;
+      -b) DBM_REL_BRANCH="$2"  ;shift;;
       --dir)
         DBM_REL_DIR="$2"
         shift
         ;;
-      h)
+      -h)
         _dbm_ins_rel_help
         return 1
         ;;
-
+      --) ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
     esac
+    shift
+
   done
 
   if [ -z "$DBM_REL_NAME" ] ; then
@@ -1400,6 +1418,7 @@ _dbm_check_ins_script_args () {
         echo -en "[-d directory]          Directory of the script.\n"
         echo -en "[-o id_order]           Script Id Order (optional). Default is used MAX(id) of the same id_release.\n"
         echo -en "[-r id_release]         Id_release of the script. Use this instead of release name and version.\n"
+        echo -en "[-h]                    Show this message.\n"
         return 1
         ;;
 
@@ -1574,7 +1593,7 @@ _dbm_upd_release_help () {
 
 _dbm_check_upd_release_args () {
 
-  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_update_release_args args: $@)\n"
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_upd_release_args: $@)\n"
 
   DBM_REL_NAME_UPD=0
   DBM_REL_DATE_UPD=0
@@ -1586,15 +1605,14 @@ _dbm_check_upd_release_args () {
   local short_options="b:n:d:a:v:i:h"
   local long_options="dir:"
 
-  set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
-
+  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
 
   if [ $# -lt 2 ] ; then
     _dbm_upd_release_help
     return 1
   fi
 
-  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_compile_args: Found $# params)\n"
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_upd_release_args: Found $# params)\n"
 
   while [ $# -gt 0 ] ; do
     case $1 in
@@ -1639,10 +1657,12 @@ _dbm_check_upd_release_args () {
         ;;
       *)
         error_generate "Invalid parameter $1."
-        return 1
         ;;
 
     esac
+
+    shift
+
   done
 
   if [ -z "$DBM_REL_ID" ] ; then
@@ -1943,6 +1963,18 @@ _dbm_get_table_schema () {
   return 0
 }
 
+_dbm_move_script_help () {
+
+  echo -en "[-i id_script]          Id script of the script to move.\n"
+  echo -en "[-v version]            Release Version\n"
+  echo -en "[-n name]               Release Name.\n"
+  echo -en "[-a version_to]         After release version_to.\n"
+  echo -en "[-b version_to]         Before release version_to.\n"
+  echo -en "[-a adapter]            Release Adapter.\n"
+  echo -en "[-b id_branch]          Id Branch.\n"
+  echo -en "[-i id_release]         Id Release to update.\n"
+
+}
 
 
 # vim: syn=sh filetype=sh

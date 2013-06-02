@@ -176,7 +176,7 @@ _oracle_connections_args () {
 
   local short_options="S:U:P:hD:t:"
 
-  set -- `getopt -u -q -o "$short_options" -- "$@"` || error_handled "Invalid parameters"
+  $(set -- $(getopt -u -q -o "$short_options" -- "$@")) || error_handled "Invalid parameters"
 
   [ $# -lt 1 ] && return 0 # is there at least one param (--)
 
@@ -218,7 +218,7 @@ _oracle_download_args () {
   local short_options="S:U:P:hD:t:"
   local long_options="all-packages all-triggers all-functions all-views all package: trigger: function: view:"
 
-  set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
+  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
 
   ORACLE_DOWNLOAD_ALL=1
 
@@ -313,7 +313,7 @@ _oracle_compile_args () {
   local short_options="S:U:P:hD:t:"
   local long_options="all-packages all-triggers id-script: file: all-functions all-views all package: trigger: function: view:"
 
-  set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
+  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
 
   ORACLE_COMPILE_ALL=1
 

@@ -45,6 +45,9 @@ mysql_file () {
   if [[ ! -z "$avoid_tmz" && x"$avoid_tmz" == x"1" ]] ; then
     tz=""
   fi
+  if [[ ! -z "$MARIADB_IGNORE_TMZ" && $MARIADB_IGNORE_TMZ -eq 1 ]] ; then
+    tz=""
+  fi
   local sql="$(cat $f | sed -e 's:`DB_NAME`:`'$MARIADB_DB'`:g' )"
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "Execute sql:\n$sql\n"

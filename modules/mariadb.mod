@@ -250,7 +250,7 @@ _mariadb_connections_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_connections_args args: $@)\n"
 
   local short_options="d:U:P:hH:D:t:"
-  local long_options="database: timezone: conn-options:"
+  local long_options="database: timezone: conn-options: ignore-timezone"
 
   set -- `getopt -u -q -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -272,6 +272,9 @@ _mariadb_connections_args () {
       --timezone)
         MARIADB_TMZ="$2"
         shift
+        ;;
+      --ignore-timezone)
+        MARIADB_IGNORE_TMZ=1
         ;;
       --conn-options)
         if [ $MARIADB_EXTRAS_ENABLE -eq 0 ] ; then
@@ -305,7 +308,7 @@ _mariadb_compile_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_compile_args args: $@)\n"
 
   local short_options="d:U:P:hH:D:t:"
-  local long_options="database: timezone: conn-options:" # connection long options
+  local long_options="database: timezone: conn-options: ignore-timezone" # connection long options
   long_options="$long_options all-triggers id-script: file: all-functions all-procedures all-views all trigger: function: view: procedure:"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
@@ -337,6 +340,9 @@ _mariadb_compile_args () {
 
       -S|-H|-U|-P|-D|--database|--timezone|--conn-options)
         shift
+        # do nothing
+        ;;
+      --ignore-timezone)
         # do nothing
         ;;
 
@@ -412,7 +418,7 @@ _mariadb_download_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_download_args args: $@)\n"
 
   local short_options="d:U:P:hH:D:t:"
-  local long_options="database: timezone: conn-options:" # connection long options
+  local long_options="database: timezone: conn-options: ignore-timezone" # connection long options
   long_options="$long_options all-triggers id-script: file: all-functions all-procedures all-views all trigger: function: view: procedure:"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
@@ -441,6 +447,9 @@ _mariadb_download_args () {
 
       -S|-H|-U|-P|-D|--database|--timezone|--conn-options)
         shift
+        # do nothing
+        ;;
+      --ignore-timezone)
         # do nothing
         ;;
 
@@ -508,7 +517,7 @@ _mariadb_show_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_show_args args: $@)\n"
 
   local short_options="d:U:P:hH:D:t:"
-  local long_options="database: timezone: conn-options:" # connection long options
+  local long_options="database: timezone: conn-options: ignore-timezone" # connection long options
   long_options="$long_options triggers functions procedures views all"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
@@ -531,6 +540,9 @@ _mariadb_show_args () {
 
       -S|-H|-U|-P|-D|--database|--timezone|--conn-options)
         shift
+        # do nothing
+        ;;
+      --ignore-timezone)
         # do nothing
         ;;
 
@@ -612,6 +624,7 @@ _mariadb_connection_help () {
   echo -en "[--database db]          Override MARIADB_DB variable for database name.\n"
   echo -en "[--timezone tmz]         Override MARIADB_TMZ variable for set timezone on connection session.\n"
   echo -en "[--conn-options opts]    Override MARIADB_EXTRA_OPTIONS variable for enable extra connection options.\n"
+  echo -en "[--ignore-timezone]      Set MARIADB_IGNORE_TMZ variable to 1 for disable initial timezone settings.\n"
 
   return 0
 }
