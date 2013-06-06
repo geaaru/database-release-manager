@@ -1966,13 +1966,68 @@ _dbm_get_table_schema () {
 _dbm_move_script_help () {
 
   echo -en "[-i id_script]          Id script of the script to move.\n"
-  echo -en "[-v version]            Release Version\n"
-  echo -en "[-n name]               Release Name.\n"
-  echo -en "[-a version_to]         After release version_to.\n"
-  echo -en "[-b version_to]         Before release version_to.\n"
-  echo -en "[-a adapter]            Release Adapter.\n"
-  echo -en "[-b id_branch]          Id Branch.\n"
-  echo -en "[-i id_release]         Id Release to update.\n"
+  echo -en "[-a x]                  After script with id x.\n"
+  echo -en "[-b x]                  Before script with id x.\n"
+  echo -en "[-i id_release]         Id Release of the script to move.\n"
+
+  return 0
+}
+
+_dbm_check_move_script_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_move_script_args: $@)\n"
+
+  DBM_BEFORE=0
+  DBM_AFTER=0
+
+  # Reinitialize opt index position
+  OPTIND=1
+  while getopts "b:n:a:r:h" opts "$@" ; do
+    case $opts in
+
+      n) DBM_REL_NAME="$OPTARG";;
+      b) DBM_BEFORE=1
+         DBM_REL_VERSION_TO="$OPTARG";;
+      a) DBM_AFTER=1
+         DBM_REL_VERSION_TO="$OPTARG";;
+      r) DBM_REL_VERSION_FROM="$OPTARG";;
+      h)
+        echo -en "[-r version_from]       Release version.\n"
+        echo -en "[-n name]               Release Name.\n"
+        echo -en "[-a version_to]         After release version_to.\n"
+        echo -en "[-b version_to]         Before release version_to.\n"
+        echo -en "\n"
+        echo -en "Example: -n 'Project1' -r '0.1.1' -a '0.1.0' (Release 0.1.1 after release 0.1.0)\n"
+        return 1
+        ;;
+
+    esac
+  done
+
+  if [ -z "$DBM_REL_NAME" ] ; then
+    echo "Missing Release Name."
+    return 1
+  fi
+
+  if [ -z "$DBM_REL_VERSION_FROM" ] ; then
+    echo "Missing Release version."
+    return 1
+  fi
+
+  if [[ $DBM_BEFORE == 1 && $DBM_AFTER == 1 ]] ; then
+    echo "Both after and before are used. Error."
+    return 1
+  fi
+
+  if [[ $DBM_BEFORE == 0 && $DBM_AFTER == 0 ]] ; then
+    echo "Missing -a or -b parameter."
+    return 1
+  fi
+
+  return 0
+
+
+
 
 }
 
