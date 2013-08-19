@@ -94,7 +94,13 @@ _dbm_retrieve_first_release () {
 _dbm_check_if_exist_id_script () {
 
   local id_script="$1"
+  local id_release="$2"
   local query="SELECT COUNT(1) AS res FROM Scripts WHERE id_script = $id_script"
+
+  if [ -n "$id_release" ] ; then
+
+    query=$query" AND id_release = $id_release"
+  fi
 
   _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
 
@@ -121,6 +127,22 @@ _dbm_check_if_exist_id_branch () {
   return 0
 }
 
+# return 0 if exists
+# generate error if doesn't exits.
+_dbm_check_if_exist_id_rel () {
+
+  local id_release="$1"
+  local query="SELECT COUNT(1) AS res FROM Releases WHERE id_release = $id_release"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+  if [ x"$_sqlite_ans" != x"1" ] ; then
+    error_generate "Invalid id_release $id_release."
+  fi
+
+  return 0
+}
+
 _dbm_retrieve_field_rel () {
 
   local field="$1"
@@ -135,6 +157,24 @@ _dbm_retrieve_field_rel () {
     [[ $DEBUG && $DEBUG == true ]] && \
       echo -en "Error on retrieve field $field for release $rel_name and version $rel_version\n"
     error_generate "Invalid version $rel_version."
+  fi
+
+  return 0
+}
+
+_dbm_retrieve_field_script () {
+
+  local field="$1"
+  local id_script="$2"
+
+  local query="SELECT $field FROM Scripts WHERE id_script = $id_script"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+  if [ x"$_sqlite_ans" == x"" ] ; then
+    [[ $DEBUG && $DEBUG == true ]] && \
+      echo -en "Error on retrieve field $field for script with id $id_script\n"
+    error_generate "Invalid id_script $id_script"
   fi
 
   return 0

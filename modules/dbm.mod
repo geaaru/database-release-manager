@@ -1227,13 +1227,154 @@ dbm_insert_branch () {
 dbm_move_script () {
 
   local result=1
+  local id_order_from=""
+  local id_order_to=""
+  local create_tmp_table=""
+  local move_others=""
 
   # Shift first two input param
   shift 2
 
   _dbm_check_move_script_args "$@" || return $result
 
+  _dbm_check_if_exist_id_rel "$DBM_REL_ID" || return $result
 
+  _dbm_check_if_exist_id_script "$DBM_SCRIPT_ID_FROM" "$DBM_REL_ID" || return $result
+
+  _dbm_check_if_exist_id_script "$DBM_SCRIPT_ID_TO" "$DBM_REL_ID" || return $result
+
+  _dbm_retrieve_field_script "id_order" "$DBM_SCRIPT_ID_FROM"
+  id_order_from=$_sqlite_ans
+
+  _dbm_retrieve_field_script "id_order" "$DBM_SCRIPT_ID_TO"
+  id_order_to=$_sqlite_ans
+
+  if [ $DBM_AFTER -eq 1 ] ; then
+
+    if  [ $id_order_to -lt $id_order_from ] ; then
+
+      where_moved_record="( id_order > $id_order_to AND id_order < $id_order_from )"
+
+      insert2tmp="INSERT INTO ScriptsTemp
+        SELECT id_script, filename, type, active,
+               directory, id_release, $id_order_to+1 as id_order,
+               creation_date, update_date
+        FROM Scripts
+        WHERE id_script = $DBM_SCRIPT_ID_FROM ;
+        INSERT INTO ScriptsTemp
+        SELECT id_script, filename, type, active,
+               directory, id_release,id_order+1 as id_order,
+               creation_date, update_date
+        FROM Scripts
+        WHERE $where_moved_record "
+
+    else
+
+      where_moved_record="id_order > $id_order_from "
+
+      insert2tmp="INSERT INTO ScriptsTemp
+        SELECT id_script, filename, type, active,
+               directory, id_release, id_order-1 as id_order,
+               creation_date, update_date
+        FROM Scripts
+        WHERE id_order > $id_order_from AND id_order <= $id_order_to ;
+        INSERT INTO ScriptsTemp
+        SELECT id_script, filename, type, active,
+               directory, id_release, id_order,
+               creation_date, update_date
+        FROM Scripts
+        WHERE id_order > $id_order_to ;
+        INSERT INTO ScriptsTemp
+        SELECT id_script, filename, type, active,
+               directory, id_release, $id_order_to as id_order,
+               creation_date, update_date
+        FROM Scripts
+        WHERE id_script = $DBM_SCRIPT_ID_FROM "
+
+    fi
+
+    t="after"
+
+    result=0
+
+  else
+
+    if [ $id_order_to -lt $id_order_from ] ; then
+
+      where_moved_record=" id_order < $id_order_from
+        AND id_order >= $id_order_to AND id_release = $DBM_REL_ID "
+
+      insert2tmp="INSERT INTO ScriptsTemp
+        SELECT id_script, filename, type, active,
+               directory, id_release, id_order+1 as id_order,
+               creation_date, update_date
+        FROM Scripts
+        WHERE $where_moved_record ;
+        INSERT INTO ScriptsTemp
+        SELECT id_script, filename, type, active,
+               directory, id_release, $id_order_to as id_order,
+               creation_date, update_date
+        FROM Scripts
+        WHERE id_script = $DBM_SCRIPT_ID_FROM "
+
+    else
+
+      where_moved_record="id_order < $id_order_to
+        AND id_order > $id_order_from AND id_release = $DBM_REL_ID "
+
+      insert2tmp="INSERT INTO ScriptsTemp
+        SELECT id_script, filename, type, active,
+               directory, id_release, id_order-1 as id_order,
+               creation_date, update_date
+        FROM Scripts
+        WHERE $where_moved_record ;
+        INSERT INTO ScriptsTemp
+        SELECT id_script, filename, type, active,
+               directory, id_release, $id_order_to-1 as id_order,
+               creation_date, update_date
+        FROM Scripts
+        WHERE id_script = $DBM_SCRIPT_ID_FROM "
+
+
+    fi
+
+    t="before"
+    result=0
+
+  fi
+
+  # Create temporary table ddl for script move
+  _dbm_get_table_schema "Scripts"
+  create_tmp_table="$(echo "$_sqlite_ans" | sed 's/TABLE Scripts/TABLE ScriptsTemp/')"
+
+  delete_scripts="DELETE FROM Scripts
+    WHERE ($where_moved_record) OR
+    (id_release = $DBM_REL_ID AND id_order = $id_order_from ) "
+
+  # Disable PRAGMA options
+  SQLITEDB_INIT_SESSION=" "
+
+  query="DROP TABLE IF EXISTS ScriptsTemp ;
+    $create_tmp_table
+    ${insert2tmp} ;
+    ${delete_scripts} ;
+    INSERT INTO Scripts
+    SELECT id_script, filename, type, active,
+           directory, id_release, id_order,
+           creation_date, DATETIME('now')
+    FROM ScriptsTemp
+    WHERE id_release = $DBM_REL_ID ;
+    DROP TABLE ScriptsTemp "
+
+  #  SELECT * FROM ScriptsTemp ;
+  #  SELECT '-'  ;
+  #  SELECT * FROM Scripts ;
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error on update id_order fields."
+
+  # Re-enable PRAGMA options
+  unset SQLITEDB_INIT_SESSION
+
+  echo -en "Moved correctly script $DBM_SCRIPT_ID_FROM of the release $DBM_REL_ID ${t} script $DBM_SCRIPT_ID_TO.\n"
 
   return $result
 }
@@ -1243,8 +1384,15 @@ dbm_move_script () {
 # Internal functions
 ##################################################################
 
-#_dbm_init() {
-#}
+_dbm_init() {
+
+  # Load dbm module files
+  for i in $DBRM_CORE_FILES_DIR/dbm/*.inc ; do
+    . $i
+  done
+
+  return 0
+}
 
 _dbm_post_init () {
 
@@ -1258,7 +1406,5 @@ _dbm_post_init () {
   fi
 
 }
-
-source $DBRM_CORE_FILES_DIR/dbm/*.inc
 
 # vim: syn=sh filetype=sh

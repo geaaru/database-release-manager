@@ -579,10 +579,10 @@ _dbm_check_move_script_args () {
 
       r) DBM_REL_ID="$OPTARG";;
       b) DBM_BEFORE=1
-         DBM_SCRIPT_ID_FROM="$OPTARG";;
+         DBM_SCRIPT_ID_TO="$OPTARG";;
       a) DBM_AFTER=1
          DBM_SCRIPT_ID_TO="$OPTARG";;
-      i) DBM_SCRIPT_ID="$OPTARG";;
+      i) DBM_SCRIPT_ID_FROM="$OPTARG";;
       h)
         _dbm_move_script_help
         return 1
@@ -591,13 +591,13 @@ _dbm_check_move_script_args () {
     esac
   done
 
-  if [ -z "$DBM_REL_NAME" ] ; then
-    echo "Missing Release Name."
+  if [ -z "$DBM_REL_ID" ] ; then
+    echo "Missing Release Id."
     return 1
   fi
 
-  if [ -z "$DBM_REL_VERSION_FROM" ] ; then
-    echo "Missing Release version."
+  if [ -z "$DBM_SCRIPT_ID_FROM" ] ; then
+    echo "Missing Script Id."
     return 1
   fi
 
@@ -612,10 +612,6 @@ _dbm_check_move_script_args () {
   fi
 
   return 0
-
-
-
-
 }
 
 
