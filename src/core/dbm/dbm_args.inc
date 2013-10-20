@@ -614,7 +614,52 @@ _dbm_check_move_script_args () {
   return 0
 }
 
+_dbm_rem_rel_help () {
 
+  echo -en "[-r id_release]         Id Release of the script to remove.\n"
+
+  return 0
+}
+
+_dbm_check_rem_rel_args () {
+
+  [[ $DEBUG ]] && echo -en "(_dbm_check_rem_rel_args args: $@)\n"
+
+  local short_options="r:h"
+
+  $(set -- $(getopt -u -q -a -o "$short_options" -- "$@")) || error_handled "Invalid parameters"
+
+  if [ $# -lt 2 ] ; then
+    _dbm_rem_rel_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_rem_rel_args: Found $# params)\n"
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -r) DBM_REL_ID="$2"    ;shift;;
+      -h)
+        _dbm_rem_rel_help
+        return 1
+        ;;
+      --) ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+    esac
+    shift
+
+  done
+
+  if [ -z "$DBM_REL_ID" ] ; then
+    echo "Missing Release Id."
+    return 1
+  fi
+
+  return 0
+}
 
 
 # vim: syn=sh filetype=sh

@@ -162,6 +162,25 @@ _dbm_retrieve_field_rel () {
   return 0
 }
 
+_dbm_retrieve_field_rel_byid () {
+
+  local field="$1"
+  local id_release="$2"
+
+  local query="SELECT $field FROM Releases WHERE id_release = $id_release "
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+  if [ x"$_sqlite_ans" == x"" ] ; then
+    [[ $DEBUG && $DEBUG == true ]] && \
+      echo -en "Error on retrieve field $field for release id $id_release.\n"
+    error_generate "Invalid version $id_release."
+  fi
+
+  return 0
+}
+
+
 _dbm_retrieve_field_script () {
 
   local field="$1"
@@ -203,6 +222,156 @@ _dbm_get_table_schema () {
   return 0
 }
 
+_dbm_remove_all_scripts_rel_inhib () {
 
+  local id_release="$1"
+
+  local query=""
+  local id_script=""
+  local release_from=""
+  local release_to=""
+  local creation_date=""
+  local name=""
+
+  # Check if there are record
+  query="
+    SELECT COUNT(1) AS CNT
+    FROM ScriptRelInhibitions
+    WHERE id_release_from = $id_release
+    OR    id_release_to = $id_release"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+  if [ $_sqlite_ans -ne 0 ] ; then
+    query="
+      SELECT R.name,
+             SRI.id_script,
+             R.version AS rel_from,
+             R2.version AS rel_to
+      FROM ScriptRelInhibitions SRI,
+           Releases R,
+           Releases R2
+      WHERE R.id_release = SRI.id_release_from
+      AND R2.id_release = SRI.id_release_to
+      AND (
+          SRI.id_release_from = $id_release
+          OR SRI.id_release_to = $id_release
+      )"
+
+    # TODO permit to set creation_date on insert script_inhibition_rel record.
+    #      SRI.creation_date
+
+    _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+
+    IFS=$'\n'
+    for row in $_sqlite_ans ; do
+
+      #[[ $DEBUG ]] && echo "ROW = ${row}"
+
+      name=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      id_script=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+      release_from=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+      release_to=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+
+      echo "dbrm dbm insert_inhibit_script -n \"$name\" -i $id_script -t $release_to -f $release_from " >> $DBM_UNDO_SCRIPT
+
+    done
+    unset IFS
+
+    # Create undo script for every record
+    query="
+      DELETE FROM ScriptRelInhibitions
+      WHERE id_release_from = $id_release
+      OR    id_release_to = $id_release"
+
+      _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+      if [ x"$_sqlite_ans" == x"" ] ; then
+        [[ $DEBUG && $DEBUG == true ]] && \
+          echo -en "Error on field $field for release id $id_release.\n"
+        error_generate "Invalid version $id_release."
+      fi
+
+  fi
+
+  return 0
+}
+
+_dbm_remove_all_scripts_rel_ded () {
+
+  local id_release="$1"
+
+  local query=""
+  local id_script=""
+  local release_from=""
+  local release_to=""
+  local creation_date=""
+  local name=""
+
+  # Check if there are record
+  query="
+    SELECT COUNT(1) AS CNT
+    FROM ScriptRelDedicated
+    WHERE id_release_from = $id_release
+    OR    id_release_to = $id_release"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+  if [ $_sqlite_ans -ne 0 ] ; then
+    query="
+      SELECT R.name,
+             SRD.id_script,
+             R.version AS rel_from,
+             R2.version AS rel_to
+      FROM ScriptRelDedicated SRD,
+           Releases R,
+           Releases R2
+      WHERE R.id_release = SRD.id_release_from
+      AND R2.id_release = SRD.id_release_to
+      AND (
+          SRD.id_release_from = $id_release
+          OR SRD.id_release_to = $id_release
+      )"
+
+    # TODO permit to set creation_date on insert script_dedicated_rel record.
+    #      SRI.creation_date
+
+    _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+
+    IFS=$'\n'
+    for row in $_sqlite_ans ; do
+
+      #[[ $DEBUG ]] && echo "ROW = ${row}"
+
+      name=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      id_script=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+      release_from=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+      release_to=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+
+      echo "dbrm dbm insert_ded_script -n \"$name\" -i $id_script -t $release_to -f $release_from " >> $DBM_UNDO_SCRIPT
+
+    done
+    unset IFS
+
+    # Create undo script for every record
+    query="
+      DELETE FROM ScriptRelDedicated
+      WHERE id_release_from = $id_release
+      OR    id_release_to = $id_release"
+
+      _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+      if [ x"$_sqlite_ans" == x"" ] ; then
+        [[ $DEBUG && $DEBUG == true ]] && \
+          echo -en "Error on field $field for release id $id_release.\n"
+        error_generate "Invalid version $id_release."
+      fi
+
+  fi
+
+  return 0
+}
 
 # vim: syn=sh filetype=sh

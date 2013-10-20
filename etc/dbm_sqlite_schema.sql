@@ -17,11 +17,12 @@ CREATE TABLE Releases (
    release_date    DATE NOT NULL,
    creation_date   DATE NOT NULL,
    update_date     DATE NOT NULL,
-   id_order        INTEGER UNIQUE NOT NULL,
+   id_order        INTEGER NOT NULL,
    db_adapter      TEXT NOT NULL,
    id_branch       INTEGER NOT NULL DEFAULT 1,
    directory       TEXT NOT NULL DEFAULT '.',
    CONSTRAINT uc_name_version UNIQUE(name, version),
+   CONSTRAINT uc_idorder_idbranch UNIQUE(id_order,id_branch),
    FOREIGN KEY(db_adapter) REFERENCES DatabaseAdapters(adapter),
    FOREIGN KEY(id_branch) REFERENCES Branches(id_branch)
 );
@@ -33,6 +34,13 @@ CREATE TABLE Branches (
    update_date     DATE NOT NULL
 );
 
+-- ReleasesDependencies table
+-- contains for every release
+-- one record for every release dependency.
+-- Example: from r. 0.1.0 -> 0.3.0
+-- There are these record:
+-- 0.3.0 (id_release) - 0.1.0 (id_release_dep)
+-- 0.3.0 (id_release) - 0.2.0 (id_release_dep)
 CREATE TABLE ReleasesDependencies (
    id_release     INTEGER NOT NULL,
    id_release_dep INTEGER NOT NULL,

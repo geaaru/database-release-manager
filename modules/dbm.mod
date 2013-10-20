@@ -43,7 +43,8 @@ dbm_long_help () {
    echo -en "\tremove_ded_script       Remove a release dedicated script relationship.\n"
    echo -en "\tinsert_release          Insert a new release.\n"
    echo -en "\tmove_release            Move release position.\n"
-   echo -en "\tupdate_release          Update release position.\n"
+   echo -en "\tupdate_release          Update a release data.\n"
+   echo -en "\tremove_release          Remove a release.\n"
    echo -en "\tinsert_script_type      Insert a new script type.\n"
    echo -en "\tinsert_rel_dep          Insert a new release dependency.\n"
    echo -en "\tremove_rel_dep          Remove release dependency.\n"
@@ -79,7 +80,8 @@ dbm_show_help () {
    echo -en "\tremove_ded_script       Remove a release dedicated script relationship.\n"
    echo -en "\tinsert_release          Insert a new release.\n"
    echo -en "\tmove_release            Move release position.\n"
-   echo -en "\tupdate_release          Update release position.\n"
+   echo -en "\tupdate_release          Update a release data .\n"
+   echo -en "\tremove_release          Remove a release.\n"
    echo -en "\tinsert_script_type      Insert a new script type.\n"
    echo -en "\tinsert_rel_dep          Insert a new release dependency.\n"
    echo -en "\tremove_rel_dep          Remove release dependency.\n"
@@ -714,6 +716,7 @@ dbm_insert_release () {
        DATETIME('now'),
        (SELECT T.ID FROM (
         SELECT MAX(ID_RELEASE)+1 AS ID, 1 AS T from Releases
+        WHERE id_branch = $id_branch
         UNION SELECT 1 AS ID, 0 AS T
         ) T
        WHERE ID IS NOT NULL ORDER BY T.T DESC LIMIT 1),
@@ -722,7 +725,7 @@ dbm_insert_release () {
   else
     query="INSERT INTO Releases
       (name,version,release_date,db_adapter,creation_date,
-       update_date,id_order, id_branch)
+       update_date,id_order, id_branch,directory)
       VALUES
       ('$DBM_REL_NAME','$DBM_REL_VERSION',$DBM_REL_DATE,'$DBM_REL_ADAPTER',DATETIME('now'),
        DATETIME('now'), $DBM_REL_ORDER, $id_branch, '$DBM_REL_DIR')"
@@ -736,6 +739,44 @@ dbm_insert_release () {
   fi
 
   result=$ans
+
+  return $result
+}
+
+dbm_remove_release () {
+
+  local result=1
+  local query=""
+  local id_branch=""
+  local cnt=""
+
+  # Shift first two input param
+  shift 2
+
+  _dbm_check_rem_rel_args "$@" || return $result
+
+  # Retrive id branch of the release
+  _dbm_retrieve_field_rel_byid "id_branch" "$DBM_REL_ID"
+  id_branch=$_sqlite_ans
+
+  # Check if there is some dependency with release
+  query="SELECT count(1) AS CNT
+    FROM ReleasesDependencies
+    WHERE id_release_dep = $DBM_REL_ID"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error on check for dependencies"
+  cnt=$_sqlite_ans
+
+  if [ $cnt -ne 0 ] ; then
+
+    error_handled "There are dependencies with release $DBM_REL_ID. You must remove these dependencies before remove release $DBM_REL_ID."
+
+  fi
+
+  _dbm_remove_all_scripts_rel_ded $DBM_REL_ID || error_handled "Unexpected error on remove all scripts from ScriptRelDedicated table"
+
+
+  _dbm_remove_all_scripts_rel_inhib  $DBM_REL_ID || error_handled "Unexpected error on remove all scripts from ScriptRelInhibitions table"
 
   return $result
 }
@@ -1404,6 +1445,20 @@ _dbm_post_init () {
     _sqlite_create -c "$DRM_DB" -s "$dbm_schema" || error_handled "Error on create $DRM_DB file."
 
   fi
+
+  # Check if is defined undo script path
+  if [[ -z "$DBM_UNDO_SCRIPT" ]] ; then
+      # Use default path
+      DBM_UNDO_SCRIPT=$LOCAL_DIR/dbm_undo.sh
+  else
+    if [[ ! -e $DBM_UNDO_SCRIPT ]] ; then
+      error_generate "Invalid DBM Undo script path defined."
+    fi
+  fi
+
+  [[ $DEBUG ]] && echo "(dbm_post_init: Use undo script: $DBM_UNDO_SCRIPT.)"
+
+  export DBM_UNDO_SCRIPT
 
 }
 
