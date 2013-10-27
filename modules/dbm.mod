@@ -773,10 +773,18 @@ dbm_remove_release () {
 
   fi
 
-  _dbm_remove_all_scripts_rel_ded $DBM_REL_ID || error_handled "Unexpected error on remove all scripts from ScriptRelDedicated table"
+  confirmation_question "Are you sure to remove release with id $DBM_REL_ID? [N/y]"
+  if [ $? -eq 0 ] ; then
 
+    _dbm_remove_all_scripts_rel_ded $DBM_REL_ID || error_handled "Unexpected error on remove all scripts from ScriptRelDedicated table"
 
-  _dbm_remove_all_scripts_rel_inhib  $DBM_REL_ID || error_handled "Unexpected error on remove all scripts from ScriptRelInhibitions table"
+    _dbm_remove_all_scripts_rel_inhib  $DBM_REL_ID || error_handled "Unexpected error on remove all scripts from ScriptRelInhibitions table"
+
+    _dbm_remove_release $DBM_REL_ID || error_handled "Unexpected error on remove release with id $DBM_REL_ID."
+
+  fi
+
+  result=0
 
   return $result
 }

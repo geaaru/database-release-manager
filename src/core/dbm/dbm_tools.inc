@@ -298,6 +298,53 @@ _dbm_remove_all_scripts_rel_inhib () {
   return 0
 }
 
+_dbm_remove_release () {
+
+  local id_release="$1"
+
+  local query=""
+  local name=""
+  local version=""
+  local release_date=""
+  local id_order=""
+  local db_adapter=""
+  local id_branch=""
+  local directory=""
+
+  # Retrieve release data
+  query="
+    SELECT name, version, release_date, id_order, db_adapter,
+           id_branch, directory
+    FROM Releases
+    WHERE id_release = $id_release"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+  IFS=$'\n'
+  for row in $_sqlite_ans ; do
+
+    #[[ $DEBUG ]] && echo "ROW = ${row}"
+
+    name=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+    version=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+    release_date=`echo $row | awk '{split($0,a,"|"); print a[3]}' | awk '{split($0,a," "); print a[1]}'`
+    id_order=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+    db_adapter=`echo $row | awk '{split($0,a,"|"); print a[5]}'`
+    id_branch=`echo $row | awk '{split($0,a,"|"); print a[6]}'`
+    directory=`echo $row | awk '{split($0,a,"|"); print a[7]}'`
+
+    echo "dbrm dbm insert_release -n \"$name\" -d \"$release_date\" -v \"$version\" -a $db_adapter -o $id_order -b $id_branch -dir \"$directory\" " >> $DBM_UNDO_SCRIPT
+
+  done
+  unset IFS
+
+  query="DELETE FROM Releases WHERE id_release = $id_release"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error on remove release $id_release!"
+
+  return 0
+}
+
 _dbm_remove_all_scripts_rel_ded () {
 
   local id_release="$1"
