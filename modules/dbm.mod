@@ -111,11 +111,33 @@ dbm_show_releases () {
   local db_adapter=""
   local id_branch=""
   local directory=""
-  local query="
-    SELECT id_release,name,version,release_date,
-           creation_date,update_date,id_order,
-           db_adapter,id_branch,directory
-    FROM Releases ORDER BY id_order ASC"
+  local result=1
+  local query=""
+
+  shift 2
+
+  _dbm_show_rel_args "$@" || return $result
+
+  query="
+    SELECT id_release,
+           name,
+           version,
+           release_date,
+           creation_date,
+           update_date,
+           id_order,
+           db_adapter,
+           id_branch,
+           directory
+    FROM Releases "
+
+  if [ -n "$DBM_BRANCH_ID" ] ; then
+
+    query="$query WHERE id_branch = $DBM_BRANCH_ID"
+
+  fi
+
+  query="$query ORDER BY id_order ASC"
 
   [[ $DEBUG ]] && echo -en "N. Releases: $n_rel\n"
 
@@ -474,6 +496,8 @@ dbm_move_release () {
   local id_rel_from=""
   local id_order=""
   local id_order_to=""
+  local id_branch=""
+  local id_branch_to=""
   local create_tmp_table=""
   local where_moved_record=""
   local insert2tmp=""
@@ -503,37 +527,101 @@ dbm_move_release () {
   _dbm_retrieve_field_rel "id_release" "$DBM_REL_NAME" "$DBM_REL_VERSION_TO"
   id_rel_to=$_sqlite_ans
 
+  # Retrieve id branch from
+  _dbm_retrieve_field_rel "id_branch" "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM"
+  id_branch=$_sqlite_ans
+
+  # Retrieve id branch to
+  _dbm_retrieve_field_rel "id_branch" "$DBM_REL_NAME" "$DBM_REL_VERSION_TO"
+  id_branch_to=$_sqlite_ans
+
+  if [ $id_branch_to -ne $id_branch ] ; then
+    error_generate "move_release command is not possibile between releases of different branches"
+  fi
+
   _dbm_get_table_schema 'Releases'
-  create_tmp_table="$(echo "$_sqlite_ans" | sed 's/TABLE Releases/TABLE ReleasesTemp/')"
+  create_tmp_table="$(echo "$_sqlite_ans" | sed 's/Releases/ReleasesTemp/')"
 
   if [ $DBM_AFTER -eq 1 ] ; then
 
     if [ $id_order_to -lt $id_order ] ; then
 
-      where_moved_record="WHERE ( id_order > $id_order_to AND id_order < $id_order )"
+      where_moved_record="WHERE id_branch = $id_branch AND ( id_order > $id_order_to AND id_order < $id_order )"
 
       insert2tmp="INSERT INTO ReleasesTemp
-        SELECT id_release,name,version,release_date,creation_date,update_date,$id_order_to+1 as id_order,db_adapter,id_branch
-        FROM Releases WHERE id_release = $id_rel_from ;
+        SELECT id_release,
+               name,
+               version,
+               release_date,
+               creation_date,
+               update_date,
+               $id_order_to+1 as id_order,
+               db_adapter,
+               id_branch,
+               directory
+        FROM Releases
+        WHERE id_release = $id_rel_from
+        AND id_branch = $id_branch ;
         INSERT INTO ReleasesTemp
-        SELECT id_release,name,version,release_date,creation_date,update_date,id_order+1 as id_order,db_adapter,id_branch
+        SELECT id_release,
+               name,
+               version,
+               release_date,
+               creation_date,
+               update_date,
+               id_order+1 as id_order,
+               db_adapter,
+               id_branch,
+               directory
         FROM Releases $where_moved_record "
       # POST: Move yet release_from to Temporary table
 
     else
 
-      where_moved_record="WHERE id_order > $id_order "
+      where_moved_record="WHERE id_order > $id_order AND id_branch = $id_branch "
       # POST: Move yet release_from to Temporary table
 
       insert2tmp="INSERT INTO ReleasesTemp
-        SELECT id_release,name,version,release_date,creation_date,update_date,id_order-1 as id_order,db_adapter,id_branch
-        FROM Releases WHERE id_order > $id_order AND id_order <= $id_order_to ;
+        SELECT id_release,
+               name,
+               version,
+               release_date,
+               creation_date,
+               update_date,
+               id_order-1 as id_order,
+               db_adapter,
+               id_branch,
+               directory
+        FROM Releases
+        WHERE id_branch = $id_branch
+        AND id_order > $id_order AND id_order <= $id_order_to ;
         INSERT INTO ReleasesTemp
-        SELECT id_release,name,version,release_date,creation_date,update_date,id_order as id_order,db_adapter,id_branch
-        FROM Releases WHERE id_order > $id_order_to ;
+        SELECT id_release,
+               name,
+               version,
+               release_date,
+               creation_date,
+               update_date,
+               id_order as id_order,
+               db_adapter,
+               id_branch,
+               directory
+        FROM Releases
+        WHERE id_order > $id_order_to AND id_branch = $id_branch ;
         INSERT INTO ReleasesTemp
-        SELECT id_release,name,version,release_date,creation_date,update_date,$id_order_to as id_order,db_adapter,id_branch
-        FROM Releases WHERE id_release = $id_rel_from "
+        SELECT id_release,
+               name,
+               version,
+               release_date,
+               creation_date,
+               update_date,
+               $id_order_to as id_order,
+               db_adapter,
+               id_branch,
+               directory
+        FROM Releases
+        WHERE id_release = $id_rel_from
+        AND id_branch = $id_branch "
 
     fi
 
@@ -545,27 +633,65 @@ dbm_move_release () {
 
     if [ $id_order_to -lt $id_order ] ; then
 
-      where_moved_record="WHERE id_order < $id_order AND id_order >= $id_order_to "
+      where_moved_record="WHERE id_branch = $id_branch AND id_order < $id_order AND id_order >= $id_order_to "
 
       insert2tmp="INSERT INTO ReleasesTemp
-        SELECT id_release,name,version,release_date,creation_date,update_date,id_order+1 as id_order,db_adapter
+        SELECT id_release,
+               name,
+               version,
+               release_date,
+               creation_date,
+               update_date,
+               id_order+1 as id_order,
+               db_adapter,
+               id_branch,
+               directory
         FROM Releases $where_moved_record ;
         INSERT INTO ReleasesTemp
-        SELECT id_release,name,version,release_date,creation_date,update_date,$id_order_to as id_order,db_adapter
-        FROM Releases WHERE id_release = $id_rel_from "
+        SELECT id_release,
+               name,
+               version,
+               release_date,
+               creation_date,
+               update_date,
+               $id_order_to as id_order,
+               db_adapter,
+               id_branch,
+               directory
+        FROM Releases
+        WHERE id_release = $id_rel_from AND id_branch = $id_branch "
       # POST: Move yet release_from to Temporary table
 
 
     else
 
-      where_moved_record="WHERE id_order < $id_order_to AND id_order > $id_order "
+      where_moved_record="WHERE id_branch = $id_branch AND id_order < $id_order_to AND id_order > $id_order "
 
       insert2tmp="INSERT INTO ReleasesTemp
-        SELECT id_release,name,version,release_date,creation_date,update_date,id_order-1 as id_order,db_adapter
+        SELECT id_release,
+               name,
+               version,
+               release_date,
+               creation_date,
+               update_date,
+               id_order-1 as id_order,
+               db_adapter,
+               id_branch,
+               directory
         FROM Releases $where_moved_record ;
         INSERT INTO ReleasesTemp
-        SELECT id_release,name,version,release_date,creation_date,update_date,$id_order_to-1 as id_order,db_adapter
-        FROM Releases WHERE id_release = $id_rel_from "
+        SELECT id_release,
+               name,
+               version,
+               release_date,
+               creation_date,
+               update_date,
+               $id_order_to-1 as id_order,
+               db_adapter,
+               id_branch,
+               directory
+        FROM Releases
+        WHERE id_release = $id_rel_from AND id_branch = $id_branch "
       # POST: Move yet release_from to Temporary table
 
     fi
@@ -575,7 +701,7 @@ dbm_move_release () {
 
   fi
 
-  delete_rel="DELETE FROM Releases $where_moved_record OR id_order = $id_order"
+  delete_rel="DELETE FROM Releases $where_moved_record OR (id_order = $id_order AND id_branch = $id_branch)"
 
   # Disable PRAGMA options
   SQLITEDB_INIT_SESSION=" "
@@ -584,7 +710,18 @@ dbm_move_release () {
     $create_tmp_table ;
     ${insert2tmp} ;
     ${delete_rel} ;
-    INSERT INTO Releases SELECT id_release,name,version,release_date,creation_date,DATETIME('now'),id_order,db_adapter FROM ReleasesTemp;
+    INSERT INTO Releases
+      SELECT id_release,
+             name,
+             version,
+             release_date,
+             creation_date,
+             DATETIME('now'),
+             id_order,
+             db_adapter,
+             id_branch,
+             directory
+      FROM ReleasesTemp;
     DROP TABLE ReleasesTemp "
 
   #  SELECT * FROM ReleasesTemp ;
@@ -715,7 +852,7 @@ dbm_insert_release () {
       ('$DBM_REL_NAME', '$DBM_REL_VERSION' ,$DBM_REL_DATE,'$DBM_REL_ADAPTER',DATETIME('now'),
        DATETIME('now'),
        (SELECT T.ID FROM (
-        SELECT MAX(ID_RELEASE)+1 AS ID, 1 AS T from Releases
+        SELECT MAX(id_order)+1 AS ID, 1 AS T from Releases
         WHERE id_branch = $id_branch
         UNION SELECT 1 AS ID, 0 AS T
         ) T

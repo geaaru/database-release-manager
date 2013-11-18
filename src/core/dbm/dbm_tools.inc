@@ -333,7 +333,7 @@ _dbm_remove_release () {
     id_branch=`echo $row | awk '{split($0,a,"|"); print a[6]}'`
     directory=`echo $row | awk '{split($0,a,"|"); print a[7]}'`
 
-    echo "dbrm dbm insert_release -n \"$name\" -d \"$release_date\" -v \"$version\" -a $db_adapter -o $id_order -b $id_branch -dir \"$directory\" " >> $DBM_UNDO_SCRIPT
+    echo "dbrm dbm insert_release -n \"$name\" -d \"$release_date\" -v \"$version\" -a $db_adapter -b $id_branch --dir \"$directory\" " >> $DBM_UNDO_SCRIPT
 
   done
   unset IFS

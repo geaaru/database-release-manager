@@ -661,5 +661,42 @@ _dbm_check_rem_rel_args () {
   return 0
 }
 
+_dbm_show_rel_help () {
+
+  echo -en "[-b id_branch]          Id branch to filter.\n"
+
+  return 0
+}
+
+_dbm_show_rel_args () {
+
+  [[ $DEBUG ]] && echo -en "(_dbm_check_show_rel_args args: $@)\n"
+
+  local short_options="b:h"
+
+  $(set -- $(getopt -u -q -a -o "$short_options" -- "$@")) || error_handled "Invalid parameters"
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_show_rel_args: Found $# params)\n"
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -b) DBM_BRANCH_ID="$2"    ;shift;;
+      -h)
+        _dbm_show_rel_help
+        return 1
+        ;;
+      --) ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+    esac
+    shift
+
+  done
+
+  return 0
+}
+
 
 # vim: syn=sh filetype=sh
