@@ -274,7 +274,7 @@ _dbm_remove_all_scripts_rel_inhib () {
       release_from=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
       release_to=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
 
-      echo "dbrm dbm insert_inhibit_script -n \"$name\" -i $id_script -t $release_to -f $release_from " >> $DBM_UNDO_SCRIPT
+      _dbm_save2undo "dbrm dbm insert_inhibit_script -n \"$name\" -i $id_script -t $release_to -f $release_from "
 
     done
     unset IFS
@@ -333,7 +333,7 @@ _dbm_remove_release () {
     id_branch=`echo $row | awk '{split($0,a,"|"); print a[6]}'`
     directory=`echo $row | awk '{split($0,a,"|"); print a[7]}'`
 
-    echo "dbrm dbm insert_release -n \"$name\" -d \"$release_date\" -v \"$version\" -a $db_adapter -b $id_branch --dir \"$directory\" " >> $DBM_UNDO_SCRIPT
+    _dbm_save2undo "dbrm dbm insert_release -n \"$name\" -d \"$release_date\" -v \"$version\" -a $db_adapter -b $id_branch --dir \"$directory\" "
 
   done
   unset IFS
@@ -397,7 +397,7 @@ _dbm_remove_all_scripts_rel_ded () {
       release_from=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
       release_to=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
 
-      echo "dbrm dbm insert_ded_script -n \"$name\" -i $id_script -t $release_to -f $release_from " >> $DBM_UNDO_SCRIPT
+      _dbm_save2undo "dbrm dbm insert_ded_script -n \"$name\" -i $id_script -t $release_to -f $release_from "
 
     done
     unset IFS
@@ -419,6 +419,22 @@ _dbm_remove_all_scripts_rel_ded () {
   fi
 
   return 0
+}
+
+_dbm_save2undo () {
+
+    local msg="$1"
+
+    echo "$msg" >> $DBM_UNDO_SCRIPT
+
+}
+
+_dbm_save2history () {
+
+    local msg="$1"
+
+    echo "$msg" >> $DBM_HISTORY
+
 }
 
 # vim: syn=sh filetype=sh

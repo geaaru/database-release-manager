@@ -508,6 +508,8 @@ dbm_move_release () {
 
   _dbm_check_move_release_args "$@" || return $result
 
+  _dbm_save2history "dbrm dbm move_release $@"
+
   _dbm_check_if_exist_rel "$DBM_REL_NAME" "$DBM_REL_VERSION_TO" || return $result
   _dbm_check_if_exist_rel "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM" || return $result
 
@@ -748,6 +750,8 @@ dbm_update_release () {
 
   _dbm_check_upd_release_args "$@" || return $result
 
+  _dbm_save2history "dbrm dbm update_release $@"
+
   if [ -n "$DBM_REL_NAME" ] ; then
 
     query="$query name = '${DBM_REL_NAME}'"
@@ -831,6 +835,8 @@ dbm_insert_release () {
   shift 2
 
   _dbm_check_ins_rel_args "$@" || return $result
+
+  _dbm_save2history "dbrm dbm insert_release $@"
 
   if [ -z "$DBM_REL_BRANCH" ] ; then
 
@@ -962,6 +968,8 @@ dbm_update_script () {
 
   _dbm_check_upd_script_args "$@" || return $result
 
+  _dbm_save2history "dbrm dbm update_script $@"
+
   if [ ! -z "$DBM_SCRIPT_FILENAME" ] ; then
 
     if [ $upd_elems -eq 0 ] ; then
@@ -1082,6 +1090,8 @@ dbm_insert_script () {
 
   _dbm_check_ins_script_args "$@" || return $result
 
+  _dbm_save2history "dbrm dbm insert_script $@"
+
   if [ -z "$DBM_SCRIPT_ID_RELEASE" ] ; then
     id_rel_query="(SELECT id_release FROM Releases WHERE name = '$DBM_SCRIPT_REL_NAME' AND version = '$DBM_SCRIPT_REL_VERSION')"
   else
@@ -1129,6 +1139,8 @@ dbm_insert_script_type () {
 
   _dbm_check_ins_script_type_args "$@" || return $result
 
+  _dbm_save2history "dbrm dbm insert_script_type $@"
+
   query="INSERT INTO ScriptTypes (code,descr) VALUES ('$DBM_SCRIPT_TYPE_CODE', '$DBM_SCRIPT_TYPE_DESCR')";
 
   _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
@@ -1154,6 +1166,8 @@ dbm_insert_rel_dep () {
   shift 2
 
   _dbm_check_rel_dep_args "$@" || return $result
+
+  _dbm_save2history "dbrm dbm insert_rel_dep $@"
 
   id_rel_query_to="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_TO')"
   id_rel_query_from="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_FROM')"
@@ -1215,6 +1229,8 @@ dbm_insert_inhibit_script () {
 
   _dbm_check_inhibit_script_args "$@" || return $result
 
+  _dbm_save2history "dbrm dbm insert_inhibit_script $@"
+
   id_rel_query_to="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_TO')"
   id_rel_query_from="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_FROM')"
 
@@ -1244,6 +1260,8 @@ dbm_insert_ded_script () {
   shift 2
 
   _dbm_check_inhibit_script_args "$@" || return $result
+
+  _dbm_save2history "dbrm dbm insert_ded_script $@"
 
   id_rel_query_to="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_TO')"
   id_rel_query_from="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_FROM')"
@@ -1395,6 +1413,8 @@ dbm_insert_branch () {
 
   _dbm_check_ins_bra_args "$@" || return $result
 
+  _dbm_save2history "dbrm dbm insert_branch $@"
+
   query="INSERT INTO Branches (name,creation_date,update_date) \
          VALUES ('$DBM_BRA_NAME', DATETIME('now'),DATETIME('now'))"
 
@@ -1428,6 +1448,8 @@ dbm_move_script () {
   _dbm_check_if_exist_id_script "$DBM_SCRIPT_ID_FROM" "$DBM_REL_ID" || return $result
 
   _dbm_check_if_exist_id_script "$DBM_SCRIPT_ID_TO" "$DBM_REL_ID" || return $result
+
+  _dbm_save2history "dbrm dbm move_script $@"
 
   _dbm_retrieve_field_script "id_order" "$DBM_SCRIPT_ID_FROM"
   id_order_from=$_sqlite_ans
@@ -1598,6 +1620,16 @@ _dbm_post_init () {
   else
     if [[ ! -e $DBM_UNDO_SCRIPT ]] ; then
       error_generate "Invalid DBM Undo script path defined."
+    fi
+  fi
+
+  # Check if is defined history script path
+  if [[ -z "$DBM_HISTORY" ]] ; then
+      # Use default path
+      DBM_HISTORY=$LOCAL_DIR/.dbm_history
+  else
+    if [[ ! -e $DBM_HISTORY ]] ; then
+      error_generate "Invalid DBM history file path defined."
     fi
   fi
 

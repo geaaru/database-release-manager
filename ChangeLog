@@ -1,7 +1,10 @@
 -- $Id$ --
 
+ * Nov 18, 2013:
+  - added column flag_dev to Releases table:
+     ALTER TABLE Releases ADD COLUMN flag_dev        INTEGER NOT NULL DEFAULT 0
+
  * May 24, 2013:
   - added column directory to Releases table:
      ALTER TABLE Releases ADD COLUMN directory       TEXT NOT NULL DEFAULT '.'
-
 
