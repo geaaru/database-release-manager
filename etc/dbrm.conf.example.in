@@ -7,7 +7,7 @@
 
 # uncomment this line to turn on debug
 #DEBUG=true
-MODULES_DIR="${prefix}/share/dbrm/modules"
+MODULES_DIR="@MODULES_DIR@"
 
 LOCAL_DIR=~/.local/share/dbrm
 LOCAL_CONFIG_FILE=$LOCAL_DIR/dbrm.conf

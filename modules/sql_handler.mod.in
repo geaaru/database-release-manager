@@ -8,7 +8,7 @@
 name="sql_handler"
 sql_handler_authors="Geaaru"
 sql_handler_creation_date="August 26, 2008"
-sql_handler_version="0.1.0"
+sql_handler_version="@PACKAGE_VERSION@"
 
 sql_handler_version () {
    echo -en "Version: ${sql_handler_version}\n"

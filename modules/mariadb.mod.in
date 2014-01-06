@@ -8,7 +8,7 @@
 name="mariadb"
 mariadb_authors="Geaaru"
 mariadb_creation_date="May 6, 2013"
-mariadb_version="0.1.0"
+mariadb_version="@PACKAGE_VERSION@"
 mariadb_status="0"
 
 

@@ -3,7 +3,7 @@
 name="sqlite"
 sqlite_authors="Geaaru"
 sqlite_creation_date="August 26, 2008"
-sqlite_version="0.1.0"
+sqlite_version="@PACKAGE_VERSION@"
 sqlite_hidden="0"
 
 sqlite_version () {

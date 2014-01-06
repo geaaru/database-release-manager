@@ -8,11 +8,11 @@
 name="oracle"
 oracle_authors="Geaaru"
 oracle_creation_date="May 6, 2013"
-oracle_version="0.1.0"
+oracle_version="@PACKAGE_VERSION@"
 oracle_status="0"
 
 # Directory with custom oracle generation scripts
-_oracle_scripts=${prefix}/share/dbrm/oracle/
+_oracle_scripts=@SHAREDIR@/oracle/
 
 oracle_version() {
   echo -en "Version: ${oracle_version}\n"

@@ -8,7 +8,7 @@
 name="logfile"
 logfile_authors="Geaaru"
 logfile_creation_date="May 6, 2013"
-logfile_version="0.1.0"
+logfile_version="@PACKAGE_VERSION@"
 logfile_status="0"
 
 logfile_version () {

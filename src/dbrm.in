@@ -5,12 +5,12 @@
 # $Id$
 # License: GPL 2.0
 #------------------------------------------------
-VERSION="0.1.0"
+VERSION="@PACKAGE_VERSION@"
 
-prefix=/home/geaaru/Projects/database-release-manager/root
-CONFIG_FILE=${prefix}/etc/dbrm.conf
-DBRM_CORE_FILES_DIR=${prefix}/share/dbrm/core
-CONFIG_FILE_STUB=${prefix}/share/dbrm/core/dbrm.conf.example
+prefix=@prefix@
+CONFIG_FILE=@CONFIG_FILE@
+DBRM_CORE_FILES_DIR=@CORE_DIR@
+CONFIG_FILE_STUB=@CORE_DIR@/dbrm.conf.example
 
 # Insert config file data
 . $CONFIG_FILE
@@ -30,7 +30,7 @@ else
    fi
 
    # If LOCAL_CONFIG_FILE is not defined
-   # use only main configuration file ${prefix}/etc/dbrm.conf.
+   # use only main configuration file @CONFIG_FILE@.
    if [[ -n $LOCAL_CONFIG_FILE ]] ; then
 
      if [[ ! -e $LOCAL_CONFIG_FILE ]] ; then

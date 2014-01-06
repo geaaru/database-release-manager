@@ -8,7 +8,7 @@
 name="install"
 install_authors="Geaaru"
 install_creation_date="May 5, 2013"
-install_version="0.1.0"
+install_version="@PACKAGE_VERSION@"
 
 install_version () {
    echo -en "Version: ${install_version}\n"

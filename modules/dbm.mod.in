@@ -8,10 +8,10 @@
 name="dbm"
 dbm_authors="Geaaru"
 dbm_creation_date="May 5, 2013"
-dbm_version="0.1.0"
+dbm_version="@PACKAGE_VERSION@"
 
 
-dbm_schema=${prefix}/share/dbrm/dbm_sqlite_schema.sql
+dbm_schema=@SHAREDIR@/dbm_sqlite_schema.sql
 
 dbm_version() {
    echo -en "Version: ${dbm_version}\n"

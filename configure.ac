@@ -24,7 +24,7 @@ AC_PREFIX_DEFAULT([/usr/local])
 
 AC_ARG_WITH(configfile-path, AS_HELP_STRING([--with-configfile-path=[path]],
             [Default config file path. Default /etc/dbrm.conf.]),
-            [CONFIG_FILE=$withval], [CONFIG_FILE="/etc/dbrm.conf"])
+            [CONFIG_FILE=$withval], [CONFIG_FILE='${prefix}/etc/dbrm.conf'])
 AC_ARG_WITH(modules-dir, AS_HELP_STRING([--with-modules-dir=[mods_dir]],
             [Dbrm modules directory. Default PREFIX/share/dbrm/modules.]),
             [MODULES_DIR=$withval], [MODULES_DIR='${prefix}/share/dbrm/modules'])
@@ -46,6 +46,15 @@ if [ test -z $BASH_PATH ]; then
   AC_MSG_ERROR("Bash program not found")
 fi
 
+# Define share dir
+SHAREDIR='${prefix}/share/dbrm'
+# Define main config file dir
+CONFIG_FILE_DIR=$(dirname $CONFIG_FILE)
+CONFIG_FILE_NAME=$(basename $CONFIG_FILE)
+
+# Defile PREFIX
+
+
 AC_SUBST(RM)
 AC_SUBST(MV)
 AC_SUBST(CP)
@@ -57,10 +66,28 @@ AC_SUBST(MODULES_DIR)
 AC_SUBST(CORE_DIR)
 AC_SUBST(BASH_PATH)
 AC_SUBST(SQLITE3)
+AC_SUBST(SHAREDIR)
+AC_SUBST(CONFIG_FILE_DIR)
+AC_SUBST(CONFIG_FILE_NAME)
+AC_SUBST(prefix)
 
 # Checks for library functions.
 AC_CONFIG_FILES([
                  Makefile
+                 etc/Makefile
+                 etc/dbrm.conf.example
+                 modules/Makefile
+                 modules/dbm.mod
+                 modules/install.mod
+                 modules/logfile.mod
+                 modules/mariadb.mod
+                 modules/oracle.mod
+                 modules/sql_handler.mod
+                 modules/sqlite.mod
+                 src/Makefile
+                 src/dbrm
+                 src/core/Makefile
+                 src/share/Makefile
                 ])
 
 AC_OUTPUT
