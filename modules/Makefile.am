@@ -12,23 +12,19 @@ EXTRA_DIST = \
 				 sql_handler.mod.in \
 				 sqlite.mod.in
 
-DISTCLEANFILES = \
-					  dbm.mod \
-					  install.mod \
-					  logfile.mod \
-					  mariadb.mod \
-					  oracle.mod \
-					  sql_handler.mod \
-					  sqlite.mod
+modules = \
+			 dbm.mod \
+			 install.mod \
+			 logfile.mod \
+			 mariadb.mod \
+			 oracle.mod \
+			 sql_handler.mod \
+			 sqlite.mod
+
+DISTCLEANFILES = $(modules)
+CLEANFILES = $(modules)
 
 modulesdir = $(MODULES_DIR)
-dist_modules_DATA = \
-						  dbm.mod \
-						  install.mod \
-						  logfile.mod \
-						  mariadb.mod \
-						  oracle.mod \
-						  sql_handler.mod \
-						  sqlite.mod
+dist_modules_DATA = $(modules)
 
 

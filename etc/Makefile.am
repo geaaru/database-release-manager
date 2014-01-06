@@ -5,6 +5,7 @@
 
 EXTRA_DIST = dbrm.conf.example.in dbm_sqlite_schema.sql
 DISTCLEANFILES = dbrm.conf.example @CONFIG_FILE_NAME@
+CLEANFILES = dbrm.conf.example @CONFIG_FILE_NAME@
 
 sharedir = $(SHAREDIR)
 dist_share_DATA = \

@@ -8,6 +8,7 @@ DIST_SUBDIRS = core share
 
 EXTRA_DIST = dbrm.in
 DISTCLEANFILES = dbrm
+CLEANFILES = dbrm
 
 dbrmdir = $(bindir)
 dist_dbrm_SCRIPTS = dbrm

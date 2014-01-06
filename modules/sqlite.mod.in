@@ -6,10 +6,19 @@ sqlite_creation_date="August 26, 2008"
 sqlite_version="@PACKAGE_VERSION@"
 sqlite_hidden="0"
 
+#****f* sqlite/sqlite_version
+# FUNCTION
+#   Show version of sqlite module.
+# SOURCE
 sqlite_version () {
   echo -en "Version: ${sqlite_version}\n"
 }
+#***
 
+#****f* sqlite/sqlite_show_help
+# FUNCTION
+#   Show help message.
+# SOURCE
 sqlite_show_help () {
    echo -en "===========================================================================\n"
    echo -en "Module [sqlite]:\n"
@@ -20,7 +29,12 @@ sqlite_show_help () {
    echo -en "\tquery                   Do a query to SQLite database.\n"
    echo -en "===========================================================================\n"
 }
+#***
 
+#****f* sqlite/sqlite_long_help
+# FUNCTION
+#   Show long help message.
+# SOURCE
 sqlite_long_help () {
    echo -en "===========================================================================\n"
    echo -en "Module [sqlite]:\n"
@@ -44,9 +58,15 @@ sqlite_long_help () {
    echo -en "===========================================================================\n"
 
 }
+#***
 
-# return 1 error
-# return 0 ok
+#****f* sqlite/sqlite_create
+# FUNCTION
+#   Create dbrm sqlite database file.
+# RETURN VALUE
+#   1   error
+#   0   ok
+# SOURCE
 sqlite_create () {
   local result=1
 
@@ -60,7 +80,19 @@ sqlite_create () {
 
   return $result
 }
+#***
 
+#****f* sqlite/sqlite_query
+# FUNCTION
+#   Execute a query to SQLITEDB database.
+# RETURN VALUE
+#   1 on error.
+#   0 on success.
+# RESULT
+#   Answer of the query is save to _sqlite_ans variable.
+# SEE ALSO
+#   _sqlite_query
+# SOURCE
 sqlite_query () {
   local result=1
 
@@ -74,7 +106,15 @@ sqlite_query () {
 
   return $result
 }
+#***
 
+#****f* sqlite/sqlite_remove
+# FUNCTION
+#   Remove SQLITEDB database file.
+# RETURN VALUE
+#   1 on error.
+#   0 on success.
+# SOURCE
 sqlite_remove () {
   local result=1
 
@@ -88,18 +128,46 @@ sqlite_remove () {
 
   return $result
 }
+#***
 
 #######################################################################
 # Internal Functions                                                  #
 #######################################################################
 
+#****f* sqlite/_sqlite_check_db
+# FUNCTION
+#   Internal function for check if exists SQLITEDB database file.
+# RESULT
+#   exit(1) if file doesn't exits.
+# SOURCE
 _sqlite_check_db () {
   if [[ ! -e "$SQLITEDB" ]] ; then
     echo -en "$SQLITEDB database doesn't exist.\n"
     exit 1
   fi
 }
+#***
 
+#****f* sqlite/_sqlite_check_args
+# FUNCTION
+#   Check commons arguments of the sqlite module.
+# DESCRIPTION
+#   Arguments of the function are:
+#   -c [sqlitedb file]        To define sqlite database file.
+#   -s [schema file]          Script to use on create sqlite database file.
+#   -q [sql query]            Query to execute on sqlite database.
+# RESULT
+#   Variables defined:
+#     * SQLITEDB: path of sqlite database. If not set it is used value
+#                 present on configuration file.
+#     * SQLITE_SCHEMA: path of the sqlite file used for initialized sqlite database.
+#                 For dbrm schema this parameter it is not needed. (optional)
+#     * SQLITE_QUERY: variable that contains query to execute. This parameter
+#                 is mandatary only for sqlite_query function.
+# RETURN VALUE
+#   1 on error.
+#   0 on success.
+# SOURCE
 _sqlite_check_args () {
   [[ $DEBUG ]] && echo -en "(_sqlite_check_args args: $@)\n"
 
@@ -123,7 +191,15 @@ _sqlite_check_args () {
 
   return 0
 }
+#***
 
+#****f* sqlite/_sqlite_remove
+# FUNCTION
+#   Internal function for remove sqlite database file.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SOURCE
 _sqlite_remove () {
   local result=1
 
@@ -152,7 +228,17 @@ _sqlite_remove () {
 
   return $result
 }
+#***
 
+#****f* sqlite/_sqlite_create
+# FUNCTION
+#   Internal function for create sqlite database file.
+# SEE_ALSO
+#   _sqlite_check_args for environment variables.
+# RETURN VALUE
+#   1 on error
+#   0 on success.
+# SOURCE
 _sqlite_create () {
   local result=1
 
@@ -184,7 +270,22 @@ _sqlite_create () {
   return 0
 
 }
+#***
 
+#****f* sqlite/_sqlite_query
+# FUNCTION
+#   Execute a query on sqlite database.
+# DESCRIPTION
+#   On execute query is add prefix command to enable foreign_keys.
+#   To disable it or insert custom prefix command it is needed
+#   override of SQLITEDB_INIT_SESSION variable.
+#   NOTE: On execute DROP command must be set SQLITEDB_INIT_SESSION to empty string ' '.
+# RETURN VALUE
+#   1 on error
+#   0 on success.
+# RESULT
+#   Query result is save to _sqlite_ans variable.
+# SOURCE
 _sqlite_query () {
   local result=1
   local pragma="PRAGMA foreign_keys = ON; "
@@ -214,5 +315,6 @@ _sqlite_query () {
 
   return $result
 }
+#***
 
 # vim: syn=sh filetype=sh ts=2 sw=2
