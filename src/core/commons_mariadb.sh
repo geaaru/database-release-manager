@@ -7,8 +7,18 @@
 
 
 
-# return 0 on success
-# return 1 on error
+#****f* commons_mariadb/commons_mariadb_check_client
+# FUNCTION
+#   Check if mysql client program is present on system.
+#   If present MARIADB_CLIENT variable with abs path is set.
+# DESCRIPTION
+#   Function check if it is set "mysql" variable:
+#   * if it is not set then try to find path through 'which' program
+#   * if it is set then check if path is correct and program exists.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
 commons_mariadb_check_client () {
 
   if [ -z "$mysql" ] ; then
@@ -27,7 +37,7 @@ commons_mariadb_check_client () {
 
     else
 
-      error_generate "sqlplus program not found"
+      error_generate "mysql program not found"
 
       return 1
 
@@ -35,7 +45,7 @@ commons_mariadb_check_client () {
 
   else
 
-    # POST: sqlplus variable set
+    # POST: mysql variable set
 
     # Check if file is correct
     if [ -f "$mysql" ] ; then
@@ -59,9 +69,15 @@ commons_mariadb_check_client () {
   return 0
 
 }
+#****
 
-# return 0 on when connection is ok
-# return 1 on error
+#****f* commons_mariadb/commons_mariadb_check_connection
+# FUNCTION
+#   Check connection to database.
+# RETURN VALUE
+#   0 when connection is ok
+#   1 on error
+# SOURCE
 commons_mariadb_check_connection () {
 
   if [ -z "$MARIADB_CLIENT" ] ; then
@@ -89,9 +105,22 @@ EOF
 
   return 0
 }
+#***
 
-# return 1 on error
-# return 0 on success
+#****f* commons_mariadb/commons_mariadb_compile_file
+# FUNCTION
+#   Compile file on database.
+# DESCRIPTION
+#   Output of the compilation is saved on MYSQL_OUTPUT variable.
+# INPUTS
+#   f        - path of the file to compile
+#   msg      - message to insert on logging file relative to input file.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   mysql_file
+# SOURCE
 commons_mariadb_compile_file () {
 
   local f=$1
@@ -121,9 +150,19 @@ commons_mariadb_compile_file () {
   return $ans
 
 }
+#***
 
-# return 1 on error
-# return 0 on success
+#****f* commons_mariadb/commons_mariadb_compile_all_procedures
+# FUNCTION
+#   Compile all files under MARIADB_DIR/procedures directory.
+# INPUTS
+#   msg      - message to insert on logging file relative to input file.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   commons_mariadb_compile_all_from_dir
+# SOURCE
 commons_mariadb_compile_all_procedures () {
 
   local msg="$1"
@@ -133,7 +172,19 @@ commons_mariadb_compile_all_procedures () {
 
   return 0
 }
+#***
 
+#****f* commons_mariadb/commons_mariadb_compile_all_triggers
+# FUNCTION
+#   Compile all files under MARIADB_DIR/triggers directory.
+# INPUTS
+#   msg      - message to insert on logging file relative to input file.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   commons_mariadb_compile_all_from_dir
+# SOURCE
 commons_mariadb_compile_all_triggers () {
 
   local msg="$1"
@@ -143,7 +194,19 @@ commons_mariadb_compile_all_triggers () {
 
   return 0
 }
+#***
 
+#****f* commons_mariadb/commons_mariadb_compile_all_functions
+# FUNCTION
+#   Compile all files under MARIADB_DIR/functions directory.
+# INPUTS
+#   msg      - message to insert on logging file relative to input file.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   commons_mariadb_compile_all_from_dir
+# SOURCE
 commons_mariadb_compile_all_functions () {
 
   local msg="$1"
@@ -153,8 +216,19 @@ commons_mariadb_compile_all_functions () {
 
   return 0
 }
+#***
 
-
+#****f* commons_mariadb/commons_mariadb_compile_all_views
+# FUNCTION
+#   Compile all files under MARIADB_DIR/views directory.
+# INPUTS
+#   msg      - message to insert on logging file relative to input file.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   commons_mariadb_compile_all_from_dir
+# SOURCE
 commons_mariadb_compile_all_views () {
 
   local msg="$1"
@@ -164,6 +238,7 @@ commons_mariadb_compile_all_views () {
 
   return 0
 }
+#***
 
 # return 1 on error
 # return 0 on success

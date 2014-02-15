@@ -10,10 +10,19 @@ sql_handler_authors="Geaaru"
 sql_handler_creation_date="August 26, 2008"
 sql_handler_version="@PACKAGE_VERSION@"
 
+#****f* sql_handler/sql_handler_version
+# FUNCTION
+#   Show version of sql_handler. module.
+# SOURCE
 sql_handler_version () {
    echo -en "Version: ${sql_handler_version}\n"
 }
+#***
 
+#****f* sql_handler/sql_handler_show_help
+# FUNCTION
+#   Show help message.
+# SOURCE
 sql_handler_show_help () {
    echo -en "===========================================================================\n"
    echo -en "Module [sql_handler]:\n"
@@ -22,7 +31,12 @@ sql_handler_show_help () {
    echo -en "\tquery                   Do a query to database.\n"
    echo -en "===========================================================================\n"
 }
+#***
 
+#****f* sql_handler/sql_handler_long_help
+# FUNCTION
+#   Show long help message.
+# SOURCE
 sql_handler_long_help () {
    echo -en "===========================================================================\n"
    echo -en "Module [sql_handler]:\n"
@@ -47,7 +61,12 @@ sql_handler_long_help () {
    echo -en "===========================================================================\n"
 
 }
+#***
 
+#****f* sql_handler/sql_handler_query
+# FUNCTION
+#   Execute a query through configured handler call.
+# SOURCE
 sql_handler_query () {
    local result=1
    local directmode=0
@@ -77,11 +96,17 @@ sql_handler_query () {
    [[ $directmode -eq 1 ]] && echo -en "Answer:\n$_sql_handler_ans\n"
    return 0
 }
+#***
 
 #######################################################################
 # Internal Functions                                                  #
 #######################################################################
 
+#****f* sql_handler/_sql_handler_check_env
+# FUNCTION
+#   Internal function of the sql_handler module that check if
+#   SQLCA variable (used to identifate SQL handler) is set.
+# SOURCE
 _sql_handler_check_env () {
    [[ $DEBUG ]] && echo -en "(_sql_handler_check_env args: $@)\n"
 
@@ -92,5 +117,6 @@ _sql_handler_check_env () {
       exit 1
    fi
 }
+#***
 
 # vim: syn=sh filetype=sh ts=2 sw=2
