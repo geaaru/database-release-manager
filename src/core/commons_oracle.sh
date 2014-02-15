@@ -5,8 +5,13 @@
 # License: GPL 2.0
 #------------------------------------------------
 
-# return 0 on success
-# return 1 on error
+#****f* commons_oracle/commons_oracle_check_tnsnames
+# FUNCTION
+#   Check and set TNS_ADMIN variable.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
 commons_oracle_check_tnsnames () {
 
   local packagedir=$1
@@ -30,9 +35,16 @@ commons_oracle_check_tnsnames () {
   return 0
 
 }
+#***
 
-# return 0 on success
-# return 1 on error
+#****f* commons_oracle/commons_oracle_check_sqlplus
+# FUNCTION
+#   Check and set SQLPLUS variable with path of the
+#   sqlplus program.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
 commons_oracle_check_sqlplus () {
 
   if [ -z "$sqlplus" ] ; then
@@ -83,9 +95,16 @@ commons_oracle_check_sqlplus () {
   return 0
 
 }
+#***
 
-# return 0 on when connection is ok
-# return 1 on error
+#****f* commons_oracle/commons_oracle_check_connection
+# FUNCTION
+#   Check that SQLPLUS and sqlplus_auth variables are set
+#   and try to do a connection to database.
+# RETURN VALUE
+#   0 when connection is ok.
+#   1 on error
+# SOURCE
 commons_oracle_check_connection () {
 
   if [ -z "$SQLPLUS" ] ; then
@@ -112,7 +131,18 @@ EOF
 
   return 0
 }
+#***
 
+#****f* commons_oracle/commons_oracle_download_all_packages
+# FUNCTION
+#   Download all packages to ORACLE_DIR/package directory.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_oracle_download_create_export_packages
+#   sqlplus_file
+# SOURCE
 commons_oracle_download_all_packages() {
 
   local packagesdir=${ORACLE_DIR}/package
@@ -133,7 +163,20 @@ commons_oracle_download_all_packages() {
 
   return $ans
 }
+#***
 
+#****f* commons_oracle/commons_oracle_download_create_export_packages
+# FUNCTION
+#   Create export_packages_file script used for download all packages.
+# DESCRIPTION
+#   If script is present and creation date has less of 7200 seconds
+#   then this function do nothing.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+# SOURCE
 commons_oracle_download_create_export_packages() {
 
   local packagesdir=${ORACLE_DIR}/package
@@ -168,7 +211,23 @@ commons_oracle_download_create_export_packages() {
   return $ans
 
 }
+#***
 
+#****f* commons_oracle/commons_oracle_download_create_export_package
+# FUNCTION
+#   Create export_packages_file script used for download a particular
+#   package.
+# DESCRIPTION
+#   If script is present and creation date has less of 7200 seconds
+#   then this function do nothing.
+# INPUTS
+#   package-name    - name of the package to insert on export script.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+# SOURCE
 commons_oracle_download_create_export_package() {
 
   local packagename=${1/.sql/}
@@ -209,7 +268,20 @@ commons_oracle_download_create_export_package() {
   return $ans
 
 }
+#***
 
+#****f* commons_oracle/commons_oracle_download_package
+# FUNCTION
+#   Download a particular package to ORACLE_DIR/package directory.
+# INPUTS
+#   package-name    - name of the package to download.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_oracle_download_create_export_package
+#   sqlplus_file
+# SOURCE
 commons_oracle_download_package() {
 
   local packagename=${1/.sql/}
@@ -231,7 +303,18 @@ commons_oracle_download_package() {
 
   return $ans
 }
+#***
 
+#****f* commons_oracle/commons_oracle_download_all_functions
+# FUNCTION
+#   Download all functions from schema to ORACLE_DIR/functions directory.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_oracle_download_create_export_functions
+#   sqlplus_file
+# SOURCE
 commons_oracle_download_all_functions() {
 
   local functionsdir=${ORACLE_DIR}/functions
@@ -252,7 +335,20 @@ commons_oracle_download_all_functions() {
 
   return $ans
 }
+#***
 
+#****f* commons_oracle/commons_oracle_download_create_export_functions
+# FUNCTION
+#   Create export_function_file script used for download all functions.
+# DESCRIPTION
+#   If script is present and creation date has less of 7200 seconds
+#   then this function do nothing.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+# SOURCE
 commons_oracle_download_create_export_functions() {
 
   local functionsdir=${ORACLE_DIR}/functions
@@ -287,7 +383,20 @@ commons_oracle_download_create_export_functions() {
   return $ans
 
 }
+#***
 
+#****f* commons_oracle/commons_oracle_download_function
+# FUNCTION
+#   Download a particular function to ORACLE_DIR/functions directory.
+# INPUTS
+#   function-name    - name of the function to download.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_oracle_download_create_export_function
+#   sqlplus_file
+# SOURCE
 commons_oracle_download_function() {
 
   local functionname=${1/.sql/}
@@ -309,7 +418,23 @@ commons_oracle_download_function() {
 
   return $ans
 }
+#***
 
+#****f* commons_oracle/commons_oracle_download_create_export_function
+# FUNCTION
+#   Create export_function_file script used for download a particular
+#   function.
+# DESCRIPTION
+#   If script is present and creation date has less of 7200 seconds
+#   then this function do nothing.
+# INPUTS
+#   function-name    - name of the function to insert on export script.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+# SOURCE
 commons_oracle_download_create_export_function() {
 
   local functionname=${1/.sql/}
@@ -350,7 +475,18 @@ commons_oracle_download_create_export_function() {
   return $ans
 
 }
+#***
 
+#****f* commons_oracle/commons_oracle_download_all_views
+# FUNCTION
+#   Download all functions from schema to ORACLE_DIR/views directory.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_oracle_download_create_export_views
+#   sqlplus_file
+# SOURCE
 commons_oracle_download_all_views() {
 
   local viewsdir=${ORACLE_DIR}/views
@@ -371,7 +507,20 @@ commons_oracle_download_all_views() {
 
   return $ans
 }
+#***
 
+#****f* commons_oracle/commons_oracle_download_create_export_views
+# FUNCTION
+#   Create export_views_file script used for download all views.
+# DESCRIPTION
+#   If script is present and creation date has less of 7200 seconds
+#   then this function do nothing.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+# SOURCE
 commons_oracle_download_create_export_views() {
 
   local viewsdir=${ORACLE_DIR}/views
@@ -406,7 +555,20 @@ commons_oracle_download_create_export_views() {
   return $ans
 
 }
+#***
 
+#****f* commons_oracle/commons_oracle_download_view
+# FUNCTION
+#   Download a particular view to ORACLE_DIR/views directory.
+# INPUTS
+#   view-name    - name of the view to download.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_oracle_download_create_export_view
+#   sqlplus_file
+# SOURCE
 commons_oracle_download_view() {
 
   local viewname=${1/.sql/}
@@ -428,7 +590,23 @@ commons_oracle_download_view() {
 
   return $ans
 }
+#***
 
+#****f* commons_oracle/commons_oracle_download_create_export_view
+# FUNCTION
+#   Create export_view_file script used for download a particular
+#   view.
+# DESCRIPTION
+#   If script is present and creation date has less of 7200 seconds
+#   then this function do nothing.
+# INPUTS
+#   view-name       - name of the view to insert on export script.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+# SOURCE
 commons_oracle_download_create_export_view() {
 
   local viewname=${1/.sql/}
@@ -469,7 +647,18 @@ commons_oracle_download_create_export_view() {
   return $ans
 
 }
+#***
 
+#****f* commons_oracle/commons_oracle_download_all_triggers
+# FUNCTION
+#   Download all triggers from schema to ORACLE_DIR/triggers directory.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_oracle_download_create_export_triggers
+#   sqlplus_file
+# SOURCE
 commons_oracle_download_all_triggers() {
 
   local triggersdir=${ORACLE_DIR}/triggers
@@ -490,7 +679,20 @@ commons_oracle_download_all_triggers() {
 
   return $ans
 }
+#***
 
+#****f* commons_oracle/commons_oracle_download_create_export_triggers
+# FUNCTION
+#   Create export_trigger_file script used for download all triggers.
+# DESCRIPTION
+#   If script is present and creation date has less of 7200 seconds
+#   then this function do nothing.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+# SOURCE
 commons_oracle_download_create_export_triggers() {
 
   local triggersdir=${ORACLE_DIR}/triggers
@@ -525,7 +727,20 @@ commons_oracle_download_create_export_triggers() {
   return $ans
 
 }
+#***
 
+#****f* commons_oracle/commons_oracle_download_trigger
+# FUNCTION
+#   Download a particular trigger to ORACLE_DIR/triggers directory.
+# INPUTS
+#   trigger-name    - name of the trigger to download.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_oracle_download_create_export_trigger
+#   sqlplus_file
+# SOURCE
 commons_oracle_download_trigger() {
 
   local triggername=${1/.sql/}
@@ -547,7 +762,23 @@ commons_oracle_download_trigger() {
 
   return $ans
 }
+#***
 
+#****f* commons_oracle/commons_oracle_download_create_export_trigger
+# FUNCTION
+#   Create export_trigger_file script used for download a particular
+#   trigger.
+# DESCRIPTION
+#   If script is present and creation date has less of 7200 seconds
+#   then this function do nothing.
+# INPUTS
+#   trigger-name       - name of the trigger to insert on export script.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+# SOURCE
 commons_oracle_download_create_export_trigger() {
 
   local triggername=${1/.sql/}
@@ -588,9 +819,21 @@ commons_oracle_download_create_export_trigger() {
   return $ans
 
 }
+#***
 
-# return 1 on error
-# return 0 on success
+#****f* commons_oracle/commons_oracle_compile_file
+# FUNCTION
+#   Compile a file to current oracle schema.
+# INPUTS
+#   file         - file to compile.
+#   msg          - message to write on logfile before and after
+#                  compilation.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+# SOURCE
 commons_oracle_compile_file() {
 
   local f=$1
@@ -620,9 +863,20 @@ commons_oracle_compile_file() {
   return $ans
 
 }
+#***
 
-# return 1 on error
-# return 0 on success
+#****f* commons_oracle/commons_oracle_compile_all_packages
+# FUNCTION
+#   Compile all packages under ORACLE_DIR/packages directory.
+# INPUTS
+#   msg          - message to write on logfile before and after
+#                  compilation.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+# SOURCE
 commons_oracle_compile_all_packages () {
 
   local msg="$1"
@@ -632,7 +886,21 @@ commons_oracle_compile_all_packages () {
 
   return 0
 }
+#***
 
+#****f* commons_oracle/commons_oracle_compile_all_triggers
+# FUNCTION
+#   Compile all triggers under ORACLE_DIR/triggers directory.
+# INPUTS
+#   msg          - message to write on logfile before and after
+#                  compilation.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+#   commons_oracle_compile_all_from_dir
+# SOURCE
 commons_oracle_compile_all_triggers () {
 
   local msg="$1"
@@ -642,7 +910,21 @@ commons_oracle_compile_all_triggers () {
 
   return 0
 }
+#***
 
+#****f* commons_oracle/commons_oracle_compile_all_functions
+# FUNCTION
+#   Compile all functions under ORACLE_DIR/functions directory.
+# INPUTS
+#   msg          - message to write on logfile before and after
+#                  compilation.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+#   commons_oracle_compile_all_from_dir
+# SOURCE
 commons_oracle_compile_all_functions () {
 
   local msg="$1"
@@ -652,8 +934,21 @@ commons_oracle_compile_all_functions () {
 
   return 0
 }
+#***
 
-
+#****f* commons_oracle/commons_oracle_compile_all_views
+# FUNCTION
+#   Compile all views under ORACLE_DIR/views directory.
+# INPUTS
+#   msg          - message to write on logfile before and after
+#                  compilation.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+#   commons_oracle_compile_all_from_dir
+# SOURCE
 commons_oracle_compile_all_views () {
 
   local msg="$1"
@@ -663,9 +958,26 @@ commons_oracle_compile_all_views () {
 
   return 0
 }
+#***
 
-# return 1 on error
-# return 0 on success
+#****f* commons_oracle/commons_oracle_compile_all_from_dir
+# FUNCTION
+#   Compile all files with .sql extension from input directory
+# DESCRIPTION
+#   It is possible some .sql file through
+#   ORACLE_COMPILE_FILES_EXCLUDED variable.
+# INPUTS
+#   directory    - directory where found .sql files to compile
+#   msg_head     - message header to insert on logfile.
+#   msg          - message to write on logfile before and after
+#                  compilation.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+#   commons_oracle_compile_all_from_dir
+# SOURCE
 commons_oracle_compile_all_from_dir () {
 
   local directory="$1"
@@ -719,7 +1031,6 @@ commons_oracle_compile_all_from_dir () {
   return 0
 
 }
-
-
+#***
 
 # vim: syn=sh filetype=sh
