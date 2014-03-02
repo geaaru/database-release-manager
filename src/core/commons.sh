@@ -5,6 +5,13 @@
 # License: GPL 2.0
 #------------------------------------------------
 
+#****f* commons/error_handled
+# FUNCTION
+#   Check if last command result. If result is not equal to 0 then
+#   print a message to stdout and exit with value 1.
+# INPUTS
+#   msg       - message to print if result is not equal to zero.
+# SOURCE
 error_handled () {
    local result=$?
    if [ $result -ne 0 ] ; then
@@ -12,14 +19,31 @@ error_handled () {
       exit 1
    fi
 }
+#****
 
+#****f* commons/error_generate
+# FUNCTION
+#   Print input message and exit with value 1.
+# INPUTS
+#   msg       - message to print in stdout.
+# SOURCE
 error_generate () {
 
   echo -en "$1\n"
   exit 1
 
 }
+#****
 
+#****f* commons/check_var
+# FUNCTION
+#   Check if variable with name in input contains a string or not.
+# INPUT
+#   var       Name of the variable to check.
+# RETURN VALUE
+#   1 length of the variable is zero.
+#   0 length of the variable is not zero.
+# SOURCE
 check_var () {
 
   local var=$1
@@ -32,7 +56,16 @@ check_var () {
 
   return 0
 }
+#****
 
+#****f* commons/escape_var
+# FUNCTION
+#   Escape content of the variable with input name.
+# INPUT
+#   var       Name of the variable to check.
+# RETURN VALUE
+#   0 always
+# SOURCE
 escape_var () {
 
   local name="$1"
@@ -45,6 +78,7 @@ escape_var () {
 
   return 0
 }
+#****
 
 escape2oct_var () {
 
@@ -62,9 +96,16 @@ escape2oct_var () {
   return 0
 }
 
-# return 0   yes
-# return 1   no
-# return 2   empty
+#****f* commons/confirmation_question
+# FUNCTION
+#   Use to generate an input question and manage response.
+# INPUTS
+#   msg         - message with question for user.
+# RETURN VALUE
+#   0   if user answer is yes.
+#   1   if user answer is no.
+#   2   if user answer empty.
+# SOURCE
 confirmation_question () {
    echo -en "$1"
    read ans
@@ -80,5 +121,6 @@ confirmation_question () {
 
    return 1
 }
+#****
 
 # vim: syn=sh filetype=sh

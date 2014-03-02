@@ -14,11 +14,20 @@ oracle_status="0"
 # Directory with custom oracle generation scripts
 _oracle_scripts=@SHAREDIR@/oracle/
 
+#****f* oracle/oracle_version
+# FUNCTION
+#  Show version of oracle module.
+# SOURCE
 oracle_version() {
   echo -en "Version: ${oracle_version}\n"
   return 0
 }
+#***
 
+#****f* oracle/oracle_long_help
+# FUNCTION
+#   Show long help message.
+# SOURCE
 oracle_long_help () {
 
    echo -en "===========================================================================\n"
@@ -38,7 +47,12 @@ oracle_long_help () {
 
    return 0
 }
+#***
 
+#****f* oracle/oracle_show_help
+# FUNCTION
+#   Show help message.
+# SOURCE
 oracle_show_help () {
    echo -en "===========================================================================\n"
    echo -en "Module [oracle]:\n"
@@ -54,7 +68,14 @@ oracle_show_help () {
 
    return 0
 }
+#***
 
+#****f* oracle/oracle_test_connection
+# FUNCTION
+#   Test connection to oracle server and schema.
+# SEE ALSO
+#   _oracle_connections_args
+# SOURCE
 oracle_test_connection () {
 
   local result=1
@@ -76,7 +97,15 @@ oracle_test_connection () {
 
   return 0
 }
+#***
 
+#****f* oracle/oracle_compile
+# FUNCTION
+#   Compile command that permit compilation of triggers, views, function, procedure, packages, etc.
+# SEE ALSO
+#   _oracle_connections_args
+#   _oracle_compile_args
+# SOURCE
 oracle_compile () {
 
   local result=1
@@ -102,7 +131,15 @@ oracle_compile () {
 
   return 0
 }
+#***
 
+#****f* oracle/oracle_download
+# FUNCTION
+#   Download command that permit download of triggers, views, function, procedure, packages, etc.
+# SEE ALSO
+#   _oracle_connections_args
+#   _oracle_download_args
+# SOURCE
 oracle_download () {
 
   local result=1
@@ -128,12 +165,30 @@ oracle_download () {
 
   return 0
 }
+#***
 
 
 ##################################################################
 # Internal functions
 ##################################################################
 
+#****f* oracle/_oracle_init
+# FUNCTION
+#   Internal function called on initialization of the oracle module.
+# DESCRIPTION
+#   Oracle module is usable when SQLCA variable contains oracle string.
+#   So, if oracle module is enabled then these check are done:
+#   * verify presence of sqlplus client program
+#   * check if ORACLE_USER variable is set. This variable define user to use
+#     on connection to database.
+#   * check if ORACLE_PWD variable is set. This variable define password to use
+#     on connection to database.
+#   * check if defined ORACLE_SID variable. This variable define name of the
+#     schema to use on connection.
+#   * check if defined ORACLE_DIR variable. This variable define path where
+#     save/retrieve files to compile.
+#   * check if TNS_ADMIN variable is present and is correct.
+# SOURCE
 _oracle_init () {
 
   if [[ ! -z "$SQLCA"  && "$SQLCA" =~ .*oracle.* ]] ; then
@@ -160,7 +215,13 @@ _oracle_init () {
 
   return 0
 }
+#***
 
+#****f* oracle/_oracle_check_status
+# FUNCTION
+#   Internal function that check if oracle module is enable.
+#   Generate an exit with an error message if module is disable.
+# SOURCE
 _oracle_check_status () {
 
   if [ x"$oracle_status" = x"0" ] ; then
@@ -169,7 +230,27 @@ _oracle_check_status () {
 
   return 0
 }
+#***
 
+#****f* oracle/_oracle_connections_args
+# FUNCTION
+#   Internal function that parse command line arguments relative to
+#   connection options.
+# DESCRIPTION
+#   * -S [SID]        Override SID variable used on connection. If not present
+#                     it is used ORACLE_SID variable from configuration file.
+#   * -P [pwd]        Override password variable used on connection. If not
+#                     present it is used ORACLE_PWD variable from configuration
+#                     file.
+#   * -U [user]       Override username variable used on connection. If not
+#                     present it is used ORACLE_USER variable from configuration file.
+#   * -D [dir path]   To define path where save/retrieve files to download/compile.
+#                     This option override ORACLE_DIR variable from configuration
+#                     file.
+#   * -t [tnsname]    Override TNS_ADMIN variable used on connection. If not
+#                     present it is used TNS_ADMIN variable from configuration file.
+#   * -h              Show help message relative to connection arguments.
+# SOURCE
 _oracle_connections_args () {
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_connections_args args: $@)\n"
@@ -210,7 +291,24 @@ _oracle_connections_args () {
 
   return 0
 }
+#***
 
+#****f* oracle/_oracle_download_args
+# FUNCTION
+#   Internal function for parse command line argument relative to download command.
+# DESCRIPTION
+#   * --all-packages      Download all packages.
+#   * --all-triggers      Download all triggers.
+#   * --all-views         Download all views.
+#   * --all-functions     Download all functions.
+#   * --all               Download all packages, triggers, view, packages, functions.
+#   * --package [p]       Download package p.
+#   * --trigger [t]       Download trigger t.
+#   * --function [f]      Download function f.
+#   * --view [v]          Download view v.
+# SEE ALSO
+#   _oracle_connections_args
+# SOURCE
 _oracle_download_args () {
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_download_args args: $@)\n"
@@ -305,7 +403,27 @@ _oracle_download_args () {
 
   return 0
 }
+#***
 
+#****f* oracle/_oracle_compile_args
+# FUNCTION
+#   Internal function for parse command line argument relative to compile command.
+# DESCRIPTION
+#   * --all-packages      Compile all packages.
+#   * --all-triggers      Compile all triggers.
+#   * --id-script [id]    Compile script with id.
+#   * --file [f]          Compile file f.
+#   * --all-functions     Compile all functions.
+#   * --all-views         Compile all views.
+#   * --all               Compile all packages, triggers, view, functions.
+#   * --package [p]       Compile package p.
+#   * --trigger [t]       Compile trigger t.
+#   * --function [f]      Compile function f.
+#   * --view [v]          Compile view v.
+#   * -h                  Show help message.
+# SEE ALSO
+#   _oracle_connections_args
+# SOURCE
 _oracle_compile_args () {
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_compile_args args: $@)\n"
@@ -410,7 +528,12 @@ _oracle_compile_args () {
 
   return 0
 }
+#***
 
+#****f* oracle/_oracle_compile_help
+# FUNCTION
+#   Internal function that print help message relative to compile command.
+# SOURCE
 _oracle_compile_help () {
 
   echo -en "[--all-packages]        Compile all packages present under ORACLE_DIR subdirectories.\n"
@@ -432,7 +555,19 @@ _oracle_compile_help () {
 
   return 0
 }
+#***
 
+#****f* oracle/_oracle_compile
+# FUNCTION
+#   Internal function that manage compilation of SQL statement.
+# SEE_ALSO
+#   _oracle_compile_id_script
+#   commons_oracle_compile_file
+#   commons_oracle_compile_all_packages
+#   commons_oracle_compile_all_triggers
+#   commons_oracle_compile_all_views
+#   commons_oracle_compile_all_functions
+# SOURCE
 _oracle_compile () {
 
   local f=""
@@ -541,7 +676,21 @@ _oracle_compile () {
 
   return 0
 }
+#***
 
+#****f* oracle/_oracle_download
+# FUNCTION
+#   Internal function relative to downloading process.
+# SEE ALSO
+#   commons_oracle_download_all_packages
+#   commons_oracle_download_all_triggers
+#   commons_oracle_download_all_functions
+#   commons_oracle_download_all_views
+#   commons_oracle_download_package
+#   commons_oracle_download_trigger
+#   commons_oracle_download_function
+#   commons_oracle_download_view
+# SOURCE
 _oracle_download () {
 
   if [ $ORACLE_DOWNLOAD_ALL -eq 1 ] ; then
@@ -624,7 +773,16 @@ _oracle_download () {
 
   return 0
 }
+#***
 
+#****f* oracle/_oracle_compile_id_script
+# FUNCTION
+#   Internal function for compile a script by id.
+# SEE ALSO
+#   _dbm_retrieve_script_data
+#   _dbm_check_if_exist_id_script
+#   commons_oracle_compile_file
+# SOURCE
 _oracle_compile_id_script () {
 
   local f=""
@@ -645,6 +803,7 @@ _oracle_compile_id_script () {
 
   return 0
 }
+#***
 
 
 # vim: syn=sh filetype=sh ts=2 sw=2

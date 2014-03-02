@@ -40,10 +40,16 @@ AC_PATH_PROG(CP, cp)
 AC_PATH_PROG(MV, mv)
 AC_PATH_PROG(LN, ln)
 AC_PATH_PROG(MKDIR, mkdir)
+AC_PATH_PROG(ROBODOC, robodoc)
 
 AC_PATH_PROG(BASH_PATH, bash)
-if [ test -z $BASH_PATH ]; then
+if [ test -z "$BASH_PATH" ]; then
   AC_MSG_ERROR("Bash program not found")
+fi
+
+AC_PATH_PROG(GETOPT, getopt)
+if [ test -z "$GETOPT" ] ; then
+  AC_MSG_ERROR("getopt program not found.")
 fi
 
 # Define share dir
@@ -51,8 +57,6 @@ SHAREDIR='${prefix}/share/dbrm'
 # Define main config file dir
 CONFIG_FILE_DIR=$(dirname $CONFIG_FILE)
 CONFIG_FILE_NAME=$(basename $CONFIG_FILE)
-
-# Defile PREFIX
 
 
 AC_SUBST(RM)

@@ -7,8 +7,18 @@
 
 
 
-# return 0 on success
-# return 1 on error
+#****f* commons_mariadb/commons_mariadb_check_client
+# FUNCTION
+#   Check if mysql client program is present on system.
+#   If present MARIADB_CLIENT variable with abs path is set.
+# DESCRIPTION
+#   Function check if it is set "mysql" variable:
+#   * if it is not set then try to find path through 'which' program
+#   * if it is set then check if path is correct and program exists.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
 commons_mariadb_check_client () {
 
   if [ -z "$mysql" ] ; then
@@ -27,7 +37,7 @@ commons_mariadb_check_client () {
 
     else
 
-      error_generate "sqlplus program not found"
+      error_generate "mysql program not found"
 
       return 1
 
@@ -35,7 +45,7 @@ commons_mariadb_check_client () {
 
   else
 
-    # POST: sqlplus variable set
+    # POST: mysql variable set
 
     # Check if file is correct
     if [ -f "$mysql" ] ; then
@@ -59,9 +69,15 @@ commons_mariadb_check_client () {
   return 0
 
 }
+#****
 
-# return 0 on when connection is ok
-# return 1 on error
+#****f* commons_mariadb/commons_mariadb_check_connection
+# FUNCTION
+#   Check connection to database.
+# RETURN VALUE
+#   0 when connection is ok
+#   1 on error
+# SOURCE
 commons_mariadb_check_connection () {
 
   if [ -z "$MARIADB_CLIENT" ] ; then
@@ -89,9 +105,22 @@ EOF
 
   return 0
 }
+#***
 
-# return 1 on error
-# return 0 on success
+#****f* commons_mariadb/commons_mariadb_compile_file
+# FUNCTION
+#   Compile file on database.
+# DESCRIPTION
+#   Output of the compilation is saved on MYSQL_OUTPUT variable.
+# INPUTS
+#   f        - path of the file to compile
+#   msg      - message to insert on logging file relative to input file.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   mysql_file
+# SOURCE
 commons_mariadb_compile_file () {
 
   local f=$1
@@ -121,9 +150,19 @@ commons_mariadb_compile_file () {
   return $ans
 
 }
+#***
 
-# return 1 on error
-# return 0 on success
+#****f* commons_mariadb/commons_mariadb_compile_all_procedures
+# FUNCTION
+#   Compile all files under MARIADB_DIR/procedures directory.
+# INPUTS
+#   msg      - message to insert on logging file relative to input file.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   commons_mariadb_compile_all_from_dir
+# SOURCE
 commons_mariadb_compile_all_procedures () {
 
   local msg="$1"
@@ -133,7 +172,19 @@ commons_mariadb_compile_all_procedures () {
 
   return 0
 }
+#***
 
+#****f* commons_mariadb/commons_mariadb_compile_all_triggers
+# FUNCTION
+#   Compile all files under MARIADB_DIR/triggers directory.
+# INPUTS
+#   msg      - message to insert on logging file relative to input file.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   commons_mariadb_compile_all_from_dir
+# SOURCE
 commons_mariadb_compile_all_triggers () {
 
   local msg="$1"
@@ -143,7 +194,19 @@ commons_mariadb_compile_all_triggers () {
 
   return 0
 }
+#***
 
+#****f* commons_mariadb/commons_mariadb_compile_all_functions
+# FUNCTION
+#   Compile all files under MARIADB_DIR/functions directory.
+# INPUTS
+#   msg      - message to insert on logging file relative to input file.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   commons_mariadb_compile_all_from_dir
+# SOURCE
 commons_mariadb_compile_all_functions () {
 
   local msg="$1"
@@ -153,8 +216,19 @@ commons_mariadb_compile_all_functions () {
 
   return 0
 }
+#***
 
-
+#****f* commons_mariadb/commons_mariadb_compile_all_views
+# FUNCTION
+#   Compile all files under MARIADB_DIR/views directory.
+# INPUTS
+#   msg      - message to insert on logging file relative to input file.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   commons_mariadb_compile_all_from_dir
+# SOURCE
 commons_mariadb_compile_all_views () {
 
   local msg="$1"
@@ -164,9 +238,21 @@ commons_mariadb_compile_all_views () {
 
   return 0
 }
+#***
 
-# return 1 on error
-# return 0 on success
+#****f* commons_mariadb/commons_mariadb_compile_all_from_dir
+# FUNCTION
+#   Compile all files from input directory with .sql extension.
+# INPUTS
+#   directory   - Directory where there are files to compile.
+#   msg_head    - Title message insert on logfile before compile files.
+#   msg         - message insert on logfile before compile files.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   commons_mariadb_compile_file
+# SOURCE
 commons_mariadb_compile_all_from_dir () {
 
   local directory="$1"
@@ -220,7 +306,16 @@ commons_mariadb_compile_all_from_dir () {
   return 0
 
 }
+#***
 
+#****f* commons_mariadb/commons_mariadb_count_procedures
+# FUNCTION
+#   Count number of procedures present on database.
+# RETURN VALUE
+#   number of procedures found.
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_count_procedures () {
 
   local cmd="
@@ -237,7 +332,16 @@ commons_mariadb_count_procedures () {
 
   return $MYSQL_OUTPUT
 }
+#***
 
+#****f* commons_mariadb/commons_mariadb_count_functions
+# FUNCTION
+#   Count number of functions present on schema.
+# RETURN VALUE
+#   number of functions found on schema.
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_count_functions () {
 
   local cmd="
@@ -254,7 +358,16 @@ commons_mariadb_count_functions () {
 
   return $MYSQL_OUTPUT
 }
+#***
 
+#****f* commons_mariadb/commons_mariadb_count_triggers
+# FUNCTION
+#   Count number of triggers defined on schema.
+# RETURN VALUE
+#   number of triggers found on schema.
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_count_triggers () {
 
   local cmd="
@@ -273,7 +386,16 @@ commons_mariadb_count_triggers () {
 
   return $MYSQL_OUTPUT
 }
+#***
 
+#****f* commons_mariadb/commons_mariadb_count_views
+# FUNCTION
+#   Count number of views present on schema.
+# RETURN VALUE
+#   Number of views available on schema.
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_count_views () {
 
   local cmd="
@@ -289,7 +411,7 @@ commons_mariadb_count_views () {
 
   return $MYSQL_OUTPUT
 }
-
+#***
 
 # return 1 if not exists
 # return 0 if exists
@@ -318,8 +440,15 @@ commons_mariadb_check_if_exist_procedure () {
   return $result
 }
 
-# return 1 if not exists
-# return 0 if exists
+#****f* commmons_mariadb/commons_mariadb_check_if_exist_function
+# FUNCTION
+#   Check if exists function with name in input on schema.
+# RETURN VALUE
+#   1 if not exists
+#   0 if exists
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_check_if_exist_function () {
 
   local result=1
@@ -344,9 +473,17 @@ commons_mariadb_check_if_exist_function () {
 
   return $result
 }
+#***
 
-# return 1 if not exists
-# return 0 if exists
+#****f* commmons_mariadb/commons_mariadb_check_if_exist_view
+# FUNCTION
+#   Check if exists view with name in input on schema.
+# RETURN VALUE
+#   1 if not exists
+#   0 if exists
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_check_if_exist_view () {
 
   local result=1
@@ -370,10 +507,18 @@ commons_mariadb_check_if_exist_view () {
 
   return $result
 }
+#***
 
-# Save on _mariadb_ans list of record
-# Return 1 on error
-# Return 0 on success
+
+#****f* commmons_mariadb/commons_mariadb_get_triggers_list
+# FUNCTION
+#   Save on _mariadb_ans variable list of triggers defined on schema.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_get_triggers_list () {
 
   local result=1
@@ -390,10 +535,17 @@ commons_mariadb_get_triggers_list () {
 
   return 0
 }
+#***
 
-# Save on _mariadb_ans list of record
-# Return 1 on error
-# Return 0 on success
+#****f* commmons_mariadb/commons_mariadb_get_procedures_list
+# FUNCTION
+#   Save on _mariadb_ans variable list of procedures defined on schema.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_get_procedures_list () {
 
   local cmd="
@@ -406,10 +558,17 @@ commons_mariadb_get_procedures_list () {
 
   return 0
 }
+#***
 
-# Save on _mariadb_ans list of record
-# Return 1 on error
-# Return 0 on success
+#****f* commmons_mariadb/commons_mariadb_get_functions_list
+# FUNCTION
+#   Save on _mariadb_ans variable list of functions defined on schema.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_get_functions_list () {
 
   local cmd="
@@ -422,10 +581,17 @@ commons_mariadb_get_functions_list () {
 
   return 0
 }
+#***
 
-# Save on _mariadb_ans list of record
-# Return 1 on error
-# Return 0 on success
+#****f* commmons_mariadb/commons_mariadb_get_views_list
+# FUNCTION
+#   Save on _mariadb_ans variable list of views defined on schema.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_get_views_list () {
 
   local cmd="
@@ -437,10 +603,17 @@ commons_mariadb_get_views_list () {
 
   return 0
 }
+#***
 
-
-# return 1 if not exists
-# return 0 if exists
+#****f* commmons_mariadb/commons_mariadb_check_if_exist_trigger
+# FUNCTION
+#   Check if exists a trigger with name in input on schema.
+# RETURN VALUE
+#   1 if not exists
+#   0 if exists
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_check_if_exist_trigger () {
 
   local result=1
@@ -467,7 +640,20 @@ commons_mariadb_check_if_exist_trigger () {
 
   return $result
 }
+#***
 
+#****f* commmons_mariadb/commons_mariadb_download_procedure
+# FUNCTION
+#   Download a procedure to MARIADB_DIR/procedures directory.
+# INPUTS
+#   name    - name of the procedure to download.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_mariadb_check_if_exist_procedure
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_download_procedure () {
 
   local name="${1/.sql/}"
@@ -524,7 +710,20 @@ $PROCEDURE_BODY
 
   return 0
 }
+#***
 
+#****f* commmons_mariadb/commons_mariadb_download_function
+# FUNCTION
+#   Download a function to MARIADB_DIR/functions directory.
+# INPUTS
+#   name    - name of the function to download.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_mariadb_check_if_exist_function
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_download_function () {
 
   local result=1
@@ -584,7 +783,20 @@ $FUNCTION_BODY
 
   return 0
 }
+#***
 
+#****f* commmons_mariadb/commons_mariadb_download_trigger
+# FUNCTION
+#   Download a trigger to MARIADB_DIR/triggers directory.
+# INPUTS
+#   name    - name of the trigger to download.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_mariadb_check_if_exist_trigger
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_download_trigger () {
 
   local result=1
@@ -631,7 +843,20 @@ $MYSQL_OUTPUT
 
   return 0
 }
+#***
 
+#****f* commmons_mariadb/commons_mariadb_download_view
+# FUNCTION
+#   Download a view to MARIADB_DIR/views directory.
+# INPUTS
+#   name    - name of the view to download.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_mariadb_check_if_exist_view
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_download_view () {
 
   local result=1
@@ -672,7 +897,18 @@ $MYSQL_OUTPUT
 
   return 0
 }
+#***
 
+#****f* commmons_mariadb/commons_mariadb_download_all_views
+# FUNCTION
+#   Download all views to MARIADB_DIR/views directory.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_mariadb_get_views_list
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_download_all_views () {
 
   local n_rec=0
@@ -707,7 +943,18 @@ commons_mariadb_download_all_views () {
 
   return 0
 }
+#***
 
+#****f* commmons_mariadb/commons_mariadb_download_all_procedures
+# FUNCTION
+#   Download all procedures to MARIADB_DIR/procedures directory.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_mariadb_get_procedures_list
+#   commons_mariadb_download_procedure
+# SOURCE
 commons_mariadb_download_all_procedures () {
 
   local n_rec=0
@@ -740,7 +987,18 @@ commons_mariadb_download_all_procedures () {
 
   return 0
 }
+#***
 
+#****f* commmons_mariadb/commons_mariadb_download_all_functions
+# FUNCTION
+#   Download all functions to MARIADB_DIR/functions directory.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_mariadb_get_functions_list
+#   commons_mariadb_download_function
+# SOURCE
 commons_mariadb_download_all_functions () {
 
   local n_rec=0
@@ -771,7 +1029,18 @@ commons_mariadb_download_all_functions () {
 
   return 0
 }
+#***
 
+#****f* commmons_mariadb/commons_mariadb_download_all_triggers
+# FUNCTION
+#   Download all triggers to MARIADB_DIR/triggers directory.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_mariadb_count_triggers
+#   commons_mariadb_download_trigger
+# SOURCE
 commons_mariadb_download_all_triggers () {
 
   local n_rec=0
@@ -803,6 +1072,7 @@ commons_mariadb_download_all_triggers () {
 
   return 0
 }
+#***
 
 
 # vim: syn=sh filetype=sh

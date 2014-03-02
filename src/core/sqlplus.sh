@@ -5,8 +5,14 @@
 # License: GPL 2.0
 #------------------------------------------------
 
-# Set sqlplus_auth variable with
-# authentication string like: USER/PASSWD@TNSNAME
+#****f* sqlplus/sqlplus_set_sqlplus_auth_var
+# FUNCTION
+#   Set sqlplus_auth variable with authentication string like: USER/PASSWD@TNSNAME.
+# INPUTS
+#   db    Schema to use.
+#   user  User to use.
+#   pwd   Password to use.
+# SOURCE
 sqlplus_set_sqlplus_auth_var () {
 
   local db=$1
@@ -18,14 +24,18 @@ sqlplus_set_sqlplus_auth_var () {
   [[ $DEBUG && $DEBUG == true ]] && echo "Use $sqlplus_auth"
 
 }
+#****
 
-# Compile a file
-# and save output to input variable
-# $1 => Variable name where is save output
-# $2 => File to compile
-#
-# return 0 on success
-# return 1 on error
+#****f* sqlplus/sqlplus_file
+# FUNCTION
+#   Compile a file and save output to input variable.
+# INPUTS
+#   var     Name of the variable where is saved output.
+#   f       File to compile.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCES
 sqlplus_file() {
 
   local var=$1
@@ -48,13 +58,22 @@ EOF
 
   return $ans
 }
+#****
 
+#****f* sqlplus/sqlplus_cmd_4var
+# FUNCTION
+#   Execute an input statement/command to configured schema.
+# INPUTS
+#   var       Name of the variable where is saved output command.
+#   cmd       Command/statement to execute on configured schema.
+#   rm_lf     If string length is not zero than from output command are remove LF.
+#   feedback  Set feedback option value. If equal to empty string default value is "off".
 sqlplus_cmd_4var() {
 
   set -f
   local var=$1
   local cmd="$2"
-  local rm_ln=$3
+  local rm_lf=$3
   local v=""
   local feedback="$4"
 
@@ -77,7 +96,7 @@ EOF
     return 1
   fi
 
-  if [[ -n $rm_ln ]] ; then
+  if [[ -n $rm_lf ]] ; then
 
     v=`echo $v | sed 's/\n//g'`
 
@@ -92,6 +111,7 @@ EOF
   return $ans
 
 }
+#****
 
 
 # vim: syn=sh filetype=sh
