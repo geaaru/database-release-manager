@@ -1,0 +1,325 @@
+#!/bin/bash
+#------------------------------------------------
+# Author(s): Geaaru, geaaru@gmail.com
+# $Id$
+# License: GPL 2.0
+#------------------------------------------------
+
+name="out_stdout"
+out_stdout_authors="Geaaru"
+out_stdout_creation_date="May 2, 2014"
+out_stdout_version="0.1.0"
+out_stdout_plugin=""
+
+#****f* out_stdout/out_stdout_version
+# FUNCTION
+#   Show version of out_stdout module.
+# SOURCE
+out_stdout_version () {
+  echo -en "Version: ${out_stdout_version}\n"
+  return 0
+}
+#***
+
+
+#****f* out_stdout/out_stdout_print
+# FUNCTION
+# DESCRIPTION
+#   Function search for this variables:
+#   out_rows         With list of name of indirect array to use with columns data.
+#   out_tabs         Array of tabulation for columns. Default is one space.
+#   out_el_pre       Array with text prefix of an entry
+#   out_el_post      Array with text postfix of an entry
+#   out_headers      Array of header of tables. (Optional).
+#   out_htabs_mode   If present accept these values: tabs, htabs, noop.
+#   out_prepost_mode If present accept these values: data (default), headers, any, noop.
+#   out_htabs        Array of header tabulation. if out_htabs_mode is equals to htabs.
+#   out_hsep         Write a separator if this field is equal to 1.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
+out_stdout_print_arr () {
+
+  local ans=0
+
+  if [ "${#out_rows[@]}" -eq 0 ] ; then
+    # Nothing to do
+    return $ans
+  fi
+
+  local out_columns=""
+  local out_column_name=""
+  local counter=0
+  local has1prefix=0 # set to 1 if is there only one entry on array.
+  local def_prefix=0 # define if is present prefix array/configurations.
+  local has1postfix=0 # set to 1 if is there only one entry on array.
+  local def_postfix=0 # define if is present postfix array/configurations.
+  local def_tab=0
+  local has1tab=0
+  local id_tab=0
+  local id_prefix=0
+  local id_postfix=0
+  local prepost_headers=0
+  local prepost_data=0
+  local header=""
+  local field=""
+  local tsize=0
+  local tspaces=0
+
+  # Check if defined array with element prefix string
+  if [ "${#out_el_pre[@]}" -gt 0 ] ; then
+      def_prefix=1
+    if [ "${#out_el_pre[@]}" -eq 1 ] ; then
+      has1prefix=1
+    fi
+  fi
+
+  # Check if defined array with element postfix string
+  if [ "${#out_el_post[@]}" -gt 0 ] ; then
+      def_postfix=1
+    if [ "${#out_el_post[@]}" -eq 1 ] ; then
+      has1postfix=1
+    fi
+  fi
+
+  # Check if defined array with tabulations string
+  if [ "${#out_tabs[@]}" -gt 0 ] ; then
+      def_tab=1
+    if [ "${#out_tabs[@]}" -eq 1 ] ; then
+      has1tab=1
+    fi
+  fi
+
+  # Check if defined out_prepost_mode
+  if [[ -z "${out_prepost_mode}" || x"${out_prepost_mode}" == x"data" ]] ; then
+    prepost_data=1
+  fi
+  if [[ -n "${out_prepost_mode}" && x"${out_prepost_mode}" == x"any" ]] ; then
+    prepost_data=1
+    prepost_headers=1
+  fi
+  if [[ -n "${out_prepost_mode}" && x"${out_prepost_mode}" == x"headers" ]] ; then
+    prepost_headers=1
+  fi
+
+  if [[ -n "${out_hsep}" && x"${out_hsep}" == x"1" ]] ; then
+    echo -en "==============================================================================================================================\n"
+  fi
+
+  #----------------------------------------------------------
+  # PRINT HEADERS
+  #----------------------------------------------------------
+  if [ "${#out_headers[@]}" -gt 0 ] ; then
+
+    id_tab=0
+    counter=0
+    id_prefix=0
+    id_postfix=0
+
+    for i in ${!out_headers[@]}
+    do
+
+      header="${out_headers[$i]}"
+
+      # Print element prefix
+      if [[ $prepost_headers -eq 1 && $def_prefix -eq 1 ]] ; then
+
+        if [ $has1prefix -ne 1 ] ; then
+
+          id_prefix=$counter
+
+        fi
+
+        if [ ! -z "${out_el_pre[$id_prefix]}" ] ; then
+          echo -en "${out_el_pre[$id_prefix]}"
+        fi
+
+      fi
+      # End print element prefix
+
+      echo -en "${header}"
+
+      # Print element postfix
+      if [[ $prepost_headers -eq 1 && $def_postfix -eq 1 ]] ; then
+
+        if [ $has1postfix -ne 1 ] ; then
+
+          id_postfix=$counter
+
+        fi
+
+        if [ ! -z "${out_el_post[$id_postfix]}" ] ; then
+          echo -en "${out_el_post[$id_postfix]}"
+        fi
+
+      fi
+      # End print element postfix
+
+      if [[ -z "$out_htabs_mode" || x"$out_htabs_mode" == x"tabs" ]] ; then
+        # Print tabulation
+        if [ $def_tab -eq 1 ] ; then
+
+          if [ $has1tab -ne 1 ] ; then
+
+            id_tab=$counter
+
+          fi
+
+          if [ ! -z "${out_tabs[$id_tab]}" ] ; then
+
+            tsize=${out_tabs[$id_tab]}
+            tspaces=$(($tsize - ${#header}))
+
+            push_spaces $tspaces
+
+          fi
+
+        fi
+        # End print tab
+
+      else
+
+        if [ x"$out_htabs_mode" == x"htabs" ] ; then
+
+          if [ "${#out_htabs[@]}" -gt 0 ] ; then
+
+            if [ "${#out_htabs[@]}" -eq 1 ] ; then
+              id_tab=0
+            else
+              id_tab=$counter
+            fi
+
+            if [ ! -z "${out_htabs[$id_tab]}" ] ; then
+              tsize=${out_htabs[$id_tab]}
+              tspaces=$(($tsize - ${#header}))
+
+              push_spaces $tspaces
+            fi
+
+          fi
+
+        fi
+        # else noop. Do nothings.
+
+      fi
+
+      let counter++
+
+    done
+
+    echo -en "\n"
+
+  fi
+  #----------------------------------------------------------
+
+  if [[ -n "${out_hsep}" && x"${out_hsep}" == x"1" ]] ; then
+    echo -en "==============================================================================================================================\n"
+  fi
+
+  #----------------------------------------------------------
+  # PRINT ROWS
+  #----------------------------------------------------------
+  for i in ${!out_rows[@]}
+  do
+    # Retrieve name of array with data per column.
+    out_column_name="${out_rows[$i]}"
+    out_columns="${out_column_name}[@]"
+    counter=0
+
+
+    for j in "${!out_columns}"
+    do
+
+      id_prefix=0
+      id_postfix=0
+      id_tab=0
+      field="$j"
+
+      # Print element prefix
+      if [[ $prepost_data -eq 1 && $def_prefix -eq 1 ]] ; then
+
+        if [ $has1prefix -ne 1 ] ; then
+
+          id_prefix=$counter
+
+        fi
+
+        if [ ! -z "${out_el_pre[$id_prefix]}" ] ; then
+          echo -en "${out_el_pre[$id_prefix]}"
+        fi
+
+      fi
+      # End print element prefix
+
+      #-----------------------------------------
+      # Print element
+      echo -en "$field"
+      #-----------------------------------------
+
+
+      # Print element postfix
+      if [[ $prepost_data -eq 1 && $def_postfix -eq 1 ]] ; then
+
+        if [ $has1postfix -ne 1 ] ; then
+
+          id_postfix=$counter
+
+        fi
+
+        if [ ! -z "${out_el_post[$id_postfix]}" ] ; then
+          echo -en "${out_el_post[$id_postfix]}"
+        fi
+
+      fi
+      # End print element postfix
+
+      # Print tabulation
+      if [ $def_tab -eq 1 ] ; then
+
+        if [ $has1tab -ne 1 ] ; then
+
+          id_tab=$counter
+
+        fi
+
+        if [ ! -z "${out_tabs[$id_tab]}" ] ; then
+          tsize=${out_tabs[$id_tab]}
+          tspaces=$(($tsize - ${#field}))
+
+          push_spaces $tspaces
+        fi
+
+      fi
+      # End print tab
+
+
+      let counter++
+
+    done
+
+    echo -en "\n"
+
+  done
+  #----------------------------------------------------------
+
+  return $ans
+}
+#***
+
+out_stdout_print () {
+
+  local msg="$1"
+  local ans=0
+
+  echo -en "$msg\n"
+
+  return $ans
+}
+
+##################################################################
+# Internal functions
+##################################################################
+
+
+# vim: syn=sh filetype=sh ts=2 sw=2

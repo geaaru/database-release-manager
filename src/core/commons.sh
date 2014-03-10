@@ -123,4 +123,25 @@ confirmation_question () {
 }
 #****
 
+#****f* commons/push_spaces
+# FUNCTION
+#   Push spaces to stdout.
+# INPUTS
+#   n_spaces    Number of spaces to write.
+# SOURCE
+push_spaces () {
+
+  local n_spaces=$1
+
+  if [ $n_spaces -gt 0 ] ; then
+    for ((i=0; i<$n_spaces; i++))
+    do
+      echo -en " "
+    done
+  fi
+
+  return 0
+}
+#****
+
 # vim: syn=sh filetype=sh

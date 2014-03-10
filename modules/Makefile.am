@@ -10,7 +10,9 @@ EXTRA_DIST = \
 				 mariadb.mod.in \
 				 oracle.mod.in \
 				 sql_handler.mod.in \
-				 sqlite.mod.in
+				 sqlite.mod.in \
+				 out_handler.mod.in \
+				 out_stdout.mod.in
 
 modules = \
 			 dbm.mod \
@@ -19,7 +21,9 @@ modules = \
 			 mariadb.mod \
 			 oracle.mod \
 			 sql_handler.mod \
-			 sqlite.mod
+			 sqlite.mod \
+			 out_handler.mod \
+			 out_stdout.mod
 
 DISTCLEANFILES = $(modules)
 CLEANFILES = $(modules)

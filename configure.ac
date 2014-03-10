@@ -88,6 +88,8 @@ AC_CONFIG_FILES([
                  modules/oracle.mod
                  modules/sql_handler.mod
                  modules/sqlite.mod
+                 modules/out_handler.mod
+                 modules/out_stdout.mod
                  src/Makefile
                  src/dbrm
                  src/core/Makefile
