@@ -9,8 +9,8 @@ CLEANFILES = dbrm.conf.example @CONFIG_FILE_NAME@
 
 sharedir = $(SHAREDIR)
 dist_share_DATA = \
-						dbrm.conf.example
-						dbm_sqlite_schema.sql
+		dbrm.conf.example \
+		dbm_sqlite_schema.sql
 
 etcdir = $(CONFIG_FILE_DIR)
 dist_etc_DATA = @CONFIG_FILE_NAME@
