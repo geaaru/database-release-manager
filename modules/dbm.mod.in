@@ -131,6 +131,7 @@ dbm_show_releases () {
   local directory=""
   local result=1
   local query=""
+  local counter=1
 
   shift 2
 
@@ -163,17 +164,41 @@ dbm_show_releases () {
 
     _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
 
-    echo -en "==============================================================================================================================\n"
-    echo -en "\e[1;33mID\e[m\t"
-    echo -en "\e[1;34mRELEASE_DATE\e[m\t\t"
-    echo -en "\e[1;35mVERSION\e[m\t"
-    echo -en "\e[1;36mUPDATE_DATE\e[m\t\t"
-    echo -en "\e[1;31mADAPTER\e[m\t\t"
-    echo -en "\e[1;32mID_ORDER\e[m\t"
-    echo -en "\e[1;38mBRANCH\e[m\t"
-    echo -en "\e[1;33mDIRECTORY\e[m\t"
-    echo -en "\e[1;37mNAME\e[m\n"
-    echo -en "==============================================================================================================================\n"
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="ID"
+    out_headers[1]="RELEASE_DATE"
+    out_headers[2]="VERSION"
+    out_headers[3]="UPDATE_DATE"
+    out_headers[4]="ADAPTER"
+    out_headers[5]="ID_ORDER"
+    out_headers[6]="BRANCH"
+    out_headers[7]="DIRECTORY"
+    out_headers[8]="NAME"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;34m"
+    out_el_pre[2]="\e[1;35m"
+    out_el_pre[3]="\e[1;36m"
+    out_el_pre[4]="\e[1;31m"
+    out_el_pre[5]="\e[1;32m"
+    out_el_pre[6]="\e[1;38m"
+    out_el_pre[7]="\e[1;33m"
+    out_el_pre[8]="\e[1;37m"
+
+    out_el_post[0]="\e[m"
+
+    out_tabs[0]="10"
+    out_tabs[1]="23"
+    out_tabs[2]="10"
+    out_tabs[3]="23"
+    out_tabs[4]="10"
+    out_tabs[5]="10"
+    out_tabs[6]="10"
+    out_tabs[7]="11"
+    out_tabs[8]="10"
 
     IFS=$'\n'
     for row in $_sqlite_ans ; do
@@ -191,27 +216,35 @@ dbm_show_releases () {
       id_branch=`echo $row | awk '{split($0,a,"|"); print a[9]}'`
       directory=`echo $row | awk '{split($0,a,"|"); print a[10]}'`
 
-      if [ ${#release_date} -eq 10 ] ; then
-        release_date_tab="\t\t"
-      else
-        release_date_tab="\t"
-      fi
+      #if [ ${#release_date} -eq 10 ] ; then
+      #  release_date_tab="\t\t"
+      #else
+      #  release_date_tab="\t"
+      #fi
 
-      echo -en "\e[1;33m${id_release}\e[m\t"
-      echo -en "\e[1;34m${release_date}${release_date_tab}\e[m"
-      echo -en "\e[1;35m${version}\e[m\t"
-      echo -en "\e[1;36m${update_date}\e[m\t"
-      echo -en "\e[1;31m${db_adapter}\e[m\t\t"
-      echo -en "\e[1;32m${id_order}\e[m\t\t"
-      echo -en "\e[1;38m${id_branch}\e[m\t"
-      echo -en "\e[1;33m${directory}\e[m\t\t"
-      echo -en "\e[1;37m${name}\e[m\n"
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${id_release}\""
+      eval "row${counter}[1]=\"${release_date}\""
+      eval "row${counter}[2]=\"${version}\""
+      eval "row${counter}[3]=\"${update_date}\""
+      eval "row${counter}[4]=\"${db_adapter}\""
+      eval "row${counter}[5]=\"${id_order}\""
+      eval "row${counter}[6]=\"${id_branch}\""
+      eval "row${counter}[7]=\"${directory}\""
+      eval "row${counter}[8]=\"${name}\""
+
+      let counter++
 
     done
     unset IFS
 
+    out_handler_print_arr
+
   else
-    echo -en "No releases available.\n"
+
+    out_handler_print "No releases available."
+
   fi
 
   return 0
@@ -227,6 +260,7 @@ dbm_show_scripts () {
   _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM Scripts" || error_handled "Unexpected error!"
 
   local n_s=$_sqlite_ans
+  local counter=0
 
   [[ $DEBUG ]] && echo -en "N. Scripts: $n_s\n"
 
@@ -234,16 +268,38 @@ dbm_show_scripts () {
 
     _sqlite_query -c "$DRM_DB" -q "SELECT id_script,filename,type,active,directory,id_release,id_order,creation_date,update_date FROM Scripts ORDER BY id_release,id_order ASC" || error_handled "Unexpected error!"
 
-    echo -en "===================================================================================================================================\n"
-    echo -en "\e[1;33mID\e[m\t"
-    echo -en "\e[1;35mTYPE\e[m\t\t"
-    echo -en "\e[1;36mACTIVE\e[m\t"
-    echo -en "\e[1;31mDIRECTORY\e[m\t\t"
-    echo -en "\e[1;37mID_RELEASE\e[m\t"
-    echo -en "\e[1;32mID_ORDER\e[m\t"
-    echo -en "\e[1;33mUPDATE_DATE\e[m\t\t"
-    echo -en "\e[1;34mFILENAME\e[m\n"
-    echo -en "===================================================================================================================================\n"
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="ID"
+    out_headers[1]="TYPE"
+    out_headers[2]="ACTIVE"
+    out_headers[3]="DIRECTORY"
+    out_headers[4]="ID_RELEASE"
+    out_headers[5]="ID_ORDER"
+    out_headers[6]="UPDATE_DATE"
+    out_headers[7]="FILENAME"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;35m"
+    out_el_pre[2]="\e[1;36m"
+    out_el_pre[3]="\e[1;31m"
+    out_el_pre[4]="\e[1;37m"
+    out_el_pre[5]="\e[1;32m"
+    out_el_pre[6]="\e[1;33m"
+    out_el_pre[7]="\e[1;34m"
+
+    out_el_post[0]="\e[m"
+
+    out_tabs[0]="10"
+    out_tabs[1]="15"
+    out_tabs[2]="10"
+    out_tabs[3]="20"
+    out_tabs[4]="12"
+    out_tabs[5]="10"
+    out_tabs[6]="24"
+    out_tabs[7]="10"
 
     IFS=$'\n'
     for row in $_sqlite_ans ; do
@@ -260,32 +316,26 @@ dbm_show_scripts () {
       creation_date=`echo $row | awk '{split($0,a,"|"); print a[8]}'`
       update_date=`echo $row | awk '{split($0,a,"|"); print a[9]}'`
 
-      if [ ${#s_type} -lt 8 ] ; then
-        type_tab="\t\t"
-      else
-        type_tab="\t"
-      fi
+      out_rows[$counter]="row"${counter}
 
-      if [ ${#directory} -lt 15 ] ; then
-        dir_tab="\t\t"
-      else
-        dir_tab="\t"
-      fi
+      eval "row${counter}[0]=\"${id_script}\""
+      eval "row${counter}[1]=\"${s_type}\""
+      eval "row${counter}[2]=\"${active}\""
+      eval "row${counter}[3]=\"${directory}\""
+      eval "row${counter}[4]=\"${id_release}\""
+      eval "row${counter}[5]=\"${id_order}\""
+      eval "row${counter}[6]=\"${update_date}\""
+      eval "row${counter}[7]=\"${filename}\""
 
-      echo -en "\e[1;33m${id_script}\e[m\t"
-      echo -en "\e[1;35m${s_type}${type_tab}\e[m"
-      echo -en "\e[1;36m${active}\e[m\t"
-      echo -en "\e[1;31m${directory}${dir_tab}\e[m"
-      echo -en "\e[1;37m${id_release}\e[m\t\t"
-      echo -en "\e[1;32m${id_order}\e[m\t\t"
-      echo -en "\e[1;33m${update_date}\e[m\t"
-      echo -en "\e[1;34m${filename}\e[m\n"
+      let counter++
 
     done
     unset IFS
 
+    out_handler_print_arr
+
   else
-    echo -en "No scripts available.\n"
+    out_handler_print "No scripts available."
   fi
 
   return 0
@@ -301,6 +351,7 @@ dbm_show_script_types () {
   _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM ScriptTypes" || error_handled "Unexpected error!"
 
   local n_st=$_sqlite_ans
+  local counter=0
 
   [[ $DEBUG ]] && echo -en "N. ScriptTypes: $n_st\n"
 
@@ -308,9 +359,19 @@ dbm_show_script_types () {
 
     _sqlite_query -c "$DRM_DB" -q "SELECT code,descr FROM ScriptTypes ORDER BY code ASC" || error_handled "Unexpected error!"
 
-    echo -en "======================================================================================\n"
-    echo -en "\e[1;33mCODE\e[m\t\t\e[1;34mDESCRIPTION\e[m\n"
-    echo -en "======================================================================================\n"
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="CODE"
+    out_headers[1]="DESCRIPTION"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;34m"
+
+    out_el_post[0]="\e[m"
+
+    out_tabs[0]="20"
 
     IFS=$'\n'
     for row in $_sqlite_ans ; do
@@ -320,20 +381,20 @@ dbm_show_script_types () {
       code=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
       descr=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
 
-      if [ ${#code} -gt 7 ] ; then
-        code_tab="\t"
-      else
-        code_tab="\t\t"
-      fi
+      out_rows[$counter]="row"${counter}
 
-      echo -en "\e[1;33m${code}\e[m${code_tab}\e[1;34m${descr}\e[m\n"
+      eval "row${counter}[0]=\"${code}\""
+      eval "row${counter}[1]=\"${descr}\""
+
+      let counter++
 
     done
     unset IFS
 
-  else
+    out_handler_print_arr
 
-    echo -en "No script types available.\n"
+  else
+    out_handler_print "No script types available."
   fi
 
   return 0
@@ -349,6 +410,7 @@ dbm_show_rel_dep () {
   _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM ReleasesDependencies" || error_handled "Unexpected error!"
 
   local n_rd=$_sqlite_ans
+  local counter=0
 
   [[ $DEBUG ]] && echo -en "N. ReleasesDependencies: $n_rd\n"
 
@@ -356,11 +418,21 @@ dbm_show_rel_dep () {
 
     _sqlite_query -c "$DRM_DB" -q "SELECT id_release,id_release_dep,creation_date FROM ReleasesDependencies ORDER BY id_release,id_release_dep ASC" || error_handled "Unexpected error!"
 
-    echo -en "======================================================================================\n"
-    echo -en "\e[1;33mID_RELEASE\e[m\t"
-    echo -en "\e[1;32mDEPENDENCY\e[m\t"
-    echo -en "\e[1;34mCREATION_DATE\e[m\n"
-    echo -en "======================================================================================\n"
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="ID_RELEASE"
+    out_headers[1]="DEPENDENCY"
+    out_headers[2]="CREATION_DATE"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;32m"
+    out_el_pre[2]="\e[1;34m"
+
+    out_el_post[0]="\e[m"
+
+    out_tabs[0]="15"
 
     IFS=$'\n'
     for row in $_sqlite_ans ; do
@@ -371,17 +443,21 @@ dbm_show_rel_dep () {
       id_release_dep=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
       creation_date=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
 
-      echo -en "\e[1;33m${id_release}\e[m\t\t"
-      echo -en "\e[1;32m${id_release_dep}\e[m\t\t"
-      echo -en "\e[1;34m${creation_date}\e[m\n"
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${id_release}\""
+      eval "row${counter}[1]=\"${id_release_dep}\""
+      eval "row${counter}[2]=\"${creation_date}\""
+
+      let counter++
 
     done
     unset IFS
 
+    out_handler_print_arr
+
   else
-
-    echo -en "No release dependencies available.\n"
-
+    out_handler_print "No release dependencies available."
   fi
 
   return 0
@@ -397,6 +473,7 @@ dbm_show_inhibit_scripts () {
   _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM ScriptRelInhibitions" || error_handled "Unexpected error!"
 
   local n_r=$_sqlite_ans
+  local counter=0
 
   [[ $DEBUG ]] && echo -en "N. ScriptRelInhibitions: $n_r\n"
 
@@ -404,12 +481,23 @@ dbm_show_inhibit_scripts () {
 
     _sqlite_query -c "$DRM_DB" -q "SELECT id_script,id_release_from,id_release_to,creation_date FROM ScriptRelInhibitions ORDER BY id_script,id_release_to,id_release_from ASC" || error_handled "Unexpected error!"
 
-    echo -en "======================================================================================\n"
-    echo -en "\e[1;33mID_SCRIPT\e[m\t"
-    echo -en "\e[1;32mID_RELEASE_FROM\e[m\t\t"
-    echo -en "\e[1;31mID_RELEASE_TO\e[m\t"
-    echo -en "\e[1;34mCREATION_DATE\e[m\n"
-    echo -en "======================================================================================\n"
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="ID_SCRIPT"
+    out_headers[1]="ID_RELEASE_FROM"
+    out_headers[2]="ID_RELEASE_TO"
+    out_headers[3]="CREATION_DATE"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;32m"
+    out_el_pre[2]="\e[1;31m"
+    out_el_pre[3]="\e[1;34m"
+
+    out_el_post[0]="\e[m"
+
+    out_tabs[0]="15"
 
     IFS=$'\n'
     for row in $_sqlite_ans ; do
@@ -421,17 +509,22 @@ dbm_show_inhibit_scripts () {
       id_release_to=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
       creation_date=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
 
-      echo -en "\e[1;33m${id_script}\e[m\t\t"
-      echo -en "\e[1;32m${id_release_from}\e[m\t\t\t"
-      echo -en "\e[1;31m${id_release_to}\e[m\t\t"
-      echo -en "\e[1;34m${creation_date}\e[m\n"
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${id_script}\""
+      eval "row${counter}[1]=\"${id_release_from}\""
+      eval "row${counter}[2]=\"${id_release_to}\""
+      eval "row${counter}[3]=\"${creation_date}\""
+
+      let counter++
 
     done
     unset IFS
 
-  else
+    out_handler_print_arr
 
-    echo -en "No scripts available.\n"
+  else
+    out_handler_print "No scripts available."
 
   fi
 
@@ -448,6 +541,7 @@ dbm_show_rel_ded_scripts () {
   _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM ScriptRelDedicated" || error_handled "Unexpected error!"
 
   local n_r=$_sqlite_ans
+  local counter=0
 
   [[ $DEBUG ]] && echo -en "N. ScriptRelDedicated: $n_r\n"
 
@@ -455,12 +549,23 @@ dbm_show_rel_ded_scripts () {
 
     _sqlite_query -c "$DRM_DB" -q "SELECT id_script,id_release_from,id_release_to,creation_date FROM ScriptRelDedicated ORDER BY id_script,id_release_to,id_release_from ASC" || error_handled "Unexpected error!"
 
-    echo -en "======================================================================================\n"
-    echo -en "\e[1;33mID_SCRIPT\e[m\t"
-    echo -en "\e[1;32mID_RELEASE_FROM\e[m\t\t"
-    echo -en "\e[1;31mID_RELEASE_TO\e[m\t"
-    echo -en "\e[1;34mCREATION_DATE\e[m\n"
-    echo -en "======================================================================================\n"
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="ID_SCRIPT"
+    out_headers[1]="ID_RELEASE_FROM"
+    out_headers[2]="ID_RELEASE_TO"
+    out_headers[3]="CREATION_DATE"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;32m"
+    out_el_pre[2]="\e[1;31m"
+    out_el_pre[3]="\e[1;34m"
+
+    out_el_post[0]="\e[m"
+
+    out_tabs[0]="15"
 
     IFS=$'\n'
     for row in $_sqlite_ans ; do
@@ -472,17 +577,22 @@ dbm_show_rel_ded_scripts () {
       id_release_to=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
       creation_date=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
 
-      echo -en "\e[1;33m${id_script}\e[m\t\t"
-      echo -en "\e[1;32m${id_release_from}\e[m\t\t\t"
-      echo -en "\e[1;31m${id_release_to}\e[m\t\t"
-      echo -en "\e[1;34m${creation_date}\e[m\n"
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${id_script}\""
+      eval "row${counter}[1]=\"${id_release_from}\""
+      eval "row${counter}[2]=\"${id_release_to}\""
+      eval "row${counter}[3]=\"${creation_date}\""
+
+      let counter++
 
     done
     unset IFS
 
-  else
+    out_handler_print_arr
 
-    echo -en "No scripts available.\n"
+  else
+    out_handler_print "No scripts available."
 
   fi
 
@@ -499,6 +609,7 @@ dbm_show_adapters  () {
   _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM DatabaseAdapters" || error_handled "Unexpected error!"
 
   local n_st=$_sqlite_ans
+  local counter=0
 
   [[ $DEBUG ]] && echo -en "N. ScriptTypes: $n_st\n"
 
@@ -506,9 +617,19 @@ dbm_show_adapters  () {
 
     _sqlite_query -c "$DRM_DB" -q "SELECT adapter,descr FROM DatabaseAdapters ORDER BY adapter ASC" || error_handled "Unexpected error!"
 
-    echo -en "======================================================================================\n"
-    echo -en "\e[1;33mADAPTER\e[m\t\t\e[1;34mDESCRIPTION\e[m\n"
-    echo -en "======================================================================================\n"
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="ADAPTER"
+    out_headers[1]="DESCRIPTION"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;34m"
+
+    out_el_post[0]="\e[m"
+
+    out_tabs[0]="15"
 
     IFS=$'\n'
     for row in $_sqlite_ans ; do
@@ -516,20 +637,21 @@ dbm_show_adapters  () {
       adapter=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
       descr=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
 
-      if [ ${#code} -gt 7 ] ; then
-        adapter_tab="\t"
-      else
-        adapter_tab="\t\t"
-      fi
+      out_rows[$counter]="row"${counter}
 
-      echo -en "\e[1;33m${adapter}\e[m${adapter_tab}\e[1;34m${descr}\e[m\n"
+      eval "row${counter}[0]=\"${adapter}\""
+      eval "row${counter}[1]=\"${descr}\""
+
+      let counter++
 
     done
     unset IFS
 
-  else
+    out_handler_print_arr
 
-    echo -en "No adapters available.\n"
+  else
+    out_handler_print "No adapters available."
+
   fi
 
   return 0
@@ -1502,6 +1624,7 @@ dbm_show_branches () {
   local n_rec=$_sqlite_ans
   local creation_date=""
   local update_date=""
+  local counter=0
 
   [[ $DEBUG ]] && echo -en "N. Branches: $n_rec\n"
 
@@ -1509,12 +1632,26 @@ dbm_show_branches () {
 
     _sqlite_query -c "$DRM_DB" -q "SELECT id_branch,name,creation_date,update_date FROM Branches ORDER BY id_branch ASC" || error_handled "Unexpected error!"
 
-    echo -en "==============================================================================================================\n"
-    echo -en "\e[1;33mID\e[m\t"
-    echo -en "\e[1;34mCREATION_DATE\e[m\t\t"
-    echo -en "\e[1;36mUPDATE_DATE\e[m\t\t"
-    echo -en "\e[1;37mNAME\e[m\n"
-    echo -en "==============================================================================================================\n"
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="ID"
+    out_headers[1]="CREATION_DATE"
+    out_headers[2]="UPDATE_DATE"
+    out_headers[3]="NAME"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;32m"
+    out_el_pre[2]="\e[1;31m"
+    out_el_pre[3]="\e[1;34m"
+
+    out_el_post[0]="\e[m"
+
+    out_tabs[0]="10"
+    out_tabs[1]="24"
+    out_tabs[2]="24"
+    out_tabs[3]="10"
 
     IFS=$'\n'
     for row in $_sqlite_ans ; do
@@ -1526,28 +1663,22 @@ dbm_show_branches () {
       creation_date=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
       update_date=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
 
-      if [ ${#creation_date} -eq 10 ] ; then
-        creation_date_tab="\t\t"
-      else
-        creation_date_tab="\t"
-      fi
+      out_rows[$counter]="row"${counter}
 
-      if [ ${#update_date} -eq 10 ] ; then
-        update_date_tab="\t\t"
-      else
-        update_date_tab="\t"
-      fi
+      eval "row${counter}[0]=\"${id_branch}\""
+      eval "row${counter}[1]=\"${creation_date}\""
+      eval "row${counter}[2]=\"${update_date}\""
+      eval "row${counter}[3]=\"${name}\""
 
-      echo -en "\e[1;33m${id_branch}\e[m\t"
-      echo -en "\e[1;34m${creation_date}${creation_date_tab}\e[m"
-      echo -en "\e[1;35m${update_date}${update_date_tab}\e[m"
-      echo -en "\e[1;37m${name}\e[m\n"
+      let counter++
 
     done
     unset IFS
 
+    out_handler_print_arr
+
   else
-    echo -en "No branches available.\n"
+    out_handler_print "No branches available."
   fi
 
   return 0
