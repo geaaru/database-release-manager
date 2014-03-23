@@ -317,6 +317,28 @@ out_stdout_print () {
   return $ans
 }
 
+#****f* out_stdout/out_stdout_print
+# FUNCTION
+#   Unset all variables used on print functions
+# SOURCE
+out_stdout_clean () {
+
+  local ans=0
+
+  unset out_rows
+  unset out_tabs
+  unset out_el_pre
+  unset out_el_post
+  unset out_headers
+  unset out_htabs_mode
+  unset out_prepost_mode
+  unset out_htabs
+  unset out_hsep
+
+  return $ans
+}
+#***
+
 ##################################################################
 # Internal functions
 ##################################################################

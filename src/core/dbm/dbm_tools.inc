@@ -345,6 +345,56 @@ _dbm_remove_release () {
   return 0
 }
 
+_dbm_update_idorder () {
+
+  local id_branch="$1"
+  local idx=0
+  local id_release=""
+  local query="
+    SELECT id_release
+    FROM Releases
+    WHERE id_branch = $id_branch
+    ORDER BY id_order
+  "
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error on retrieve list of id_release!"
+
+  declare -a list_id_rels
+
+  IFS=$'\n'
+  for row in $_sqlite_ans ; do
+    id_release=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+    list_id_rels[$idx]=$id_release
+    let idx++
+  done
+  unset IFS
+
+  # Update list of id
+  id_order=1
+  idx=0
+
+  for e in ${!list_id_rels[@]}
+  do
+
+    id_release=${list_id_rels[$e]}
+
+    query="
+      UPDATE Releases
+      SET id_order = $id_order
+      WHERE id_release = $id_release
+    "
+
+    _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error on update id_release $id_release"
+
+    let id_order++
+
+  done
+
+  unset list_id_rels
+
+  return 0
+}
+
 _dbm_remove_all_scripts_rel_ded () {
 
   local id_release="$1"

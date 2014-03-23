@@ -96,6 +96,21 @@ testListScriptTypes()
   return 0
 }
 
+testInsertBranch ()
+{
+  local args="-n 0.3.x"
+  local ins_bra="$(dbm_insert_branch dbm insert_branch $args)"
+
+  assertEquals "Branches 0.3.x insert correctly." "$ins_bra" || return 1
+
+  args="-n 0.4.x"
+  ins_bra="$(dbm_insert_branch dbm insert_branch $args)"
+
+  assertEquals "Branches 0.4.x insert correctly." "$ins_bra" || return 1
+
+  return 0
+}
+
 testInsertRelease()
 {
   local args="-n TEST -v 0.1.0 -a mariadb -b 1"
@@ -111,7 +126,97 @@ testInsertRelease()
 
   assertEquals 1 $out || return 1
 
+  args="-n TEST -v 0.2.0 -a mariadb -b 1"
+  ins_rel="$(dbm_insert_release dbm insert_release $args)"
+
+  assertEquals "Release TEST v. 0.2.0 insert correctly." "$ins_rel" || return 1
+
+  args="-n TEST -v 0.3.0 -a mariadb -b 1"
+  ins_rel="$(dbm_insert_release dbm insert_release $args)"
+
+  assertEquals "Release TEST v. 0.3.0 insert correctly." "$ins_rel" || return 1
+
+  args="-n TEST -v 0.3.1 -a mariadb -b 2"
+  ins_rel="$(dbm_insert_release dbm insert_release $args)"
+
+  assertEquals "Release TEST v. 0.3.1 insert correctly." "$ins_rel" || return 1
+
   return 0
+}
+
+testRemoveRelease ()
+{
+  local args="-r 1 -f"
+  #local rm_rel="$(dbm_remove_release dbm remove_release $args)"
+  local res=$?
+
+  dbm_remove_release dbm remove_release -r 1 -f
+  assertEquals 0 $res || return 1
+
+  args="-n TEST -v 0.1.0 -a mariadb -b 1"
+  local ins_rel=$(eval dbm_insert_release dbm insert_release $args)
+
+  assertEquals "Release TEST v. 0.1.0 insert correctly." "$ins_rel" || return 1
+
+  return 0
+}
+
+testMoveRelease ()
+{
+  local args="-n TEST -v 0.2.1 -a mariadb -b 1"
+  local ins_rel="$(dbm_insert_release dbm insert_release $args)"
+
+  # Test move before
+  args="-n TEST -r 0.2.1 -b 0.3.0"
+  local mv_rel="$(dbm_move_release dbm move_release $args)"
+
+  assertEquals "testMoveRelease: before =>" "Moved correctly TEST v.0.2.1 before v.0.3.0." "$mv_rel" || return 1
+
+  # Test move after
+  args="-n TEST -v 0.2.2 -a mariadb -b 1"
+  ins_rel="$(dbm_insert_release dbm insert_release $args)"
+
+  args="-n TEST -r 0.2.2 -a 0.2.1"
+  mv_rel="$(dbm_move_release dbm move_release $args)"
+
+  assertEquals "testMoveRelease: after =>" "Moved correctly TEST v.0.2.2 after v.0.2.1." "$mv_rel" || return 1
+
+  # Check than it isn't possible move release of different branches.
+
+  args="-n TEST -r 0.2.2 -b 0.3.1"
+  mv_rel="$(dbm_move_release dbm move_release $args)"
+
+  assertEquals "testMoveRelease: block different branches =>" \
+    "move_release command is not possibile between releases of different branches" "$mv_rel" || return 1
+
+  # Test move before
+  args="-n TEST -r 0.1.0 -b 0.2.0"
+  local mv_rel=$(eval dbm_move_release dbm move_release $args)
+
+  assertEquals "testMoveRelease: before2 =>" "Moved correctly TEST v.0.1.0 before v.0.2.0." "$mv_rel" || return 1
+
+  return 0
+}
+
+testInsertScriptType ()
+{
+  local args='-c test_script_type -d "Test Script Type"'
+  local ins_st=$(eval dbm_insert_script_type dbm insert_script_type $args)
+
+  assertEquals "testInsertScriptType: insert" "Script Type test_script_type insert correctly." "$ins_st" || return 1
+
+  # Check output
+  local st="$(dbm_show_script_types)"
+  local out="$(echo $st | grep --colour=none test_script_type | wc -l )"
+
+  assertEquals 1 $out || return 1
+
+  return 0
+}
+
+testInsertScript ()
+{
+  dbm_show_releases
 }
 
 . /usr/bin/shunit2

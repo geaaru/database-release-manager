@@ -111,7 +111,8 @@ _dbm_check_ins_bra_args () {
   done
 
   if [ -z "$DBM_BRA_NAME" ] ; then
-    echo "Missing Release Name"
+    echo -en "[-n name]               Branch Name.\n"
+    echo -en "[-d YYYY-MM-DD]         Branch Date. (Use now if not available)\n"
     return 1
   fi
 
@@ -120,6 +121,14 @@ _dbm_check_ins_bra_args () {
   else
     DBM_BRA_DATE="'$DBM_REL_DATE'"
   fi
+
+  return 0
+}
+
+_dbm_ins_script_type_help () {
+
+  echo -en "[-c code]               Script Type Code.\n"
+  echo -en "[-d description]        Script Type Description\n"
 
   return 0
 }
@@ -136,13 +145,17 @@ _dbm_check_ins_script_type_args () {
       c) DBM_SCRIPT_TYPE_CODE="$OPTARG";;
       d) DBM_SCRIPT_TYPE_DESCR="$OPTARG";;
       h)
-        echo -en "[-c code]               Script Type Code.\n"
-        echo -en "[-d description]        Script Type Description\n"
+        _dbm_ins_script_type_help
         return 1
         ;;
 
     esac
   done
+
+  if [[ -z "$DBM_SCRIPT_TYPE_CODE" && -z "$DBM_SCRIPT_TYPE_DESCR" ]] ; then
+    _dbm_ins_script_type_help
+    return 1
+  fi
 
   if [ -z "$DBM_SCRIPT_TYPE_CODE" ] ; then
     echo "Missing Script Type Code."
@@ -448,6 +461,17 @@ _dbm_check_upd_release_args () {
   return 0
 }
 
+_dbm_mv_release_help () {
+  echo -en "[-r version]            Release version.\n"
+  echo -en "[-n name]               Release Name.\n"
+  echo -en "[-a version_to]         After release version_to.\n"
+  echo -en "[-b version_to]         Before release version_to.\n"
+  echo -en "\n"
+  echo -en "Example: -n 'Project1' -r '0.1.1' -a '0.1.0' (Release 0.1.1 after release 0.1.0)\n"
+
+  return 0
+}
+
 _dbm_check_move_release_args () {
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_ins_inhibit_script_args args: $@)\n"
@@ -467,12 +491,7 @@ _dbm_check_move_release_args () {
          DBM_REL_VERSION_TO="$OPTARG";;
       r) DBM_REL_VERSION_FROM="$OPTARG";;
       h)
-        echo -en "[-r version_from]       Release version.\n"
-        echo -en "[-n name]               Release Name.\n"
-        echo -en "[-a version_to]         After release version_to.\n"
-        echo -en "[-b version_to]         Before release version_to.\n"
-        echo -en "\n"
-        echo -en "Example: -n 'Project1' -r '0.1.1' -a '0.1.0' (Release 0.1.1 after release 0.1.0)\n"
+        _dbm_mv_release_help
         return 1
         ;;
 
@@ -480,7 +499,8 @@ _dbm_check_move_release_args () {
   done
 
   if [ -z "$DBM_REL_NAME" ] ; then
-    echo "Missing Release Name."
+    _dbm_mv_release_help
+    #echo "Missing Release Name."
     return 1
   fi
 
@@ -617,6 +637,7 @@ _dbm_check_move_script_args () {
 _dbm_rem_rel_help () {
 
   echo -en "[-r id_release]         Id Release of the script to remove.\n"
+  echo -en "[-f]                    Force remove without confirmation question.\n"
 
   return 0
 }
@@ -625,7 +646,7 @@ _dbm_check_rem_rel_args () {
 
   [[ $DEBUG ]] && echo -en "(_dbm_check_rem_rel_args args: $@)\n"
 
-  local short_options="r:h"
+  local short_options="r:hf"
 
   $(set -- $(getopt -u -q -a -o "$short_options" -- "$@")) || error_handled "Invalid parameters"
 
@@ -636,10 +657,13 @@ _dbm_check_rem_rel_args () {
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_rem_rel_args: Found $# params)\n"
 
+  DBM_FORCE_RM=0
+
   while [ $# -gt 0 ] ; do
     case "$1" in
 
       -r) DBM_REL_ID="$2"    ;shift;;
+      -f) DBM_FORCE_RM="1" ;;
       -h)
         _dbm_rem_rel_help
         return 1

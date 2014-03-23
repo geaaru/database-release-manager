@@ -156,7 +156,7 @@ dbm_show_releases () {
 
   fi
 
-  query="$query ORDER BY id_order ASC"
+  query="$query ORDER BY id_order,id_branch ASC"
 
   [[ $DEBUG ]] && echo -en "N. Releases: $n_rel\n"
 
@@ -246,6 +246,8 @@ dbm_show_releases () {
     out_handler_print "No releases available."
 
   fi
+
+  out_handler_clean
 
   return 0
 }
@@ -338,6 +340,8 @@ dbm_show_scripts () {
     out_handler_print "No scripts available."
   fi
 
+  out_handler_clean
+
   return 0
 }
 #***
@@ -396,6 +400,8 @@ dbm_show_script_types () {
   else
     out_handler_print "No script types available."
   fi
+
+  out_handler_clean
 
   return 0
 }
@@ -459,6 +465,8 @@ dbm_show_rel_dep () {
   else
     out_handler_print "No release dependencies available."
   fi
+
+  out_handler_clean
 
   return 0
 }
@@ -528,6 +536,8 @@ dbm_show_inhibit_scripts () {
 
   fi
 
+  out_handler_clean
+
   return 0
 }
 #***
@@ -596,6 +606,8 @@ dbm_show_rel_ded_scripts () {
 
   fi
 
+  out_handler_clean
+
   return 0
 }
 #***
@@ -653,6 +665,8 @@ dbm_show_adapters  () {
     out_handler_print "No adapters available."
 
   fi
+
+  out_handler_clean
 
   return 0
 }
@@ -736,7 +750,8 @@ dbm_move_release () {
                $id_order_to+1 as id_order,
                db_adapter,
                id_branch,
-               directory
+               directory,
+               flag_dev
         FROM Releases
         WHERE id_release = $id_rel_from
         AND id_branch = $id_branch ;
@@ -750,7 +765,8 @@ dbm_move_release () {
                id_order+1 as id_order,
                db_adapter,
                id_branch,
-               directory
+               directory,
+               flag_dev
         FROM Releases $where_moved_record "
       # POST: Move yet release_from to Temporary table
 
@@ -769,7 +785,8 @@ dbm_move_release () {
                id_order-1 as id_order,
                db_adapter,
                id_branch,
-               directory
+               directory,
+               flag_dev
         FROM Releases
         WHERE id_branch = $id_branch
         AND id_order > $id_order AND id_order <= $id_order_to ;
@@ -783,7 +800,8 @@ dbm_move_release () {
                id_order as id_order,
                db_adapter,
                id_branch,
-               directory
+               directory,
+               flag_dev
         FROM Releases
         WHERE id_order > $id_order_to AND id_branch = $id_branch ;
         INSERT INTO ReleasesTemp
@@ -796,7 +814,8 @@ dbm_move_release () {
                $id_order_to as id_order,
                db_adapter,
                id_branch,
-               directory
+               directory,
+               flag_dev
         FROM Releases
         WHERE id_release = $id_rel_from
         AND id_branch = $id_branch "
@@ -823,7 +842,8 @@ dbm_move_release () {
                id_order+1 as id_order,
                db_adapter,
                id_branch,
-               directory
+               directory,
+               flag_dev
         FROM Releases $where_moved_record ;
         INSERT INTO ReleasesTemp
         SELECT id_release,
@@ -835,7 +855,8 @@ dbm_move_release () {
                $id_order_to as id_order,
                db_adapter,
                id_branch,
-               directory
+               directory,
+               flag_dev
         FROM Releases
         WHERE id_release = $id_rel_from AND id_branch = $id_branch "
       # POST: Move yet release_from to Temporary table
@@ -855,7 +876,8 @@ dbm_move_release () {
                id_order-1 as id_order,
                db_adapter,
                id_branch,
-               directory
+               directory,
+               flag_dev
         FROM Releases $where_moved_record ;
         INSERT INTO ReleasesTemp
         SELECT id_release,
@@ -867,7 +889,8 @@ dbm_move_release () {
                $id_order_to-1 as id_order,
                db_adapter,
                id_branch,
-               directory
+               directory,
+               flag_dev
         FROM Releases
         WHERE id_release = $id_rel_from AND id_branch = $id_branch "
       # POST: Move yet release_from to Temporary table
@@ -898,7 +921,8 @@ dbm_move_release () {
              id_order,
              db_adapter,
              id_branch,
-             directory
+             directory,
+             flag_dev
       FROM ReleasesTemp;
     DROP TABLE ReleasesTemp "
 
@@ -1089,6 +1113,7 @@ dbm_remove_release () {
   local query=""
   local id_branch=""
   local cnt=""
+  local cofirm=0
 
   # Shift first two input param
   shift 2
@@ -1113,14 +1138,24 @@ dbm_remove_release () {
 
   fi
 
-  confirmation_question "Are you sure to remove release with id $DBM_REL_ID? [N/y]"
-  if [ $? -eq 0 ] ; then
+  if [ $DBM_FORCE_RM -eq 1 ] ; then
+    confirm=1
+  else
+    confirmation_question "Are you sure to remove release with id $DBM_REL_ID? [N/y]"
+    if [ $? -eq 0 ] ; then
+      confirm=1
+    fi
+  fi
+
+  if [ $confirm -eq 1 ] ; then
 
     _dbm_remove_all_scripts_rel_ded $DBM_REL_ID || error_handled "Unexpected error on remove all scripts from ScriptRelDedicated table"
 
     _dbm_remove_all_scripts_rel_inhib  $DBM_REL_ID || error_handled "Unexpected error on remove all scripts from ScriptRelInhibitions table"
 
     _dbm_remove_release $DBM_REL_ID || error_handled "Unexpected error on remove release with id $DBM_REL_ID."
+
+    _dbm_update_idorder $id_branch || error_handled "Unexpected error on update id_order"
 
   fi
 
@@ -1680,6 +1715,8 @@ dbm_show_branches () {
   else
     out_handler_print "No branches available."
   fi
+
+  out_handler_clean
 
   return 0
 }

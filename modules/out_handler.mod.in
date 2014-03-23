@@ -44,11 +44,11 @@ out_handler_print () {
 
   return $ans
 }
-
 #***
+
 #****f* out_handler/out_handler_print_arr
 # FUNCTION
-#
+#  Call print_arr function for any active out_handler plugins.
 # RETURN VALUE
 #   0 on success
 #   1 on error
@@ -66,6 +66,31 @@ out_handler_print_arr () {
   done
 
   return $ans
+}
+#***
+
+#****f* out_handler/out_handler_clean
+# FUNCTION
+#   Unset all array used to call any active out_handler plugins.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
+out_handler_clean () {
+
+  local ans=0
+
+
+  for i in "$out_handler_plugin" ; do
+
+    if type -t ${i}_clean > /dev/null ; then
+      ${i}_clean
+    fi
+
+  done
+
+  return $ans
+
 }
 #***
 
