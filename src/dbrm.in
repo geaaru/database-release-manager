@@ -13,7 +13,9 @@ DBRM_CORE_FILES_DIR=@CORE_DIR@
 CONFIG_FILE_STUB=@SHAREDIR@/dbrm.conf.example
 
 # Insert config file data
-. $CONFIG_FILE
+if [ -f $CONFIG_FILE ] ; then
+  . $CONFIG_FILE
+fi
 
 # If already present OVERRIDE_LOCAL_CONFIG_FILE
 # variable i use environment variable.
