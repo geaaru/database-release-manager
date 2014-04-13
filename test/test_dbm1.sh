@@ -1,4 +1,5 @@
 #!/bin/bash
+# Author: geaaru
 
 #DEBUG=true
 
@@ -216,8 +217,87 @@ testInsertScriptType ()
 
 testInsertScript ()
 {
-  dbm_show_releases
+  local args='-f prova.sql -d ./test -n "TEST" -v 0.1.0 -t update_script'
+  local ins_script=$(eval dbm_insert_script dbm insert_script $args)
+
+  assertEquals "testInsertScript: insert" "Script prova.sql insert correctly." "$ins_script" || return 1
+
+  # Check output
+  local st="$(dbm_show_scripts)"
+  local out="$(echo $st | grep --colour=none prova.sql | wc -l )"
+
+  assertEquals 1 $out || return 1
+
+  f="prova2.sql"
+  args="-f $f -d ./test -n TEST -v 0.2.0 -t update_script"
+  ins_script=$(eval dbm_insert_script dbm insert_script $args)
+
+  assertEquals "testInsertScript: insert" "Script $f insert correctly." "$ins_script" || return 1
+
+  # Check output
+  st="$(dbm_show_scripts)"
+  out="$(echo $st | grep --colour=none $f | wc -l )"
+
+  assertEquals 1 $out || return 1
+
+  f="prova3.sql"
+  args="-f $f -d ./test -n TEST -v 0.2.1 -t update_script"
+  ins_script=$(eval dbm_insert_script dbm insert_script $args)
+
+  assertEquals "testInsertScript: insert" "Script $f insert correctly." "$ins_script" || return 1
+
+  # Check output
+  st="$(dbm_show_scripts)"
+  out="$(echo $st | grep --colour=none $f | wc -l )"
+
+  assertEquals 1 $out || return 1
+
+  f="prova4.sql"
+  args="-f $f -d ./test -n TEST -v 0.2.2 -t update_script"
+  ins_script=$(eval dbm_insert_script dbm insert_script $args)
+
+  assertEquals "testInsertScript: insert" "Script $f insert correctly." "$ins_script" || return 1
+
+  # Check output
+  st="$(dbm_show_scripts)"
+  out="$(echo $st | grep --colour=none $f | wc -l )"
+
+  assertEquals 1 $out || return 1
+
+  f="prova5.sql"
+  args="-f $f -d ./test -n TEST -v 0.3.0 -t update_script"
+  ins_script=$(eval dbm_insert_script dbm insert_script $args)
+
+  assertEquals "testInsertScript: insert" "Script $f insert correctly." "$ins_script" || return 1
+
+  # Check output
+  st="$(dbm_show_scripts)"
+  out="$(echo $st | grep --colour=none $f | wc -l )"
+
+  assertEquals 1 $out || return 1
+
+  return 0
 }
+
+testRemoveScript ()
+{
+  local args="-i 1"
+  local rm_script=$(eval dbm_remove_script dbm remove_script $args)
+
+  assertEquals "testRemoveScript: remove" "Script 1 removed correctly." "$rm_script" || return 1
+
+  # check output
+  local st="$(dbm_show_scripts)"
+  local out="$(echo $st | grep --colour=none prova.sql | wc -l )"
+
+  assertEquals 0 $out || return 1
+
+  dbm_show_releases
+  dbm_show_scripts
+
+  return 0
+}
+
 
 . /usr/bin/shunit2
 

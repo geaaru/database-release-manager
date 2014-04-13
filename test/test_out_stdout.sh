@@ -1,7 +1,8 @@
 #!/bin/bash
 
-. ../modules/out_stdout.mod.in
-. ../src/core/commons.sh
+dir=`dirname $0`
+. $dir/../modules/out_stdout.mod.in
+. $dir/../src/core/commons.sh
 
 DEBUG=true
 
@@ -31,6 +32,7 @@ testStdOut1()
     out_htabs_mode="tabs"
     #out_htabs_mode="htabs"
     out_prepost_mode="any"
+    out_vertical=1
 
     out_headers[0]="TITLE1"
     out_headers[1]="TITLE2"

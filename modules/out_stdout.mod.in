@@ -35,6 +35,7 @@ out_stdout_version () {
 #   out_prepost_mode If present accept these values: data (default), headers, any, noop.
 #   out_htabs        Array of header tabulation. if out_htabs_mode is equals to htabs.
 #   out_hsep         Write a separator if this field is equal to 1.
+#   out_vertical     Enable vertical output of the row if this field is equal to 1. Default is 0.
 # RETURN VALUE
 #   0 on success
 #   1 on error
@@ -66,6 +67,8 @@ out_stdout_print_arr () {
   local field=""
   local tsize=0
   local tspaces=0
+  local print_vertical=0
+  local column_counter=0
 
   # Check if defined array with element prefix string
   if [ "${#out_el_pre[@]}" -gt 0 ] ; then
@@ -103,6 +106,10 @@ out_stdout_print_arr () {
     prepost_headers=1
   fi
 
+  if [[ -n "${out_vertical}" || x"${out_vertical}" == x"1" ]] ; then
+    print_vertical=1
+  fi
+
   if [[ -n "${out_hsep}" && x"${out_hsep}" == x"1" ]] ; then
     echo -en "==============================================================================================================================\n"
   fi
@@ -110,7 +117,7 @@ out_stdout_print_arr () {
   #----------------------------------------------------------
   # PRINT HEADERS
   #----------------------------------------------------------
-  if [ "${#out_headers[@]}" -gt 0 ] ; then
+  if [[ "${#out_headers[@]}" -gt 0 && $print_vertical -eq 0 ]] ; then
 
     id_tab=0
     counter=0
@@ -226,7 +233,11 @@ out_stdout_print_arr () {
     out_column_name="${out_rows[$i]}"
     out_columns="${out_column_name}[@]"
     counter=0
+    column_counter=0
 
+    if [ $print_vertical -eq 1 ] ; then
+      echo -en "#\n"
+    fi
 
     for j in "${!out_columns}"
     do
@@ -237,7 +248,7 @@ out_stdout_print_arr () {
       field="$j"
 
       # Print element prefix
-      if [[ $prepost_data -eq 1 && $def_prefix -eq 1 ]] ; then
+      if [[ $prepost_data -eq 1 && $def_prefix -eq 1 && $print_vertical -eq 0 ]] ; then
 
         if [ $has1prefix -ne 1 ] ; then
 
@@ -252,6 +263,17 @@ out_stdout_print_arr () {
       fi
       # End print element prefix
 
+      # Print column field if it is enable print vertical.
+      if [[ "${#out_headers[@]}" -gt 0 && $print_vertical -eq 1 ]] ; then
+
+        header="${out_headers[$column_counter]}"
+
+        echo -en "${header}: "
+
+        let column_counter++
+
+      fi
+
       #-----------------------------------------
       # Print element
       echo -en "$field"
@@ -259,48 +281,56 @@ out_stdout_print_arr () {
 
 
       # Print element postfix
-      if [[ $prepost_data -eq 1 && $def_postfix -eq 1 ]] ; then
+      if [ $print_vertical -eq 0 ] ; then
+        if [[ $prepost_data -eq 1 && $def_postfix -eq 1 ]] ; then
 
-        if [ $has1postfix -ne 1 ] ; then
+          if [ $has1postfix -ne 1 ] ; then
 
-          id_postfix=$counter
+            id_postfix=$counter
+
+          fi
+
+          if [ ! -z "${out_el_post[$id_postfix]}" ] ; then
+            echo -en "${out_el_post[$id_postfix]}"
+          fi
 
         fi
+        # End print element postfix
 
-        if [ ! -z "${out_el_post[$id_postfix]}" ] ; then
-          echo -en "${out_el_post[$id_postfix]}"
+        # Print tabulation
+        if [ $def_tab -eq 1 ] ; then
+
+          if [ $has1tab -ne 1 ] ; then
+
+            id_tab=$counter
+
+          fi
+
+          if [ ! -z "${out_tabs[$id_tab]}" ] ; then
+            tsize=${out_tabs[$id_tab]}
+            tspaces=$(($tsize - ${#field}))
+
+            push_spaces $tspaces
+          fi
+
         fi
-
+        # End print tab
+      else
+        echo -en "\n"
       fi
-      # End print element postfix
-
-      # Print tabulation
-      if [ $def_tab -eq 1 ] ; then
-
-        if [ $has1tab -ne 1 ] ; then
-
-          id_tab=$counter
-
-        fi
-
-        if [ ! -z "${out_tabs[$id_tab]}" ] ; then
-          tsize=${out_tabs[$id_tab]}
-          tspaces=$(($tsize - ${#field}))
-
-          push_spaces $tspaces
-        fi
-
-      fi
-      # End print tab
 
 
       let counter++
 
     done
 
-    echo -en "\n"
+    if [ $print_vertical -eq 0 ] ; then
+      echo -en "\n"
+    fi
+
 
   done
+
   #----------------------------------------------------------
 
   return $ans

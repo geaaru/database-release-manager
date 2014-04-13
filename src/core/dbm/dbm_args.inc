@@ -170,37 +170,58 @@ _dbm_check_ins_script_type_args () {
   return 0
 }
 
+_dbm_ins_script_help () {
+
+  echo -en "[-f filename]           Script filename.\n"
+  echo -en "[-n name]               Release Name.\n"
+  echo -en "[-v version]            Release Version\n"
+  echo -en "[-t script_type]        Script Type.\n"
+  echo -en "[-a 0|1]                Set active flag. Default is 1 (active)\n"
+  echo -en "[-d directory]          Directory of the script.\n"
+  echo -en "[-o id_order]           Script Id Order (optional). Default is used MAX(id) of the same id_release.\n"
+  echo -en "[-r id_release]         Id_release of the script. Use this instead of release name and version.\n"
+  echo -en "[-h]                    Show this message.\n"
+
+  return 0
+}
+
 _dbm_check_ins_script_args () {
 
   [[ $DEBUG ]] && echo -en "(_dbm_check_ins_script_args args: $@)\n"
 
-  # Reinitialize opt index position
-  OPTIND=1
-  while getopts "f:t:a:d:hr:n:v:o:" opts "$@" ; do
-    case $opts in
+  local short_options="f:t:a:d:hr:n:v:o:"
 
-      f) DBM_SCRIPT_FILENAME="$OPTARG";;
-      t) DBM_SCRIPT_TYPE="$OPTARG";;
-      a) DBM_SCRIPT_ACTIVE="$OPTARG";;
-      d) DBM_SCRIPT_DIRECTORY="$OPTARG";;
-      r) DBM_SCRIPT_ID_RELEASE="$OPTARG";;
-      n) DBM_SCRIPT_REL_NAME="$OPTARG";;
-      v) DBM_SCRIPT_REL_VERSION="$OPTARG";;
-      o) DBM_SCRIPT_ID_ORDER="$OPTARG";;
-      h)
-        echo -en "[-f filename]           Script filename.\n"
-        echo -en "[-n name]               Release Name.\n"
-        echo -en "[-v version]            Release Version\n"
-        echo -en "[-t script_type]        Script Type.\n"
-        echo -en "[-a 0|1]                Set active flag. Default is 1 (active)\n"
-        echo -en "[-d directory]          Directory of the script.\n"
-        echo -en "[-o id_order]           Script Id Order (optional). Default is used MAX(id) of the same id_release.\n"
-        echo -en "[-r id_release]         Id_release of the script. Use this instead of release name and version.\n"
-        echo -en "[-h]                    Show this message.\n"
+  $(set -- $(getopt -u -q -a -o "$short_options" -- "$@")) || error_handled "Invalid parameters"
+
+  if [ $# -lt 2 ] ; then
+    _dbm_ins_script_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_ins_script_args: Found $# params)\n"
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -f) DBM_SCRIPT_FILENAME="$2";shift;;
+      -t) DBM_SCRIPT_TYPE="$2";shift;;
+      -a) DBM_SCRIPT_ACTIVE="$2";shift;;
+      -d) DBM_SCRIPT_DIRECTORY="$2";shift;;
+      -r) DBM_SCRIPT_ID_RELEASE="$2";shift;;
+      -n) DBM_SCRIPT_REL_NAME="$2";shift;;
+      -v) DBM_SCRIPT_REL_VERSION="$2";shift;;
+      -o) DBM_SCRIPT_ID_ORDER="$2";shift;;
+      -h)
+        _dbm_ins_script_help
         return 1
         ;;
-
+      --) ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
     esac
+    shift
+
   done
 
   if [ -z "$DBM_SCRIPT_FILENAME" ] ; then
@@ -330,22 +351,44 @@ _dbm_check_upd_script_args () {
   return 0
 }
 
+_dbm_rm_script_help () {
+
+  echo -en "[-i id_script]          Id Script of the script to remove.\n"
+
+  return 0
+}
+
+
 _dbm_check_rm_script_args () {
 
-  [[ $DEBUG ]] && echo -en "(_dbm_check_rm_script_args args: $@)\n"
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_rm_script_args args: $@)\n"
 
-  # Reinitialize opt index position
-  OPTIND=1
-  while getopts "i:h" opts "$@" ; do
-    case $opts in
+  local short_options="i:h"
 
-      i) DBM_SCRIPT_ID="$OPTARG";;
-      h)
-        echo -en "[-i id_script]          Id Script of the script to remove.\n"
+  $(set -- $(getopt -u -q -a -o "$short_options" -- "$@")) || error_handled "Invalid parameters"
+
+  if [ $# -lt 2 ] ; then
+    _dbm_rm_script_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_rm_script_args: Found $# params)\n"
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -i) DBM_SCRIPT_ID="$2";shift;;
+      -h)
+        _dbm_rm_script_help
         return 1
         ;;
-
+      --) ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
     esac
+    shift
+
   done
 
   if [ -z "$DBM_SCRIPT_ID" ] ; then
