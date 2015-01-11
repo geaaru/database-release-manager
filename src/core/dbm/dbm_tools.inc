@@ -5,6 +5,43 @@
 # License: GPL 2.0
 #------------------------------------------------
 
+
+# return 0 on success (show $_sqlite_ans variable for number)
+# return 1 on error
+_dbm_how_many_profiles () {
+
+  local query=""
+
+  _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS P FROM Profiles" || return 1
+
+  return 0
+}
+
+_dbm_get_default_profile_filepath () {
+
+  local query=""
+
+  check_var "DRM_PROFILES_PATH" || error_handled "You must define DRM_PROFILES_PATH variable on configuration file"
+
+  query="
+    SELECT conf_file
+    FROM Profiles
+    WHERE default_profile = 1"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || return 1
+  if [ x"$_sqlite_ans" == x"" ] ; then
+    return 1
+  fi
+
+  DRM_PROFILE_FILE="$DRM_PROFILES_PATH/$_sqlite_ans"
+
+  if [ ! -f $DRM_PROFILE_FILE ] ; then
+    error_generate "Profile file $DRM_PROFILE_FILE not found."
+  fi
+
+  return 0
+}
+
 # return 0 if exists
 # return 1 if not exists
 _dbm_check_if_exist_rel () {

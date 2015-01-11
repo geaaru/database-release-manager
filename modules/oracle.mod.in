@@ -89,6 +89,8 @@ oracle_test_connection () {
 
   _oracle_connections_args "$@" || error_handled ""
 
+  commons_oracle_check_vars
+
   sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD"
 
   commons_oracle_check_connection || error_handled "SQLPlus was unable to connect the DB with the supplied credentials"
@@ -120,6 +122,8 @@ oracle_compile () {
   _oracle_connections_args "$@"
 
   _oracle_compile_args "$@" || error_handled ""
+
+  commons_oracle_check_vars
 
   sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD"
 
@@ -154,6 +158,8 @@ oracle_download () {
   _oracle_connections_args "$@"
 
   _oracle_download_args "$@" || error_handled ""
+
+  commons_oracle_check_vars
 
   sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD"
 
@@ -195,12 +201,6 @@ _oracle_init () {
 
     [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_init: Check requirements of the oracle module.)\n"
 
-    check_var "ORACLE_USER" || error_handled "You must define ORACLE_USER variable on configuration file."
-    check_var "ORACLE_PWD"  || error_handled "You must define ORACLE_PWD variable on configuration file."
-    check_var "ORACLE_SID"  || error_handled "You must define ORACLE_SID variable on configuration file."
-    check_var "ORACLE_DIR"  || error_handled "You must define ORACLE_DIR variable on configuration file."
-
-    commons_oracle_check_tnsnames $LOCAL_DIR || error_handled "Invalid TNS_ADMIN variable"
     commons_oracle_check_sqlplus || error_handled ""
 
     [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_init: All requirements are present. Continue my work.)\n"

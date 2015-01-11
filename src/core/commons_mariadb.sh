@@ -73,6 +73,27 @@ commons_mariadb_check_client () {
 
 #****f* commons_mariadb/commons_mariadb_check_connection
 # FUNCTION
+#   Check if are present mandatary mariadb environment variables.
+# RETURN VALUE
+#   0 all mandatary variables are present.
+#   1 on error
+# SOURCE
+commons_mariadb_check_vars () {
+
+  local commons_msg = 'variable on configuration file, through arguments or on current profile.'
+
+  check_var "MARIADB_USER" || error_handled "You must define MARIADB_USER $commons_msg"
+  check_var "MARIADB_PWD"  || error_handled "You must define MARIADB_PWD $commons_msg"
+  check_var "MARIADB_DB"   || error_handled "You must define MARIADB_DB $commons_msg"
+  check_var "MARIADB_DIR"  || error_handled "You must define MARIADB_DIR $commons_msg"
+
+
+  return 0
+}
+#****
+
+#****f* commons_mariadb/commons_mariadb_check_connection
+# FUNCTION
 #   Check connection to database.
 # RETURN VALUE
 #   0 when connection is ok

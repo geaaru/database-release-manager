@@ -1,38 +1,38 @@
 BEGIN TRANSACTION;
 
 CREATE TABLE ScriptTypes (
-   code            TEXT PRIMARY KEY UNIQUE,
-   descr           TEXT NOT NULL
+  code            TEXT PRIMARY KEY UNIQUE,
+  descr           TEXT NOT NULL
 );
 
 CREATE TABLE DatabaseAdapters (
-   adapter         TEXT PRIMARY KEY UNIQUE,
-   descr           TEXT NOT NULL
+  adapter         TEXT PRIMARY KEY UNIQUE,
+  descr           TEXT NOT NULL
 );
 
 CREATE TABLE Releases (
-   id_release      INTEGER PRIMARY KEY AUTOINCREMENT,
-   name            TEXT NOT NULL,
-   version         TEXT NOT NULL,
-   release_date    DATE NOT NULL,
-   creation_date   DATE NOT NULL,
-   update_date     DATE NOT NULL,
-   id_order        INTEGER NOT NULL,
-   db_adapter      TEXT NOT NULL,
-   id_branch       INTEGER NOT NULL DEFAULT 1,
-   directory       TEXT NOT NULL DEFAULT '.',
-   flag_dev        INTEGER NOT NULL DEFAULT 0,
-   CONSTRAINT uc_name_version UNIQUE(name, version),
-   CONSTRAINT uc_idorder_idbranch UNIQUE(id_order,id_branch),
-   FOREIGN KEY(db_adapter) REFERENCES DatabaseAdapters(adapter),
-   FOREIGN KEY(id_branch) REFERENCES Branches(id_branch)
+  id_release      INTEGER PRIMARY KEY AUTOINCREMENT,
+  name            TEXT NOT NULL,
+  version         TEXT NOT NULL,
+  release_date    DATE NOT NULL,
+  creation_date   DATE NOT NULL,
+  update_date     DATE NOT NULL,
+  id_order        INTEGER NOT NULL,
+  db_adapter      TEXT NOT NULL,
+  id_branch       INTEGER NOT NULL DEFAULT 1,
+  directory       TEXT NOT NULL DEFAULT '.',
+  flag_dev        INTEGER NOT NULL DEFAULT 0,
+  CONSTRAINT uc_name_version UNIQUE(name, version),
+  CONSTRAINT uc_idorder_idbranch UNIQUE(id_order,id_branch),
+  FOREIGN KEY(db_adapter) REFERENCES DatabaseAdapters(adapter),
+  FOREIGN KEY(id_branch) REFERENCES Branches(id_branch)
 );
 
 CREATE TABLE Branches (
-   id_branch       INTEGER PRIMARY KEY AUTOINCREMENT,
-   name            TEXT UNIQUE NOT NULL,
-   creation_date   DATE NOT NULL,
-   update_date     DATE NOT NULL
+  id_branch       INTEGER PRIMARY KEY AUTOINCREMENT,
+  name            TEXT UNIQUE NOT NULL,
+  creation_date   DATE NOT NULL,
+  update_date     DATE NOT NULL
 );
 
 -- ReleasesDependencies table
@@ -43,26 +43,26 @@ CREATE TABLE Branches (
 -- 0.3.0 (id_release) - 0.1.0 (id_release_dep)
 -- 0.3.0 (id_release) - 0.2.0 (id_release_dep)
 CREATE TABLE ReleasesDependencies (
-   id_release     INTEGER NOT NULL,
-   id_release_dep INTEGER NOT NULL,
-   creation_date  DATE NOT NULL,
-   PRIMARY KEY(id_release, id_release_dep),
-   FOREIGN KEY(id_release_dep) REFERENCES Releases(id_release),
-   FOREIGN KEY(id_release) REFERENCES Releases(id_release)
+  id_release     INTEGER NOT NULL,
+  id_release_dep INTEGER NOT NULL,
+  creation_date  DATE NOT NULL,
+  PRIMARY KEY(id_release, id_release_dep),
+  FOREIGN KEY(id_release_dep) REFERENCES Releases(id_release),
+  FOREIGN KEY(id_release) REFERENCES Releases(id_release)
 );
 
 CREATE TABLE Scripts (
-   id_script       INTEGER PRIMARY KEY AUTOINCREMENT,
-   filename        TEXT NOT NULL,
-   type            TEXT NOT NULL,
-   active          INTEGER NOT NULL,
-   directory       TEXT NOT NULL,
-   id_release      INTEGER NOT NULL,
-   id_order        INTEGER NOT NULL,
-   creation_date   DATE NOT NULL,
-   update_date     DATE NOT NULL,
-   FOREIGN KEY(id_release) REFERENCES Releases(id_release),
-   FOREIGN KEY(type)       REFERENCES ScriptTypes(code)
+  id_script       INTEGER PRIMARY KEY AUTOINCREMENT,
+  filename        TEXT NOT NULL,
+  type            TEXT NOT NULL,
+  active          INTEGER NOT NULL,
+  directory       TEXT NOT NULL,
+  id_release      INTEGER NOT NULL,
+  id_order        INTEGER NOT NULL,
+  creation_date   DATE NOT NULL,
+  update_date     DATE NOT NULL,
+  FOREIGN KEY(id_release) REFERENCES Releases(id_release),
+  FOREIGN KEY(type)       REFERENCES ScriptTypes(code)
 );
 
 CREATE TABLE ScriptRelInhibitions (
@@ -85,6 +85,16 @@ CREATE TABLE ScriptRelDedicated (
   FOREIGN KEY(id_script)       REFERENCES Scripts(id_script),
   FOREIGN KEY(id_release_from) REFERENCES Releases(id_release),
   FOREIGN KEY(id_release_to)   REFERENCES Releases(id_release)
+);
+
+CREATE TABLE Profiles (
+  id_profile       INTEGER NOT NULL,
+  profile_name     TEXT NOT NULL,
+  conf_file        TEXT NOT NULL,
+  default_profile  INTEGER NOT NULL,
+  creation_date    DATE NOT NULL,
+  update_date      DATE NOT NULL,
+  CONSTRAINT uc_profile_name UNIQUE(profile_name)
 );
 
 INSERT INTO DatabaseAdapters (adapter, descr) VALUES('oracle', 'Oracle Database Adapter');

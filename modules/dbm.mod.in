@@ -63,6 +63,7 @@ dbm_long_help () {
    echo -en "\tmove_script             Move script.\n"
    echo -en "\tshow_branches           Show branches.\n"
    echo -en "\tinsert_branch           Insert a new branch.\n"
+   echo -en "\tshow_profiles           Show profiles\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -104,9 +105,115 @@ dbm_show_help () {
    echo -en "\tmove_script             Move script.\n"
    echo -en "\tshow_branches           Show branches.\n"
    echo -en "\tinsert_branch           Insert a new branch.\n"
-    echo -en "===========================================================================\n"
+   echo -en "\tshow_profiles           Show profiles\n"
+   echo -en "===========================================================================\n"
 
    return 0
+}
+#***
+
+#****f* dbm/dbm_show_profiles
+# FUNCTION
+#  Show profiles list
+# SOURCE
+dbm_show_profiles () {
+
+  _dbm_how_many_profiles || error_handled "Unexpected error!"
+
+  local n_profiles=$_sqlite_ans
+  local query=""
+  local counter=1
+  local id_profile=""
+  local name=""
+  local file=""
+  local default_profile=""
+  local update_date=""
+  local creation_date=""
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "N. Profiles: $n_profiles\n"
+
+  if [ x$n_profiles != x0 ] ; then
+
+    query="
+      SELECT id_profile,
+             profile_name,
+             default_profile,
+             conf_file,
+             creation_date,
+             update_date
+      FROM Profiles
+      ORDER BY id_profile"
+
+    _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="ID"
+    out_headers[1]="PROFILE_NAME"
+    out_headers[2]="DEFAULT"
+    out_headers[3]="CONFIG_FILE"
+    out_headers[4]="CREATION_DATE"
+    out_headers[5]="UPDATE_DATE"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;34m"
+    out_el_pre[2]="\e[1;35m"
+    out_el_pre[3]="\e[1;36m"
+    out_el_pre[4]="\e[1;31m"
+    out_el_pre[5]="\e[1;32m"
+
+    out_el_post[0]="\e[m"
+
+    out_tabs[0]="10"
+    out_tabs[1]="23"
+    out_tabs[2]="15"
+    out_tabs[3]="23"
+    out_tabs[4]="23"
+    out_tabs[5]="23"
+
+    IFS=$'\n'
+    for row in $_sqlite_ans ; do
+
+      id_profile=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      name=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+      default_profile=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+      file=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+      update_date=`echo $row | awk '{split($0,a,"|"); print a[5]}'`
+      creation_date=`echo $row | awk '{split($0,a,"|"); print a[6]}'`
+
+      if [ x${default_profile} == x1 ] ; then
+        default_profile="*"
+      else
+        default_profile=" "
+      fi
+
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${id_profile}\""
+      eval "row${counter}[1]=\"${name}\""
+      eval "row${counter}[2]=\"${default_profile}\""
+      eval "row${counter}[3]=\"${file}\""
+      eval "row${counter}[4]=\"${update_date}\""
+      eval "row${counter}[5]=\"${creation_date}\""
+
+      let counter++
+
+    done
+    unset IFS
+
+    out_handler_print_arr
+
+  else
+
+    out_handler_print "No profiles available."
+
+  fi
+
+  out_handler_clean
+
+  return 0
 }
 #***
 

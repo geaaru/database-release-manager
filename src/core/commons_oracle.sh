@@ -97,6 +97,30 @@ commons_oracle_check_sqlplus () {
 }
 #***
 
+#****f* commons_oracle/commons_oracle_check_sqlplus
+# FUNCTION
+#   Check if are present mandatary oracle environment variables
+#   and check validity of TNS_ADMIN variable path.
+# RETURN VALUE
+#   0 on success
+#   exit on error
+# SOURCE
+commons_oracle_check_vars () {
+
+  local commons_msg = 'variable on configuration file, through arguments or on current profile.'
+
+  check_var "ORACLE_USER" || error_handled "You must define ORACLE_USER $commons_msg"
+  check_var "ORACLE_PWD"  || error_handled "You must define ORACLE_PWD $commons_msg"
+  check_var "ORACLE_SID"  || error_handled "You must define ORACLE_SID $commons_msg"
+  check_var "ORACLE_DIR"  || error_handled "You must define ORACLE_DIR $commons_msg"
+
+  commons_oracle_check_tnsnames $LOCAL_DIR || error_handled "Invalid TNS_ADMIN variable"
+
+  return 0
+}
+#***
+
+
 #****f* commons_oracle/commons_oracle_check_connection
 # FUNCTION
 #   Check that SQLPLUS and sqlplus_auth variables are set

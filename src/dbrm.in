@@ -67,6 +67,14 @@ show_help () {
    done
 }
 
+load_profile () {
+
+  _dbm_get_default_profile_filepath
+
+  . $DRM_PROFILE_FILE
+
+}
+
 # return 0 ok
 # return 1 error or help message
 check_cmdline_args () {
@@ -106,6 +114,13 @@ check_cmdline_args () {
    for i in $modules ; do
       if [ x"$i" == x"$1" ] ; then
          if type -t ${i}_${2} > /dev/null ; then
+
+           if [[ -n $DRM_PROFILE && x$DRM_PROFILE == x1 ]] ; then
+
+             load_profile
+
+           fi
+
             ${i}_${2} "$@"
             return 0
          else

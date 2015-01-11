@@ -89,6 +89,8 @@ mariadb_test_connection () {
 
   _mariadb_connections_args "$@" || error_handled ""
 
+  commons_mariadb_check_vars || error_handled ""
+
   mysql_set_auth_var "$MARIADB_DB" "$MARIADB_USER" "$MARIADB_PWD" "$MARIADB_HOST"
 
   commons_mariadb_check_connection || error_handled "MySQL client was unable to connect to DB with supplied credentials."
@@ -130,6 +132,8 @@ mariadb_show () {
   _mariadb_connections_args "$@"
 
   _mariadb_show_args "$@" || error_handled ""
+
+  commons_mariadb_check_vars || error_handled ""
 
   mysql_set_auth_var "$MARIADB_DB" "$MARIADB_USER" "$MARIADB_PWD" "$MARIADB_HOST"
 
@@ -211,6 +215,8 @@ mariadb_compile () {
 
   _mariadb_compile_args "$@" || error_handled ""
 
+  commons_mariadb_check_vars || error_handled ""
+
   mysql_set_auth_var "$MARIADB_DB" "$MARIADB_USER" "$MARIADB_PWD" "$MARIADB_HOST"
 
   commons_mariadb_check_connection || error_handled "MySQL client was unable to connect to DB with supplied credentials."
@@ -243,6 +249,8 @@ mariadb_download () {
   _mariadb_connections_args "$@"
 
   _mariadb_download_args "$@" || error_handled ""
+
+  commons_mariadb_check_vars || error_handled ""
 
   mysql_set_auth_var "$MARIADB_DB" "$MARIADB_USER" "$MARIADB_PWD" "$MARIADB_HOST"
 
@@ -285,11 +293,6 @@ _mariadb_init () {
     [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_init: Check requirements of the mariadb module.)\n"
 
     commons_mariadb_check_client || error_handled ""
-
-    check_var "MARIADB_USER" || error_handled "You must define MARIADB_USER variable on configuration file."
-    check_var "MARIADB_PWD"  || error_handled "You must define MARIADB_PWD variable on configuration file."
-    check_var "MARIADB_DB"   || error_handled "You must define MARIADB_DB variable on configuration file."
-    check_var "MARIADB_DIR"  || error_handled "You must define MARIADB_DIR variable on configuration file."
 
     if [ -z $MARIADB_TMZ ] ; then
       MARIADB_TMZ='UTC'
