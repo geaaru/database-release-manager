@@ -89,6 +89,172 @@ _dbm_check_ins_rel_args () {
   return 0
 }
 
+#****f* dbm/_dbm_add_prof_help
+# FUNCTION
+#   Print help message of add_profile command.
+# SOURCE
+_dbm_add_prof_help () {
+
+  echo -en "[--name name]          Profile name to insert.\n"
+  echo -en "[--file file]          Filename of the profile. Example: prof1.conf.\n"
+  echo -en "[--default]            Set new profile as default.\n"
+  echo -en "[-h]                   Show this help message.\n"
+
+  return 0
+}
+#***
+
+#****f* dbm/_dbm_prof_help
+# FUNCTION
+#   Print help message of del_profile/set_profile command.
+# SOURCE
+_dbm_prof_help () {
+
+  echo -en "[--name profile_name]  Name of the profile.\n"
+  echo -en "[--id id_profile]      Id of the profile.\n"
+  echo -en "[-h]                   Show this help message.\n"
+
+  return 0
+}
+#***
+
+
+#****f* dbm/_dbm_check_prof_args
+# FUNCTION
+#   Internal function for parse command line arguments related to
+#   del_profile/set_profile command.
+# DESCRIPTION
+#   * --name profile_name  Name of the profile.
+#   * --id id_profile      Id of the profile.
+#   * -h                   Show help message.
+# SOURCE
+_dbm_check_prof_args () {
+
+  [[ $DEBUG ]] && echo -en "(_dbm_check_del_prof_args args: $@)\n"
+
+  local short_options="h"
+  local long_options="id: name:"
+
+  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
+
+  if [ $# -lt 2 ] ; then
+    _dbm_prof_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_del_prof_args: Found $# params)\n"
+
+  DBM_PROFILE_BYNAME=0
+  DBM_PROFILE_BYID=0
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      --name)
+        DBM_PROFILE_NAME="$2"
+        DBM_PROFILE_BYNAME=1
+        shift
+        ;;
+      --id)
+        DBM_PROFILE_ID="$2"
+        DBM_PROFILE_BYID=1
+        shift
+        ;;
+      -h)
+        _dbm_prof_help
+        return 1
+        ;;
+      --) ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+    esac
+    shift
+
+  done
+
+  if [[ $DBM_PROFILE_BYID -eq 0 && $DBM_PROFILE_BYNAME -eq 0 ]] ; then
+    echo "A profile name or profile id is needed."
+    return 1
+  fi
+
+  if [[ $DBM_PROFILE_BYID -eq 1 && $DBM_PROFILE_BYNAME -eq 1 ]] ; then
+    echo "Set only profile id or only profile name."
+    return 1
+  fi
+
+  return 0
+}
+#***
+
+#****f* dbm/_dbm_check_add_prof_args
+# FUNCTION
+#   Internal function for parse command line arguments related to add_profile command.
+# DESCRIPTION
+#   * --default            Set profile as default.
+#   * --name               Set profile name.
+#   * --file               Set profile filename.
+#   * -h                   Show help message.
+# SOURCE
+_dbm_check_add_prof_args () {
+
+  [[ $DEBUG ]] && echo -en "(_dbm_check_add_prof_args args: $@)\n"
+
+  local short_options="h"
+  local long_options="default name: file:"
+
+  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
+
+  if [ $# -lt 2 ] ; then
+    _dbm_add_prof_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_add_prof_args: Found $# params)\n"
+
+  DBM_PROFILE_DEFAULT=0
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      --name) DBM_PROFILE_NAME="$2"
+        shift
+        ;;
+      --file)
+        DBM_PROFILE_FILENAME="$2"
+        shift
+        ;;
+      --default)
+        DBM_PROFILE_DEFAULT=1
+        ;;
+      -h)
+        _dbm_add_prof_help
+        return 1
+        ;;
+      --) ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+    esac
+    shift
+
+  done
+
+  if [ -z "$DBM_PROFILE_NAME" ] ; then
+    echo "Missing Profile Name"
+    return 1
+  fi
+
+  if [ -z "$DBM_PROFILE_FILENAME" ] ; then
+    echo "Missing Profile filename."
+    return 1
+  fi
+
+  return 0
+}
+#***
+
+
 # Args for insert branch command
 _dbm_check_ins_bra_args () {
 

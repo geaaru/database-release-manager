@@ -71,7 +71,9 @@ load_profile () {
 
   _dbm_get_default_profile_filepath
 
-  . $DRM_PROFILE_FILE
+  if [ -n "$DRM_PROFILE_FILE" ] ; then
+    . $DRM_PROFILE_FILE
+  fi
 
 }
 

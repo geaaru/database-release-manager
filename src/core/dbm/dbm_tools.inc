@@ -17,16 +17,17 @@ _dbm_how_many_profiles () {
   return 0
 }
 
-_dbm_get_default_profile_filepath () {
+_dbm_get_profile_by_name () {
 
   local query=""
+  local name="$1"
 
   check_var "DRM_PROFILES_PATH" || error_handled "You must define DRM_PROFILES_PATH variable on configuration file"
 
   query="
     SELECT conf_file
     FROM Profiles
-    WHERE default_profile = 1"
+    WHERE profile_name = '$profile_name'"
 
   _sqlite_query -c "$DRM_DB" -q "$query" || return 1
   if [ x"$_sqlite_ans" == x"" ] ; then
@@ -37,6 +38,77 @@ _dbm_get_default_profile_filepath () {
 
   if [ ! -f $DRM_PROFILE_FILE ] ; then
     error_generate "Profile file $DRM_PROFILE_FILE not found."
+  fi
+
+  export DRM_PROFILE_FILE
+
+  return 0
+
+}
+
+_dbm_get_default_profile_filepath () {
+
+  local query=""
+
+  check_var "DRM_PROFILES_PATH" || error_handled "You must define DRM_PROFILES_PATH variable on configuration file"
+
+  query="
+    SELECT conf_file
+    FROM Profiles
+    WHERE default_profile = 1
+    LIMIT 1"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || return 1
+  if [ x"$_sqlite_ans" == x"" ] ; then
+    return 1
+  fi
+
+  DRM_PROFILE_FILE="$DRM_PROFILES_PATH/$_sqlite_ans"
+
+  if [ ! -f $DRM_PROFILE_FILE ] ; then
+    error_generate "Profile file $DRM_PROFILE_FILE not found."
+  fi
+
+  export DRM_PROFILE_FILE
+
+  return 0
+}
+
+# return 0 if exists
+# return 1 if not exists
+_dbm_check_if_exist_prof_byid () {
+
+  local id_profile="$1"
+
+  local query="
+    SELECT COUNT(1)
+    FROM Profiles
+    WHERE id_profile = $id_profile"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+  if [ x"$_sqlite_ans" != x"1" ] ; then
+    error_generate "Invalid id_profile $id_profile."
+  fi
+
+  return 0
+}
+
+# return 0 if exists
+# return 1 if not exists
+_dbm_check_if_exist_prof_byname () {
+
+  local profile_name="$1"
+
+  local query="
+    SELECT COUNT(1)
+    FROM Profiles
+    WHERE profile_name = '$profile_name'"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+  if [ x"$_sqlite_ans" != x"1" ] ; then
+    error_generate "Invalid profile_name $profile_name."
   fi
 
   return 0

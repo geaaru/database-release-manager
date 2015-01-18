@@ -22,7 +22,7 @@ out_stdout_version () {
 #***
 
 
-#****f* out_stdout/out_stdout_print
+#****f* out_stdout/out_stdout_arr
 # FUNCTION
 # DESCRIPTION
 #   Function search for this variables:

@@ -88,7 +88,7 @@ CREATE TABLE ScriptRelDedicated (
 );
 
 CREATE TABLE Profiles (
-  id_profile       INTEGER NOT NULL,
+  id_profile       INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   profile_name     TEXT NOT NULL,
   conf_file        TEXT NOT NULL,
   default_profile  INTEGER NOT NULL,

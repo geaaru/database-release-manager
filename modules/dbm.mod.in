@@ -64,6 +64,10 @@ dbm_long_help () {
    echo -en "\tshow_branches           Show branches.\n"
    echo -en "\tinsert_branch           Insert a new branch.\n"
    echo -en "\tshow_profiles           Show profiles\n"
+   echo -en "\tadd_profile             Add a new profile to project.\n"
+   echo -en "\tdel_profile             Remove a profile from project.\n"
+   echo -en "\tset_profile             Set default profile of the project.\n"
+   echo -en "\tinfo                    Show informations about dbm parameters and project.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -106,9 +110,67 @@ dbm_show_help () {
    echo -en "\tshow_branches           Show branches.\n"
    echo -en "\tinsert_branch           Insert a new branch.\n"
    echo -en "\tshow_profiles           Show profiles\n"
+   echo -en "\tadd_profile             Add a new profile to project.\n"
+   echo -en "\tset_profile             Set default profile of the project.\n"
+   echo -en "\tinfo                    Show informations about dbm parameters and project.\n"
    echo -en "===========================================================================\n"
 
    return 0
+}
+#***
+
+#****f* dbm/dbm_info
+# FUNCTION
+#  Show profiles list
+# SOURCE
+dbm_info () {
+
+  local fields="LOCAL_DIR
+    LOCAL_CONFIG_FILE
+    MODULES_DIR
+    SQLCA
+    DRM_DB
+    DBM_HISTORY
+    DRM_PROFILE
+    DRM_PROFILES_PATH
+  "
+
+  if [[ ! -z "$SQLCA"  && "$SQLCA" =~ .*mariadb.* ]] ; then
+    fields="${fields}
+      MARIADB_USER
+      MARIADB_PWD
+      MARIADB_DB
+      MARIADB_HOST
+      MARIADB_DIR
+      MARIADB_TMZ
+      MARIADB_COMPILE_FILES_EXCLUDED
+      MARIADB_EXTRA_OPTIONS
+    "
+  fi
+
+  if [[ ! -z "$SQLCA"  && "$SQLCA" =~ .*sqlite.* ]] ; then
+    fields="${fields}
+      SQLITEDB
+    "
+  fi
+
+  if [[ ! -z "$SQLCA"  && "$SQLCA" =~ .*oracle.* ]] ; then
+    fields="${fields}
+      ORACLE_USER
+      ORACLE_PWD
+      ORACLE_SID
+      ORACLE_DIR
+      ORACLE_COMPILE_FILES_EXCLUDED
+      TNS_ADMIN
+    "
+  fi
+
+  # TODO: use output modules.
+  for i in $fields ; do
+    echo -en "$i = ${!i}\n"
+  done
+
+  return 0
 }
 #***
 
@@ -799,13 +861,16 @@ dbm_move_release () {
   local where_moved_record=""
   local insert2tmp=""
   local delete_rel=""
+  local args=""
 
   # Shift first two input param
   shift 2
 
+  args="$@"
+
   _dbm_check_move_release_args "$@" || return $result
 
-  _dbm_save2history "dbrm dbm move_release $@"
+  _dbm_save2history "dbrm dbm move_release $args"
 
   _dbm_check_if_exist_rel "$DBM_REL_NAME" "$DBM_REL_VERSION_TO" || return $result
   _dbm_check_if_exist_rel "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM" || return $result
@@ -1058,13 +1123,16 @@ dbm_update_release () {
   local result=1
   local query="UPDATE Releases SET "
   local count=0
+  local args=""
 
   # Shift first two input param
   shift 2
 
+  args="$@"
+
   _dbm_check_upd_release_args "$@" || return $result
 
-  _dbm_save2history "dbrm dbm update_release $@"
+  _dbm_save2history "dbrm dbm update_release $args"
 
   if [ -n "$DBM_REL_NAME" ] ; then
 
@@ -1140,6 +1208,199 @@ dbm_update_release () {
 }
 #***
 
+#****f* dbm/dbm_add_profile
+# FUNCTION
+#  Insert a new profile.
+# SEE ALSO
+#  _dbm_check_add_prof_args for list of accepted arguments.
+# SOURCE
+dbm_add_profile () {
+
+  local result=1
+  local query=""
+  local id_profile=""
+  local is_present_default=0
+  local update_query=""
+  local args=""
+
+  # Shift first two input param
+  shift 2
+
+  args="$@"
+
+  _dbm_check_add_prof_args "$@" || return $result
+
+  _dbm_save2history "dbrm dbm add_profile $args"
+
+  # Check if present a default profile
+  query="
+    SELECT COUNT(1)
+    FROM Profiles
+    WHERE default_profile = 1"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Error on check if is present a default profile"
+
+  if [[ x"$_sqlite_ans" != x"0" && $DBM_PROFILE_DEFAULT -eq 1 ]] ; then
+    is_present_default=1
+  fi
+
+  if [ $is_present_default -eq 1 ] ; then
+    update_query="
+      UPDATE Profiles
+      SET default_profile = 0, update_date = DATETIME('now')
+      WHERE default_profile = 1"
+  fi
+
+  query="
+    ${update_query};
+    INSERT INTO Profiles
+    (profile_name,
+     conf_file,
+     default_profile,
+     creation_date,
+     update_date)
+    VALUES (
+     '$DBM_PROFILE_NAME',
+     '$DBM_PROFILE_FILENAME',
+     '$DBM_PROFILE_DEFAULT',
+     DATETIME('now'),
+     DATETIME('now')
+    );
+    SELECT last_insert_rowid() AS rowid
+    FROM Profiles
+    LIMIT 1
+  "
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Error on insert profile $DBM_PROFILE_NAME."
+
+  if [ -n "$_sqlite_ans" ] ; then
+    out_handler_print "Created profile $_sqlite_ans."
+  fi
+
+  out_handler_clean
+
+  return 0
+}
+#***
+
+#****f* dbm/dbm_del_profile
+# FUNCTION
+#  Delete a profile.
+# SEE ALSO
+#  _dbm_check_prof_args for list of accepted arguments.
+# SOURCE
+dbm_del_profile () {
+
+  local result=1
+  local query=""
+  local where_cond=""
+  local profile=""
+  local args=""
+
+  # Shift first two input param
+  shift 2
+
+  args="$@"
+
+  _dbm_check_prof_args "$@" || return $result
+
+  _dbm_save2history "dbrm dbm del_profile $args"
+
+  if [ $DBM_PROFILE_BYID -eq 1 ] ; then
+    where_cond="id_profile = $DBM_PROFILE_ID"
+    profile="$DBM_PROFILE_ID"
+  else
+    where_cond="profile_name = '$DBM_PROFILE_NAME'"
+    profile="$DBM_PROFILE_NAME"
+  fi
+
+  query="
+    DELETE FROM Profiles
+    WHERE ${where_cond}"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Error on delete profile."
+
+  out_handler_print "Profile $profile is been deleted."
+
+  out_handler_clean
+
+  return 0
+}
+#***
+
+#****f* dbm/dbm_set_profile
+# FUNCTION
+#  Set default profile.
+# SEE ALSO
+#  _dbm_check_prof_args for list of accepted arguments.
+# SOURCE
+dbm_set_profile () {
+
+  local result=1
+  local query=""
+  local where_cond=""
+  local profile=""
+  local is_present_default=0
+  local args=""
+
+  # Shift first two input param
+  shift 2
+
+  args="$@"
+
+  _dbm_check_prof_args "$@" || return $result
+
+  _dbm_save2history "dbrm dbm set_profile $args"
+
+  # Check if present a default profile
+  query="
+    SELECT COUNT(1)
+    FROM Profiles
+    WHERE default_profile = 1"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Error on check if is present a default profile"
+
+  if [ x"$_sqlite_ans" != x"0" ] ; then
+    is_present_default=1
+  fi
+
+  if [ $is_present_default -eq 1 ] ; then
+    update_query="
+      UPDATE Profiles
+      SET default_profile = 0, update_date = DATETIME('now')
+      WHERE default_profile = 1"
+  fi
+
+  if [ $DBM_PROFILE_BYID -eq 1 ] ; then
+
+    where_cond="id_profile = $DBM_PROFILE_ID"
+    profile="$DBM_PROFILE_ID"
+    _dbm_check_if_exist_prof_byid "$profile" || error_handled ""
+
+  else
+
+    where_cond="profile_name = '$DBM_PROFILE_NAME'"
+    profile="$DBM_PROFILE_NAME"
+    _dbm_check_if_exist_prof_byname "$profile" || error_handled ""
+
+  fi
+
+  query="
+    ${update_query};
+    UPDATE Profiles
+    SET default_profile = 1, update_date = DATETIME('now')
+    WHERE ${where_cond}"
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Error on set profile $profile."
+
+  out_handler_print "Default profile $profile is now default."
+
+  out_handler_clean
+
+  return 0
+}
+#***
+
 #****f* dbm/dbm_insert_release
 # FUNCTION
 #  Insert a new release.
@@ -1151,13 +1412,16 @@ dbm_insert_release () {
   local result=1
   local query=""
   local id_branch=""
+  local args=""
 
   # Shift first two input param
   shift 2
 
+  args="$@"
+
   _dbm_check_ins_rel_args "$@" || return $result
 
-  _dbm_save2history "dbrm dbm insert_release $@"
+  _dbm_save2history "dbrm dbm insert_release $args"
 
   if [ -z "$DBM_REL_BRANCH" ] ; then
 
@@ -1315,13 +1579,16 @@ dbm_update_script () {
   local query=""
   local query_sub=""
   local upd_elems=0
+  local args=""
 
   # Shift first two input param
   shift 2
 
+  args="$@"
+
   _dbm_check_upd_script_args "$@" || return $result
 
-  _dbm_save2history "dbrm dbm update_script $@"
+  _dbm_save2history "dbrm dbm update_script $args"
 
   if [ ! -z "$DBM_SCRIPT_FILENAME" ] ; then
 
@@ -1444,13 +1711,16 @@ dbm_insert_script () {
   local result=1
   local query=""
   local id_rel_query=""
+  local args=""
 
   # Shift first two input param
   shift 2
 
+  args="$@"
+
   _dbm_check_ins_script_args "$@" || return $result
 
-  _dbm_save2history "dbrm dbm insert_script $@"
+  _dbm_save2history "dbrm dbm insert_script $args"
 
   if [ -z "$DBM_SCRIPT_ID_RELEASE" ] ; then
     id_rel_query="(SELECT id_release FROM Releases WHERE name = '$DBM_SCRIPT_REL_NAME' AND version = '$DBM_SCRIPT_REL_VERSION')"
@@ -1500,13 +1770,16 @@ dbm_insert_script_type () {
 
   local result=1
   local query=""
+  local args=""
 
   # Shift first two input param
   shift 2
 
+  args="$@"
+
   _dbm_check_ins_script_type_args "$@" || return $result
 
-  _dbm_save2history "dbrm dbm insert_script_type $@"
+  _dbm_save2history "dbrm dbm insert_script_type $args"
 
   query="INSERT INTO ScriptTypes (code,descr) VALUES ('$DBM_SCRIPT_TYPE_CODE', '$DBM_SCRIPT_TYPE_DESCR')";
 
@@ -1535,13 +1808,16 @@ dbm_insert_rel_dep () {
   local query=""
   local id_rel_query_to=""
   local id_rel_query_from=""
+  local args=""
 
   # Shift first two input param
   shift 2
 
+  args="$@"
+
   _dbm_check_rel_dep_args "$@" || return $result
 
-  _dbm_save2history "dbrm dbm insert_rel_dep $@"
+  _dbm_save2history "dbrm dbm insert_rel_dep $args"
 
   id_rel_query_to="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_TO')"
   id_rel_query_from="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_FROM')"
@@ -1611,13 +1887,16 @@ dbm_insert_inhibit_script () {
   local query=""
   local id_rel_query_to=""
   local id_rel_query_from=""
+  local args=""
 
   # Shift first two input param
   shift 2
 
+  args="$@"
+
   _dbm_check_inhibit_script_args "$@" || return $result
 
-  _dbm_save2history "dbrm dbm insert_inhibit_script $@"
+  _dbm_save2history "dbrm dbm insert_inhibit_script $args"
 
   id_rel_query_to="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_TO')"
   id_rel_query_from="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_FROM')"
@@ -1650,13 +1929,16 @@ dbm_insert_ded_script () {
   local query=""
   local id_rel_query_to=""
   local id_rel_query_from=""
+  local args=""
 
   # Shift first two input param
   shift 2
 
+  args="$@"
+
   _dbm_check_inhibit_script_args "$@" || return $result
 
-  _dbm_save2history "dbrm dbm insert_ded_script $@"
+  _dbm_save2history "dbrm dbm insert_ded_script $args"
 
   id_rel_query_to="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_TO')"
   id_rel_query_from="(SELECT id_release FROM Releases WHERE name = '$DBM_REL_NAME' AND version = '$DBM_REL_VERSION_FROM')"
@@ -1839,13 +2121,16 @@ dbm_insert_branch () {
 
   local result=1
   local query=""
+  local args=""
 
   # Shift first two input param
   shift 2
 
+  args="$@"
+
   _dbm_check_ins_bra_args "$@" || return $result
 
-  _dbm_save2history "dbrm dbm insert_branch $@"
+  _dbm_save2history "dbrm dbm insert_branch $args"
 
   query="INSERT INTO Branches (name,creation_date,update_date) \
          VALUES ('$DBM_BRA_NAME', DATETIME('now'),DATETIME('now'))"
@@ -1876,9 +2161,12 @@ dbm_move_script () {
   local id_order_to=""
   local create_tmp_table=""
   local move_others=""
+  local args=""
 
   # Shift first two input param
   shift 2
+
+  args="$@"
 
   _dbm_check_move_script_args "$@" || return $result
 
@@ -1888,7 +2176,7 @@ dbm_move_script () {
 
   _dbm_check_if_exist_id_script "$DBM_SCRIPT_ID_TO" "$DBM_REL_ID" || return $result
 
-  _dbm_save2history "dbrm dbm move_script $@"
+  _dbm_save2history "dbrm dbm move_script $args"
 
   _dbm_retrieve_field_script "id_order" "$DBM_SCRIPT_ID_FROM"
   id_order_from=$_sqlite_ans
@@ -2064,8 +2352,10 @@ _dbm_post_init () {
   [[ $DEBUG ]] && echo "(dbm_post_init: Check if is present sqlite internal db file: $DRM_DB)"
   if [[ ! -e $DRM_DB ]] ; then
 
-    [[ $DEBUG ]] && echo "(dbm_post_init: Create sqlite internal db file: $DRM_DB)"
-    _sqlite_create -c "$DRM_DB" -s "$dbm_schema" || error_handled "Error on create $DRM_DB file."
+    if [[ -z "$DRM_PROFILE" || $DRM_PROFILE -eq 0 ]] ; then
+      [[ $DEBUG ]] && echo "(dbm_post_init: Create sqlite internal db file: $DRM_DB)"
+      _sqlite_create -c "$DRM_DB" -s "$dbm_schema" || error_handled "Error on create $DRM_DB file."
+    fi
 
   fi
 

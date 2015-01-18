@@ -23,5 +23,5 @@ dbrm.conf.example: @CONFIG_FILE_NAME@
 		-e 's/^MODULES_DIR=/#MODULES_DIR=/' \
 		-e 's/^LOCAL_DIR=/#LOCAL_DIR=/' \
 		-e 's/^LOCAL_CONFIG_FILE=/#LOCAL_CONFIG_FILE=/' \
-		-e 's/^DRM_DB=/#DBRM_DB=/' $@
+		-e 's/^DRM_DB=/#DRM_DB=/' $@
 

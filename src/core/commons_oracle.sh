@@ -97,7 +97,7 @@ commons_oracle_check_sqlplus () {
 }
 #***
 
-#****f* commons_oracle/commons_oracle_check_sqlplus
+#****f* commons_oracle/commons_oracle_check_vars
 # FUNCTION
 #   Check if are present mandatary oracle environment variables
 #   and check validity of TNS_ADMIN variable path.

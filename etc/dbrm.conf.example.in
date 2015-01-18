@@ -46,3 +46,13 @@ DRM_DB=$LOCAL_DIR/dbrm.db
 
 # Path of SQLITE3 database
 #SQLITEDB=@SQLITEDB@
+
+# Profiles Feature:
+#
+# Enable/Disable Profile Feature: 0 --> disable, 1 --> enable
+# DRM_PROFILE=1
+#
+# Set Profiles files directory path.
+# Default profile path is $HOME/.local/share/dbrm/profiles
+# DRM_PROFILES_PATH=$HOME/.local/share/dbrm/profiles
+

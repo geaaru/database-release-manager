@@ -71,7 +71,7 @@ commons_mariadb_check_client () {
 }
 #****
 
-#****f* commons_mariadb/commons_mariadb_check_connection
+#****f* commons_mariadb/commons_mariadb_check_vars
 # FUNCTION
 #   Check if are present mandatary mariadb environment variables.
 # RETURN VALUE
