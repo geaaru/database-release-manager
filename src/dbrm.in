@@ -24,25 +24,40 @@ if [[ ! -z $OVERRIDE_LOCAL_CONFIG_FILE && -e $OVERRIDE_LOCAL_CONFIG_FILE ]] ; th
   [[ $DEBUG ]] && echo -en "dbrm: Override LOCAL_CONFIG_FILE with: $OVERRIDE_LOCAL_CONFIG_FILE\n"
 
 else
-   # Check if exists local directory
-   if [[ ! -d $LOCAL_DIR ]] ; then
-     echo -en "Create local DRM directory.\n"
-     mkdir -p $LOCAL_DIR
 
-   fi
+  # Check if present a dbrm.conf file in current directory
+  # I use this file for import configurations fields.
+  # I ignore $LOCAL_DIR and $LOCAL_CONFIG_FILE
+  if [ -e ./dbrm.conf ] ; then
 
-   # If LOCAL_CONFIG_FILE is not defined
-   # use only main configuration file @CONFIG_FILE@.
-   if [[ -n $LOCAL_CONFIG_FILE ]] ; then
+    . ./dbrm.conf
 
-     if [[ ! -e $LOCAL_CONFIG_FILE ]] ; then
-       cp $CONFIG_FILE_STUB $LOCAL_CONFIG_FILE
-     fi
+    [[ $DEBUG ]] && echo -en "dbrm: I use local file ./dbrm.conf\n"
 
-     . $LOCAL_CONFIG_FILE
+  else
 
-   fi
+    # Check if exists local directory
+    if [[ ! -d $LOCAL_DIR ]] ; then
+      echo -en "Create local DRM directory.\n"
+      mkdir -p $LOCAL_DIR
 
+    fi
+
+    # If LOCAL_CONFIG_FILE is not defined
+    # use only main configuration file @CONFIG_FILE@.
+    if [[ -n $LOCAL_CONFIG_FILE ]] ; then
+
+      if [[ ! -e $LOCAL_CONFIG_FILE ]] ; then
+        cp $CONFIG_FILE_STUB $LOCAL_CONFIG_FILE
+      fi
+
+      . $LOCAL_CONFIG_FILE
+
+    fi
+
+  fi
+
+# end else
 fi
 
 # Use . directory if MODULES_DIR isn't defined
