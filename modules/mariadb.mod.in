@@ -871,7 +871,7 @@ _mariadb_compile () {
       if [ ! -z "$MARIADB_COMPILE_TRIGGER" ] ; then
 
         f="${MARIADB_COMPILE_TRIGGER/.sql/}"
-        commons_mariadb_compile_file "$MARIADB_DIR/procedures/$f.sql" "" || error_handled "Error on compile file $f.sql"
+        commons_mariadb_compile_file "$MARIADB_DIR/triggers/$f.sql" "" || error_handled "Error on compile file $f.sql"
 
       fi
 
