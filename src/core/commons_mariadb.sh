@@ -716,6 +716,7 @@ commons_mariadb_download_procedure () {
   #escape_var "PROCEDURE_BODY"
 
   local out="
+-- \$Id\$
 USE \`DB_NAME\`;
 DROP PROCEDURE IF EXISTS \`$name\`;
 
@@ -789,6 +790,7 @@ commons_mariadb_download_function () {
   #escape_var "FUNCTION_BODY"
 
   local out="
+-- \$Id\$
 USE \`DB_NAME\`;
 DROP FUNCTION IF EXISTS \`$name\`;
 
@@ -850,6 +852,7 @@ commons_mariadb_download_trigger () {
   fi
 
   local out="
+-- \$Id\$
 USE \`DB_NAME\`;
 DROP TRIGGER IF EXISTS \`$name\`;
 
@@ -909,6 +912,7 @@ commons_mariadb_download_view () {
   fi
 
   local out="
+-- \$Id\$
 $MYSQL_OUTPUT
 "
 
