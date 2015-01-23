@@ -80,7 +80,7 @@ commons_mariadb_check_client () {
 # SOURCE
 commons_mariadb_check_vars () {
 
-  local commons_msg = 'variable on configuration file, through arguments or on current profile.'
+  local commons_msg='variable on configuration file, through arguments or on current profile.'
 
   check_var "MARIADB_USER" || error_handled "You must define MARIADB_USER $commons_msg"
   check_var "MARIADB_PWD"  || error_handled "You must define MARIADB_PWD $commons_msg"
@@ -1070,7 +1070,11 @@ commons_mariadb_download_all_triggers () {
   commons_mariadb_count_triggers
   n_rec=$?
 
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_commons_mariadb_count_triggers: Found $n_rec triggers.\n"
+
   if [ $n_rec -gt 0 ] ; then
+
+    commons_mariadb_get_triggers_list || error_handled "Error on get triggers name list."
 
     IFS=$'\n'
     for row in $_mariadb_ans ; do

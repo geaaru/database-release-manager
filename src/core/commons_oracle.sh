@@ -107,7 +107,7 @@ commons_oracle_check_sqlplus () {
 # SOURCE
 commons_oracle_check_vars () {
 
-  local commons_msg = 'variable on configuration file, through arguments or on current profile.'
+  local commons_msg='variable on configuration file, through arguments or on current profile.'
 
   check_var "ORACLE_USER" || error_handled "You must define ORACLE_USER $commons_msg"
   check_var "ORACLE_PWD"  || error_handled "You must define ORACLE_PWD $commons_msg"
