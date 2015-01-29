@@ -428,7 +428,7 @@ commons_mariadb_count_triggers () {
     FROM INFORMATION_SCHEMA.TRIGGERS
     WHERE TRIGGER_SCHEMA = '$MARIADB_DB'
     AND ACTION_TIMING IN ('BEFORE', 'AFTER')
-    AND EVENT_MANIPULATION IN ('INSERT', 'UPDATE')
+    AND EVENT_MANIPULATION IN ('INSERT', 'UPDATE', 'DELETE')
     AND ACTION_STATEMENT IS NOT NULL;"
 
   mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || error_handled ""
@@ -580,13 +580,131 @@ commons_mariadb_get_triggers_list () {
     FROM INFORMATION_SCHEMA.TRIGGERS
     WHERE TRIGGER_SCHEMA = '$MARIADB_DB'
     AND ACTION_TIMING IN ('BEFORE', 'AFTER')
-    AND EVENT_MANIPULATION IN ('INSERT', 'UPDATE')
+    AND EVENT_MANIPULATION IN ('INSERT', 'UPDATE', 'DELETE')
     AND ACTION_STATEMENT IS NOT NULL
     ORDER BY EVENT_OBJECT_TABLE, ACTION_ORDER;"
 
   mysql_cmd_4var "_mariadb_ans" "$cmd" || return $result
 
   return 0
+}
+#***
+
+#****f* commmons_mariadb/commons_mariadb_count_tables
+# FUNCTION
+# RETURN VALUE
+#   number of tables found.
+# SOURCE
+commons_mariadb_count_tables () {
+
+  local cmd="
+    SELECT COUNT(1) AS CNT
+    FROM INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_SCHEMA = '$MARIADB_DB';"
+
+  mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" "" "1" || error_handled ""
+
+  if [ -z "$MYSQL_OUTPUT" ] ; then
+    error_generate "Error on count tables."
+  fi
+
+  return $MYSQL_OUTPUT
+}
+#***
+
+#****f* commmons_mariadb/commons_mariadb_get_tables_list
+# FUNCTION
+#   Save on _mariadb_ans variable list of tables defined on schema.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
+commons_mariadb_get_tables_list () {
+
+  local all="$1"
+  local custom_column="$2"
+  local all_column=""
+
+  if [ -n "$all" ] ; then
+    all_column=",ENGINE,TABLE_ROWS,DATA_LENGTH,CREATE_TIME,UPDATE_TIME"
+  fi
+
+  local cmd="
+    SELECT TABLE_NAME ${all_column} ${custom_column}
+    FROM INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_SCHEMA = '$MARIADB_DB'
+    ORDER BY TABLE_NAME;"
+
+  mysql_cmd_4var "_mariadb_ans" "$cmd" || return 1
+
+  return 0
+}
+#***
+
+#****f* commmons_mariadb/commons_mariadb_desc_table
+# FUNCTION
+#   Save on _mariadb_ans variable list of columns of input table.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
+commons_mariadb_desc_table () {
+
+  local tname="$1"
+  local custom_column="$2"
+
+  local cmd="
+    SELECT CONCAT_WS('|',
+                  COLUMN_NAME,
+                  IS_NULLABLE,
+                  UPPER(COLUMN_TYPE),
+                  COLUMN_KEY,
+                  UPPER(EXTRA)) AS C,
+                  '|' AS S,
+                  COLUMN_DEFAULT
+                  ${custom_column}
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = '$MARIADB_DB'
+    AND TABLE_NAME = '$tname'
+    ORDER BY ORDINAL_POSITION;"
+
+  mysql_cmd_4var "_mariadb_ans" "$cmd" || return 1
+
+  return 0
+}
+#***
+
+#****f* commmons_mariadb/commons_mariadb_exist_table
+# FUNCTION
+#   Check if exists table in input.
+# RETURN VALUE
+#   1 on error or if table is not exists.
+#   0 if table exists.
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
+commons_mariadb_exist_table () {
+
+  local tname="$1"
+  local result=1
+
+  local cmd="
+    SELECT COUNT(1)
+    FROM INFORMATION_SCHEMA.TABLES
+    WHERE TABLE_SCHEMA = '$MARIADB_DB'
+    AND TABLE_NAME = '$tname'"
+
+  mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || return 1
+
+  if [ x"$MYSQL_OUTPUT" == x"1" ] ; then
+    result=0
+  fi
+
+  return $result
 }
 #***
 
@@ -692,7 +810,7 @@ commons_mariadb_check_if_exist_trigger () {
     WHERE TRIGGER_SCHEMA = '$MARIADB_DB'
     AND TRIGGER_NAME = '$name' 
     AND ACTION_TIMING IN ('BEFORE', 'AFTER')
-    AND EVENT_MANIPULATION IN ('INSERT', 'UPDATE')
+    AND EVENT_MANIPULATION IN ('INSERT', 'UPDATE', 'DELETE')
     AND ACTION_STATEMENT IS NOT NULL;"
 
   mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || return $result

@@ -26,6 +26,7 @@ out_stdout_version () {
 # FUNCTION
 # DESCRIPTION
 #   Function search for this variables:
+#   out_ttitle       Define a table title.
 #   out_rows         With list of name of indirect array to use with columns data.
 #   out_tabs         Array of tabulation for columns. Default is one space.
 #   out_el_pre       Array with text prefix of an entry
@@ -69,6 +70,13 @@ out_stdout_print_arr () {
   local tspaces=0
   local print_vertical=0
   local column_counter=0
+
+
+  # Check if present a table title
+  if [ -n "$out_ttitle" ] ; then
+    echo -en "==============================================================================================================================\n"
+    echo -en "\e[1;33m$out_ttitle\e[m\n"
+  fi
 
   # Check if defined array with element prefix string
   if [ "${#out_el_pre[@]}" -gt 0 ] ; then
@@ -355,6 +363,7 @@ out_stdout_clean () {
 
   local ans=0
 
+  unset out_ttitle
   unset out_rows
   unset out_tabs
   unset out_el_pre

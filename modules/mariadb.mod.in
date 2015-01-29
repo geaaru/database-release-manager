@@ -193,6 +193,10 @@ mariadb_show () {
 
     out_handler_print "\n"
 
+    _mariadb_show_tables
+
+    out_handler_print "\n"
+
   else
 
     # Show procedures
@@ -221,6 +225,25 @@ mariadb_show () {
       _mariadb_show_views
 
     fi
+
+    if [ $MARIADB_SHOW_ALL_TABLES -eq 1 ] ; then
+
+      _mariadb_show_tables
+
+    fi
+
+  fi
+
+  if [ $MARIADB_SHOW_TABLES_DESCR -gt 0 ] ; then
+
+    for i in ${!MARIADB_SHOW_TABLES[@]}
+    do
+
+      _mariadb_show_table ${MARIADB_SHOW_TABLES[$i]}
+
+      out_handler_print "\n"
+
+    done
 
   fi
 
@@ -704,11 +727,12 @@ _mariadb_download_args () {
 #   Internal parse command line and define environment variables for show command.
 # DESCRIPTION
 #   Available commands line are:
-#   * -h                  Show help message
+#   * -h|--help          Show help message
 #   * --triggers          Show all triggers.
 #   * --functions         Show all functions.
 #   * --procedures        Show all procedures.
 #   * --all               Show all triggers, functions, views, procedures.
+#   * --tables            Show all tables.
 #   * --views             Show all views.
 # SEE ALSO
 #   _mariadb_connections_args for a list of connection arguments
@@ -718,8 +742,8 @@ _mariadb_show_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_show_args args: $@)\n"
 
   local short_options="d:U:P:hH:D:t:"
-  local long_options="database: timezone: conn-options: ignore-timezone" # connection long options
-  long_options="$long_options triggers functions procedures views all"
+  local long_options="database: timezone: conn-options: ignore-timezone table:" # connection long options
+  long_options="$long_options triggers functions procedures views tables all help"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -735,6 +759,9 @@ _mariadb_show_args () {
   MARIADB_SHOW_ALL_TRIGGERS=0
   MARIADB_SHOW_ALL_FUNCTIONS=0
   MARIADB_SHOW_ALL_VIEWS=0
+  MARIADB_SHOW_ALL_TABLES=0
+  MARIADB_SHOW_TABLES_DESCR=0
+  MARIADB_SHOW_TABLES=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -759,10 +786,22 @@ _mariadb_show_args () {
       --views)
         MARIADB_SHOW_ALL_VIEWS=1
         ;;
+      --tables)
+        MARIADB_SHOW_ALL_TABLES=1
+        ;;
       --all)
         MARIADB_SHOW_ALL=1
         ;;
+      --table)
+        MARIADB_SHOW_TABLES[$MARIADB_SHOW_TABLES_DESCR]="$2"
+        let MARIADB_SHOW_TABLES_DESCR++
+        shift
+        ;;
 
+      --help)
+        _mariadb_show_help
+        return 1
+        ;;
       -h)
         _mariadb_show_help
         return 1
@@ -792,7 +831,9 @@ _mariadb_show_help () {
   echo -en "[--triggers]             Show list of trigger name present on database.\n"
   echo -en "[--functions]            Show list of functions name present on database.\n"
   echo -en "[--views]                Show list of view name present on database.\n"
+  echo -en "[--tables]               Show list of tables present on database.\n"
   echo -en "[--all]                  Show list of all procedures, triggers, functions and views present on database.\n"
+  echo -en "[--table TABLE_NAME]     Show detail of a table.\n"
 
   return 0
 
@@ -1216,6 +1257,199 @@ _mariadb_show_views () {
 
     out_tabs[0]=$name_size
     out_tabs[1]=20
+
+    out_handler_print_arr
+
+  fi
+
+  out_handler_clean
+
+  return 0
+}
+#***
+
+
+#****f* mariadb/_mariadb_show_tables
+# FUNCTION
+#   Internal function that is a custom wrapper used to retrieve list tables.
+# SOURCE
+_mariadb_show_table () {
+
+  local counter=1
+  local tname="$1"
+  local is_present=1
+  local name=""
+  local default=""
+  local is_nullable=""
+  local ctype=""
+  local ckey=""
+  local cextra=""
+  local name_size=20
+  local default_size=20
+
+  commons_mariadb_exist_table "$tname"
+  is_present=$?
+
+  if [ $is_present -eq 0 ] ; then
+
+    commons_mariadb_desc_table "$tname" || error_handled "Error on retrieve data about table $tname."
+
+    out_ttitle="TABLE: $tname"
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="COLUMN_NAME"
+    out_headers[1]="DEFAULT"
+    out_headers[2]="IS_NULLABLE"
+    out_headers[3]="TYPE"
+    out_headers[4]="KEY"
+    out_headers[5]="EXTRA"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;32m"
+    out_el_pre[2]="\e[1;31m"
+    out_el_pre[3]="\e[1;34m"
+    out_el_pre[4]="\e[1;30m"
+    out_el_pre[5]="\e[1;35m"
+
+    out_el_post[0]="\e[m"
+
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      name=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      is_nullable=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+      ctype=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+      ckey=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+      cextra=`echo $row | awk '{split($0,a,"|"); print a[5]}' | xargs`
+      default=`echo $row | awk '{split($0,a,"|"); print a[6]}' | xargs`
+
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${name}\""
+      eval "row${counter}[1]=\"${default}\""
+      eval "row${counter}[2]=\"${is_nullable}\""
+      eval "row${counter}[3]=\"${ctype}\""
+      eval "row${counter}[4]=\"${ckey}\""
+      eval "row${counter}[5]=\"${cextra}\""
+
+      # Check if needed enlarge size of first column
+      if [ ${#name} -ge $name_size ] ; then
+        name_size=$((${#name}+1))
+      fi
+
+      if [ ${#default} -ge $default_size ] ; then
+        default_size=$((${#default}+1))
+      fi
+      let counter++
+
+    done
+    unset IFS
+
+    out_tabs[0]=$name_size
+    out_tabs[1]=$default_size
+    out_tabs[2]=15
+    out_tabs[3]=15
+    out_tabs[4]=10
+    out_tabs[5]=23
+
+    out_handler_print_arr
+
+  else
+
+    out_handler_print "Table $tname not found."
+
+  fi
+
+  out_handler_clean
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_show_tables
+# FUNCTION
+#   Internal function that is a custom wrapper used to retrieve list tables.
+# SOURCE
+_mariadb_show_tables () {
+
+  local counter=1
+  local n_rec=0
+  local name=""
+  local engine=""
+  local table_rows=""
+  local data_length=""
+  local create_time=""
+  local update_time=""
+  local name_size=23
+
+  commons_mariadb_count_tables
+  n_rec=$?
+
+  if [ $n_rec -eq 0 ] ; then
+
+    out_handler_print "No tables available."
+
+  else
+
+    commons_mariadb_get_tables_list "1" || error_handled "Error on get tables name list."
+
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="TABLE_NAME"
+    out_headers[1]="ENGINE"
+    out_headers[2]="TABLE_ROWS"
+    out_headers[3]="DATA_LENGTH"
+    out_headers[4]="CREATE_TIME"
+    out_headers[5]="UPDATE_TIME"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;32m"
+    out_el_pre[2]="\e[1;31m"
+    out_el_pre[3]="\e[1;34m"
+    out_el_pre[4]="\e[1;30m"
+    out_el_pre[5]="\e[1;35m"
+
+    out_el_post[0]="\e[m"
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      name=`echo $row | awk '{split($0,a," "); print a[1]}'`
+      engine=`echo $row | awk '{split($0,a," "); print a[2]}'`
+      table_rows=`echo $row | awk '{split($0,a," "); print a[3]}'`
+      data_length=`echo $row | awk '{split($0,a," "); print a[4]}'`
+      create_time=`echo $row | awk '{split($0,a," "); print a[5]" "a[6]}'`
+      update_time=`echo $row | awk '{split($0,a," "); print a[7]" "a[8]}'`
+
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${name}\""
+      eval "row${counter}[1]=\"${engine}\""
+      eval "row${counter}[2]=\"${table_rows}\""
+      eval "row${counter}[3]=\"${data_length}\""
+      eval "row${counter}[4]=\"${create_time}\""
+      eval "row${counter}[5]=\"${update_time}\""
+
+      # Check if needed enlarge size of first column
+      if [ ${#name} -ge $name_size ] ; then
+        name_size=$((${#name}+1))
+      fi
+      let counter++
+
+    done
+    unset IFS
+
+    out_tabs[0]=$name_size
+    out_tabs[1]=11
+    out_tabs[2]=15
+    out_tabs[3]=15
+    out_tabs[4]=23
+    out_tabs[5]=23
 
     out_handler_print_arr
 
