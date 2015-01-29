@@ -128,6 +128,38 @@ EOF
 }
 #***
 
+#****f* commons_mariadb/commons_mariadb_shell
+# FUNCTION
+#   Enter on command line shell of Mysql/Mariadb server.
+# RETURN VALUE
+#   0 when connection is ok
+#   1 on error
+# SOURCE
+commons_mariadb_shell () {
+
+  if [ -z "$MARIADB_CLIENT" ] ; then
+    return 1
+  fi
+
+  if [ -z "$mysql_auth" ] ; then
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(oracle) Try connection with -A $MARIADB_EXTRA_OPTIONS $mysql_auth.\n"
+
+  $MARIADB_CLIENT -A $MARIADB_EXTRA_OPTIONS $mysql_auth
+
+  errorCode=$?
+  if [ ${errorCode} -ne 0 ] ; then
+    return 1
+  fi
+
+  unset errorCode
+
+  return 0
+}
+#***
+
 #****f* commons_mariadb/commons_mariadb_compile_file
 # FUNCTION
 #   Compile file on database.
@@ -569,8 +601,15 @@ commons_mariadb_get_triggers_list () {
 # SOURCE
 commons_mariadb_get_procedures_list () {
 
+  local all=$1
+  local all_column=""
+
+  if [ -n "$all" ] ; then
+    all_column=",DEFINER, CREATED, LAST_ALTERED"
+  fi
+
   local cmd="
-    SELECT ROUTINE_NAME
+    SELECT ROUTINE_NAME $all_column
     FROM INFORMATION_SCHEMA.ROUTINES
     WHERE ROUTINE_SCHEMA = '$MARIADB_DB'
     AND ROUTINE_TYPE = 'PROCEDURE';"
@@ -592,8 +631,15 @@ commons_mariadb_get_procedures_list () {
 # SOURCE
 commons_mariadb_get_functions_list () {
 
+  local all=$1
+  local all_column=""
+
+  if [ -n "$all" ] ; then
+    all_column=",DEFINER, CREATED, LAST_ALTERED"
+  fi
+
   local cmd="
-    SELECT ROUTINE_NAME
+    SELECT ROUTINE_NAME $all_column
     FROM INFORMATION_SCHEMA.ROUTINES
     WHERE ROUTINE_SCHEMA = '$MARIADB_DB'
     AND ROUTINE_TYPE = 'FUNCTION';"
