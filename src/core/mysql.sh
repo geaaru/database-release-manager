@@ -196,6 +196,8 @@ EOF
 #                           command to print column data.
 #   * MARIADB_CLIENT: Path of mysql client.
 #   * MARIADB_EXTRA_OPTIONS: Extra options for mysql client.
+#   * MARIADB_ENABLE_COMMENTS: With value 0 (disable) or 1 (enable) insert of comments
+#                              in compilation. Default is 0.
 # RETURN VALUE
 #   0 on success
 #   1 on error
@@ -217,6 +219,10 @@ mysql_cmd_4var () {
 
   if [ -n "$MARIADB_SHOW_COLUMNS" ] ; then
     opts=""
+  fi
+
+  if [[ -n "$MARIADB_ENABLE_COMMENTS" && x"$MARIADB_ENABLE_COMMENTS" == x"1" ]] ; then
+    opts="$opts -c"
   fi
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "Connection options: $MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth\n"
