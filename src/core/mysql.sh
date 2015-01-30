@@ -82,9 +82,6 @@ mysql_file () {
   fi
   local sql="$(cat $f | sed -e 's:`DB_NAME`:`'$MARIADB_DB'`:g' )"
 
-  [[ $DEBUG && $DEBUG == true ]] && echo -en "Execute sql:\n$sql\n"
-
-
   if [ -n "$MARIADB_SHOW_COLUMNS" ] ; then
     opts=""
   fi
@@ -92,6 +89,9 @@ mysql_file () {
   if [[ -n "$MARIADB_ENABLE_COMMENTS" && x"$MARIADB_ENABLE_COMMENTS" == x"1" ]] ; then
     opts="$opts -c"
   fi
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "Execute $MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth for sql command:\n$sql\n"
 
   v=$($MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth 2>&1 <<EOF
 $tz
@@ -149,8 +149,6 @@ mysql_source_file () {
   fi
   local sql="$(cat $f)"
 
-  [[ $DEBUG && $DEBUG == true ]] && echo -en "Execute sql:\n$sql\n"
-
 
   if [ -n "$MARIADB_SHOW_COLUMNS" ] ; then
     opts=""
@@ -159,6 +157,9 @@ mysql_source_file () {
   if [[ -n "$MARIADB_ENABLE_COMMENTS" && x"$MARIADB_ENABLE_COMMENTS" == x"1" ]] ; then
     opts="$opts -c"
   fi
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "Execute $MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth for sql command:\n$sql\n"
 
   v=$($MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth 2>&1 <<EOF
 $tz

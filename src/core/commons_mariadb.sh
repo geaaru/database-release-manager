@@ -109,7 +109,7 @@ commons_mariadb_check_connection () {
     return 1
   fi
 
-  [[ $DEBUG && $DEBUG == true ]] && echo -en "(oracle) Try connection with -A $MARIADB_EXTRA_OPTIONS $mysql_auth.\n"
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(commons_mariadb_check_connection) Try connection with -A $MARIADB_EXTRA_OPTIONS $mysql_auth.\n"
 
   $MARIADB_CLIENT -A $MARIADB_EXTRA_OPTIONS $mysql_auth 2>&1 << EOF
 exit
@@ -137,6 +137,8 @@ EOF
 # SOURCE
 commons_mariadb_shell () {
 
+  local opts=""
+
   if [ -z "$MARIADB_CLIENT" ] ; then
     return 1
   fi
@@ -145,9 +147,14 @@ commons_mariadb_shell () {
     return 1
   fi
 
-  [[ $DEBUG && $DEBUG == true ]] && echo -en "(oracle) Try connection with -A $MARIADB_EXTRA_OPTIONS $mysql_auth.\n"
+  if [[ -n "$MARIADB_ENABLE_COMMENTS" && x"$MARIADB_ENABLE_COMMENTS" == x"1" ]] ; then
+    opts="$opts -c"
+  fi
 
-  $MARIADB_CLIENT -A $MARIADB_EXTRA_OPTIONS $mysql_auth
+  # TODO: Enable -A options through a variable option.
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(commons_mariadb_shell) Try connection with $opts $MARIADB_EXTRA_OPTIONS $mysql_auth.\n"
+
+  $MARIADB_CLIENT $opts $MARIADB_EXTRA_OPTIONS $mysql_auth
 
   errorCode=$?
   if [ ${errorCode} -ne 0 ] ; then
