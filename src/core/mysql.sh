@@ -57,6 +57,8 @@ mysql_set_auth_var () {
 #   * MARIADB_CLIENT: Path of mysql client.
 #   * MARIADB_EXTRA_OPTIONS: Extra options for mysql client.
 #   * MARIADB_DB: name of the schema to use.
+#   * MARIADB_ENABLE_COMMENTS: With value 0 (disable) or 1 (enable) insert of comments
+#                              in compilation. Default is 0.
 #   NOTE: This command try to replace string `DB_NAME` with name of the schema
 #         defined on MARIADB_DB variable.
 # RETURN VALUE
@@ -85,6 +87,10 @@ mysql_file () {
 
   if [ -n "$MARIADB_SHOW_COLUMNS" ] ; then
     opts=""
+  fi
+
+  if [[ -n "$MARIADB_ENABLE_COMMENTS" && x"$MARIADB_ENABLE_COMMENTS" == x"1" ]] ; then
+    opts="$opts -c"
   fi
 
   v=$($MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth 2>&1 <<EOF
@@ -123,6 +129,8 @@ EOF
 #                           command to print column data.
 #   * MARIADB_CLIENT: Path of mysql client.
 #   * MARIADB_EXTRA_OPTIONS: Extra options for mysql client.
+#   * MARIADB_ENABLE_COMMENTS: With value 0 (disable) or 1 (enable) insert of comments
+#                              in compilation. Default is 0.
 # RETURN VALUE
 #   0 on success
 #   1 on error
@@ -146,6 +154,10 @@ mysql_source_file () {
 
   if [ -n "$MARIADB_SHOW_COLUMNS" ] ; then
     opts=""
+  fi
+
+  if [[ -n "$MARIADB_ENABLE_COMMENTS" && x"$MARIADB_ENABLE_COMMENTS" == x"1" ]] ; then
+    opts="$opts -c"
   fi
 
   v=$($MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth 2>&1 <<EOF
