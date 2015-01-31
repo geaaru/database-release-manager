@@ -40,6 +40,14 @@ DRM_DB=$LOCAL_DIR/dbrm.db
 #
 # Add -v to see executed statement on log.
 # MARIADB_EXTRA_OPTIONS=""
+#
+# Disable (0) or enable (1) insert of comments on compilation.
+# Default is 0.
+# MARIADB_ENABLE_COMMENTS="1"
+#
+# Enable support of mysql >=5.6 with environment password.
+# MYSQL5_6_ENV_PWD="1"
+
 
 # Oracle tnsnames.ora file directory
 # TNS_ADMIN=/xxx

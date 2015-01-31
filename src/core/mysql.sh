@@ -31,7 +31,16 @@ mysql_set_auth_var () {
     v_host="--host $host"
   fi
 
-  export mysql_auth="$v_host -u $user --password=$pwd $db"
+  if [ -n "MYSQL5_6_ENV_PWD" ] ; then
+
+    export MYSQL_PWD="$pwd"
+    mysql_auth="$v_host -u $user $db"
+
+  else
+
+    mysql_auth="$v_host -u $user --password=$pwd $db"
+
+  fi
 
   [[ $DEBUG && $DEBUG == true ]] && echo "Use '$mysql_auth'"
 
