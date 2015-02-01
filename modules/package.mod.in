@@ -1,0 +1,242 @@
+#!/bin/bash
+#------------------------------------------------
+# Author(s): Geaaru, geaaru@gmail.com
+# $Id$
+# License: GPL 2.0
+#------------------------------------------------
+
+name="package"
+package_authors="Geaaru"
+package_creation_date="Feb 1, 2015"
+package_version="@PACKAGE_VERSION@"
+
+#*****f* package/package_version
+# FUNCTION
+#   Show version of package module.
+# SOURCE
+package_version() {
+  echo -en "Version: ${package_version}\n"
+
+  return 0
+}
+#***
+
+#****f* package/package_long_help
+# FUNCTION
+#  Show long help message.
+# SOURCE
+package_long_help () {
+
+   echo -en "===========================================================================\n"
+   echo -en "Module [package]:\n"
+   echo -en "Author(s): ${package_authors}\n"
+   echo -en "Created: ${package_creation_date}\n"
+   echo -en "Version: ${package_version}\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "\tlong_help               Show long help informations\n"
+   echo -en "\tshow_help               Show command list.\n"
+   echo -en "\tversion                 Show module version.\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "===========================================================================\n"
+
+   return 0
+}
+#***
+
+#****f* package/package_show_help
+# FUNCTION
+#  Show help message
+# SOURCE
+package_show_help () {
+
+   echo -en "===========================================================================\n"
+   echo -en "Module [package]:\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "\tlong_help               Show long help informations\n"
+   echo -en "\tshow_help               Show command list.\n"
+   echo -en "\tversion                 Show module version.\n"
+   echo -en "\tcreate                  Create a self installer tarball of current\n"
+   echo -en "\t                        project.\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "===========================================================================\n"
+
+   return 0
+}
+#***
+
+#****f* package/package_create
+# FUNCTION
+#  Create a tarball file of a self installer of current dbrm project, ready for
+#  production/test installation.
+# SOURCE
+package_create () {
+
+  local result=1
+
+  # Shift first two input param
+  shift 2
+
+  _package_create_args "$@" || return $result
+
+  _package_init_tmpdir
+
+  _package_copy_dbrm_files
+
+
+  return 0
+}
+
+##################################################################
+# Internal functions
+##################################################################
+
+_package_init_tmpdir () {
+
+  local dbrmfiles_dir="$DBRM_PACKAGE_TMPDIR/dbrm-files"
+
+  if [ -d $DBRM_PACKAGE_TMPDIR ] ; then
+    rm -rf $DBRM_PACKAGE_TMPDIR || error_handled "Error on delete temporary directory for package module."
+  fi
+
+  mkdir -p $DBRM_PACKAGE_TMPDIR || error_handled "Error on create temporary directory $DBRM_PACKAGE_TMPDIR"
+
+
+  # Create dbrm core files directory
+  local dbm_dirs="$dbrmfiles_dir
+      ${dbrmfiles_dir}/modules
+      ${dbrmfiles_dir}/share/core
+      ${dbrmfiles_dir}/bin
+  "
+
+  for i in $dbm_dirs ; do
+    mkdir -p $i || error_handled "Error on create directory $i."
+  done
+
+  return 0
+}
+
+_package_copy_dbrm_files () {
+
+  local dbrmfiles_dir="$DBRM_PACKAGE_TMPDIR/dbrm-files"
+  local core_files="
+    commons.sh
+  "
+
+  # Copy modules files
+  for mod in $MODULES_DIR/*.mod ; do
+
+    if [ $mod != "$MODULES_DIR/package.mod" ] ; then # Avoid copy of package.mod
+      cp $mod $dbrmfiles_dir/modules/ || error_handled "Error on copy module $mod file."
+    fi
+
+  done
+
+  # Copy core files
+  cp -rf $DBRM_CORE_FILES_DIR/dbm $dbrmfiles_dir/share/core/ || error_handled "Error on copy core files."
+
+  if [[ ! -z "$SQLCA"  && "$SQLCA" =~ .*oracle.* ]] ; then
+
+    core_files="${core_files}
+      sqlplus.sh
+      commons_oracle.sh
+    "
+    cp -rf $DBRM_CORE_FILES_DIR/../oracle ${dbrmfiles_dir}/share/ || error_handled "Error on copy oracle files."
+
+  fi
+
+  if [[ ! -z "$SQLCA"  && "$SQLCA" =~ .*mariadb.* ]] ; then
+
+    core_files="${core_files}
+      mysql.sh
+      commons_mariadb.sh
+    "
+
+  fi
+
+  for f in $core_files ; do
+
+    cp $DBRM_CORE_FILES_DIR/$f ${dbrmfiles_dir}/share/core/ || error_handled "Error on copy core file $f."
+
+  done
+
+  # Copy dbrm main file
+  # cp -f 
+
+  return 0
+}
+
+_package_init () {
+
+  # Check if defined DBRM_PACKAGE_TMPDIR variable or set a default path
+  if [ -z "$DBRM_PACKAGE_TMPDIR" ] ; then
+    DBRM_PACKAGE_TMPDIR=".dbrm_package"
+  fi
+
+  return 0
+}
+
+_package_create_args () {
+
+  [[ $DEBUG ]] && echo -en "(_package_create_args args: $@)\n"
+
+  local short_options="h"
+  local long_options="to:exclude:help"
+
+  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
+
+  if [ $# -lt 2 ] ; then
+    _package_create_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_package_create_args: Found $# params)\n"
+
+  DBRM_PACKAGE_TO=""
+  DBRM_PACKAGE_EXCLUDED_FILES=0
+  DBRM_PACKAGE_EXCLUDED=""
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -h)
+        _package_create_help
+        return 1
+        ;;
+      --help)
+        _package_create_help
+        return 1
+        ;;
+      --to)
+        DBRM_PACKAGE_TO="$2"
+        shift
+        ;;
+      --exclude)
+        let DBRM_PACKAGE_EXCLUDED_FILES++
+        DBRM_PACKAGE_EXCLUDED[$DBRM_PACKAGE_EXCLUDED_FILES]="$2"
+        shift
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+    esac
+    shift
+  done
+
+  if [ -z "$DBRM_PACKAGE_TO" ] ; then
+    echo "Missing target file path"
+    return 1
+  fi
+
+  return 0
+}
+
+_package_create_help () {
+
+  echo -en "[--exclude file]        Exclude file on tarball file.\n"
+  echo -en "[--to f.tar.gz]         Path of target tarball filename.\n"
+  echo -en "\n"
+
+  return 0
+}
+
+# vim: syn=sh filetype=sh ts=2 sw=2

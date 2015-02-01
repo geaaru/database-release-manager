@@ -12,7 +12,8 @@ EXTRA_DIST = \
 				 sql_handler.mod.in \
 				 sqlite.mod.in \
 				 out_handler.mod.in \
-				 out_stdout.mod.in
+				 out_stdout.mod.in \
+				 package.mod.in
 
 modules = \
 			 dbm.mod \
@@ -23,7 +24,8 @@ modules = \
 			 sql_handler.mod \
 			 sqlite.mod \
 			 out_handler.mod \
-			 out_stdout.mod
+			 out_stdout.mod \
+			 package.mod
 
 DISTCLEANFILES = $(modules)
 CLEANFILES = $(modules)

@@ -90,6 +90,7 @@ AC_CONFIG_FILES([
                  modules/sqlite.mod
                  modules/out_handler.mod
                  modules/out_stdout.mod
+                 modules/package.mod
                  src/Makefile
                  src/dbrm
                  src/core/Makefile
