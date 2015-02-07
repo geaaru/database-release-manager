@@ -118,6 +118,7 @@ _package_init_tmpdir () {
 _package_copy_dbrm_files () {
 
   local dbrmfiles_dir="$DBRM_PACKAGE_TMPDIR/dbrm-files"
+  local dbrm_bin="$0"
   local core_files="
     commons.sh
   "
@@ -160,7 +161,7 @@ _package_copy_dbrm_files () {
   done
 
   # Copy dbrm main file
-  # cp -f 
+  cp $dbrm_bin ${dbrmfiles_dir}/bin || error_handled "Error on copy dbrm file."
 
   return 0
 }

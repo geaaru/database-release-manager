@@ -37,6 +37,7 @@ out_stdout_version () {
 #   out_htabs        Array of header tabulation. if out_htabs_mode is equals to htabs.
 #   out_hsep         Write a separator if this field is equal to 1.
 #   out_vertical     Enable vertical output of the row if this field is equal to 1. Default is 0.
+#   out_vert_sep     If present is used to separator line between vertical rows.
 # RETURN VALUE
 #   0 on success
 #   1 on error
@@ -114,7 +115,7 @@ out_stdout_print_arr () {
     prepost_headers=1
   fi
 
-  if [[ -n "${out_vertical}" || x"${out_vertical}" == x"1" ]] ; then
+  if [[ -n "${out_vertical}" && x"${out_vertical}" == x"1" ]] ; then
     print_vertical=1
   fi
 
@@ -228,7 +229,7 @@ out_stdout_print_arr () {
   fi
   #----------------------------------------------------------
 
-  if [[ -n "${out_hsep}" && x"${out_hsep}" == x"1" ]] ; then
+  if [[ -n "${out_hsep}" && x"${out_hsep}" == x"1" && ${print_vertical} -eq 0 ]] ; then
     echo -en "==============================================================================================================================\n"
   fi
 
@@ -243,8 +244,8 @@ out_stdout_print_arr () {
     counter=0
     column_counter=0
 
-    if [ $print_vertical -eq 1 ] ; then
-      echo -en "#\n"
+    if [[ $print_vertical -eq 1 && -n "${out_vert_sep}" ]]; then
+      echo -en "${out_vert_sep}\n"
     fi
 
     for j in "${!out_columns}"
@@ -256,7 +257,7 @@ out_stdout_print_arr () {
       field="$j"
 
       # Print element prefix
-      if [[ $prepost_data -eq 1 && $def_prefix -eq 1 && $print_vertical -eq 0 ]] ; then
+      if [[ $prepost_data -eq 1 && $def_prefix -eq 1 ]] ; then
 
         if [ $has1prefix -ne 1 ] ; then
 
@@ -280,6 +281,27 @@ out_stdout_print_arr () {
 
         let column_counter++
 
+        if [ x"$out_htabs_mode" == x"htabs" ] ; then
+
+          if [ "${#out_htabs[@]}" -gt 0 ] ; then
+
+            if [ "${#out_htabs[@]}" -eq 1 ] ; then
+              id_tab=0
+            else
+              id_tab=$counter
+            fi
+
+            if [ ! -z "${out_htabs[$id_tab]}" ] ; then
+              tsize=${out_htabs[$id_tab]}
+              tspaces=$(($tsize - ${#header} + 1))
+
+              push_spaces $tspaces
+            fi
+
+          fi
+
+        fi
+
       fi
 
       #-----------------------------------------
@@ -289,22 +311,21 @@ out_stdout_print_arr () {
 
 
       # Print element postfix
-      if [ $print_vertical -eq 0 ] ; then
-        if [[ $prepost_data -eq 1 && $def_postfix -eq 1 ]] ; then
+      if [[ $prepost_data -eq 1 && $def_postfix -eq 1 ]] ; then
 
-          if [ $has1postfix -ne 1 ] ; then
+        if [ $has1postfix -ne 1 ] ; then
 
-            id_postfix=$counter
-
-          fi
-
-          if [ ! -z "${out_el_post[$id_postfix]}" ] ; then
-            echo -en "${out_el_post[$id_postfix]}"
-          fi
+          id_postfix=$counter
 
         fi
-        # End print element postfix
 
+        if [ ! -z "${out_el_post[$id_postfix]}" ] ; then
+          echo -en "${out_el_post[$id_postfix]}"
+        fi
+
+      fi
+
+      if [ $print_vertical -eq 0 ] ; then
         # Print tabulation
         if [ $def_tab -eq 1 ] ; then
 
@@ -326,6 +347,7 @@ out_stdout_print_arr () {
       else
         echo -en "\n"
       fi
+      # End print element postfix
 
 
       let counter++
@@ -363,6 +385,30 @@ out_stdout_clean () {
 
   local ans=0
 
+  if [ "${#out_rows[@]}" -gt 0 ] ; then
+    for i in ${!out_rows[@]} ; do
+      unset ${out_rows[$i]}
+    done
+  fi
+
+  if [ "${#out_el_post[@]}" -gt 0 ] ; then
+    for i in ${!out_el_post[@]} ; do
+      out_el_post[$i]=""
+    done
+  fi
+
+  if [ "${#out_el_pre[@]}" -gt 0 ] ; then
+    for i in ${!out_el_pre[@]} ; do
+      out_el_pre[$i]=""
+    done
+  fi
+
+  if [ "${#out_tabs[@]}" -gt 0 ] ; then
+    for i in ${!out_tabs[@]} ; do
+      out_tabs[$i]=""
+    done
+  fi
+
   unset out_ttitle
   unset out_rows
   unset out_tabs
@@ -373,6 +419,7 @@ out_stdout_clean () {
   unset out_prepost_mode
   unset out_htabs
   unset out_hsep
+  unset out_vertical
 
   return $ans
 }

@@ -368,6 +368,42 @@ commons_mariadb_compile_all_from_dir () {
 }
 #***
 
+#****f* commons_mariadb/commons_mariadb_count_fkeys
+# FUNCTION
+#   Count number of foreign keys present on database.
+# INPUTS
+# RETURN VALUE
+#   number of foreign keys found.
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
+commons_mariadb_count_fkeys () {
+
+  local tname=$1
+  local andwhere=""
+
+  if [ -n "$tname" ] ; then
+    andwhere="AND TABLE_NAME = '$tname'"
+  fi
+
+  local cmd="
+    SELECT COUNT(1) AS CNT
+    FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
+    WHERE CONSTRAINT_SCHEMA = '$MARIADB_DB'
+    AND TABLE_SCHEMA = '$MARIADB_DB'
+    AND CONSTRAINT_TYPE = 'FOREIGN KEY'
+    $andwhere ;"
+
+  mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" "" "1" || error_handled ""
+
+  if [ -z "$MYSQL_OUTPUT" ] ; then
+    error_generate "Error on count foreign keys."
+  fi
+
+  return $MYSQL_OUTPUT
+}
+#***
+
 #****f* commons_mariadb/commons_mariadb_count_procedures
 # FUNCTION
 #   Count number of procedures present on database.
@@ -473,8 +509,15 @@ commons_mariadb_count_views () {
 }
 #***
 
-# return 1 if not exists
-# return 0 if exists
+#****f* commmons_mariadb/commons_mariadb_check_if_exist_procedure
+# FUNCTION
+#   Check if exists procedure with name in input on schema.
+# RETURN VALUE
+#   1 if not exists
+#   0 if exists
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
 commons_mariadb_check_if_exist_procedure () {
 
   local result=1
@@ -499,6 +542,7 @@ commons_mariadb_check_if_exist_procedure () {
 
   return $result
 }
+#***
 
 #****f* commmons_mariadb/commons_mariadb_check_if_exist_function
 # FUNCTION
@@ -569,6 +613,41 @@ commons_mariadb_check_if_exist_view () {
 }
 #***
 
+#****f* commmons_mariadb/commons_mariadb_check_if_exist_fkey
+# FUNCTION
+#   Check if exists foreign keys with name in input on schema.
+# RETURN VALUE
+#   1 if not exists
+#   0 if exists
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
+commons_mariadb_check_if_exist_fkey () {
+
+  local result=1
+  local name="$1"
+  local errmsg="Error on check if exists foreign key with $name."
+  local cmd="
+    SELECT COUNT(1) AS CNT
+    FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
+    WHERE TABLE_SCHEMA = '$MARIADB_DB'
+    AND CONSTRAINT_TYPE = 'FOREIGN KEY'
+    AND CONSTRAINT_SCHEMA = '$MARIADB_DB'
+    AND CONSTRAINT_NAME = '$name' ;"
+
+  mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || return $result
+
+  if [ -z "$MYSQL_OUTPUT" ] ; then
+    error_generate "$errmsg"
+  fi
+
+  if [ x"$MYSQL_OUTPUT" == x"1" ] ; then
+    result=0
+  fi
+
+  return $result
+}
+#***
 
 #****f* commmons_mariadb/commons_mariadb_get_triggers_list
 # FUNCTION
@@ -616,6 +695,68 @@ commons_mariadb_count_tables () {
   fi
 
   return $MYSQL_OUTPUT
+}
+#***
+
+
+#****f* commmons_mariadb/commons_mariadb_get_fkeys_list
+# FUNCTION
+#   Save on _mariadb_ans variable list of foreign keys defined on schema.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
+commons_mariadb_get_fkeys_list () {
+
+  local all="$1"
+  local custom_column="$2"
+  local fkey_name="$3"
+  local all_column=""
+  local fk_name=""
+
+  if [ -n "$all" ] ; then
+    all_column="
+      TS.CONSTRAINT_NAME,
+      TS.TABLE_NAME,
+      KCU.COLUMN_NAME,
+      KCU.REFERENCED_TABLE_NAME,
+      KCU.REFERENCED_COLUMN_NAME,
+      RC.UPDATE_RULE,
+      RC.DELETE_RULE
+    "
+    # KCU.POSITION_IN_UNIQUE_CONSTRAINT
+
+    # RC.MATCH_OPTION,
+    # For now only possible value for this field is None.
+    # See: http://dev.mysql.com/doc/refman/5.7/en/referential-constraints-table.html
+  fi
+
+  if [ -n "${fkey_name}" ] ; then
+    fk_name="AND TS.CONSTRAINT_NAME = '${fkey_name}'"
+  fi
+
+  local cmd="
+    SELECT ${all_column} ${custom_column}
+    FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TS,
+         INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU,
+         INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS RC
+    WHERE TS.TABLE_SCHEMA = '$MARIADB_DB'
+    AND TS.CONSTRAINT_SCHEMA = '$MARIADB_DB'
+    AND KCU.TABLE_SCHEMA = '$MARIADB_DB'
+    AND RC.CONSTRAINT_SCHEMA = KCU.TABLE_SCHEMA
+    AND TS.CONSTRAINT_TYPE = 'FOREIGN KEY'
+    AND TS.CONSTRAINT_NAME = KCU.CONSTRAINT_NAME
+    AND RC.CONSTRAINT_NAME = TS.CONSTRAINT_NAME
+    AND RC.UNIQUE_CONSTRAINT_SCHEMA = KCU.TABLE_SCHEMA
+    AND KCU.REFERENCED_TABLE_NAME IS NOT NULL
+    ${fk_name}
+    ORDER BY TS.TABLE_NAME, TS.CONSTRAINT_NAME;"
+
+  mysql_cmd_4var "_mariadb_ans" "$cmd" || return 1
+
+  return 0
 }
 #***
 
