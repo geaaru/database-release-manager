@@ -109,7 +109,8 @@ commons_mariadb_check_connection () {
     return 1
   fi
 
-  [[ $DEBUG && $DEBUG == true ]] && echo -en "(commons_mariadb_check_connection) Try connection with -A $MARIADB_EXTRA_OPTIONS $mysql_auth.\n"
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(commons_mariadb_check_connection) Try connection with -A $MARIADB_EXTRA_OPTIONS $mysql_auth.\n"
 
   $MARIADB_CLIENT -A $MARIADB_EXTRA_OPTIONS $mysql_auth 2>&1 << EOF
 exit
@@ -300,6 +301,29 @@ commons_mariadb_compile_all_views () {
 }
 #***
 
+
+#****f* commons_mariadb/commons_mariadb_compile_all_fkeys
+# FUNCTION
+#   Compile all files under MARIADB_DIR/foreign_keys directory.
+# INPUTS
+#   msg      - message to insert on logging file relative to input file.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   commons_mariadb_compile_all_from_dir
+# SOURCE
+commons_mariadb_compile_all_fkeys () {
+
+  local msg="$1"
+  local directory="$MARIADB_DIR/foreign_keys"
+
+  commons_mariadb_compile_all_from_dir "$directory" "of all foreign keys" "$msg" "fkey" || return 1
+
+  return 0
+}
+#***
+
 #****f* commons_mariadb/commons_mariadb_compile_all_from_dir
 # FUNCTION
 #   Compile all files from input directory with .sql extension.
@@ -307,6 +331,7 @@ commons_mariadb_compile_all_views () {
 #   directory   - Directory where there are files to compile.
 #   msg_head    - Title message insert on logfile before compile files.
 #   msg         - message insert on logfile before compile files.
+#   type        - (optional) identify type of directory: fkey|procedure|function|view.
 # RETURN VALUE
 #   0 on success
 #   1 on error
@@ -318,6 +343,7 @@ commons_mariadb_compile_all_from_dir () {
   local directory="$1"
   local msg_head="$2"
   local msg="$3"
+  local dtype="$4"
   local f=""
   local fb=""
   local ex_f=""
@@ -355,9 +381,14 @@ commons_mariadb_compile_all_from_dir () {
     # If file is excluded go to the next
     [ $exc -eq 1 ] && continue
 
+    if [[ -n "$dtype" && x"$dtype" == x"fkey" ]] ; then
+
+      commons_mariadb_drop_fkey "$f" || continue
+
+    fi
+
     commons_mariadb_compile_file "$i" "$msg"
     # POST: on error go to next file
-
 
   done # end for
 
@@ -633,7 +664,8 @@ commons_mariadb_check_if_exist_fkey () {
     WHERE TABLE_SCHEMA = '$MARIADB_DB'
     AND CONSTRAINT_TYPE = 'FOREIGN KEY'
     AND CONSTRAINT_SCHEMA = '$MARIADB_DB'
-    AND CONSTRAINT_NAME = '$name' ;"
+    AND CONSTRAINT_NAME = '$name'
+    GROUP BY CONSTRAINT_NAME;"
 
   mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || return $result
 
@@ -718,11 +750,11 @@ commons_mariadb_get_fkeys_list () {
 
   if [ -n "$all" ] ; then
     all_column="
-      TS.CONSTRAINT_NAME,
-      TS.TABLE_NAME,
-      KCU.COLUMN_NAME,
+      KCU.CONSTRAINT_NAME,
+      KCU.TABLE_NAME,
+      GROUP_CONCAT(KCU.COLUMN_NAME ORDER BY KCU.ORDINAL_POSITION) AS COLUMN_NAME,
       KCU.REFERENCED_TABLE_NAME,
-      KCU.REFERENCED_COLUMN_NAME,
+      GROUP_CONCAT(KCU.REFERENCED_COLUMN_NAME ORDER BY KCU.ORDINAL_POSITION) AS REFERENCED_COLUMN_NAME,
       RC.UPDATE_RULE,
       RC.DELETE_RULE
     "
@@ -752,7 +784,9 @@ commons_mariadb_get_fkeys_list () {
     AND RC.UNIQUE_CONSTRAINT_SCHEMA = KCU.TABLE_SCHEMA
     AND KCU.REFERENCED_TABLE_NAME IS NOT NULL
     ${fk_name}
-    ORDER BY TS.TABLE_NAME, TS.CONSTRAINT_NAME;"
+    GROUP BY KCU.CONSTRAINT_NAME
+    ORDER BY TS.TABLE_NAME, TS.CONSTRAINT_NAME
+    ;"
 
   mysql_cmd_4var "_mariadb_ans" "$cmd" || return 1
 
@@ -1250,6 +1284,7 @@ commons_mariadb_download_all_views () {
 
   local n_rec=0
   local name=""
+  local i=1
 
   commons_mariadb_count_views
   n_rec=$?
@@ -1270,6 +1305,7 @@ commons_mariadb_download_all_views () {
       else
         echo -en "Download view $name ($i of $n_rec).\n"
       fi
+      let i++
       IFS=$'\n'
 
     done
@@ -1339,6 +1375,7 @@ commons_mariadb_download_all_procedures () {
 commons_mariadb_download_all_functions () {
 
   local n_rec=0
+  local i=0
 
   commons_mariadb_count_functions
   n_rec=$?
@@ -1357,6 +1394,7 @@ commons_mariadb_download_all_functions () {
       else
         echo -en "Download function $row correctly ($i of $n_rec).\n"
       fi
+      let i++
       IFS=$'\n'
 
     done
@@ -1382,6 +1420,7 @@ commons_mariadb_download_all_triggers () {
 
   local n_rec=0
   local name=""
+  local i=1
 
   commons_mariadb_count_triggers
   n_rec=$?
@@ -1404,6 +1443,7 @@ commons_mariadb_download_all_triggers () {
       else
         echo -en "Download trigger $name ($i of $n_rec).\n"
       fi
+      let i++
       IFS=$'\n'
 
     done
@@ -1415,5 +1455,184 @@ commons_mariadb_download_all_triggers () {
 }
 #***
 
+#****f* commmons_mariadb/commons_mariadb_download_fkey
+# FUNCTION
+#   Download a foreign key to MARIADB_DIR/foreign_keys directory.
+# INPUTS
+#   name    - name of the foreign key to download.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_mariadb_check_if_exist_fkey
+#   mysql_cmd_4var
+# SOURCE
+commons_mariadb_download_fkey () {
+
+  local name="${1/.sql/}"
+  name=`basename $name`
+  local fkeysdir="${MARIADB_DIR}/foreign_keys"
+  local f="$fkeysdir/$name.sql"
+  local table=""
+  local cname=""
+  local rtable=""
+  local rcname=""
+  local ur=""
+  local dr=""
+  local on_delete=""
+  local on_update=""
+
+  commons_mariadb_check_if_exist_fkey "$name" || error_handled "Foreign key $name not found."
+
+  if [ ! -e "$fkeysdir" ] ; then
+    mkdir "$fkeysdir"
+  fi
+
+  [ -f "$f" ] && rm -f "$f"
+
+  # Retrieve data about foreign key
+  commons_mariadb_get_fkeys_list "1" "" "$name" || \
+    error_handled "Error on retrieve data about foreign key $name."
+
+  table=`echo $_mariadb_ans | awk '{split($0,a," "); print a[2]}'`
+  cname=`echo $_mariadb_ans | awk '{split($0,a," "); print a[3]}'`
+  rtable=`echo $_mariadb_ans | awk '{split($0,a," "); print a[4]}'`
+  rcname=`echo $_mariadb_ans | awk '{split($0,a," "); print a[5]}'`
+  ur=`echo $_mariadb_ans | awk '{split($0,a," "); print a[6]}'`
+  dr=`echo $_mariadb_ans | awk '{split($0,a," "); print a[7]}'`
+
+  if [ x"${dr}" != x"RESTRICT" ] ; then
+    on_delete="ON DELETE ${dr}"
+  fi
+
+  if [ x"${ur}" != x"RESTRICT" ] ; then
+    on_update="ON UPDATE ${dr}"
+  fi
+
+  # TODO: Check if create a [index_name] field automatically
+  #       See: http://dev.mysql.com/doc/refman/5.6/en/create-table-foreign-keys.html
+  local out="
+-- \$Id\$
+USE \`DB_NAME\`;
+ALTER TABLE \`${table}\`
+  ADD CONSTRAINT \`${name}\`
+  FOREIGN KEY
+    (${cname})
+  REFERENCES \`${rtable}\`
+    (${rcname})
+  ${on_delete}
+  ${on_update}
+  ;
+"
+
+  echo -en "$out" > $f
+
+  return 0
+}
+#***
+
+#****f* commmons_mariadb/commons_mariadb_download_all_fkeys
+# FUNCTION
+#   Download all foreign keys to MARIADB_DIR/foreign_keys directory.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_mariadb_count_fkeys
+#   commons_mariadb_download_fkey
+# SOURCE
+commons_mariadb_download_all_fkeys () {
+
+  local n_rec=0
+  local name=""
+  local i=1
+
+  commons_mariadb_count_fkeys
+  n_rec=$?
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(commons_mariadb_download_all_fkeys: Found $n_rec foreign keys.\n"
+
+  if [ $n_rec -gt 0 ] ; then
+
+    commons_mariadb_get_fkeys_list "" "KCU.CONSTRAINT_NAME" || \
+      error_handled "Error on get foreign key name list."
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      name=`echo $row | awk '{split($0,a," "); print a[1]}'`
+
+      unset IFS
+      commons_mariadb_download_fkey "$name"
+      if [ $? -ne 0 ] ; then
+        echo -en "Error on download foreign key $name ($i of $n_rec).\n"
+      else
+        echo -en "Download foreign key $name ($i of $n_rec).\n"
+      fi
+      let i++
+      IFS=$'\n'
+
+    done
+    unset IFS
+
+  fi
+
+  return 0
+}
+#***
+
+#****f* commmons_mariadb/commons_mariadb_drop_fkey
+# FUNCTION
+#   Drop a foreign key from database if exists.
+# INPUT
+#   fkey   Name of the foreign key to drop.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SOURCE
+commons_mariadb_drop_fkey () {
+
+  local is_present=1
+  local name="$1"
+  local tname=""
+  local cmd=""
+
+  _logfile_write "(mariadb) Start drop foreign key: $name" || return 1
+
+  commons_mariadb_check_if_exist_fkey "$name"
+  is_present=$?
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(commons_mariadb_drop: Dropping foreign key $name (is_present = $is_present).\n"
+
+  if [ $is_present -eq 0 ] ; then
+
+    commons_mariadb_get_fkeys_list "" "KCU.CONSTRAINT_NAME, KCU.TABLE_NAME" "${name}" || \
+      error_handled "Error on get data of foreign key $name."
+
+    tname=`echo $_mariadb_ans | awk '{split($0,a," "); print a[2]}'`
+
+    cmd="
+      USE \`${MARIADB_DB}\` ;
+      ALTER TABLE \`${tname}\`
+        DROP FOREIGN KEY \`${name}\`
+    "
+
+    mysql_cmd_4var "MYSQL_OUTPUT" "$cmd"
+    local ans=$?
+
+    _logfile_write "Result = $ans\n$MYSQL_OUTPUT" || return 1
+
+  else
+
+    _logfile_write "\nWARNING: Foreign key $name not present." || return 1
+
+  fi
+
+  _logfile_write "(mariadb) End drop foreign key: $name" || return 1
+
+  return 0
+}
+#***
 
 # vim: syn=sh filetype=sh

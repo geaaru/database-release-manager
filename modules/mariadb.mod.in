@@ -504,11 +504,13 @@ _mariadb_connections_args () {
 #   * --file [file_path]  Compile a file
 #   * --all-functions     Compile all functions files.
 #   * --all-views         Compile all views
-#   * --all               Compile all triggers, functions, views, procedures.
+#   * --all-foreign-keys  Compile all foreign keys.
+#   * --all               Compile all triggers, functions, views, procedures, foreign keys.
 #   * --trigger [trigger] Compile input trigger
 #   * --function [f]      Compile function f.
 #   * --view [v]          Compile view v.
 #   * --procedure [p]     Compile procedure p.
+#   * --fkey [fk]         Compile foreign key fk
 #   * --exclude [f]       Permit to exclude a file from compilation. This option
 #                         could be used more of one time.
 # SEE ALSO
@@ -520,7 +522,7 @@ _mariadb_compile_args () {
 
   local short_options="d:U:P:hH:D:t:"
   local long_options="database: timezone: conn-options: ignore-timezone" # connection long options
-  long_options="$long_options all-triggers id-script: file: all-functions all-procedures all-views all trigger: function: view: procedure: exclude:"
+  long_options="$long_options all-triggers id-script: file: all-functions all-procedures all-views all-foreign-keys all trigger: function: view: procedure: exclude: fkey:"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -538,12 +540,14 @@ _mariadb_compile_args () {
   MARIADB_COMPILE_ALL_FUNCTIONS=0
   MARIADB_COMPILE_ALL_PROCEDURES=0
   MARIADB_COMPILE_ALL_VIEWS=0
+  MARIADB_COMPILE_ALL_FKEYS=0
   MARIADB_COMPILE_PROCEDURE=""
   MARIADB_COMPILE_TRIGGER=""
   MARIADB_COMPILE_FUNCTION=""
   MARIADB_COMPILE_VIEW=""
   MARIADB_COMPILE_ID_SCRIPT=""
   MARIADB_COMPILE_FILE=""
+  MARIADB_COMPILE_FKEY=""
   local MARIADB_COMPILE_EXC_RCVD=0
 
   while [ $# -gt 0 ] ; do
@@ -568,6 +572,9 @@ _mariadb_compile_args () {
         ;;
       --all-views)
         MARIADB_COMPILE_ALL_VIEWS=1
+        ;;
+      --all-foreign-keys)
+        MARIADB_COMPILE_ALL_FKEYS=1
         ;;
       --all)
         MARIADB_COMPILE_ALL=1
@@ -594,6 +601,10 @@ _mariadb_compile_args () {
         ;;
       --file)
         MARIADB_COMPILE_FILE="$2"
+        shift
+        ;;
+      --fkey)
+        MARIADB_COMPILE_FKEY="$2"
         shift
         ;;
       --exclude)
@@ -635,12 +646,14 @@ _mariadb_compile_args () {
 #   * --id-script [id]    Download a particular script with input id.
 #   * --file [file_path]  Download a file
 #   * --all-functions     Download all functions files.
-#   * --all-views         Download all views
+#   * --all-views         Download all views.
+#   * --all-foreign-keys  Download all foreign keys.
 #   * --all               Download all triggers, functions, views, procedures.
 #   * --trigger [trigger] Download input trigger
 #   * --function [f]      Download function f.
 #   * --view [v]          Download view v.
 #   * --procedure [p]     Download procedure p.
+#   * --foreign-key [fk]  Download foreign key fk.
 # SEE ALSO
 #   _mariadb_connections_args for a list of connection arguments
 # SOURCE
@@ -650,7 +663,7 @@ _mariadb_download_args () {
 
   local short_options="d:U:P:hH:D:t:"
   local long_options="database: timezone: conn-options: ignore-timezone" # connection long options
-  long_options="$long_options all-triggers id-script: file: all-functions all-procedures all-views all trigger: function: view: procedure:"
+  long_options="$long_options all-triggers all-id-script: file: all-functions all-procedures all-views all trigger: function: view: procedure: all-foreign-keys foreign-key:"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -668,9 +681,11 @@ _mariadb_download_args () {
   MARIADB_DOWNLOAD_ALL_TRIGGERS=0
   MARIADB_DOWNLOAD_ALL_FUNCTIONS=0
   MARIADB_DOWNLOAD_ALL_VIEWS=0
+  MARIADB_DOWNLOAD_ALL_FKEYS=0
   MARIADB_DOWNLOAD_PROCEDURE=""
   MARIADB_DOWNLOAD_TRIGGER=""
   MARIADB_DOWNLOAD_FUNCTION=""
+  MARIADB_DOWNLOAD_FKEY=""
   MARIADB_DOWNLOAD_VIEW=""
 
   while [ $# -gt 0 ] ; do
@@ -696,6 +711,9 @@ _mariadb_download_args () {
       --all-views)
         MARIADB_DOWNLOAD_ALL_VIEWS=1
         ;;
+      --all-foreign-keys)
+        MARIADB_DOWNLOAD_ALL_FKEYS=1
+        ;;
       --all)
         MARIADB_DOWNLOAD_ALL=1
         ;;
@@ -715,17 +733,23 @@ _mariadb_download_args () {
         MARIADB_DOWNLOAD_VIEW="$2"
         shift
         ;;
+      --foreign-key)
+        MARIADB_DOWNLOAD_FKEY="$2"
+        shift
+        ;;
 
       -h)
         echo -en "[--all-procedure]        Download all procedures.\n"
         echo -en "[--all-triggers]         Download all triggers.\n"
         echo -en "[--all-functions]        Download all functions.\n"
+        echo -en "[--all-foreign-keys]     Download all foreign keys.\n"
         echo -en "[--all-views]            Download all views.\n"
         echo -en "[--all]                  Download all.\n"
         echo -en "[--procedure name]       Download a particular procedure.\n"
         echo -en "[--trigger name]         Download a particular trigger.\n"
         echo -en "[--function name]        Download a particular function.\n"
         echo -en "[--view name]            Download a particular view.\n"
+        echo -en "[--foreign-key name]     Download a particular foreign key.\n"
         echo -en "Note: For argument with value if it isn't passed value argument is ignored.\n"
         return 1
         ;;
@@ -768,7 +792,7 @@ _mariadb_show_args () {
 
   local short_options="d:U:P:hH:D:t:"
   local long_options="database: timezone: conn-options: ignore-timezone table: fkey:" # connection long options
-  long_options="$long_options triggers functions procedures views tables all foreing-keys help"
+  long_options="$long_options triggers functions procedures views tables all foreign-keys help"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -817,7 +841,7 @@ _mariadb_show_args () {
       --tables)
         MARIADB_SHOW_ALL_TABLES=1
         ;;
-      --foreing-keys)
+      --foreign-keys)
         MARIADB_SHOW_ALL_FKEYS=1
         ;;
       --all)
@@ -866,7 +890,7 @@ _mariadb_show_help () {
   echo -en "[--triggers]             Show list of trigger name present on database.\n"
   echo -en "[--functions]            Show list of functions name present on database.\n"
   echo -en "[--views]                Show list of view name present on database.\n"
-  echo -en "[--foreing-keys]         Show list of foreign keys name present on database.\n"
+  echo -en "[--foreign-keys]         Show list of foreign keys name present on database.\n"
   echo -en "[--tables]               Show list of tables present on database.\n"
   echo -en "[--all]                  Show list of all procedures, triggers, functions and views present on database.\n"
   echo -en "[--table TABLE_NAME]     Show detail of a table. This option could be repeated.\n"
@@ -887,12 +911,14 @@ _mariadb_compile_help () {
   echo -en "[--all-triggers]         Compile all triggers present under MARIADB_DIR subdirectories.\n"
   echo -en "[--all-functions]        Compile all functions present under MARIADB_DIR subdirectories.\n"
   echo -en "[--all-views]            Compile all views present on MARIADB_DIR subdirectories.\n"
+  echo -en "[--all-foreign-keys]     Compile all foreign keys present on MARIADB_DIR subdirectories.\n"
   echo -en "[--all]                  Compile all procedures, triggers, functions and views present under\n"
   echo -en "                         MARIADB_DIR subdirectories.\n"
   echo -en "[--procedure name]       Compile a particular procedure under MARIADB_DIR/procedures directory.\n"
   echo -en "[--trigger name]         Compile a particular trigger under MARIADB_DIR/triggers directory.\n"
   echo -en "[--function name]        Compile a particular function under MARIADB_DIR/functions directory.\n"
   echo -en "[--view name]            Compile a particular view under MARIADB_DIR/views directory.\n"
+  echo -en "[--fkey name]            Compile a particular foreign key under MARIADB_DIR/foreign_keys directory.\n"
   echo -en "[--exclude filename]     Exclude a particular file from compilation.\n"
   echo -en "                         (This option can be repeat and override MARIADB_COMPILE_FILES_EXCLUDED\n"
   echo -en "                          configuration variable).\n"
@@ -956,6 +982,7 @@ _mariadb_compile () {
     commons_mariadb_compile_all_triggers "" || error_handled "Error on compile all triggers."
     commons_mariadb_compile_all_functions "" || error_handled "Error on compile all functions."
     commons_mariadb_compile_all_views "" || error_handled "Error on compile all functions."
+    commons_mariadb_compile_all_fkeys"" || error_handled "Error on compile all foreign keys."
 
   else
 
@@ -1008,7 +1035,7 @@ _mariadb_compile () {
 
     fi
 
-    # Check for all-views of single view
+    # Check for all-views or single view
 
     if [ $MARIADB_COMPILE_ALL_VIEWS -eq 1 ] ; then
 
@@ -1025,6 +1052,25 @@ _mariadb_compile () {
 
     fi
 
+    # Check for all-foreign-keys or single foreign key
+
+    if [ $MARIADB_COMPILE_ALL_FKEYS -eq 1 ] ; then
+
+      commons_mariadb_compile_all_fkeys "" || error_handled "Error on compile all foreign keys."
+
+    else
+
+      if [ ! -z "$MARIADB_COMPILE_FKEY" ] ; then
+
+        f="${MARIADB_COMPILE_FKEY/.sql/}"
+
+        commons_mariadb_drop_fkey "$f" || error_handled "Error on drop foreign key $f."
+
+        commons_mariadb_compile_file "$MARIADB_DIR/foreign_keys/$f.sql" "" || error_handled "Error on compile file $f.sql"
+
+      fi
+
+    fi
 
   fi # end if $MARIADB_COMPILE_ALL
 
@@ -1140,6 +1186,21 @@ _mariadb_download () {
 
         commons_mariadb_download_view "$MARIADB_DOWNLOAD_VIEW" || error_handled "Error on download view."
 
+      fi
+
+    fi
+
+    # Check for all-foreign-keys or single foreign key
+
+    if [ $MARIADB_DOWNLOAD_ALL_FKEYS -eq 1 ] ; then
+
+      commons_mariadb_download_all_fkeys || error_handled "Error on download all foreign keys."
+
+    else
+
+      if [ -n "$MARIADB_DOWNLOAD_FKEY" ] ; then
+
+        commons_mariadb_download_fkey "$MARIADB_DOWNLOAD_FKEY" || error_handled "Error on download foreign key."
       fi
 
     fi
