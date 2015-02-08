@@ -41,6 +41,7 @@ mariadb_long_help () {
    echo -en "\tdownload                Download procedures/triggers/views/etc.\n"
    echo -en "\tcompile                 Compile procedures/triggers/views/etc.\n"
    echo -en "\tshow                    Show procedures/triggers/views/etc.\n"
+   echo -en "\tdrop                    Drop procedures/triggers/views/etc.\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
@@ -64,6 +65,7 @@ mariadb_show_help () {
    echo -en "\tdownload                Download procedures/triggers/views/etc.\n"
    echo -en "\tcompile                 Compile procedures/triggers/views/etc.\n"
    echo -en "\tshow                    Show procedures/triggers/views/etc.\n"
+   echo -en "\tdrop                    Drop procedures/triggers/views/etc.\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
@@ -345,6 +347,38 @@ mariadb_download () {
 }
 #***
 
+#****f* mariadb/mariadb_drop
+# FUNCTION
+#   Drop triggers, functions, views, procedures, file, etc. from database.
+# SEE ALSO
+#   _mariadb_connections_args
+#   _mariadb_drop_args
+# SOURCE
+mariadb_drop () {
+
+  # Shift first two input param
+  shift 2
+
+  _mariadb_check_status
+
+  _mariadb_help_message="print_help"
+
+  _mariadb_connections_args "$@"
+
+  _mariadb_drop_args "$@" || error_handled ""
+
+  commons_mariadb_check_vars || error_handled ""
+
+  mysql_set_auth_var "$MARIADB_DB" "$MARIADB_USER" "$MARIADB_PWD" "$MARIADB_HOST"
+
+  commons_mariadb_check_connection || error_handled "MySQL client was unable to connect to DB with supplied credentials."
+
+  _mariadb_drop || error_handled ""
+
+  return 0
+}
+#***
+
 ##################################################################
 # Internal functions
 ##################################################################
@@ -439,7 +473,7 @@ _mariadb_connections_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_connections_args args: $@)\n"
 
   local short_options="U:P:hH:D:t:"
-  local long_options="database: timezone: conn-options: ignore-timezone"
+  local long_options="database: timezone: conn-options: ignore-timezone help"
 
   set -- `getopt -u -q -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -474,8 +508,8 @@ _mariadb_connections_args () {
         fi
         shift
         ;;
-      -h)
-        if [ ! -z "$_mariadb_help_message" ] ; then
+      --help|-h)
+        if [ -n "$_mariadb_help_message" ] ; then
           _mariadb_connection_help
         fi
         return 1
@@ -521,7 +555,7 @@ _mariadb_compile_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_compile_args args: $@)\n"
 
   local short_options="d:U:P:hH:D:t:"
-  local long_options="database: timezone: conn-options: ignore-timezone" # connection long options
+  local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
   long_options="$long_options all-triggers id-script: file: all-functions all-procedures all-views all-foreign-keys all trigger: function: view: procedure: exclude: fkey:"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
@@ -616,7 +650,7 @@ _mariadb_compile_args () {
         fi
         shift
         ;;
-      -h)
+      -h|--help)
         _mariadb_compile_help
         return 1
         ;;
@@ -662,7 +696,7 @@ _mariadb_download_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_download_args args: $@)\n"
 
   local short_options="d:U:P:hH:D:t:"
-  local long_options="database: timezone: conn-options: ignore-timezone" # connection long options
+  local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
   long_options="$long_options all-triggers all-id-script: file: all-functions all-procedures all-views all trigger: function: view: procedure: all-foreign-keys foreign-key:"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
@@ -738,7 +772,7 @@ _mariadb_download_args () {
         shift
         ;;
 
-      -h)
+      -h|--help)
         echo -en "[--all-procedure]        Download all procedures.\n"
         echo -en "[--all-triggers]         Download all triggers.\n"
         echo -en "[--all-functions]        Download all functions.\n"
@@ -791,8 +825,8 @@ _mariadb_show_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_show_args args: $@)\n"
 
   local short_options="d:U:P:hH:D:t:"
-  local long_options="database: timezone: conn-options: ignore-timezone table: fkey:" # connection long options
-  long_options="$long_options triggers functions procedures views tables all foreign-keys help"
+  local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
+  long_options="$long_options triggers functions procedures views tables all foreign-keys table: fkey:"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -857,11 +891,7 @@ _mariadb_show_args () {
         let MARIADB_SHOW_FKEYS_DESCR++
         shift
         ;;
-      --help)
-        _mariadb_show_help
-        return 1
-        ;;
-      -h)
+      -h|--help)
         _mariadb_show_help
         return 1
         ;;
@@ -880,6 +910,72 @@ _mariadb_show_args () {
 }
 #***
 
+#****f* mariadb/_mariadb_drop_args
+# FUNCTION
+#   Parse command line and define environment variables for drop command.
+# DESCRIPTION
+#   Available commands line are:
+#   * -h                  Show help message
+#   * --fkey [fk]         Drop foreign key fk
+# SEE ALSO
+#   _mariadb_connections_args for a list of connection arguments
+# SOURCE
+_mariadb_drop_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_drop_args args: $@)\n"
+
+  local short_options="d:U:P:hH:D:t:"
+  local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
+  long_options="$long_options fkey:"
+
+  set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
+
+  MARIADB_COMPILE_ALL=1
+
+  if [ $# -lt 2 ] ; then # is there at least one param (--)
+    _mariadb_drop_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_drop_args: Found $# params)\n"
+
+  MARIADB_DROP_FKEYS=""
+  MARIADB_DROP_FKEY_NAMES=0
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -S|-H|-U|-P|-D|--database|--timezone|--conn-options)
+        shift
+        # do nothing
+        ;;
+      --ignore-timezone)
+        # do nothing
+        ;;
+      --fkey)
+        MARIADB_DROP_FKEYS[$MARIADB_DROP_FKEY_NAMES]="$2"
+        let MARIADB_DROP_FKEY_NAMES++
+        shift
+        ;;
+      -h|--help)
+        _mariadb_drop_help
+        return 1
+        ;;
+      --)
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+
+    esac
+
+    shift
+  done
+
+  return 0
+
+}
+#***
 #****f* mariadb/_mariadb_show_help
 # FUNCTION
 #   Internal function that print help message of show command.
@@ -947,6 +1043,20 @@ _mariadb_connection_help () {
   echo -en "[--ignore-timezone]      Set MARIADB_IGNORE_TMZ variable to 1 for disable initial timezone settings.\n"
 
   return 0
+}
+#***
+
+#****f* mariadb/_mariadb_drop_help
+# FUNCTION
+#   Internal function that print help message of drop command.
+# SOURCE
+_mariadb_drop_help () {
+
+  echo -en "[--fkey FKEY_NAME]       Drop foreign key [FKEY_NAME] from database.\n"
+  echo -en "                         This option could be repeated.\n"
+
+  return 0
+
 }
 #***
 
@@ -1064,7 +1174,7 @@ _mariadb_compile () {
 
         f="${MARIADB_COMPILE_FKEY/.sql/}"
 
-        commons_mariadb_drop_fkey "$f" || error_handled "Error on drop foreign key $f."
+        commons_mariadb_drop_fkey "$f" "nowarn" || error_handled "Error on drop foreign key $f."
 
         commons_mariadb_compile_file "$MARIADB_DIR/foreign_keys/$f.sql" "" || error_handled "Error on compile file $f.sql"
 
@@ -1206,6 +1316,38 @@ _mariadb_download () {
     fi
 
   fi # end $MARIADB_DOWNLOAD_ALL
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_drop
+# FUNCTION
+#   Internal function that manage drop process.
+# SOURCE
+_mariadb_drop () {
+
+  local fk=""
+  local f=""
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_drop args: $@)\n"
+
+  # Drop single foreign key
+
+  if [ $MARIADB_DROP_FKEY_NAMES -gt 0 ] ; then
+
+    for i in ${!MARIADB_DROP_FKEYS[@]}
+    do
+
+      f="${MARIADB_DROP_FKEYS[$i]/.sql/}"
+
+      commons_mariadb_drop_fkey "$f" || error_handled "Error on drop foreign key $f."
+
+      out_handler_print "Foreign key ${f} dropped.\n"
+
+    done
+
+  fi
 
   return 0
 }

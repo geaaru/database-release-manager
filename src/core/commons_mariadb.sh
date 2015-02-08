@@ -660,12 +660,16 @@ commons_mariadb_check_if_exist_fkey () {
   local errmsg="Error on check if exists foreign key with $name."
   local cmd="
     SELECT COUNT(1) AS CNT
-    FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
-    WHERE TABLE_SCHEMA = '$MARIADB_DB'
-    AND CONSTRAINT_TYPE = 'FOREIGN KEY'
-    AND CONSTRAINT_SCHEMA = '$MARIADB_DB'
-    AND CONSTRAINT_NAME = '$name'
-    GROUP BY CONSTRAINT_NAME;"
+    FROM
+    (
+      SELECT CONSTRAINT_NAME
+      FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
+      WHERE TABLE_SCHEMA = '$MARIADB_DB'
+      AND CONSTRAINT_TYPE = 'FOREIGN KEY'
+      AND CONSTRAINT_SCHEMA = '$MARIADB_DB'
+      AND CONSTRAINT_NAME = '$name'
+      GROUP BY CONSTRAINT_NAME
+     ) TMP "
 
   mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || return $result
 
@@ -785,8 +789,74 @@ commons_mariadb_get_fkeys_list () {
     AND KCU.REFERENCED_TABLE_NAME IS NOT NULL
     ${fk_name}
     GROUP BY KCU.CONSTRAINT_NAME
-    ORDER BY TS.TABLE_NAME, TS.CONSTRAINT_NAME
-    ;"
+    ORDER BY TS.TABLE_NAME, TS.CONSTRAINT_NAME"
+
+  mysql_cmd_4var "_mariadb_ans" "$cmd" || return 1
+
+  return 0
+}
+#***
+
+#****f* commmons_mariadb/commons_mariadb_get_indexes_list
+# FUNCTION
+#   Save on _mariadb_ans variable list of indexes defined on schema.
+# INPUTS
+#   - idx_types     Argument $1 identify indexes types. Values are: "all" (default), "primary", "not_primary"
+#   - custom_colum  Argument $2 if not empty defined list of column returned.
+#   - tname         Argument $3 if not empty define table name where search for indexes.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
+commons_mariadb_get_indexes_list () {
+
+  local idx_types="$1"
+  local custom_column="$2"
+  local tname="$3"
+  local all_column=""
+  local andWhere_name=""
+  local andWhere_type=""
+
+  if [ -z "$custom_column" ] ; then
+    all_column="
+      TABLE_NAME,
+      NON_UNIQUE,
+      INDEX_NAME,
+      GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX) AS KEY_COLUMNS,
+      INDEX_TYPE,
+      COMMENT,
+      INDEX_COMMENT
+    "
+
+  fi
+
+  # TODO: ADD LEFT JOIN WITH TABLE_CONSTRAINTS TO
+  #       AVOID SHOW OF FOREIGN KEYS.
+
+  if [ -n "$idx_types" ] ; then
+    if [ x"$idx_types" == x"primary" ] ; then
+      andWhere_type="AND INDEX_NAME = 'PRIMARY'"
+    else
+      if [ x"$idx_types" == x"not_primary" ] ; then
+        andWhere_type="AND INDEX_NAME <> 'PRIMARY'"
+      fi
+    fi
+  fi
+
+  if [ -n "${tname}" ] ; then
+    andWhere_name="AND TABLE_NAME = '${tname}'"
+  fi
+
+  local cmd="
+    SELECT ${all_column} ${custom_column}
+    FROM  INFORMATION_SCHEMA.STATISTICS
+    WHERE TABLE_SCHEMA = '$MARIADB_DB'
+    ${andWhere_name}
+    ${andWhere_type}
+    GROUP BY TABLE_NAME, INDEX_NAME
+    ORDER BY TABLE_NAME, INDEX_NAME"
 
   mysql_cmd_4var "_mariadb_ans" "$cmd" || return 1
 
@@ -1594,6 +1664,7 @@ commons_mariadb_drop_fkey () {
 
   local is_present=1
   local name="$1"
+  local avoid_warn="$2"
   local tname=""
   local cmd=""
 
@@ -1625,7 +1696,9 @@ commons_mariadb_drop_fkey () {
 
   else
 
-    _logfile_write "\nWARNING: Foreign key $name not present." || return 1
+    if [ -z "$avoid_warn" ] ; then
+      _logfile_write "\nWARNING: Foreign key $name not present." || return 1
+    fi
 
   fi
 
