@@ -1234,6 +1234,8 @@ _mariadb_download () {
 
     commons_mariadb_download_all_views || error_handled "Error on download all views."
 
+    commons_mariadb_download_all_fkeys || error_handled "Error on download all foreign keys."
+
   else
 
     # Check for all procedures
