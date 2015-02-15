@@ -540,6 +540,67 @@ commons_mariadb_count_views () {
 }
 #***
 
+#****f* commons_mariadb/commons_mariadb_count_indexes
+# FUNCTION
+#   Count number of indexes present on database.
+# INPUTS
+#   - tname         Argument $1 if isn't an empty string identify table name.
+#   - idx_types     Argument $2 identify indexes types. Values are: "all" (default), "primary", "not_primary"
+# RETURN VALUE
+#   number of indexes found.
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
+commons_mariadb_count_indexes () {
+
+  local tname=$1
+  local idx_types="$2"
+  local andwhere=""
+
+  if [ -n "$tname" ] ; then
+    andwhere="AND TABLE_NAME = '$tname'"
+  fi
+
+  if [ -n "$idx_types" ] ; then
+    if [ x"$idx_types" == x"primary" ] ; then
+      andWhere_type="AND INDEX_NAME = 'PRIMARY'"
+    else
+      if [ x"$idx_types" == x"not_primary" ] ; then
+        andWhere_type="AND INDEX_NAME <> 'PRIMARY'"
+      fi
+    fi
+  fi
+
+  local cmd="
+    SELECT COUNT(1) AS CNT
+    FROM (
+       SELECT TABLE_NAME, INDEX_NAME
+      FROM  INFORMATION_SCHEMA.STATISTICS
+      WHERE TABLE_SCHEMA = '$MARIADB_DB'
+      AND INDEX_NAME NOT IN (
+          SELECT TC.CONSTRAINT_NAME
+          FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
+          WHERE TC.TABLE_SCHEMA = '$MARIADB_DB'
+          AND TC.CONSTRAINT_SCHEMA = TC.TABLE_SCHEMA
+          AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY'
+      )
+      ${andWhere_type}
+      ${andwhere}
+      GROUP BY TABLE_NAME, INDEX_NAME
+      ORDER BY TABLE_NAME, INDEX_NAME
+    ) T
+  "
+
+  mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" "" "1" || error_handled ""
+
+  if [ -z "$MYSQL_OUTPUT" ] ; then
+    error_generate "Error on count indexes."
+  fi
+
+  return $MYSQL_OUTPUT
+}
+#***
+
 #****f* commmons_mariadb/commons_mariadb_check_if_exist_procedure
 # FUNCTION
 #   Check if exists procedure with name in input on schema.
@@ -685,6 +746,57 @@ commons_mariadb_check_if_exist_fkey () {
 }
 #***
 
+#****f* commmons_mariadb/commons_mariadb_check_if_exist_index
+# FUNCTION
+#   Check if exists index with name and table name in input on schema.
+# INPUTS
+#   index_name   - Argument $1 identify index name.
+#   table_name   - Argument $2 identify table name.
+# RETURN VALUE
+#   1 if not exists
+#   0 if exists
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
+commons_mariadb_check_if_exist_index () {
+
+  local result=1
+  local name="$1"
+  local tname="$2"
+  local errmsg="Error on check if exists index key with $name on table $tname."
+  local cmd="
+    SELECT COUNT(1) AS CNT
+    FROM (
+       SELECT TABLE_NAME, INDEX_NAME
+      FROM  INFORMATION_SCHEMA.STATISTICS
+      WHERE TABLE_SCHEMA = '$MARIADB_DB'
+      AND INDEX_NAME NOT IN (
+          SELECT TC.CONSTRAINT_NAME
+          FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
+          WHERE TC.TABLE_SCHEMA = '$MARIADB_DB'
+          AND TC.CONSTRAINT_SCHEMA = TC.TABLE_SCHEMA
+          AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY'
+      )
+      AND TABLE_NAME = '${tname}'
+      AND INDEX_NAME = '${name}'
+      GROUP BY TABLE_NAME, INDEX_NAME
+      ORDER BY TABLE_NAME, INDEX_NAME
+    ) T"
+
+  mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || return $result
+
+  if [ -z "$MYSQL_OUTPUT" ] ; then
+    error_generate "$errmsg"
+  fi
+
+  if [ x"$MYSQL_OUTPUT" == x"1" ] ; then
+    result=0
+  fi
+
+  return $result
+}
+#***
+
 #****f* commmons_mariadb/commons_mariadb_get_triggers_list
 # FUNCTION
 #   Save on _mariadb_ans variable list of triggers defined on schema.
@@ -804,6 +916,7 @@ commons_mariadb_get_fkeys_list () {
 #   - idx_types     Argument $1 identify indexes types. Values are: "all" (default), "primary", "not_primary"
 #   - custom_colum  Argument $2 if not empty defined list of column returned.
 #   - tname         Argument $3 if not empty define table name where search for indexes.
+#   - index_name    Argument $4 if not empty define index name.
 # RETURN VALUE
 #   1 on error
 #   0 on success
@@ -815,48 +928,58 @@ commons_mariadb_get_indexes_list () {
   local idx_types="$1"
   local custom_column="$2"
   local tname="$3"
+  local iname="$4"
   local all_column=""
   local andWhere_name=""
   local andWhere_type=""
 
   if [ -z "$custom_column" ] ; then
     all_column="
-      TABLE_NAME,
-      NON_UNIQUE,
-      INDEX_NAME,
-      GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX) AS KEY_COLUMNS,
-      INDEX_TYPE,
-      COMMENT,
-      INDEX_COMMENT
+      S.TABLE_NAME,
+      S.NON_UNIQUE,
+      S.INDEX_NAME,
+      GROUP_CONCAT(S.COLUMN_NAME ORDER BY S.SEQ_IN_INDEX) AS KEY_COLUMNS,
+      S.INDEX_TYPE,
+      S.COMMENT,
+      S.INDEX_COMMENT
     "
 
   fi
 
-  # TODO: ADD LEFT JOIN WITH TABLE_CONSTRAINTS TO
-  #       AVOID SHOW OF FOREIGN KEYS.
-
   if [ -n "$idx_types" ] ; then
     if [ x"$idx_types" == x"primary" ] ; then
-      andWhere_type="AND INDEX_NAME = 'PRIMARY'"
+      andWhere_type="AND S.INDEX_NAME = 'PRIMARY'"
     else
       if [ x"$idx_types" == x"not_primary" ] ; then
-        andWhere_type="AND INDEX_NAME <> 'PRIMARY'"
+        andWhere_type="AND S.INDEX_NAME <> 'PRIMARY'"
       fi
     fi
   fi
 
   if [ -n "${tname}" ] ; then
-    andWhere_name="AND TABLE_NAME = '${tname}'"
+    andWhere_name="AND S.TABLE_NAME = '${tname}'"
+  fi
+
+  if [ -n "${iname}" ] ; then
+    andWhere_iname="AND S.INDEX_NAME = '${iname}'"
   fi
 
   local cmd="
     SELECT ${all_column} ${custom_column}
-    FROM  INFORMATION_SCHEMA.STATISTICS
-    WHERE TABLE_SCHEMA = '$MARIADB_DB'
+    FROM  INFORMATION_SCHEMA.STATISTICS S
+    WHERE S.TABLE_SCHEMA = '$MARIADB_DB'
     ${andWhere_name}
+    ${andWhere_iname}
     ${andWhere_type}
-    GROUP BY TABLE_NAME, INDEX_NAME
-    ORDER BY TABLE_NAME, INDEX_NAME"
+    AND S.INDEX_NAME NOT IN (
+        SELECT TC.CONSTRAINT_NAME
+        FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
+        WHERE TC.TABLE_SCHEMA = '$MARIADB_DB'
+        AND TC.CONSTRAINT_SCHEMA = TC.TABLE_SCHEMA
+        AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY'
+    )
+    GROUP BY S.TABLE_NAME, S.INDEX_NAME
+    ORDER BY S.TABLE_NAME, S.INDEX_NAME"
 
   mysql_cmd_4var "_mariadb_ans" "$cmd" || return 1
 
@@ -898,6 +1021,10 @@ commons_mariadb_get_tables_list () {
 #****f* commmons_mariadb/commons_mariadb_desc_table
 # FUNCTION
 #   Save on _mariadb_ans variable list of columns of input table.
+# INPUTS
+#   tname          Argument $1 identify table name.
+#   custom_column  Argument $2 permit to customize return cursor if not empty.
+#   cname          Argument $3 permit to filter for column name if not empty.
 # RETURN VALUE
 #   1 on error
 #   0 on success
@@ -908,20 +1035,32 @@ commons_mariadb_desc_table () {
 
   local tname="$1"
   local custom_column="$2"
+  local cname="$3"
+  local andwhere=""
+  local all_column=""
+
+  if [ -n "$cname" ] ; then
+    andWhere="AND COLUMN_NAME = '$cname'"
+  fi
+
+  if [ -z "$custom_column" ] ; then
+    all_column="CONCAT_WS('|',
+       COLUMN_NAME,
+       IS_NULLABLE,
+       UPPER(COLUMN_TYPE),
+       COLUMN_KEY,
+       UPPER(EXTRA)) AS C,
+       '|' AS S,
+       COLUMN_DEFAULT
+    "
+  fi
 
   local cmd="
-    SELECT CONCAT_WS('|',
-                  COLUMN_NAME,
-                  IS_NULLABLE,
-                  UPPER(COLUMN_TYPE),
-                  COLUMN_KEY,
-                  UPPER(EXTRA)) AS C,
-                  '|' AS S,
-                  COLUMN_DEFAULT
-                  ${custom_column}
+    SELECT ${all_column} ${custom_column}
     FROM INFORMATION_SCHEMA.COLUMNS
     WHERE TABLE_SCHEMA = '$MARIADB_DB'
     AND TABLE_NAME = '$tname'
+    ${andWhere}
     ORDER BY ORDINAL_POSITION;"
 
   mysql_cmd_4var "_mariadb_ans" "$cmd" || return 1
@@ -1707,5 +1846,260 @@ commons_mariadb_drop_fkey () {
   return 0
 }
 #***
+
+#****f* commmons_mariadb/commons_mariadb_download_index
+# FUNCTION
+#   Download a index key (primary, unique, spatial) to MARIADB_DIR/indexes directory.
+# INPUTS
+#   name         - name of the index key to download.
+#   table_name   - name of the table related with the key to download.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_mariadb_check_if_exist_index
+#   mysql_cmd_4var
+# SOURCE
+commons_mariadb_download_index () {
+
+  local name="${1/.sql/}"
+  local tname="${2}"
+  name=`basename $name`
+  local indexesdir="${MARIADB_DIR}/indexes"
+  local f="${indexesdir}/${tname}_${name}.sql"
+  local table=""
+  local not_unique=""
+  local keys=""
+  local itype=""
+  local comment=""
+  local icomment=""
+  local iname=""
+  local out=""
+
+  commons_mariadb_check_if_exist_index "$name" "${tname}" || \
+    error_handled "Index key $name on table ${tname} not found."
+
+  if [ ! -e "${indexesdir}" ] ; then
+    mkdir "${indexesdir}"
+  fi
+
+  [ -f "$f" ] && rm -f "$f"
+
+  # Retrieve data about index key
+  commons_mariadb_get_indexes_list "all" "" "${tname}" "$name" || \
+    error_handled "Error on retrieve data about index key $name on table ${tname}."
+
+  # TODO: add support to comment and index comment
+  table=`echo $_mariadb_ans | awk '{split($0,a," "); print a[1]}'`
+  not_unique=`echo $_mariadb_ans | awk '{split($0,a," "); print a[2]}'`
+  iname=`echo $_mariadb_ans | awk '{split($0,a," "); print a[3]}'`
+  keys=`echo $_mariadb_ans | awk '{split($0,a," "); print a[4]}'`
+  itype=`echo $_mariadb_ans | awk '{split($0,a," "); print a[5]}'`
+
+  if [ "${iname}" == 'PRIMARY' ] ; then
+
+    # TODO: check if customize index_name
+    #       See http://dev.mysql.com/doc/refman/5.6/en/alter-table.html
+    out="
+-- \$Id\$
+USE \`DB_NAME\`;
+ALTER TABLE \`${table}\`
+  ADD PRIMARY KEY
+    (${keys})
+;
+"
+
+  else
+
+    local itype_string=""
+
+    if [ "${not_unique}" == "0" ] ; then
+      itype_string="UNIQUE"
+    else
+
+      if [[ "${itype}" == 'FULLTEXT' || "${itype}" == 'SPATIAL' ]] ; then
+        itype_string="${itype}"
+      fi
+
+    fi
+
+    out="
+-- \$Id\$
+USE \`DB_NAME\`;
+ALTER TABLE \`${table}\`
+  ADD ${itype_string} INDEX \`${name}\`
+    (${keys})
+;
+"
+
+  fi
+
+  echo -en "$out" > $f
+
+  return 0
+}
+#***
+
+#****f* commmons_mariadb/commons_mariadb_download_all_indexes
+# FUNCTION
+#   Download all indexes to MARIADB_DIR/indexes directory.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_mariadb_count_indexes
+#   commons_mariadb_download_index
+# SOURCE
+commons_mariadb_download_all_indexes () {
+
+  local n_rec=0
+  local tname=""
+  local iname=""
+  local i=1
+
+  commons_mariadb_count_indexes
+  n_rec=$?
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(commons_mariadb_download_all_indexes: Found $n_rec indexes.\n"
+
+  if [ $n_rec -gt 0 ] ; then
+
+    commons_mariadb_get_indexes_list "all" "S.TABLE_NAME,S.INDEX_NAME" || \
+      error_handled "Error on get indexes name list."
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      tname=`echo $row | awk '{split($0,a," "); print a[1]}'`
+      iname=`echo $row | awk '{split($0,a," "); print a[2]}'`
+
+      unset IFS
+      commons_mariadb_download_index "${iname}" "${tname}"
+      if [ $? -ne 0 ] ; then
+        echo -en "Error on download data of index $iname of table ${tname} ($i of $n_rec).\n"
+      else
+        echo -en "Download index $iname of table ${tname} ($i of $n_rec).\n"
+      fi
+      let i++
+      IFS=$'\n'
+
+    done
+    unset IFS
+
+  fi
+
+  return 0
+}
+#***
+
+#****f* commmons_mariadb/commons_mariadb_drop_index
+# FUNCTION
+#   Drop a index from database if exists.
+# INPUTS
+#   name         - name of the index key to drop.
+#   table_name   - name of the table related with the key to drop.
+#   avoid_warn   - if argument $3 is not empty and index doesn't exist no warning are printed.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SOURCE
+commons_mariadb_drop_index () {
+
+  local is_present=1
+  local name="$1"
+  local tname="$2"
+  local avoid_warn="$3"
+  local cmd=""
+  local keys=""
+  local extra=""
+  local ctype=""
+  local is_nullable=""
+  local null=""
+
+  _logfile_write "(mariadb) Start drop index: $name (table ${tname}) " || return 1
+
+  commons_mariadb_check_if_exist_index "${name}" "${tname}"
+  is_present=$?
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(commons_mariadb_drop: Dropping index $name from table ${tname} (is_present = $is_present).\n"
+
+  if [ $is_present -eq 0 ] ; then
+
+    if [ "${name}" == 'PRIMARY' ] ; then
+
+      commons_mariadb_get_indexes_list "all" "" "${tname}" "${name}" || \
+        error_handled "Error on get index data."
+
+      keys=`echo $_mariadb_ans | awk '{split($0,a," "); print a[4]}' | tr "," " "`
+      karr=($keys)
+
+      for k in ${!karr[@]} ; do
+
+        commons_mariadb_desc_table "${tname}" "UPPER(COLUMN_TYPE),IS_NULLABLE,UPPER(EXTRA)" "${karr[$k]}" || \
+          error_handled "Error on get column data of column ${arr[$k]}."
+
+        ctype=`echo $_mariadb_ans | awk '{split($0,a," "); print a[1]}'`
+        is_nullable=`echo $_mariadb_ans | awk '{split($0,a," "); print a[2]}'`
+        extra=`echo $_mariadb_ans | awk '{split($0,a," "); print a[3]}'`
+
+        if [ "$extra" == 'AUTO_INCREMENT' ] ; then
+
+          _logfile_write "(mariadb) Modify column ${karr[$k]} for remove AUTO_INCREMENT and permit drop of primary key." || return 1
+
+          if [ "$is_nullable" == 'NO' ] ; then
+            null="NOT NULL"
+          else
+            null="NULL"
+          fi
+
+          cmd="
+            USE \`${MARIADB_DB}\` ;
+            ALTER TABLE \`${tname}\`
+            CHANGE \`${karr[$k]}\` \`${karr[$k]}\` ${ctype} ${null}
+          "
+
+          mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || \
+            error_handled "Error on remove AUTO_INCREMENT from column ${karr[$k]} of table ${tname}."
+
+        fi
+
+      done # end for k ..
+
+      # Check if keys contains AUTO_INCREMENT column.
+
+      cmd="
+        USE \`${MARIADB_DB}\` ;
+        ALTER TABLE \`${tname}\`
+          DROP PRIMARY KEY
+      "
+    else
+      cmd="
+        USE \`${MARIADB_DB}\` ;
+        ALTER TABLE \`${tname}\`
+          DROP INDEX \`${name}\`
+      "
+    fi
+
+    mysql_cmd_4var "MYSQL_OUTPUT" "$cmd"
+    local ans=$?
+
+    _logfile_write "Result = $ans\n$MYSQL_OUTPUT" || return 1
+
+  else
+
+    if [ -z "$avoid_warn" ] ; then
+      _logfile_write "\nWARNING: Index $name on table ${tname} not present." || return 1
+    fi
+
+  fi
+
+  _logfile_write "(mariadb) End drop index: $name (table ${tname})" || return 1
+
+  return 0
+}
+#***
+
+
 
 # vim: syn=sh filetype=sh
