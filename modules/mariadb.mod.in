@@ -1623,6 +1623,7 @@ _mariadb_show_table () {
   local cextra=""
   local name_size=20
   local default_size=20
+  local type_size=15
 
   commons_mariadb_exist_table "$tname"
   is_present=$?
@@ -1638,7 +1639,7 @@ _mariadb_show_table () {
 
     out_headers[0]="COLUMN_NAME"
     out_headers[1]="DEFAULT"
-    out_headers[2]="IS_NULLABLE"
+    out_headers[2]="NULLABLE"
     out_headers[3]="TYPE"
     out_headers[4]="KEY"
     out_headers[5]="EXTRA"
@@ -1680,6 +1681,10 @@ _mariadb_show_table () {
       if [ ${#default} -ge $default_size ] ; then
         default_size=$((${#default}+1))
       fi
+
+      if [ ${#ctype} -ge $type_size ] ; then
+        type_size=$((${#ctype}+2))
+      fi
       let counter++
 
     done
@@ -1687,8 +1692,8 @@ _mariadb_show_table () {
 
     out_tabs[0]=$name_size
     out_tabs[1]=$default_size
-    out_tabs[2]=15
-    out_tabs[3]=15
+    out_tabs[2]=10
+    out_tabs[3]=$type_size
     out_tabs[4]=10
     out_tabs[5]=23
 
