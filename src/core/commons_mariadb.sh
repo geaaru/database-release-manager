@@ -1866,7 +1866,7 @@ commons_mariadb_download_index () {
   local tname="${2}"
   name=`basename $name`
   local indexesdir="${MARIADB_DIR}/indexes"
-  local f="${indexesdir}/${tname}_${name}.sql"
+  local f="${indexesdir}/${tname}-${name}.sql"
   local table=""
   local not_unique=""
   local keys=""
