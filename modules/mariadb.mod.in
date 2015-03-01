@@ -1089,11 +1089,14 @@ _mariadb_drop_args () {
 # DESCRIPTION
 #   Available commands line are:
 #   * -h                   Show help message
-#   * --fkey [fk_name]     Create a foreign key with name $fk_name
+#   * --fkey [fk_name]     Create a foreign key with name $fk_name.
+#   * --index [iname]      Create an index with name $iname.
 #   * --on-table [tname]   Table where create database entity.
 #   * --on-column [cname]  Column/Columns where create database entity.
 #   * --ref-table [rtname] Reference table related with database entity to create.
 #   * --ref-column [rcols] Reference columns related with database entity to create.
+#   * --itype [type]       To use with --index for define type of index.
+#   *                      Possible values are UNIQUE|SPATIAL|FULLTEXT.
 # SEE ALSO
 #   _mariadb_connections_args for a list of connection arguments
 # SOURCE
@@ -1103,7 +1106,7 @@ _mariadb_create_args () {
 
   local short_options="d:U:P:hH:D:t:"
   local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
-  long_options="$long_options fkey: on-table: on-column: ref-table: ref-column:"
+  long_options="$long_options fkey: on-table: on-column: ref-table: ref-column: index: itype:"
   local ans=0
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
@@ -1122,6 +1125,8 @@ _mariadb_create_args () {
   MARIADB_CREATE_ON_COLUMNS=""
   MARIADB_CREATE_REF_TABLE=""
   MARIADB_CREATE_REF_COLUMNS=""
+  MARIADB_CREATE_ITYPE=""
+  MARIADB_CREATE_INDEX=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -1152,6 +1157,15 @@ _mariadb_create_args () {
         ;;
       --ref-column)
         MARIADB_CREATE_REF_COLUMNS="$2"
+        shift
+        ;;
+      --index)
+        MARIADB_CREATE_INDEX="$2"
+        MARIADB_CREATE_INDEX_ACTION=1
+        shift
+        ;;
+      --itype)
+        MARIADB_CREATE_ITYPE="$2"
         shift
         ;;
       -h|--help)
@@ -1200,7 +1214,24 @@ _mariadb_create_args () {
 
   elif [ $MARIADB_CREATE_INDEX_ACTION -eq 1 ] ; then
 
-    ans=1
+    if [[ -z "$MARIADB_CREATE_INDEX" ||
+      -z "$MARIADB_CREATE_ON_TABLE" ||
+      -z "$MARIADB_CREATE_ON_COLUMNS" ]] ; then
+
+      echo "Missing mandatary parameters for index."
+      ans=1
+
+    fi
+
+    if [[ -n "$MARIADB_CREATE_ITYPE" &&
+      "$MARIADB_CREATE_ITYPE" != "UNIQUE" &&
+      "$MARIADB_CREATE_ITYPE" != "SPATIAL" &&
+      "$MARIADB_CREATE_ITYPE" != "FULLTEXT" ]] ; then
+
+      echo "Invalid value of --itype field. Possible values are UNIQUE,SPATIAL or FULLTEXT"
+      ans=1
+
+    fi
 
   fi
 
@@ -1308,17 +1339,24 @@ _mariadb_create_help () {
 
   echo -en "[--fkey FKEY_NAME]       Create foreign key [FKEY_NAME] file, ready for compilation.\n"
   echo -en "                         Others mandatary parameters: --on-table,--on-column,--ref-table\n"
-  echo -en "                         --ref-column.\n"
+  echo -en "                         --ref-column.\n"a
+  echo -en "[--index INAME]          Create index [INAME] file, ready for compilation.\n"
+  echo -en "                         Others mandatary parameters: --on-table,--on-column.\n"
+  echo -en "                         Others optional parameters: --itype.\n"
   echo -en "[--on-table TNAME]       Choice table where create database entity.\n"
   echo -en "[--on-column CNAME]      Choice column or columns (ex. col1,col2) related to db entity to.\n"
   echo -en "                         create.\n"
   echo -en "[--ref-table RTNAME]     Reference table related with db entity to create.\n"
   echo -en "[--ref-column RCOLS]     Reference columns related with db entity to create.\n"
-  echo -en "                         \n"
-  echo -en "Example: - Create a foreign key on table T1 on columns col1,col2 referenced by table T2\n"
-  echo -en "                         \n"
-  echo -en "dbrm mariadb create --fkey fk1 --on-table T1 --on-column \"col1,col2\"\n"
-  echo -en "                    --ref-table T2 --ref-column \"col1,col2\"\n"
+  echo -en "[--itype TYPE]           To use with --index for define type of index.\n"
+  echo -en "                         Possible values are UNIQUE|SPATIAL|FULLTEXT.\n"
+  echo -en "\n"
+  echo -en "Example1: - Create a foreign key on table T1 on columns col1,col2 referenced by table T2\n"
+  echo -en "\$> dbrm mariadb create --fkey fk1 --on-table T1 --on-column \"col1,col2\"\n"
+  echo -en "                       --ref-table T2 --ref-column \"col1,col2\"\n"
+  echo -en "\n"
+  echo -en "Example2: - Create an index on table T1 to columns col1,col2\n"
+  echo -en "\$> dbrm mariadb create --index idx_test --on-table T1 --on-column \"col1,col2\"\n"
 
   return 0
 }
@@ -2430,7 +2468,12 @@ _mariadb_create () {
 
   elif [ $MARIADB_CREATE_INDEX_ACTION -eq 1 ] ; then
 
-    ans=1
+    commons_mariadb_create_index_file "$MARIADB_CREATE_INDEX" \
+      "$MARIADB_CREATE_ON_TABLE" "$MARIADB_CREATE_ON_COLUMNS" \
+      "$MARIADB_CREATE_ITYPE"
+
+    out_handler_print \
+      "File for index $MARIADB_CREATE_INDEX is been created. You can compile it."
 
   fi
 

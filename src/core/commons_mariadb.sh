@@ -2232,4 +2232,50 @@ ALTER TABLE \`${table}\`
 }
 #***
 
+#****f* commmons_mariadb/commons_mariadb_create_index_file
+# FUNCTION
+#   Create index file for compilation.
+# INPUTS
+#   name         - name of the index to create
+#   table_name   - name of the table where create index.
+#   key_columns  - list of columns of the index.
+#   itype        - for particolar index could be contains "UNIQUE" | "FULLTEXT" | "SPATIAL"
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SOURCE
+commons_mariadb_create_index_file () {
+
+  local name="$1"
+  local table="$2"
+  local keys="$3"
+  local itype="$4"
+  local content=""
+  local indexesdir="${MARIADB_DIR}/indexes"
+  local f="${indexesdir}/${table}-${name}.sql"
+
+  commons_mariadb_check_if_exist_index "${name}" "${table}"
+  is_present=$?
+
+  if [ $is_present -eq 0 ] ; then
+    error_generate "An index with name ${name} on table ${table} is already present."
+  fi
+
+  content="
+-- \$Id\$ --
+USE \`DB_NAME\`;
+ALTER TABLE \`${table}\`
+  ADD ${itype} INDEX \`${name}\`
+    (${keys})
+    ;
+"
+
+  echo -en "$content" > $f || error_generate "Error on write file $f."
+
+  _logfile_write "(mariadb) Create index ${name} on table ${table} (file ${f})" || return 1
+
+  return 0
+}
+#***
+
 # vim: syn=sh filetype=sh
