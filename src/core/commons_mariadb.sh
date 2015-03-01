@@ -213,6 +213,70 @@ commons_mariadb_compile_file () {
 }
 #***
 
+#****f* commons_mariadb/commons_mariadb_compile_fkey
+# FUNCTION
+#   Compile file related with foreign key on database.
+# DESCRIPTION
+#   Output of the compilation is saved on MYSQL_OUTPUT variable.
+# INPUTS
+#   f        - path of the file to compile
+#   msg      - message to insert on logging file relative to input file.
+#   force    - if foreign key is present and force is equal to 1, then
+#              foreign key is dropped and added again.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   mysql_file
+# SOURCE
+commons_mariadb_compile_fkey () {
+
+  local f=$1
+  local msg=$2
+  local force="$3"
+  local f_base=$(basename "$f")
+  local fk="${f_base/.sql/}"
+  local fk_is_present=1
+
+  if [ ! -e $f ] ; then
+    _logfile_write "(mariadb) File $f not found." || return 1
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "( commons_mariadb_compile_fkey: Try to compile foreign key ${fk} (${force})...)\n"
+
+  # Check if foreign key already present
+  commons_mariadb_check_if_exist_fkey "${fk}"
+  fk_is_present=$?
+
+  if [[ $fk_is_present -eq 0 && x"${force}" == x"1" ]] ; then
+    # POST: foreign is is present and force is equal to 1.
+
+    commons_mariadb_drop_fkey "${fk}" || return 1
+
+    commons_mariadb_compile_file "$f" "$msg" || return 1
+
+  elif [ $fk_is_present -eq 0 ] ; then
+
+    [[ $DEBUG && $DEBUG == true ]] && \
+      echo -en "( commons_mariadb_compile_fkey: foreign key ${f} is already present. Nothing to do.)\n"
+
+    _logfile_write "(mariadb) Foreign key ${fk} is already present. Nothing to do." || return 1
+
+  else
+
+    # POST: foreign key not present. I compile it.
+    commons_mariadb_compile_file "$f" "$msg" || return 1
+
+  fi
+
+  return 0
+}
+#***
+
+
+
 #****f* commons_mariadb/commons_mariadb_compile_all_procedures
 # FUNCTION
 #   Compile all files under MARIADB_DIR/procedures directory.
@@ -307,6 +371,7 @@ commons_mariadb_compile_all_views () {
 #   Compile all files under MARIADB_DIR/foreign_keys directory.
 # INPUTS
 #   msg      - message to insert on logging file relative to input file.
+#   force    - if equals to 1, force compilation of all foreign keys also if already present.
 # RETURN VALUE
 #   0 on success
 #   1 on error
@@ -316,9 +381,11 @@ commons_mariadb_compile_all_views () {
 commons_mariadb_compile_all_fkeys () {
 
   local msg="$1"
+  local force="$2"
   local directory="$MARIADB_DIR/foreign_keys"
 
-  commons_mariadb_compile_all_from_dir "$directory" "of all foreign keys" "$msg" "fkey" || return 1
+  commons_mariadb_compile_all_from_dir "$directory" "of all foreign keys" "$msg" "fkey" "${force}" || \
+    return 1
 
   return 0
 }
@@ -332,6 +399,7 @@ commons_mariadb_compile_all_fkeys () {
 #   msg_head    - Title message insert on logfile before compile files.
 #   msg         - message insert on logfile before compile files.
 #   type        - (optional) identify type of directory: fkey|procedure|function|view.
+#   closure     - custom parameter with a value relative to type.
 # RETURN VALUE
 #   0 on success
 #   1 on error
@@ -344,15 +412,18 @@ commons_mariadb_compile_all_from_dir () {
   local msg_head="$2"
   local msg="$3"
   local dtype="$4"
+  local closure="$5"
   local f=""
   local fb=""
   local ex_f=""
+  local fk_is_present=1
   local exc=0
 
   _logfile_write "(mariadb) Start compilation $msg_head: $msg" || return 1
 
   for i in $directory/*.sql ; do
 
+    fk_is_present=1
     exc=0
 
     fb=`basename $i`
@@ -383,11 +454,14 @@ commons_mariadb_compile_all_from_dir () {
 
     if [[ -n "$dtype" && x"$dtype" == x"fkey" ]] ; then
 
-      commons_mariadb_drop_fkey "$f" || continue
+      commons_mariadb_compile_fkey "$i" "$msg" "${closure}"
+
+    else
+
+      commons_mariadb_compile_file "$i" "$msg"
 
     fi
 
-    commons_mariadb_compile_file "$i" "$msg"
     # POST: on error go to next file
 
   done # end for
@@ -1584,7 +1658,7 @@ commons_mariadb_download_all_procedures () {
 commons_mariadb_download_all_functions () {
 
   local n_rec=0
-  local i=0
+  local i=1
 
   commons_mariadb_count_functions
   n_rec=$?
@@ -1721,7 +1795,7 @@ commons_mariadb_download_fkey () {
   # TODO: Check if create a [index_name] field automatically
   #       See: http://dev.mysql.com/doc/refman/5.6/en/create-table-foreign-keys.html
   local out="
--- \$Id\$
+-- \$Id\$ --
 USE \`DB_NAME\`;
 ALTER TABLE \`${table}\`
   ADD CONSTRAINT \`${name}\`
@@ -1952,19 +2026,25 @@ ALTER TABLE \`${table}\`
 # SOURCE
 commons_mariadb_download_all_indexes () {
 
+  local with_pk="$1"
   local n_rec=0
   local tname=""
   local iname=""
   local i=1
+  local itypes="not_primary"
 
-  commons_mariadb_count_indexes
+  if [ -n "${with_pk}" ] ; then
+    itypes="all"
+  fi
+
+  commons_mariadb_count_indexes "" "${itypes}"
   n_rec=$?
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(commons_mariadb_download_all_indexes: Found $n_rec indexes.\n"
 
   if [ $n_rec -gt 0 ] ; then
 
-    commons_mariadb_get_indexes_list "all" "S.TABLE_NAME,S.INDEX_NAME" || \
+    commons_mariadb_get_indexes_list "${itypes}" "S.TABLE_NAME,S.INDEX_NAME" || \
       error_handled "Error on get indexes name list."
 
     IFS=$'\n'
@@ -2100,6 +2180,56 @@ commons_mariadb_drop_index () {
 }
 #***
 
+#****f* commmons_mariadb/commons_mariadb_create_fkey_file
+# FUNCTION
+#   Create foreign key file for compilation.
+# INPUTS
+#   name         - name of the foreign key to create
+#   table_name   - name of the table where create foreign key.
+#   fk_columns   - list of columns related with foreign key.
+#   ref_table    - name of the table reference
+#   ref_columns  - list of the columns reference on foreign key.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SOURCE
+commons_mariadb_create_fkey_file () {
 
+  local name="$1"
+  local table="$2"
+  local cname="$3"
+  local rtable="$4"
+  local rcname="$5"
+  local is_present=1
+  local content=""
+  local fkeysdir="${MARIADB_DIR}/foreign_keys"
+  local f="$fkeysdir/${name}.sql"
+
+  commons_mariadb_check_if_exist_fkey "${name}"
+  is_present=$?
+
+  if [ $is_present -eq 0 ] ; then
+    error_generate "A foreign key with name ${name} is already present."
+  fi
+
+  content="
+-- \$Id\$ --
+USE \`DB_NAME\`;
+ALTER TABLE \`${table}\`
+  ADD CONSTRAINT \`${name}\`
+  FOREIGN KEY
+    (${cname})
+  REFERENCES \`${rtable}\`
+    (${rcname})
+    ;
+"
+
+  echo -en "$content" > $f || error_generate "Error on write file $f."
+
+  _logfile_write "(mariadb) Create foreign key $name (file ${f})" || return 1
+
+  return 0
+}
+#***
 
 # vim: syn=sh filetype=sh

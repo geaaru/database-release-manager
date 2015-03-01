@@ -42,6 +42,7 @@ mariadb_long_help () {
    echo -en "\tcompile                 Compile procedures/triggers/views/etc.\n"
    echo -en "\tshow                    Show procedures/triggers/views/etc.\n"
    echo -en "\tdrop                    Drop procedures/triggers/views/etc.\n"
+   echo -en "\tcreate                  Create foreign keys/index/etc..\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
@@ -66,6 +67,7 @@ mariadb_show_help () {
    echo -en "\tcompile                 Compile procedures/triggers/views/etc.\n"
    echo -en "\tshow                    Show procedures/triggers/views/etc.\n"
    echo -en "\tdrop                    Drop procedures/triggers/views/etc.\n"
+   echo -en "\tcreate                  Create foreign keys/index/etc..\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
@@ -403,6 +405,38 @@ mariadb_drop () {
 }
 #***
 
+#****f* mariadb/mariadb_create
+# FUNCTION
+#   Create triggers, index file for compilation.
+# SEE ALSO
+#   _mariadb_connections_args
+#   _mariadb_create_args
+# SOURCE
+mariadb_create () {
+
+  # Shift first two input param
+  shift 2
+
+  _mariadb_check_status
+
+  _mariadb_help_message="print_help"
+
+  _mariadb_connections_args "$@"
+
+  _mariadb_create_args "$@" || error_handled ""
+
+  commons_mariadb_check_vars || error_handled ""
+
+  mysql_set_auth_var "$MARIADB_DB" "$MARIADB_USER" "$MARIADB_PWD" "$MARIADB_HOST"
+
+  commons_mariadb_check_connection || error_handled "MySQL client was unable to connect to DB with supplied credentials."
+
+  _mariadb_create || error_handled ""
+
+  return 0
+}
+#***
+
 ##################################################################
 # Internal functions
 ##################################################################
@@ -562,7 +596,8 @@ _mariadb_connections_args () {
 #   * --file [file_path]  Compile a file
 #   * --all-functions     Compile all functions files.
 #   * --all-views         Compile all views
-#   * --all-foreign-keys  Compile all foreign keys.
+#   * --all-foreign-keys  Compile all foreign keys if not present. (Use --force to drop and compile
+#                         again foreign keys).
 #   * --all               Compile all triggers, functions, views, procedures, foreign keys.
 #   * --trigger [trigger] Compile input trigger
 #   * --function [f]      Compile function f.
@@ -571,6 +606,8 @@ _mariadb_connections_args () {
 #   * --fkey [fk]         Compile foreign key fk
 #   * --exclude [f]       Permit to exclude a file from compilation. This option
 #                         could be used more of one time.
+#   * --force             For foreign keys it means that fkey is dropped and add again
+#                         also if it is present.
 # SEE ALSO
 #   _mariadb_connections_args for a list of connection arguments
 # SOURCE
@@ -580,7 +617,7 @@ _mariadb_compile_args () {
 
   local short_options="d:U:P:hH:D:t:"
   local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
-  long_options="$long_options all-triggers id-script: file: all-functions all-procedures all-views all-foreign-keys all trigger: function: view: procedure: exclude: fkey:"
+  long_options="$long_options all-triggers id-script: file: all-functions all-procedures all-views all-foreign-keys all trigger: function: view: procedure: exclude: fkey: force"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -606,6 +643,7 @@ _mariadb_compile_args () {
   MARIADB_COMPILE_ID_SCRIPT=""
   MARIADB_COMPILE_FILE=""
   MARIADB_COMPILE_FKEY=""
+  MARIADB_COMPILE_FORCE=0
   local MARIADB_COMPILE_EXC_RCVD=0
 
   while [ $# -gt 0 ] ; do
@@ -674,6 +712,9 @@ _mariadb_compile_args () {
         fi
         shift
         ;;
+      --force)
+        MARIADB_COMPILE_FORCE=1
+        ;;
       -h|--help)
         _mariadb_compile_help
         return 1
@@ -714,6 +755,7 @@ _mariadb_compile_args () {
 #   * --foreign-key [fk]  Download foreign key fk.
 #   * --index [i]         Downlaod index with name i. To use with --index-table.
 #   * --index-table [it]  Table name of index to download. To use with --index
+#   * --with-pk-indexes   Download also primary key indexes. To use with --all|--index|--all-indexes
 # SEE ALSO
 #   _mariadb_connections_args for a list of connection arguments
 # SOURCE
@@ -723,7 +765,7 @@ _mariadb_download_args () {
 
   local short_options="d:U:P:hH:D:t:"
   local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
-  long_options="$long_options all-triggers all-id-script: file: all-functions all-procedures all-views all trigger: function: view: procedure: all-foreign-keys foreign-key: all-indexes index: index-table:"
+  long_options="$long_options all-triggers all-id-script: file: all-functions all-procedures all-views all trigger: function: view: procedure: all-foreign-keys foreign-key: all-indexes index: index-table: with-pk-indexes"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -743,6 +785,7 @@ _mariadb_download_args () {
   MARIADB_DOWNLOAD_ALL_VIEWS=0
   MARIADB_DOWNLOAD_ALL_FKEYS=0
   MARIADB_DOWNLOAD_ALL_INDEXES=0
+  MARIADB_DOWNLOAD_PK_INDEXES=""
   MARIADB_DOWNLOAD_PROCEDURE=""
   MARIADB_DOWNLOAD_TRIGGER=""
   MARIADB_DOWNLOAD_FUNCTION=""
@@ -811,6 +854,9 @@ _mariadb_download_args () {
         MARIADB_DOWNLOAD_ITABLE="$2"
         shift
         ;;
+      --with-pk-indexes)
+        MARIADB_DOWNLOAD_PK_INDEXES="all"
+        ;;
 
       -h|--help)
         echo -en "[--all-procedure]        Download all procedures.\n"
@@ -828,6 +874,8 @@ _mariadb_download_args () {
         echo -en "[--index name]           Download a particular index (Require --index-table).\n"
         echo -en "                         Only one index a time.\n"
         echo -en "[--index-table tname]    Name of table of index to download. (To use with --index).\n"
+        echo -en "[--with-pk-indexes]      Download also primary key indexes.\n"
+        echo -en "                         (To use with --all|--index|--all-indexes)\n"
         echo -en "Note: For argument with value if it isn't passed value argument is ignored.\n"
         return 1
         ;;
@@ -980,8 +1028,6 @@ _mariadb_drop_args () {
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
-  MARIADB_COMPILE_ALL=1
-
   if [ $# -lt 2 ] ; then # is there at least one param (--)
     _mariadb_drop_help
     return 1
@@ -1037,6 +1083,132 @@ _mariadb_drop_args () {
 }
 #***
 
+#****f* mariadb/_mariadb_create_args
+# FUNCTION
+#   Parse command line and define environment variables for create command.
+# DESCRIPTION
+#   Available commands line are:
+#   * -h                   Show help message
+#   * --fkey [fk_name]     Create a foreign key with name $fk_name
+#   * --on-table [tname]   Table where create database entity.
+#   * --on-column [cname]  Column/Columns where create database entity.
+#   * --ref-table [rtname] Reference table related with database entity to create.
+#   * --ref-column [rcols] Reference columns related with database entity to create.
+# SEE ALSO
+#   _mariadb_connections_args for a list of connection arguments
+# SOURCE
+_mariadb_create_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_create_args args: $@)\n"
+
+  local short_options="d:U:P:hH:D:t:"
+  local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
+  long_options="$long_options fkey: on-table: on-column: ref-table: ref-column:"
+  local ans=0
+
+  set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
+
+  if [ $# -lt 2 ] ; then # is there at least one param (--)
+    _mariadb_create_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_drop_args: Found $# params)\n"
+
+  MARIADB_CREATE_FKEY_ACTION=0
+  MARIADB_CREATE_INDEX_ACTION=0
+  MARIADB_CREATE_FKEY=""
+  MARIADB_CREATE_ON_TABLE=""
+  MARIADB_CREATE_ON_COLUMNS=""
+  MARIADB_CREATE_REF_TABLE=""
+  MARIADB_CREATE_REF_COLUMNS=""
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -S|-H|-U|-P|-D|--database|--timezone|--conn-options)
+        shift
+        # do nothing
+        ;;
+      --ignore-timezone)
+        # do nothing
+        ;;
+      --fkey)
+        MARIADB_CREATE_FKEY="$2"
+        MARIADB_CREATE_FKEY_ACTION=1
+        shift
+        ;;
+      --on-table)
+        MARIADB_CREATE_ON_TABLE="$2"
+        shift
+        ;;
+      --on-column)
+        MARIADB_CREATE_ON_COLUMNS="$2"
+        shift
+        ;;
+      --ref-table)
+        MARIADB_CREATE_REF_TABLE="$2"
+        shift
+        ;;
+      --ref-column)
+        MARIADB_CREATE_REF_COLUMNS="$2"
+        shift
+        ;;
+      -h|--help)
+        _mariadb_create_help
+        return 1
+        ;;
+      --)
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+
+    esac
+
+    shift
+  done
+
+  if [[ $MARIADB_CREATE_FKEY_ACTION -eq 1 &&
+    $MARIADB_CREATE_INDEX_ACTION -eq 1 ]] ; then
+
+    echo "It is possible only an action a time."
+    return 1
+
+  fi
+
+  if [ $MARIADB_CREATE_FKEY_ACTION -eq 1 ] ; then
+
+    if [ -z "$MARIADB_CREATE_FKEY" ] ; then
+
+      echo "Invalid foreign key name supply."
+      ans=1
+
+    else
+
+      if [[ -z "$MARIADB_CREATE_ON_TABLE" ||
+        -z "$MARIADB_CREATE_ON_COLUMNS" ||
+        -z "$MARIADB_CREATE_REF_TABLE" ||
+        -z "$MARIADB_CREATE_REF_COLUMNS" ]] ; then
+
+        echo "Missing mandatary parameters for foreign key."
+        ans=1
+
+      fi
+
+    fi
+
+  elif [ $MARIADB_CREATE_INDEX_ACTION -eq 1 ] ; then
+
+    ans=1
+
+  fi
+
+  return $ans
+}
+#***
+
+
 #****f* mariadb/_mariadb_show_help
 # FUNCTION
 #   Internal function that print help message of show command.
@@ -1069,7 +1241,8 @@ _mariadb_compile_help () {
   echo -en "[--all-triggers]         Compile all triggers present under MARIADB_DIR subdirectories.\n"
   echo -en "[--all-functions]        Compile all functions present under MARIADB_DIR subdirectories.\n"
   echo -en "[--all-views]            Compile all views present on MARIADB_DIR subdirectories.\n"
-  echo -en "[--all-foreign-keys]     Compile all foreign keys present on MARIADB_DIR subdirectories.\n"
+  echo -en "[--all-foreign-keys]     Compile all foreign keys present on MARIADB_DIR subdirectories\n"
+  echo -en "                         if not present on database. (Use --force to drop and compile again fkey).\n"
   echo -en "[--all]                  Compile all procedures, triggers, functions and views present under\n"
   echo -en "                         MARIADB_DIR subdirectories.\n"
   echo -en "[--procedure name]       Compile a particular procedure under MARIADB_DIR/procedures directory.\n"
@@ -1082,6 +1255,8 @@ _mariadb_compile_help () {
   echo -en "                          configuration variable).\n"
   echo -en "[--id-script id]         Compile a particular script registered under MARIADB_DIR/<directory>/.\n"
   echo -en "[--file file]            Compile a particular file. (Use ABS Path or relative path from current dir.)\n"
+  echo -en "[--force]                For foreign keys it means that fkey is dropped and add again also if\n"
+  echo -en "                         already present.\n"
   echo -en "Note: For argument with value if it isn't passed value argument is ignored.\n"
 
   return 0
@@ -1125,6 +1300,30 @@ _mariadb_drop_help () {
 }
 #***
 
+#****f* mariadb/_mariadb_create_help
+# FUNCTION
+#   Internal function that print help message of create command.
+# SOURCE
+_mariadb_create_help () {
+
+  echo -en "[--fkey FKEY_NAME]       Create foreign key [FKEY_NAME] file, ready for compilation.\n"
+  echo -en "                         Others mandatary parameters: --on-table,--on-column,--ref-table\n"
+  echo -en "                         --ref-column.\n"
+  echo -en "[--on-table TNAME]       Choice table where create database entity.\n"
+  echo -en "[--on-column CNAME]      Choice column or columns (ex. col1,col2) related to db entity to.\n"
+  echo -en "                         create.\n"
+  echo -en "[--ref-table RTNAME]     Reference table related with db entity to create.\n"
+  echo -en "[--ref-column RCOLS]     Reference columns related with db entity to create.\n"
+  echo -en "                         \n"
+  echo -en "Example: - Create a foreign key on table T1 on columns col1,col2 referenced by table T2\n"
+  echo -en "                         \n"
+  echo -en "dbrm mariadb create --fkey fk1 --on-table T1 --on-column \"col1,col2\"\n"
+  echo -en "                    --ref-table T2 --ref-column \"col1,col2\"\n"
+
+  return 0
+}
+#***
+
 #****f* mariadb/_mariadb_compile
 # FUNCTION
 #   Internal function that manage compilation process.
@@ -1132,6 +1331,7 @@ _mariadb_drop_help () {
 _mariadb_compile () {
 
   local f=""
+  local is_present=1
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_compile args: $@)\n"
 
@@ -1157,7 +1357,8 @@ _mariadb_compile () {
     commons_mariadb_compile_all_triggers "" || error_handled "Error on compile all triggers."
     commons_mariadb_compile_all_functions "" || error_handled "Error on compile all functions."
     commons_mariadb_compile_all_views "" || error_handled "Error on compile all functions."
-    commons_mariadb_compile_all_fkeys"" || error_handled "Error on compile all foreign keys."
+    commons_mariadb_compile_all_fkeys "" $MARIADB_COMPILE_FORCE || \
+      error_handled "Error on compile all foreign keys."
 
   else
 
@@ -1231,7 +1432,8 @@ _mariadb_compile () {
 
     if [ $MARIADB_COMPILE_ALL_FKEYS -eq 1 ] ; then
 
-      commons_mariadb_compile_all_fkeys "" || error_handled "Error on compile all foreign keys."
+      commons_mariadb_compile_all_fkeys "" $MARIADB_COMPILE_FORCE || \
+        error_handled "Error on compile all foreign keys."
 
     else
 
@@ -1239,9 +1441,8 @@ _mariadb_compile () {
 
         f="${MARIADB_COMPILE_FKEY/.sql/}"
 
-        commons_mariadb_drop_fkey "$f" "nowarn" || error_handled "Error on drop foreign key $f."
-
-        commons_mariadb_compile_file "$MARIADB_DIR/foreign_keys/$f.sql" "" || error_handled "Error on compile file $f.sql"
+        commons_mariadb_compile_fkey "${MARIADB_DIR}/foreign_keys/$f.sql" "" "$MARIADB_COMPILE_FORCE" || \
+          error_handled "Error on compile file $f.sql"
 
       fi
 
@@ -1301,7 +1502,8 @@ _mariadb_download () {
 
     commons_mariadb_download_all_fkeys || error_handled "Error on download all foreign keys."
 
-    commons_mariadb_download_all_indexes || error_handled "Error on download all indexes."
+    commons_mariadb_download_all_indexes "${MARIADB_DOWNLOAD_PK_INDEXES}" || \
+      error_handled "Error on download all indexes."
 
   else
 
@@ -1388,7 +1590,8 @@ _mariadb_download () {
 
     if [ $MARIADB_DOWNLOAD_ALL_INDEXES -eq 1 ] ; then
 
-      commons_mariadb_download_all_indexes || error_handled "Error on download all indexes."
+      commons_mariadb_download_all_indexes "${MARIADB_DOWNLOAD_PK_INDEXES}" || \
+        error_handled "Error on download all indexes."
 
     else
 
@@ -2199,6 +2402,39 @@ _mariadb_show_indexes () {
 
   return 0
 
+}
+#***
+
+#****f* mariadb/_mariadb_create
+# FUNCTION
+#   Internal function that manage create process.
+# SOURCE
+_mariadb_create () {
+
+  local fk=""
+  local f=""
+  local ans=0
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_drop args: $@)\n"
+
+  # Create single foreign key
+
+  if [ $MARIADB_CREATE_FKEY_ACTION -eq 1 ] ; then
+
+    commons_mariadb_create_fkey_file "$MARIADB_CREATE_FKEY" \
+      "$MARIADB_CREATE_ON_TABLE" "$MARIADB_CREATE_ON_COLUMNS" \
+      "$MARIADB_CREATE_REF_TABLE" "$MARIADB_CREATE_REF_COLUMNS"
+
+    out_handler_print \
+      "File for foreign key $MARIADB_CREATE_FKEY is been created. You can compile it."
+
+  elif [ $MARIADB_CREATE_INDEX_ACTION -eq 1 ] ; then
+
+    ans=1
+
+  fi
+
+  return $ans
 }
 #***
 
