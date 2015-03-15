@@ -99,14 +99,25 @@ package_create () {
 
 _package_init_tmpdir () {
 
-  local dbrmfiles_dir="$DBRM_PACKAGE_TMPDIR/dbrm-files"
+  local dbrmfiles_dir=""
 
   if [ -d $DBRM_PACKAGE_TMPDIR ] ; then
     rm -rf $DBRM_PACKAGE_TMPDIR || error_handled "Error on delete temporary directory for package module."
   fi
 
+  # Check if dirname is present
+  if [ -n "$DBRM_PACKAGE_DIRNAME" ] ; then
+    DBRM_PACKAGE_TMPDIR=${DBRM_PACKAGE_TMPDIR}/${DBRM_PACKAGE_DIRNAME}
+  else
+    # POST: use current directory name
+    local dirname=$(basename `pwd`)
+    DBRM_PACKAGE_DIRNAME=${dirname}
+    DBRM_PACKAGE_TMPDIR=${DBRM_PACKAGE_TMPDIR}/${dirname}
+  fi
+
   mkdir -p $DBRM_PACKAGE_TMPDIR || error_handled "Error on create temporary directory $DBRM_PACKAGE_TMPDIR"
 
+  dbrmfiles_dir="${DBRM_PACKAGE_TMPDIR}/dbrm-files"
 
   # Create dbrm core files directory
   local dbm_dirs="$dbrmfiles_dir
@@ -128,7 +139,19 @@ _package_tar_files () {
   [[ $DEBUG && $DEBUG == true ]] && \
     echo -en "(_package_tar_files: Begin creation of file $DBRM_PACKAGE_TO file...\n"
 
-  tar -C $DBRM_PACKAGE_TMPDIR -cf $DBRM_PACKAGE_TO ./{dbrm,dbrm-files,project} || \
+  # Check extensions
+  local extension="${DBRM_PACKAGE_TO##*.}"
+  local tar_options=""
+
+  if [[ $extension == "gz" || $extension == "tgz" ]] ; then
+    tar_options="z"
+  else
+    if [[ $extension == "zip" ]] ; then
+      error_handled "Zip format not supported!."
+    fi
+  fi
+
+  tar -C $DBRM_PACKAGE_TMPDIR/.. -c${tar_options}f $DBRM_PACKAGE_TO ./${DBRM_PACKAGE_DIRNAME} || \
     error_handled "Error on tar content of $DBRM_PACKAGE_TMPDIR directory."
 
   rm -rf $DBRM_PACKAGE_TMPDIR ||
@@ -391,7 +414,7 @@ _package_create_args () {
   [[ $DEBUG ]] && echo -en "(_package_create_args args: $@)\n"
 
   local short_options="h"
-  local long_options="to:exclude:help"
+  local long_options="dirname:to:exclude:help"
 
   $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
 
@@ -405,6 +428,7 @@ _package_create_args () {
   DBRM_PACKAGE_TO=""
   DBRM_PACKAGE_EXCLUDED_FILES=0
   DBRM_PACKAGE_EXCLUDED=""
+  DBRM_PACKAGE_DIRNAME=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -420,6 +444,10 @@ _package_create_args () {
       --exclude)
         let DBRM_PACKAGE_EXCLUDED_FILES++
         DBRM_PACKAGE_EXCLUDED[$DBRM_PACKAGE_EXCLUDED_FILES]="$2"
+        shift
+        ;;
+      --dirname)
+        DBRM_PACKAGE_DIRNAME="$2"
         shift
         ;;
       *)
@@ -441,6 +469,10 @@ _package_create_help () {
 
   echo -en "[--exclude file]        Exclude file on tarball file.\n"
   echo -en "[--to f.tar.gz]         Path of target tarball filename.\n"
+  echo -en "[--dirname dir]         Supply name of the directory to use as \n"
+  echo -en "                        main directory inside target tarball tree.\n"
+  echo -en "                        This option is optional. Default is current\n"
+  echo -en "                        directory name.\n"
   echo -en "\n"
 
   return 0
