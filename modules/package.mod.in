@@ -80,8 +80,15 @@ package_create () {
 
   _package_init_tmpdir
 
+  _package_copy_project_files
+
   _package_copy_dbrm_files
 
+  _package_handle_profile_params
+
+  _package_tar_files
+
+  echo -en "Package $DBRM_PACKAGE_TO is ready.\n"
 
   return 0
 }
@@ -105,6 +112,7 @@ _package_init_tmpdir () {
   local dbm_dirs="$dbrmfiles_dir
       ${dbrmfiles_dir}/modules
       ${dbrmfiles_dir}/share/core
+      ${dbrmfiles_dir}/share/core/dbm
       ${dbrmfiles_dir}/bin
   "
 
@@ -115,10 +123,154 @@ _package_init_tmpdir () {
   return 0
 }
 
+_package_tar_files () {
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(_package_tar_files: Begin creation of file $DBRM_PACKAGE_TO file...\n"
+
+  tar -C $DBRM_PACKAGE_TMPDIR -cf $DBRM_PACKAGE_TO ./{dbrm,dbrm-files,project} || \
+    error_handled "Error on tar content of $DBRM_PACKAGE_TMPDIR directory."
+
+  rm -rf $DBRM_PACKAGE_TMPDIR ||
+    error_handled "Error on remove staging directory $DBRM_PACKAGE_TMPDIR."
+
+  return 0
+}
+
+_package_handle_profile_params () {
+
+  local pj_dir="$DBRM_PACKAGE_TMPDIR/project"
+  local profiles_dir="${pj_dir}/dbrm/profiles/"
+  local query=""
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(_package_copy_project_files: Begin handling of profile parameters... \n"
+
+  if [[ $DRM_PROFILE -eq 1 ]] ; then
+
+    # For now just copy all profiles under project/dbrm/profiles directory.
+    mkdir -p ${profiles_dir} || error_handled "Error on create directory ${profiles_dir}."
+
+    query="
+      SELECT profile_name,
+             conf_file
+      FROM Profiles
+      ORDER BY id_profile"
+
+    _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
+
+    IFS=$'\n'
+    for row in $_sqlite_ans ; do
+
+      name=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      file=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+
+      if [[ -e ${DRM_PROFILES_PATH}/${file} ]] ; then
+        cp ${DRM_PROFILES_PATH}/${file} ${profiles_dir} || \
+          error_handled "Error on copy file of profile $name."
+      else
+        echo -en "WARN: file of profile ${name} not found. I ignore it."
+      fi
+
+    done
+    unset IFS
+
+  # else  DBM Profile is not enabled. Nothing to do. Parameter are already
+  #       under current dbrm.conf file.
+
+  fi
+
+  return 0
+}
+
+_package_copy_project_files () {
+
+  local pj_dir="$DBRM_PACKAGE_TMPDIR/project"
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(_package_copy_project_files: Begin copy of project files...\n"
+
+  mkdir -p ${pj_dir} || error_handled "Error on create ${pj_dir} directory."
+
+  # TODO: handle projects with multiple database
+  if [[ ! -z "$SQLCA"  && "$SQLCA" =~ .*mariadb.* ]] ; then
+
+    _package_copy_pj_mariadb_files
+
+  fi
+
+  if [[ ! -z "$SQLCA"  && "$SQLCA" =~ .*oracle.* ]] ; then
+
+    _package_copy_pj_oracle_files
+
+  fi
+
+  # Copy current dbrm.conf file project/dbrm.conf
+  cp ${LOCAL_CONFIG_FILE} ${pj_dir}/ || error_handled "Error on copy LOCAL_CONFIG_FILE."
+
+  # Replace LOCAL_DIR of dbrm.conf file to ./project/
+  sed -i -e 's/LOCAL_DIR=.*/LOCAL_DIR=.\/project/g' ${pj_dir}/dbrm.conf ||
+    error_handled "Error on fix LOCAL_DIR on ${pj_dir}/dbrm.conf file."
+
+  # Copy current dbrm.db file under ./project
+  cp ${DRM_DB} ${pj_dir} || error_handled "Error on copy dbrm.db file to ${pj_dir}."
+
+  return 0
+}
+
+_package_copy_pj_mariadb_files () {
+
+  local pj_dir="$DBRM_PACKAGE_TMPDIR/project"
+  local files=""
+
+  local adapter_dirs="
+    creation_script
+    foreign_keys
+    functions
+    procedures
+    indexes
+    triggers
+    update_script
+    views
+  "
+
+  for dir in ${adapter_dirs} ; do
+
+    # Check if exists creation_script directory
+    if [[ -d ${LOCAL_DIR}/${dir} ]] ; then
+
+      mkdir ${pj_dir}/${dir} || \
+        error_handled "Error on create temporary directory ${pj_dir}/${dir}"
+
+      files=$(ls ${LOCAL_DIR}/${dir}/*.sql 2>/dev/null)
+      if [[ -n "${files}" ]] ; then
+        for f in ${files} ; do
+          cp $f ${pj_dir}/${dir} || error_handled "Error on copy file $f from ${dir} directory."
+        done
+      fi
+
+    fi
+
+  done
+
+  return 0
+}
+
+_package_copy_pj_oracle_files () {
+
+  error_handled "NOT IMPLEMENTED!"
+
+}
+
 _package_copy_dbrm_files () {
 
   local dbrmfiles_dir="$DBRM_PACKAGE_TMPDIR/dbrm-files"
   local dbrm_bin="$0"
+  local dbm_files="
+    dbm_args.inc
+    dbm_tools.inc
+  "
+  local append_conf=""
   local core_files="
     commons.sh
   "
@@ -126,8 +278,34 @@ _package_copy_dbrm_files () {
   # Copy modules files
   for mod in $MODULES_DIR/*.mod ; do
 
+    local m=`basename $mod`
+
     if [ $mod != "$MODULES_DIR/package.mod" ] ; then # Avoid copy of package.mod
       cp $mod $dbrmfiles_dir/modules/ || error_handled "Error on copy module $mod file."
+    fi
+
+    if [ $mod == ${MODULES_DIR}"/dbm.mod" ] ; then
+
+      # Disable auto creation of an empty dbrm sqlite database.
+      sed -i -e 's/dbm_schema=.*/#dbm_schema=/g' ${dbrmfiles_dir}/modules/$m || \
+        error_handled "Error on unset dbm_schema variable."
+
+      sed -i -e 's/\[\[ $DEBUG \]\] && echo "(dbm_post_init: Create sqlite internal db file: $DRM_DB)"//g' \
+        ${dbrmfiles_dir}/modules/$m || \
+        error_handled "Error on remove debug entry about creation of a new dbrm sqlite database."
+
+      sed -i -e \
+        's/_sqlite_create -c "$DRM_DB" -s "$dbm_schema" || error_handled "Error on create $DRM_DB file."/error_handled "Missing dbrm database file."/g' \
+        ${dbrmfiles_dir}/modules/$m || \
+        error_handled "Error on remove row about creation of a new dbrm sqlite database."
+
+    elif [ $mod == ${MODULES_DIR}"/oracle.mod" ] ; then
+
+      # Replace _oracle_scripts
+      sed -i -e 's/_oracle_scripts=.*/_oracle_scripts=${prefix}\/share\/oracle\//g' \
+        ${dbrmfiles_dir}/modules/$m || \
+        error_handled "Error on update oracle module."
+
     fi
 
   done
@@ -160,8 +338,40 @@ _package_copy_dbrm_files () {
 
   done
 
+  # Copy dbm module files
+  for f in $dbm_files ; do
+
+    cp $DBRM_CORE_FILES_DIR/dbm/$f ${dbrmfiles_dir}/share/core/dbm/ || error_handled "Error on copy dbm file $f."
+
+  done
+
   # Copy dbrm main file
   cp $dbrm_bin ${dbrmfiles_dir}/bin || error_handled "Error on copy dbrm file."
+
+  # Create a link on DBRM_PACKAGE_TMPDIR directory to dbrm main file.
+  cd $DBRM_PACKAGE_TMPDIR
+  ln -s dbrm-files/bin/dbrm . || error_handled "Error on create link to dbrm file."
+  cd - >/dev/null 2>&1
+
+  # Fix path variables
+  sed -i -e 's/prefix=.*/prefix=./g' ${dbrmfiles_dir}/bin/dbrm || \
+    error_handled "Error on fix prefix on dbrm file."
+  # Set project dbrm.conf path inside dbrm main file.
+  sed -i -e 's/CONFIG_FILE=.*/CONFIG_FILE=.\/project\/dbrm.conf/g' ${dbrmfiles_dir}/bin/dbrm || \
+    error_handled "Error on edit CONFIG_FILE parameter on dbrm.conf file."
+  # Replace DBRM_CORE_FILES_DIR variable
+  sed -i -e 's/DBRM_CORE_FILES_DIR=.*/DBRM_CORE_FILES_DIR=\${prefix}\/dbrm-files\/share\/core/g' \
+    ${dbrmfiles_dir}/bin/dbrm || error_handled "Error on edit DBRM_CORE_FILES_DIR variable."
+
+  # Append parameter to dbrm.conf
+  append_conf="
+# -----------------------------------------
+# Parameters added by dbrm package module.
+MODULES_DIR=\"\${prefix}/dbrm-files/modules\"
+# -----------------------------------------
+"
+
+  echo -en "${append_conf}" >> ${DBRM_PACKAGE_TMPDIR}/project/dbrm.conf
 
   return 0
 }
@@ -199,11 +409,7 @@ _package_create_args () {
   while [ $# -gt 0 ] ; do
     case "$1" in
 
-      -h)
-        _package_create_help
-        return 1
-        ;;
-      --help)
+      -h|--help)
         _package_create_help
         return 1
         ;;
