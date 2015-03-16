@@ -1940,12 +1940,15 @@ _mariadb_show_table () {
 
     out_handler_print_arr
 
+    out_handler_clean
     out_handler_print ""
+
     _mariadb_show_foreign_keys "$tname" "in" "TABLE FOREIGN KEYS"
 
+    out_handler_clean
     out_handler_print ""
+
     _mariadb_show_foreign_keys "$tname" "ref" "FOREIGN KEYS VS. TABLE $tname"
-    out_handler_print ""
 
   else
 

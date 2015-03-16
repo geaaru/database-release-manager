@@ -391,6 +391,12 @@ out_stdout_clean () {
     done
   fi
 
+  if [ "${#out_headers[@]}" -gt 0 ] ; then
+    for i in ${!out_headers[@]} ; do
+      unset ${out_headers[$i]}
+    done
+  fi
+
   if [ "${#out_el_post[@]}" -gt 0 ] ; then
     for i in ${!out_el_post[@]} ; do
       out_el_post[$i]=""
