@@ -1940,6 +1940,13 @@ _mariadb_show_table () {
 
     out_handler_print_arr
 
+    out_handler_print ""
+    _mariadb_show_foreign_keys "$tname" "in" "TABLE FOREIGN KEYS"
+
+    out_handler_print ""
+    _mariadb_show_foreign_keys "$tname" "ref" "FOREIGN KEYS VS. TABLE $tname"
+    out_handler_print ""
+
   else
 
     out_handler_print "Table $tname not found."
@@ -2060,9 +2067,13 @@ _mariadb_show_foreign_keys () {
   local name_size=25
   local table_size=28
   local rtable_size=25
-  local rname_size=20
+  local rname_size=17
+  local cname_size=20
+  local for_table="$1"
+  local mode="$2"
+  local table_title="$3"
 
-  commons_mariadb_count_fkeys
+  commons_mariadb_count_fkeys "$for_table" "$mode"
   n_rec=$?
 
   if [ $n_rec -eq 0 ] ; then
@@ -2071,8 +2082,12 @@ _mariadb_show_foreign_keys () {
 
   else
 
-    commons_mariadb_get_fkeys_list "1" || error_handled "Error on get foreign keys name list."
+    commons_mariadb_get_fkeys_list "1" "" "" "$for_table" "$mode" || \
+      error_handled "Error on get foreign keys name list."
 
+    if [[ -n "$table_title" ]] ; then
+      out_ttitle="$table_title"
+    fi
     out_hsep=1
     out_prepost_mode="any"
     out_htabs_mode="tabs"
@@ -2115,7 +2130,9 @@ _mariadb_show_foreign_keys () {
       if [ ${#table} -ge $table_size ] ; then
         table_size=$((${#table}+1))
       fi
-
+      if [ ${#cname} -ge $cname_size ] ; then
+        cname_size=$((${#cname}+1))
+      fi
       if [ ${#rtable} -ge $rtable_size ] ; then
         rtable_size=$((${#rtable}+1))
       fi
@@ -2129,7 +2146,7 @@ _mariadb_show_foreign_keys () {
     unset IFS
 
     out_tabs[0]=$name_size
-    out_tabs[1]="20"
+    out_tabs[1]=$cname_size
     out_tabs[2]=$table_size
     out_tabs[3]=$rname_size
     out_tabs[4]=$rtable_size

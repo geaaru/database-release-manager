@@ -477,6 +477,10 @@ commons_mariadb_compile_all_from_dir () {
 # FUNCTION
 #   Count number of foreign keys present on database.
 # INPUTS
+#   tname    (optional) table name to use on count foreign keys.
+#   mode     (optional) if tname is present this field could be used for identify
+#            count must be done for count foreign key of the table or foreign keys that
+#            reference table. Possible values are: "in" (default) | "ref"
 # RETURN VALUE
 #   number of foreign keys found.
 # SEE ALSO
@@ -485,19 +489,44 @@ commons_mariadb_compile_all_from_dir () {
 commons_mariadb_count_fkeys () {
 
   local tname=$1
+  local mode=$2
   local andwhere=""
 
-  if [ -n "$tname" ] ; then
-    andwhere="AND TABLE_NAME = '$tname'"
+  if [[ -n "$tname" && -z "$mode" || -n "$tname" && "$mode" == "in" ]] ; then
+    andwhere="AND TS.TABLE_NAME = '$tname'"
+  else
+    if [[ -n "$tname" && "$mode" == "ref" ]] ; then
+      andwhere="AND KCU.REFERENCED_TABLE_NAME = '$tname'"
+    fi
   fi
 
   local cmd="
     SELECT COUNT(1) AS CNT
-    FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
-    WHERE CONSTRAINT_SCHEMA = '$MARIADB_DB'
-    AND TABLE_SCHEMA = '$MARIADB_DB'
-    AND CONSTRAINT_TYPE = 'FOREIGN KEY'
-    $andwhere ;"
+    FROM (
+      SELECT
+      KCU.CONSTRAINT_NAME,
+      KCU.TABLE_NAME,
+      GROUP_CONCAT(KCU.COLUMN_NAME ORDER BY KCU.ORDINAL_POSITION) AS COLUMN_NAME,
+      KCU.REFERENCED_TABLE_NAME,
+      GROUP_CONCAT(KCU.REFERENCED_COLUMN_NAME ORDER BY KCU.ORDINAL_POSITION) AS REFERENCED_COLUMN_NAME,
+      RC.UPDATE_RULE,
+      RC.DELETE_RULE
+    FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TS,
+         INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU,
+         INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS RC
+    WHERE TS.TABLE_SCHEMA = TS.CONSTRAINT_SCHEMA
+    AND TS.CONSTRAINT_SCHEMA = KCU.TABLE_SCHEMA
+    AND KCU.TABLE_SCHEMA = '$MARIADB_DB'
+    AND RC.CONSTRAINT_SCHEMA = KCU.TABLE_SCHEMA
+    AND TS.CONSTRAINT_TYPE = 'FOREIGN KEY'
+    AND TS.CONSTRAINT_NAME = KCU.CONSTRAINT_NAME
+    AND RC.CONSTRAINT_NAME = TS.CONSTRAINT_NAME
+    AND RC.UNIQUE_CONSTRAINT_SCHEMA = KCU.TABLE_SCHEMA
+    AND KCU.REFERENCED_TABLE_NAME IS NOT NULL
+    $andwhere
+    GROUP BY KCU.CONSTRAINT_NAME
+    ORDER BY TS.TABLE_NAME, TS.CONSTRAINT_NAME 
+    ) TMP;"
 
   mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" "" "1" || error_handled ""
 
@@ -924,6 +953,10 @@ commons_mariadb_count_tables () {
 #****f* commmons_mariadb/commons_mariadb_get_fkeys_list
 # FUNCTION
 #   Save on _mariadb_ans variable list of foreign keys defined on schema.
+#   tname($4) (optional) table name to use on count foreign keys.
+#   mode($5)  (optional) if tname is present this field could be used for identify
+#             count must be done for count foreign key of the table or foreign keys that
+#             reference table. Possible values are: "in" (default) | "ref"
 # RETURN VALUE
 #   1 on error
 #   0 on success
@@ -935,6 +968,8 @@ commons_mariadb_get_fkeys_list () {
   local all="$1"
   local custom_column="$2"
   local fkey_name="$3"
+  local tname="$4"
+  local mode="$5"
   local all_column=""
   local fk_name=""
 
@@ -959,6 +994,14 @@ commons_mariadb_get_fkeys_list () {
     fk_name="AND TS.CONSTRAINT_NAME = '${fkey_name}'"
   fi
 
+  if [[ -n "$tname" && -z "$mode" || -n "$tname" && "$mode" == "in" ]] ; then
+    andwhere="AND TS.TABLE_NAME = '$tname'"
+  else
+    if [[ -n "$tname" && "$mode" == "ref" ]] ; then
+      andwhere="AND KCU.REFERENCED_TABLE_NAME = '$tname'"
+    fi
+  fi
+
   local cmd="
     SELECT ${all_column} ${custom_column}
     FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TS,
@@ -974,6 +1017,7 @@ commons_mariadb_get_fkeys_list () {
     AND RC.UNIQUE_CONSTRAINT_SCHEMA = KCU.TABLE_SCHEMA
     AND KCU.REFERENCED_TABLE_NAME IS NOT NULL
     ${fk_name}
+    ${andwhere}
     GROUP BY KCU.CONSTRAINT_NAME
     ORDER BY TS.TABLE_NAME, TS.CONSTRAINT_NAME"
 
