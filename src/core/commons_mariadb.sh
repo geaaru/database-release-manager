@@ -2249,6 +2249,11 @@ commons_mariadb_create_fkey_file () {
   local fkeysdir="${MARIADB_DIR}/foreign_keys"
   local f="$fkeysdir/${name}.sql"
 
+  # Check if exists foreign_keys or create it
+  if [[ ! -d ${fkeysdir} ]] ; then
+    mkdir -p ${fkeysdir} || error_generate "Error on create directory ${fkeysdir}."
+  fi
+
   commons_mariadb_check_if_exist_fkey "${name}"
   is_present=$?
 
@@ -2297,6 +2302,11 @@ commons_mariadb_create_index_file () {
   local content=""
   local indexesdir="${MARIADB_DIR}/indexes"
   local f="${indexesdir}/${table}-${name}.sql"
+
+  # Check if exists indexes or create it
+  if [[ ! -d ${indexesdir} ]] ; then
+    mkdir -p ${indexesdir} || error_generate "Error on create directory ${indexesdir}."
+  fi
 
   commons_mariadb_check_if_exist_index "${name}" "${table}"
   is_present=$?
