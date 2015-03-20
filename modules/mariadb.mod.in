@@ -756,6 +756,10 @@ _mariadb_compile_args () {
 #   * --index [i]         Downlaod index with name i. To use with --index-table.
 #   * --index-table [it]  Table name of index to download. To use with --index
 #   * --with-pk-indexes   Download also primary key indexes. To use with --all|--index|--all-indexes
+#   * --all-tables        Download all tables definition.
+#   * --file [f]          (optional) File where write tables definitions.
+#                         Default is creation_script/initial_ddl.sql
+#   * --table [name]      Download table description of table name.
 # SEE ALSO
 #   _mariadb_connections_args for a list of connection arguments
 # SOURCE
@@ -765,15 +769,17 @@ _mariadb_download_args () {
 
   local short_options="d:U:P:hH:D:t:"
   local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
-  long_options="$long_options all-triggers all-id-script: file: all-functions all-procedures all-views all trigger: function: view: procedure: all-foreign-keys foreign-key: all-indexes index: index-table: with-pk-indexes"
+  long_options="$long_options all-triggers all-id-script: file: all-functions all-procedures all-views"
+  long_options="$long_options all trigger: function: view: procedure: all-foreign-keys foreign-key:"
+  long_options="$long_options all-indexes index: index-table: with-pk-indexes all-tables file: table:"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
   MARIADB_DOWNLOAD_ALL=1
 
   if [ $# -lt 2 ] ; then # is there at least one param (--)
-    echo -en "No params supply. I presume --all param.\n"
-    return 0
+    _mariadb_download_help
+    return 1
   fi
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_download_args: Found $# params)\n"
@@ -785,6 +791,7 @@ _mariadb_download_args () {
   MARIADB_DOWNLOAD_ALL_VIEWS=0
   MARIADB_DOWNLOAD_ALL_FKEYS=0
   MARIADB_DOWNLOAD_ALL_INDEXES=0
+  MARIADB_DOWNLOAD_ALL_TABLES=0
   MARIADB_DOWNLOAD_PK_INDEXES=""
   MARIADB_DOWNLOAD_PROCEDURE=""
   MARIADB_DOWNLOAD_TRIGGER=""
@@ -793,6 +800,8 @@ _mariadb_download_args () {
   MARIADB_DOWNLOAD_VIEW=""
   MARIADB_DOWNLOAD_INDEX=""
   MARIADB_DOWNLOAD_ITABLE=""
+  MARIADB_DOWNLOAD_FILE=""
+  MARIADB_DOWNLOAD_TABLE=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -857,26 +866,20 @@ _mariadb_download_args () {
       --with-pk-indexes)
         MARIADB_DOWNLOAD_PK_INDEXES="all"
         ;;
+      --all-tables)
+        MARIADB_DOWNLOAD_ALL_TABLES=1
+        ;;
+      --file)
+        MARIADB_DOWNLOAD_FILE="$2"
+        shift
+        ;;
+      --table)
+        MARIADB_DOWNLOAD_TABLE="$2"
+        shift
+        ;;
 
       -h|--help)
-        echo -en "[--all-procedure]        Download all procedures.\n"
-        echo -en "[--all-triggers]         Download all triggers.\n"
-        echo -en "[--all-functions]        Download all functions.\n"
-        echo -en "[--all-foreign-keys]     Download all foreign keys.\n"
-        echo -en "[--all-indexes]          Download all indexes.\n"
-        echo -en "[--all-views]            Download all views.\n"
-        echo -en "[--all]                  Download all.\n"
-        echo -en "[--procedure name]       Download a particular procedure.\n"
-        echo -en "[--trigger name]         Download a particular trigger.\n"
-        echo -en "[--function name]        Download a particular function.\n"
-        echo -en "[--view name]            Download a particular view.\n"
-        echo -en "[--foreign-key name]     Download a particular foreign key.\n"
-        echo -en "[--index name]           Download a particular index (Require --index-table).\n"
-        echo -en "                         Only one index a time.\n"
-        echo -en "[--index-table tname]    Name of table of index to download. (To use with --index).\n"
-        echo -en "[--with-pk-indexes]      Download also primary key indexes.\n"
-        echo -en "                         (To use with --all|--index|--all-indexes)\n"
-        echo -en "Note: For argument with value if it isn't passed value argument is ignored.\n"
+        _mariadb_download_help
         return 1
         ;;
       --)
@@ -889,6 +892,41 @@ _mariadb_download_args () {
 
     shift
   done
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_download_help
+# FUNCTION
+#   Internal function for help message related with download command.
+# SOURCE
+_mariadb_download_help () {
+
+  echo -en "[--all-procedure]        Download all procedures.\n"
+  echo -en "[--all-triggers]         Download all triggers.\n"
+  echo -en "[--all-functions]        Download all functions.\n"
+  echo -en "[--all-foreign-keys]     Download all foreign keys.\n"
+  echo -en "[--all-indexes]          Download all indexes.\n"
+  echo -en "[--all-views]            Download all views.\n"
+  echo -en "[--all]                  Download all (no tables schemas).\n"
+  echo -en "[--procedure name]       Download a particular procedure.\n"
+  echo -en "[--trigger name]         Download a particular trigger.\n"
+  echo -en "[--function name]        Download a particular function.\n"
+  echo -en "[--view name]            Download a particular view.\n"
+  echo -en "[--foreign-key name]     Download a particular foreign key.\n"
+  echo -en "[--index name]           Download a particular index (Require --index-table).\n"
+  echo -en "                         Only one index a time.\n"
+  echo -en "[--index-table tname]    Name of table of index to download. (To use with --index).\n"
+  echo -en "[--with-pk-indexes]      Download also primary key indexes.\n"
+  echo -en "                         (To use with --all|--index|--all-indexes)\n"
+  echo -en "[--all-tables]           Download all tables definitions that aren't present on target\n"
+  echo -en "                         file. This option could be used with --file.\n"
+  echo -en "[--table name]           Download schema of a particular table\n"
+  echo -en "                         This option could be used with --file.\n"
+  echo -en "[--file file]            (optional) File where write tables definitions.\n"
+  echo -en "                         Default is creation_script/initial_ddl.sql\n"
+  echo -en "Note: For argument with value if it isn't passed value argument is ignored.\n"
 
   return 0
 }
@@ -919,6 +957,7 @@ _mariadb_show_args () {
   local short_options="d:U:P:hH:D:t:"
   local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
   long_options="$long_options triggers functions procedures views tables all foreign-keys indexes table: fkey:"
+  long_options="$long_options table-def"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -939,6 +978,7 @@ _mariadb_show_args () {
   MARIADB_SHOW_ALL_INDEXES=0
   MARIADB_SHOW_TABLES_DESCR=0
   MARIADB_SHOW_FKEYS_DESCR=0
+  MARIADB_SHOW_TABLE_DEF=0
   MARIADB_SHOW_TABLES=""
   MARIADB_SHOW_FKEYS=""
 
@@ -981,6 +1021,9 @@ _mariadb_show_args () {
         MARIADB_SHOW_TABLES[$MARIADB_SHOW_TABLES_DESCR]="$2"
         let MARIADB_SHOW_TABLES_DESCR++
         shift
+        ;;
+      --table-def)
+        MARIADB_SHOW_TABLE_DEF=1
         ;;
       --fkey)
         MARIADB_SHOW_FKEYS[$MARIADB_SHOW_FKEYS_DESCR]="$2"
@@ -1256,6 +1299,7 @@ _mariadb_show_help () {
   echo -en "[--all]                  Show list of all procedures, triggers, functions and views present on database.\n"
   echo -en "[--table TABLE_NAME]     Show detail of a table. This option could be repeated.\n"
   echo -en "[--fkey FKEY_NAME]       Show detail of a foreign key. This option could be repeated.\n"
+  echo -en "[--table-def]            Show table definition SQL (To use with --table).\n"
 
   return 0
 
@@ -1339,7 +1383,7 @@ _mariadb_create_help () {
 
   echo -en "[--fkey FKEY_NAME]       Create foreign key [FKEY_NAME] file, ready for compilation.\n"
   echo -en "                         Others mandatary parameters: --on-table,--on-column,--ref-table\n"
-  echo -en "                         --ref-column.\n"a
+  echo -en "                         --ref-column.\n"
   echo -en "[--index INAME]          Create index [INAME] file, ready for compilation.\n"
   echo -en "                         Others mandatary parameters: --on-table,--on-column.\n"
   echo -en "                         Others optional parameters: --itype.\n"
@@ -1643,6 +1687,28 @@ _mariadb_download () {
 
     fi
   fi # end $MARIADB_DOWNLOAD_ALL
+
+  # Check for all-tables or single table
+  local f="${LOCAL_DIR}/creation_script/initial_ddl.sql"
+
+  if [ -n "$MARIADB_DOWNLOAD_FILE" ] ; then
+    f="${MARIADB_DOWNLOAD_FILE}"
+  fi
+
+  if [ $MARIADB_DOWNLOAD_ALL_TABLES -eq 1 ] ; then
+
+    commons_mariadb_download_all_tables "${f}"
+
+  else
+
+    if [[ -n "${MARIADB_DOWNLOAD_TABLE}" ]] ; then
+
+      commons_mariadb_download_all_tables "${f}" "${MARIADB_DOWNLOAD_TABLE}"
+
+    fi
+
+  fi
+
 
   return 0
 }
@@ -1950,6 +2016,17 @@ _mariadb_show_table () {
 
     _mariadb_show_foreign_keys "$tname" "ref" "FOREIGN KEYS VS. TABLE $tname"
 
+    if [ $MARIADB_SHOW_TABLE_DEF -eq 1 ] ; then
+
+      out_handler_clean
+      out_handler_print ""
+
+      commons_mariadb_get_table_def "$tname"
+
+      out_handler_print "\n${TABLE_DEF}"
+
+    fi
+
   else
 
     out_handler_print "Table $tname not found."
@@ -1976,6 +2053,7 @@ _mariadb_show_tables () {
   local data_length=""
   local create_time=""
   local update_time=""
+  local charset=""
   local name_size=23
 
   commons_mariadb_count_tables
@@ -1997,8 +2075,9 @@ _mariadb_show_tables () {
     out_headers[1]="ENGINE"
     out_headers[2]="TABLE_ROWS"
     out_headers[3]="DATA_LENGTH"
-    out_headers[4]="CREATE_TIME"
-    out_headers[5]="UPDATE_TIME"
+    out_headers[4]="CHARSET"
+    out_headers[5]="CREATE_TIME"
+    out_headers[6]="UPDATE_TIME"
 
     out_el_pre[0]="\e[1;33m"
     out_el_pre[1]="\e[1;32m"
@@ -2006,6 +2085,7 @@ _mariadb_show_tables () {
     out_el_pre[3]="\e[1;34m"
     out_el_pre[4]="\e[1;30m"
     out_el_pre[5]="\e[1;35m"
+    out_el_pre[6]="\e[1;36m"
 
     out_el_post[0]="\e[m"
 
@@ -2016,8 +2096,9 @@ _mariadb_show_tables () {
       engine=`echo $row | awk '{split($0,a," "); print a[2]}'`
       table_rows=`echo $row | awk '{split($0,a," "); print a[3]}'`
       data_length=`echo $row | awk '{split($0,a," "); print a[4]}'`
-      create_time=`echo $row | awk '{split($0,a," "); print a[5]" "a[6]}'`
-      update_time=`echo $row | awk '{split($0,a," "); print a[7]" "a[8]}'`
+      charset=`echo $row | awk '{split($0,a," "); print a[5]}'`
+      create_time=`echo $row | awk '{split($0,a," "); print a[6]" "a[7]}'`
+      update_time=`echo $row | awk '{split($0,a," "); print a[8]" "a[9]}'`
 
       out_rows[$counter]="row"${counter}
 
@@ -2025,8 +2106,9 @@ _mariadb_show_tables () {
       eval "row${counter}[1]=\"${engine}\""
       eval "row${counter}[2]=\"${table_rows}\""
       eval "row${counter}[3]=\"${data_length}\""
-      eval "row${counter}[4]=\"${create_time}\""
-      eval "row${counter}[5]=\"${update_time}\""
+      eval "row${counter}[4]=\"${charset}\""
+      eval "row${counter}[5]=\"${create_time}\""
+      eval "row${counter}[6]=\"${update_time}\""
 
       # Check if needed enlarge size of first column
       if [ ${#name} -ge $name_size ] ; then
@@ -2041,8 +2123,9 @@ _mariadb_show_tables () {
     out_tabs[1]=11
     out_tabs[2]=15
     out_tabs[3]=15
-    out_tabs[4]=23
+    out_tabs[4]=13
     out_tabs[5]=23
+    out_tabs[6]=23
 
     out_handler_print_arr
 

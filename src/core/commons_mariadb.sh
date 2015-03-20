@@ -1118,16 +1118,25 @@ commons_mariadb_get_tables_list () {
 
   local all="$1"
   local custom_column="$2"
+  local tname="$3"
   local all_column=""
+  local andwhere=""
 
   if [ -n "$all" ] ; then
-    all_column=",ENGINE,TABLE_ROWS,DATA_LENGTH,CREATE_TIME,UPDATE_TIME"
+    all_column=",T.ENGINE,T.TABLE_ROWS,T.DATA_LENGTH,CCSA.CHARACTER_SET_NAME,T.CREATE_TIME,T.UPDATE_TIME"
+  fi
+
+  if [ -n "$tname" ] ; then
+    andwhere="AND T.TABLE_NAME = '${tname}'"
   fi
 
   local cmd="
-    SELECT TABLE_NAME ${all_column} ${custom_column}
-    FROM INFORMATION_SCHEMA.TABLES
-    WHERE TABLE_SCHEMA = '$MARIADB_DB'
+    SELECT T.TABLE_NAME ${all_column} ${custom_column}
+    FROM INFORMATION_SCHEMA.TABLES T,
+         INFORMATION_SCHEMA.COLLATION_CHARACTER_SET_APPLICABILITY CCSA
+    WHERE T.TABLE_SCHEMA = '$MARIADB_DB'
+      AND T.TABLE_COLLATION = CCSA.COLLATION_NAME
+      ${andwhere}
     ORDER BY TABLE_NAME;"
 
   mysql_cmd_4var "_mariadb_ans" "$cmd" || return 1
@@ -2329,6 +2338,300 @@ ALTER TABLE \`${table}\`
   _logfile_write "(mariadb) Create index ${name} on table ${table} (file ${f})" || return 1
 
   return 0
+}
+#***
+
+#****f* commmons_mariadb/commons_mariadb_get_table_def
+# FUNCTION
+#   Create table definition syntax and store it on TABLE_DEF variable.
+# INPUTS
+#   name         - name of the table
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SOURCE
+commons_mariadb_get_table_def () {
+
+  local tname="$1"
+  local def="CREATE TABLE IF NOT EXISTS \`${tname}\` (\n"
+  local row_cname=""
+  local row_is_nullable=""
+  local row_ctype=""
+  local row_ckey=""
+  local row_cextra=""
+  local row_default=""
+  local cname=""
+  local is_nullable=""
+  local ctype=""
+  local cextra=""
+  local default=""
+  local counter=0
+  local min_col_size=19
+  local pre_spaces=4
+  local engine=""
+  local charset=""
+  local has_pk=0
+
+  commons_mariadb_exist_table "$tname"
+  is_present=$?
+
+  if [ $is_present -eq 1 ] ; then
+    return 1
+  fi
+
+  commons_mariadb_desc_table "$tname" || return 1
+
+  IFS=$'\n'
+  for row in $_mariadb_ans ; do
+
+    row_name[${counter}]=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+    row_is_nullable[${counter}]=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+    row_ctype[${counter}]=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+    row_ckey[${counter}]=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+    row_cextra[${counter}]=`echo $row | awk '{split($0,a,"|"); print a[5]}' | xargs`
+    row_default[${counter}]=`echo $row | awk '{split($0,a,"|"); print a[6]}' | xargs`
+
+    if [ ${#row_name[${counter}]} -ge $min_col_size ] ; then
+      min_col_size=$((${#row_name[${counter}]}+1))
+    fi
+
+    let counter++
+
+  done
+  unset IFS
+
+  # Check if is present a primary key
+  commons_mariadb_count_indexes "${tname}" "primary"
+  has_pk=$?
+
+  for row_id in ${!row_name[@]} ; do
+
+    let counter--
+
+    cname="${row_name[${row_id}]}"
+    is_nullable="${row_is_nullable[${row_id}]}"
+    ctype="${row_ctype[${row_id}]}"
+    ckey="${row_ctype[${row_id}]}"
+    cextra="${row_cextra[${row_id}]}"
+    default="${row_default[${row_id}]}"
+
+    local cname_str=""
+
+    get_space_str "cname_str" "${min_col_size}" "${cname}" "${pre_spaces}"
+    def="${def}${cname_str} ${ctype}"
+
+    # Set NOT NULL section if column is not nullable
+    if [ "${is_nullable}" == "NO" ] ; then
+      def="${def} NOT NULL"
+    fi
+
+    # Set default section
+    if [ "${default}" != "NULL" ] ; then
+      if [ "${default}" == "CURRENT_TIMESTAMP" ] ; then
+        def="${def} DEFAULT ${default}"
+      else
+        def="${def} DEFAULT '${default}'"
+      fi
+    fi
+
+    if [ -n "${cextra}" ] ; then
+      def="${def} ${cextra}"
+    fi
+
+    if [ $counter -gt 0 ] ; then
+      def="${def},\n"
+    else
+      def="${def}"
+    fi
+
+    # Clean field values
+    row_name[${row_id}]=""
+    row_is_nullable[${row_id}]=""
+    row_ctype[${row_id}]=""
+    row_ckey[${row_id}]=""
+    row_cextra[${row_id}]=""
+    row_default[${row_id}]=""
+
+  done
+
+  # Add primary key
+  if [ $has_pk -eq 1 ] ; then
+
+    def="${def},\n"
+    commons_mariadb_get_indexes_list "primary" "" "${tname}"
+    local keys=`echo $_mariadb_ans | awk '{split($0,a," "); print a[4]}'`
+    local pkey=""
+
+    get_space_str "pkey" "0" "" "${pre_spaces}"
+    pkey="${pkey}PRIMARY KEY(${keys})"
+
+    def="${def}${pkey}\n"
+  else
+    def="${def}\n"
+  fi
+
+  # Add close round bracket and engine
+  commons_mariadb_get_tables_list "1" "" "${tname}" || \
+    error_handled "Error on retrieve table data"
+  engine=`echo $_mariadb_ans | awk '{split($0,a," "); print a[2]}'`
+  charset=`echo $_mariadb_ans | awk '{split($0,a," "); print a[5]}'`
+
+  def="${def}) ENGINE=${engine} DEFAULT CHARSET=${charset};\n"
+
+  TABLE_DEF="${def}"
+
+  unset row_name
+  unset row_is_nullable
+  unset row_ctype
+  unset row_ckey
+  unset row_cextra
+  unset row_default
+
+  return 0
+}
+#***
+
+
+#****f* commmons_mariadb/commons_mariadb_download_all_tables
+# FUNCTION
+#   Extract all tables definition and write its to a target file.
+# INPUTS
+#   file      file name path where save tables schema.
+#   tname     (optional) download only schema of a particular table.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SOURCE
+commons_mariadb_download_all_tables () {
+
+  local f="$1"
+  local tname="$2"
+  local is_present=0
+  local n_tables=0
+  local out=""
+  local counter=0
+  local tname_list=""
+  local name=""
+  local tb_added=0
+  local file_exists=false
+  local table_is_present=0
+
+  [[ -z "$f" ]] && return 1
+
+  # Check if file exists
+  if [[ -f "$f" ]] ; then
+    file_exists=true
+  fi
+
+  # Check if directory must be created
+  if [[ ! -d "$(dirname ${f})" ]] ; then
+    # Try to create directory
+    mkdir -p $(dirname ${f}) || error_generate "Error on create directory $(dirname ${f})."
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(commons_mariadb_download_all_tables: File $f exists: $file_exists.)\n"
+
+  if [[ -z "${tname}" ]] ; then
+
+    commons_mariadb_count_tables
+    n_tables=$?
+
+    if [ "$n_tables" -eq 0 ] ; then
+
+      echo -en "No tables available.\n"
+
+    else
+
+      commons_mariadb_get_tables_list "1" || \
+        error_handled "Error on retrieve list of tables."
+
+      IFS=$'\n'
+      for row in $_mariadb_ans ; do
+
+        tname_list[${counter}]=`echo $row | awk '{split($0,a," "); print a[1]}'`
+
+        let counter++
+
+      done
+      unset IFS
+
+      for t_id in ${!tname_list[@]} ; do
+
+        name="${tname_list[${t_id}]}"
+        [[ $DEBUG && $DEBUG == true ]] && echo -en "Table $t_id: ${name}.\n"
+
+        if [[ $file_exists && $file_exists == true ]] ; then
+          # Check if table definition is already present.
+
+          table_is_present=$(cat $f | grep "CREATE TABLE IF NOT EXISTS \`${name}\`" | wc -l)
+          [[ $DEBUG && $DEBUG == true ]] && echo -en "Table ${name} is present: ${table_is_present}."
+
+          if [[ $table_is_present -eq 0 ]] ; then
+
+            commons_mariadb_get_table_def "${name}" || \
+              error_handled "Error on retrieve definition of table ${name}."
+
+            out="${out}${TABLE_DEF}\n"
+
+            let tb_added++
+
+          fi
+
+        else
+
+            commons_mariadb_get_table_def "${name}" || \
+              error_handled "Error on retrieve definition of table ${name}."
+
+            out="${out}${TABLE_DEF}\n"
+
+            let tb_added++
+
+        fi
+
+      done
+
+      if [[ $file_exists && $file_exists == true ]] ; then
+
+        if [[ $tb_added -eq 0 ]] ; then
+
+          echo -en "All tables are already present on file $f. Nothing to do.\n"
+
+        else
+
+          echo -en "$out" >> $f
+          echo -en "Added ${tb_added} tables to file $f.\n"
+
+        fi
+
+      else
+
+        out="
+-- \$Id\$ --
+
+${out}"
+        echo -en "$out" > $f
+
+      fi
+
+    fi
+
+  else
+
+    commons_mariadb_get_table_def "${tname}" || \
+      error_handled "Error on create definition of table ${tname}."
+
+    out="
+-- \$Id\$ --
+
+${TABLE_DEF}
+"
+    echo -en "$out" > $f
+
+  fi
+
+  return 0
+
 }
 #***
 

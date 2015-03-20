@@ -144,4 +144,44 @@ push_spaces () {
 }
 #****
 
+#****f* commons/get_spaces_str
+# FUNCTION
+#   Create a string with input "str" param at begin and N spaces
+#   where N is equal to max_chars - ${#str}
+# INPUTS
+#   var_name     Name of variable where save string with spaces.
+#   max_chars    Number of max chars of the string with spaces.
+#   str          String to insert at begin of save string.
+#   pre_spaces   Number of spaces to add before str. (Optional. default 0).
+# RETURN
+#   0 on success
+#   1 on error
+# SOURCE
+get_space_str () {
+  local var_name="$1"
+  local max_chars="$2"
+  local str="$3"
+  local pre_spaces="$4"
+
+  [[ -z "$max_chars" || -z "$var_name" ]] && return 1
+
+  local n_spaces="$((${max_chars} - ${#str}))"
+
+  if [ -n "${pre_spaces}" ] ; then
+    for ((i=0; i<${pre_spaces}; i++)) ; do
+      str=" ${str}"
+    done
+  fi
+
+  if [ $n_spaces -gt 0 ] ; then
+    for ((i=0; i<$n_spaces; i++)) ; do
+      str="${str} "
+    done
+  fi
+
+  eval "$var_name=\$str"
+
+  return 0
+}
+
 # vim: syn=sh filetype=sh
