@@ -27,7 +27,7 @@ BEGIN
 --   AND u.object_name = UPPER('TEST_PROC_PKABNORM')) LOOP
       select 'spool '||functionsdir||'fc'||InitCap(REPLACE(LOWER(t_name.object_name), 'fc', ''))||'.sql' into res from dual;
       dbms_output.put_line (res); 
-      select 'select REPLACE(FNC, '' "''||OWNER||''"."'', '' "'') AS FNC from '||
+      select 'select REPLACE(REPLACE(FNC, '' "''||OWNER||''"."'', '' "''), ''EDITIONABLE '', '''') AS FNC from '||
              '('||
                   'select TRIM(dbms_metadata.GET_DDL(''FUNCTION'',u.object_name)) AS FNC, ' || 
                   '(select username from user_users) AS OWNER '||

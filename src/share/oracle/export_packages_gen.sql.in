@@ -34,7 +34,7 @@ BEGIN
       dbms_output.put_line (res); 
       dbms_output.put_line ('END;'); 
       dbms_output.put_line ('/'); 
-      select 'select REPLACE(PKG, '' "''||OWNER||''"."'', '' "'') AS PKG from '||
+      select 'select REPLACE(REPLACE(PKG, '' "''||OWNER||''"."'', '' "''), ''EDITIONABLE '', '''') AS PKG from '||
                     '('||
                        'select TRIM(dbms_metadata.GET_DDL(''PACKAGE'',u.object_name)) AS PKG, '||
                        '(select username from user_users) AS OWNER '||
@@ -52,7 +52,7 @@ BEGIN
       dbms_output.put_line (res); 
       dbms_output.put_line ('END;'); 
       dbms_output.put_line ('/'); 
-      select 'select REPLACE(PKG, '' "''||OWNER||''"."'', '' "'') AS PKG from '||
+      select 'select REPLACE(REPLACE(PKG, '' "''||OWNER||''"."'', '' "''), ''EDITIONABLE '', '''') AS PKG from '||
                     '('||
                        'select TRIM(dbms_metadata.GET_DDL(''PACKAGE'',u.object_name)) AS PKG, '||
                        '(select username from user_users) AS OWNER '||

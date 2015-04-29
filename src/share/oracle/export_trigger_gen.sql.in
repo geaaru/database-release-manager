@@ -28,7 +28,7 @@ BEGIN
    AND u.object_name = UPPER(triggername)) LOOP
       select 'spool '||triggersdir||'trg'||InitCap(REPLACE(LOWER(t_name.object_name), 'trg', ''))||'.sql' into res from dual;
        dbms_output.put_line (res); 
-      select 'select REPLACE(REPLACE(TRG, '' "''||OWNER||''"."'', '' "''),
+      select 'select REPLACE(REPLACE(REPLACE(TRG, '' "''||OWNER||''"."'', '' "''), ''EDITIONABLE '', ''''), 
              ''ALTER TRIGGER "'||UPPER(t_name.object_name)||'" ENABLE
 '', '''') AS TRG from '||
              '('||
