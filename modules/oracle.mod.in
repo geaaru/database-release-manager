@@ -321,7 +321,7 @@ _oracle_download_args () {
 
   ORACLE_DOWNLOAD_ALL=1
 
-  if [ $# -lt 2 ] ; then # is there at least one param (--)
+  if [ $# -lt 1 ] ; then # is there at least one param (--)
     _oracle_download_help
     return 1
   fi
