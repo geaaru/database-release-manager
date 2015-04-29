@@ -68,6 +68,7 @@ dbm_long_help () {
    echo -en "\tdel_profile             Remove a profile from project.\n"
    echo -en "\tset_profile             Set default profile of the project.\n"
    echo -en "\tinfo                    Show informations about dbm parameters and project.\n"
+   echo -en "\tshell                   Enter on sqlite dbm database.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -113,6 +114,7 @@ dbm_show_help () {
    echo -en "\tadd_profile             Add a new profile to project.\n"
    echo -en "\tset_profile             Set default profile of the project.\n"
    echo -en "\tinfo                    Show informations about dbm parameters and project.\n"
+   echo -en "\tshell                   Enter on sqlite dbm database.\n"
    echo -en "===========================================================================\n"
 
    return 0
@@ -170,6 +172,20 @@ dbm_info () {
   for i in $fields ; do
     echo -en "$i = ${!i}\n"
   done
+
+  return 0
+}
+#***
+
+#****f* dbm/dbm_shell
+# FUNCTION
+#  Enter on dbm sqlite database file.
+# SOURCE
+dbm_shell () {
+
+  shift 2
+
+  _sqlite_shell -c "$DRM_DB" || error_handled ""
 
   return 0
 }

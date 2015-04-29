@@ -13,6 +13,7 @@ EXTRA_DIST = \
 				 sqlite.mod.in \
 				 out_handler.mod.in \
 				 out_stdout.mod.in \
+				 ssl.mod.in \
 				 package.mod.in
 
 modules = \
@@ -25,6 +26,7 @@ modules = \
 			 sqlite.mod \
 			 out_handler.mod \
 			 out_stdout.mod \
+			 ssl.mod \
 			 package.mod
 
 DISTCLEANFILES = $(modules)

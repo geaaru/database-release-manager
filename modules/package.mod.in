@@ -10,7 +10,7 @@ package_authors="Geaaru"
 package_creation_date="Feb 1, 2015"
 package_version="@PACKAGE_VERSION@"
 
-#*****f* package/package_version
+#****f* package/package_version
 # FUNCTION
 #   Show version of package module.
 # SOURCE
@@ -36,6 +36,8 @@ package_long_help () {
    echo -en "\tlong_help               Show long help informations\n"
    echo -en "\tshow_help               Show command list.\n"
    echo -en "\tversion                 Show module version.\n"
+   echo -en "\tcreate                  Create a self installer tarball of current\n"
+   echo -en "\t                        project.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
