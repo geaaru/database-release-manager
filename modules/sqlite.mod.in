@@ -27,6 +27,7 @@ sqlite_show_help () {
    echo -en "\tcreate                  Create SQLite database.\n"
    echo -en "\tremove                  Remove SQLite database.\n"
    echo -en "\tquery                   Do a query to SQLite database.\n"
+   echo -en "\tshell                   Enter on SQLite database shell.\n"
    echo -en "\tshow_autoincr_seq       Show list of autoincrement sequences values.\n"
    echo -en "===========================================================================\n"
 }
@@ -46,6 +47,7 @@ sqlite_long_help () {
    echo -en "\tlong_help               Show long help informations\n"
    echo -en "\tshow_help               Show command list.\n"
    echo -en "\tversion                 Show module version.\n"
+   echo -en "\tshell                   Enter on SQLite database shell.\n"
    echo -en "\tcreate                  Create SQLite database to file:\n"
    if [[ -z "$SQLITEDB" ]] ; then
      echo -en "\t (ATTENTION: you must set SQLITEDB\n"
@@ -82,7 +84,7 @@ sqlite_show_autoincr_seq () {
   shift 2
 
   # TODO: use a dedicate check args function.
-  _sqlite_check_args "$@"
+  _sqlite_check_args "$@" || error_handled ""
 
 
   query="
@@ -208,9 +210,51 @@ sqlite_remove () {
 }
 #***
 
+#****f* sqliet/sqlite_shell
+# FUNCTION
+#   Enter on database shell.
+# RETURN VALUE
+#   1 on error
+#   0 on success.
+# SEE ALSO
+#   _sqlite_check_args
+# SOURCE
+sqlite_shell () {
+
+  local result=1
+
+  [[ $DEBUG ]] && echo -en "(sqlite_shell args: $@)\n"
+
+  # Shift first two input param
+  shift 2
+
+  _sqlite_shell "$@" || error_handled "Error on enter to sqlite database file $SQLITEDB."
+
+  return 0
+}
+#***
+
 #######################################################################
 # Internal Functions                                                  #
 #######################################################################
+
+#****f* sqlite/_sqlite_shell
+# FUNCTION
+#   Internal function for enter on sqlite database shell.
+# RESULT
+#   exit(1) if file doesn't exits.
+# SOURCE
+_sqlite_shell () {
+
+  _sqlite_check_args "$@" || error_handled ""
+
+  _sqlite_check_db || return 1
+
+  sqlite3 $SQLITEDB || return 1
+
+  return 0
+}
+#***
 
 #****f* sqlite/_sqlite_check_db
 # FUNCTION
@@ -251,7 +295,7 @@ _sqlite_check_args () {
 
   # Reinitialize opt index position
   OPTIND=1
-  while getopts "c:s:q:d:g:u:n:f:qD:S:L:t:" opts "$@" ; do
+  while getopts "c:s:q:t:" opts "$@" ; do
     case $opts in
       # sqlite_create params
       c) SQLITEDB="$OPTARG";;
@@ -260,12 +304,16 @@ _sqlite_check_args () {
       # sqlite_query params
       q) SQLITE_QUERY="$OPTARG";;
 
-      *) sqlite_help
-          return 1
-          ;;
+      t) SQLITE_TABLE="$OPTARG";;
+
+      *) ;;
     esac
   done
 
+  if [[ -z $SQLITEDB ]] ; then
+    echo -en "_sqlite_check_args: Missing sqlite database parameter.\n"
+    return 1
+  fi
 
   return 0
 }
@@ -281,11 +329,7 @@ _sqlite_check_args () {
 _sqlite_remove () {
   local result=1
 
-  _sqlite_check_args "$@"
-  if [[ -z $SQLITEDB ]] ; then
-    echo -en "_sqlite_remove: Missing parameters.\n"
-    return 1
-  fi
+  _sqlite_check_args "$@" || error_handled ""
 
   _sqlite_check_db
 
@@ -321,8 +365,8 @@ _sqlite_create () {
   local result=1
 
   _sqlite_check_args "$@"
-  if [[ -z $SQLITEDB || -z $SQLITE_SCHEMA ]] ; then
-    echo -en "_sqlite_create: Missing parameters.\n"
+  if [[ -z $SQLITE_SCHEMA ]] ; then
+    echo -en "_sqlite_create: Missing schema file.\n"
     return 1
   fi
 
@@ -338,13 +382,13 @@ _sqlite_create () {
       else
         echo -en "..."
       fi
+      echo -en "OK\n"
     else
       echo -en "No schema file found to $SQLITE_SCHEMA\n"
       return 1
     fi
   fi
 
-  echo -en "OK\n"
   return 0
 
 }
@@ -372,10 +416,33 @@ _sqlite_query () {
 
   _sqlite_check_args "$@" || error_handled ""
 
-  #[[ $DEBUG ]] && echo -en "USE db: $SQLITEDB\n"
-  #[[ $DEBUG ]] && echo -en "USE QUERY: $SQLITE_QUERY\n"
-
   _sqlite_check_db || error_handled ""
+
+  _sqlite_query_ || return 1
+
+  return 0
+}
+#***
+
+#****f* sqlite/_sqlite_query_
+# FUNCTION
+#   Execute a query on sqlite database without check of sqlite database, etc.
+# DESCRIPTION
+#   On execute query is add prefix command to enable foreign_keys.
+#   To disable it or insert custom prefix command it is needed
+#   override of SQLITEDB_INIT_SESSION variable.
+#   NOTE: On execute DROP command must be set SQLITEDB_INIT_SESSION to empty string ' '.
+# SEE ALSO
+#   _sqlite_query
+# RETURN VALUE
+#   1 on error
+#   0 on success.
+# RESULT
+#   Query result is save to _sqlite_ans variable.
+# SOURCE
+_sqlite_query_ () {
+  local result=1
+  local pragma="PRAGMA foreign_keys = ON; "
 
   if [[ ! -z "$SQLITEDB_INIT_SESSION" ]] ; then
     if [ "$SQLITEDB_INIT_SESSION" == " " ] ; then
@@ -385,13 +452,75 @@ _sqlite_query () {
     fi
   fi
 
-  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_sqlite_query execute: sqlite3 $SQLITEDB \"$pragma $SQLITE_QUERY\"\n"
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_sqlite_query_ execute: sqlite3 $SQLITEDB \"$pragma $SQLITE_QUERY\"\n"
   _sqlite_ans="$(sqlite3 $SQLITEDB "${pragma}${SQLITE_QUERY}")"
   result=$?
 
-  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_sqlite_query ans:\n$_sqlite_ans\n)\n"
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_sqlite_query_ ans:\n$_sqlite_ans\n)\n"
 
   return $result
+}
+#***
+
+#****f* sqlite/_sqlite_get_table_schema
+# FUNCTION
+#   Retrieve table schema and save content to $_sqlite_ans.
+# RETURN VALUE
+#   1 on error
+#   0 on success.
+# SOURCE
+_sqlite_get_table_schema () {
+
+  _sqlite_check_args "$@" || error_handled ""
+
+  _sqlite_check_db || error_handled ""
+
+  SQLITE_QUERY=".schema $SQLITE_TABLE"
+
+  # Disable PRAGMA options
+  SQLITEDB_INIT_SESSION=" "
+
+  _sqlite_query_  || error_handled "Unexpected error!"
+
+  # Re-enable PRAGMA options
+  unset SQLITEDB_INIT_SESSION
+
+  if [ x"$_sqlite_ans" == x"" ] ; then
+    [[ $DEBUG && $DEBUG == true ]] && \
+      echo -en "Error on retrieve schema of the table $SQLITE_TABLE.\n"
+    return 1
+  fi
+
+  return 0
+}
+#***
+
+#****f* sqlite/_sqlite_exists_table
+# FUNCTION
+#   Check if exists a table on sqlite database file.
+# RETURN VALUE
+#   0 if table doesn't exist.
+#   1 if table exists.
+# SOURCE
+_sqlite_exists_table () {
+
+  _sqlite_check_args "$@" || error_handled ""
+
+  _sqlite_check_db || error_handled ""
+
+  SQLITE_QUERY="
+    SELECT count(1)
+    FROM sqlite_master
+    WHERE type='table'
+    AND name='$SQLITE_TABLE'"
+
+  _sqlite_query_ || error_handled "Unexpected error!"
+
+  if [ x"$_sqlite_ans" == x"0" ] ; then
+    return 0
+  else
+    return 1
+  fi
 }
 #***
 

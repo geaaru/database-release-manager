@@ -315,14 +315,15 @@ _oracle_download_args () {
 
   local short_options="S:U:P:hD:t:"
   local long_options="all-packages all-triggers all-functions all-views all package: trigger: function: view:"
+  long_options="$long_options help"
 
   $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
 
   ORACLE_DOWNLOAD_ALL=1
 
   if [ $# -lt 2 ] ; then # is there at least one param (--)
-    echo -en "No params supply. I presume --all param.\n"
-    return 0
+    _oracle_download_help
+    return 1
   fi
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_download_args: Found $# params)\n"
@@ -377,17 +378,8 @@ _oracle_download_args () {
         shift
         ;;
 
-      -h)
-        echo -en "[--all-packages]        Download all packages.\n"
-        echo -en "[--all-triggers]        Download all triggers.\n"
-        echo -en "[--all-functions]       Download all functions.\n"
-        echo -en "[--all-views]           Download all views.\n"
-        echo -en "[--all]                 Download all.\n"
-        echo -en "[--package name]        Download a particular package.\n"
-        echo -en "[--trigger name]        Download a particular trigger.\n"
-        echo -en "[--function name]       Download a particular function.\n"
-        echo -en "[--view name]           Download a particular view.\n"
-        echo -en "Note: For argument with value if it isn't passed value argument is ignored.\n"
+      -h|--help)
+        _oracle_download_help
         return 1
         ;;
       --)
@@ -404,6 +396,25 @@ _oracle_download_args () {
   return 0
 }
 #***
+
+#****f* oracle/_oracle_download_help
+# FUNCTION
+#   Print help message of download command.
+# SOURCE
+_oracle_download_help () {
+
+  echo -en "[--all-packages]        Download all packages.\n"
+  echo -en "[--all-triggers]        Download all triggers.\n"
+  echo -en "[--all-functions]       Download all functions.\n"
+  echo -en "[--all-views]           Download all views.\n"
+  echo -en "[--all]                 Download all.\n"
+  echo -en "[--package name]        Download a particular package.\n"
+  echo -en "[--trigger name]        Download a particular trigger.\n"
+  echo -en "[--function name]       Download a particular function.\n"
+  echo -en "[--view name]           Download a particular view.\n"
+
+  return 0
+}
 
 #****f* oracle/_oracle_compile_args
 # FUNCTION

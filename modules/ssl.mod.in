@@ -1,0 +1,222 @@
+#!/bin/bash
+#------------------------------------------------
+# Author(s): Geaaru, geaaru@gmail.com
+# $Id$
+# License: GPL 2.0
+#------------------------------------------------
+
+name="ssl"
+package_authors="Geaaru"
+package_creation_date="Mar 29, 2015"
+package_version="@PACKAGE_VERSION@"
+
+#****f* ssl/ssl_version
+# FUNCTION
+#   Show version of ssl module
+# SOURCE
+ssl_version () {
+  echo -en "Version: ${package_version}\n"
+
+  return 0
+}
+#***
+
+#****f* ssl/ssl_long_help
+# FUNCTION
+#  Show long help message.
+# SOURCE
+ssl_long_help () {
+
+   echo -en "===========================================================================\n"
+   echo -en "Module [${name}]:\n"
+   echo -en "Author(s): ${package_authors}\n"
+   echo -en "Created: ${package_creation_date}\n"
+   echo -en "Version: ${package_version}\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "\tlong_help               Show long help informations\n"
+   echo -en "\tshow_help               Show command list.\n"
+   echo -en "\tversion                 Show module version.\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "===========================================================================\n"
+
+   return 0
+}
+#***
+
+#****f* ssl/ssl_show_help
+# FUNCTION
+#  Show help message
+# SOURCE
+ssl_show_help () {
+
+   echo -en "===========================================================================\n"
+   echo -en "Module [${name}]:\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "\tlong_help               Show long help informations\n"
+   echo -en "\tshow_help               Show command list.\n"
+   echo -en "\tversion                 Show module version.\n"
+   echo -en "\tcreate                  Create a self installer tarball of current\n"
+   echo -en "\t                        project.\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "===========================================================================\n"
+
+   return 0
+}
+#***
+
+#****f* ssl/ssl_create
+# FUNCTION
+#  Create command function.
+# SOURCE
+ssl_create () {
+
+  local result=1
+
+  # Shift first two input param
+  shift 2
+
+  _ssl_create_args "$@" || return $result
+
+
+
+  return 0
+
+}
+#***
+
+##################################################################
+# Internal functions
+##################################################################
+
+
+#****f* ssl/_ssl_create
+# FUNCTION
+#   Handle create method.
+# SOURCE
+_ssl_create () {
+
+  local result=1
+
+}
+#***
+
+#****f* ssl/_ssl_check_ext
+# FUNCTION
+#   Check presence of ssl extensions table.
+# SOURCE
+_ssl_check_ext () {
+
+  local result=1
+
+}
+#***
+
+#****f* ssl/_ssl_create_args
+# FUNCTION
+#   Parse command line arguments of create method.
+# SOURCE
+_ssl_create_args () {
+
+  [[ $DEBUG ]] && echo -en "(_ssl_create_args args: $@)\n"
+
+  local short_options="h"
+  local long_options="on-local-port:remote-host:remote-port:tunnel-hport:tunnel-host:"
+  local long_options="tunnel-user:name:help"
+
+  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || \
+    error_handled "Invalid parameters"
+
+  if [ $# -lt 2 ] ; then
+    _ssl_create_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_ssl_create_args: Found $# params)\n"
+
+  DBRM_SSL_LPORT=""
+  DBRM_SSL_REMOTE_HOST=""
+  DBRM_SSL_REMOTE_PORT=""
+  DBRM_SSL_TUN_HOST=""
+  DBRM_SSL_TUN_PORT=""
+  DBRM_SSL_TUN_USER=""
+  DBRM_SSL_TUN_NAME=""
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -h|--help)
+        _ssl_create_help
+        return 1
+        ;;
+      --on-local-port)
+        DBRM_SSL_LPORT="$2"
+        shift
+        ;;
+      --remote-host)
+        DBRM_SSL_REMOTE_HOST="$2"
+        shift
+        ;;
+      --remote-port)
+        DBRM_SSL_REMOTE_PORT="$2"
+        shift
+        ;;
+      --tunnel-host)
+        DBRM_SSL_TUN_HOST="$2"
+        shift
+        ;;
+      --tunnel-hport)
+        DBRM_SSL_TUN_PORT="$2"
+        shift
+        ;;
+      --tunnel-user)
+        DBRM_SSL_TUN_USER="$2"
+        shift
+        ;;
+      --name)
+        DBRM_SSL_TUN_NAME="$2"
+        shift
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+    esac
+    shift
+  done
+
+  if [ -z "$DBRM_SSL_TUN_NAME" ] ; then
+    error_generate "Missing --name option."
+  fi
+
+  if [ -z "$DBRM_SSL_REMOTE_HOST" ] ; then
+    error_generate "Missing --remote-host option."
+  fi
+
+  if [ -z "$DBRM_SSL_TUN_HOST" ] ; then
+    error_generate "Missing --tunnel-host option."
+  fi
+
+  return 0
+}
+#***
+
+#****f* ssl/_ssl_create_help
+# FUNCTION
+#   Print help message of create method.
+# SOURCE
+_ssl_create_help () {
+
+  echo -en "[--on-local-port port]  Local port where binding tcp flow versun remote host\n"
+  echo -en "                        through ssl tunnel.\n"
+  echo -en "[--remote-host host]    Host to reach through ssl tunnel.\n"
+  echo -en "[--remote-port port]    Port of remote host to reach through ssl tunnel.\n"
+  echo -en "[--tunnel-host host]    Host to use for reach remote host.\n"
+  echo -en "[--tunnel-hport port]   Port of host used for tunnel. Default is 22.\n"
+  echo -en "[--tunnel-user user]    User to use on tunnel creation. Default is current user.\n"
+  echo -en "[--name name]           Name of the tunnel.\n"
+  echo -en "\n"
+
+  return 0
+}
+#***
+
+# vim: syn=sh filetype=sh ts=2 sw=2

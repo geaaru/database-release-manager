@@ -91,6 +91,7 @@ AC_CONFIG_FILES([
                  modules/out_handler.mod
                  modules/out_stdout.mod
                  modules/package.mod
+                 modules/ssl.mod
                  src/Makefile
                  src/dbrm
                  src/core/Makefile

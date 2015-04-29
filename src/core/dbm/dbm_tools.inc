@@ -314,19 +314,7 @@ _dbm_get_table_schema () {
 
   local query=".schema $table"
 
-  # Disable PRAGMA options
-  SQLITEDB_INIT_SESSION=" "
-
-  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Unexpected error!"
-
-  # Re-enable PRAGMA options
-  unset SQLITEDB_INIT_SESSION
-
-  if [ x"$_sqlite_ans" == x"" ] ; then
-    [[ $DEBUG && $DEBUG == true ]] && \
-      echo -en "Error on retrieve schema of the table $table.\n"
-    error_generate "Unexpected error on retrive schema of the table $table!"
-  fi
+  _sqlite_query -c "$DRM_DB" -t "$table" || error_handled ""
 
   return 0
 }
