@@ -33,6 +33,7 @@ out_handler_print () {
 
   local msg="$1"
   local ans=0
+  local i=""
 
   for i in "$out_handler_plugin" ; do
 

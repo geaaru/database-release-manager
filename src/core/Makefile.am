@@ -10,7 +10,8 @@ EXTRA_DIST = \
 				 mysql.sh \
 				 sqlplus.sh \
 				 dbm/dbm_args.inc \
-				 dbm/dbm_tools.inc
+				 dbm/dbm_tools.inc \
+				 dbm/dbm_exts.inc
 
 DISTCLEANFILES =
 
@@ -25,5 +26,6 @@ dist_core_DATA = \
 dbmdir = $(CORE_DIR)/dbm
 dist_dbm_DATA = \
 					 dbm/dbm_args.inc \
-					 dbm/dbm_tools.inc
+					 dbm/dbm_tools.inc \
+					 dbm/dbm_exts.inc
 

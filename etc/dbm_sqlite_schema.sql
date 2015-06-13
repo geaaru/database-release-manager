@@ -97,6 +97,15 @@ CREATE TABLE Profiles (
   CONSTRAINT uc_profile_name UNIQUE(profile_name)
 );
 
+CREATE TABLE Extensions (
+  id_extensions    INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  ext_name         TEXT NOT NULL,
+  version          TEXT NOT NULL,
+  creation_date    DATE NOT NULL,
+  update_date      DATE NOT NULL,
+  CONSTRAINT uc_ext_name  UNIQUE(ext_name)
+);
+
 INSERT INTO DatabaseAdapters (adapter, descr) VALUES('oracle', 'Oracle Database Adapter');
 INSERT INTO DatabaseAdapters (adapter, descr) VALUES('mariadb', 'MySQL/MariaDb Database Adapter');
 INSERT INTO DatabaseAdapters (adapter, descr) VALUES('sqlite', 'SQLite Database Adapter');

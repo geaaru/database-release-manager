@@ -278,6 +278,9 @@ _sqlite_check_db () {
 #   -c [sqlitedb file]        To define sqlite database file.
 #   -s [schema file]          Script to use on create sqlite database file.
 #   -q [sql query]            Query to execute on sqlite database.
+#   -t [table name]           Set table name to verify. Used only
+#                             on _sqlite_exists_table function.
+#   -f [sqlite file]          Script to execute on sqlite database.
 # RESULT
 #   Variables defined:
 #     * SQLITEDB: path of sqlite database. If not set it is used value
@@ -286,6 +289,8 @@ _sqlite_check_db () {
 #                 For dbrm schema this parameter it is not needed. (optional)
 #     * SQLITE_QUERY: variable that contains query to execute. This parameter
 #                 is mandatary only for sqlite_query function.
+#     * SQLITE_TABLE: contains table name to analize.
+#     * SQLITE_FILE: contains script file to execute on sqlite database.
 # RETURN VALUE
 #   1 on error.
 #   0 on success.
@@ -295,7 +300,7 @@ _sqlite_check_args () {
 
   # Reinitialize opt index position
   OPTIND=1
-  while getopts "c:s:q:t:" opts "$@" ; do
+  while getopts "c:s:q:t:f:" opts "$@" ; do
     case $opts in
       # sqlite_create params
       c) SQLITEDB="$OPTARG";;
@@ -305,6 +310,8 @@ _sqlite_check_args () {
       q) SQLITE_QUERY="$OPTARG";;
 
       t) SQLITE_TABLE="$OPTARG";;
+
+      f) SQLITE_FILE="$OPTARG";;
 
       *) ;;
     esac
@@ -390,7 +397,6 @@ _sqlite_create () {
   fi
 
   return 0
-
 }
 #***
 
@@ -523,5 +529,85 @@ _sqlite_exists_table () {
   fi
 }
 #***
+
+#****f* sqlite/_sqlite_compile
+# FUNCTION
+#   Compile imput file on sqlite database file.
+# TODO
+#   Check if it is correct use of error_handled function
+#   or use return 1.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
+_sqlite_compile () {
+
+  _sqlite_check_args "$@" || error_handled ""
+  _sqlite_check_db || error_handled ""
+
+  if [ -z "$SQLITE_FILE" ] ; then
+    error_handled "Missing file to compile."
+  else
+    if [ -e "$SQLITE_FILE" ] ; then
+      error_handled "File $SQLITE_FILE not found."
+    fi
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "Compiling file ${SQLITE_FILE} on database ${SQLITEDB}..."
+
+  sqlite3 "$SQLITEDB" < "$SQLITE_FILE"
+  result=$?
+  if [ $result -ne 0 ] ; then
+    echo -en "Error on compile file ${SQLITE_FILE}.\n"
+  fi
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "OK\n"
+
+  return $result
+
+}
+#***
+
+
+#****f* dbm/_dbm_get_table_schema_from_file
+# FUNCTION
+#  Retrieve table schema from a .sql file and save creation script
+#  to $_sqlite_ans variable.
+# RETURN VALUE
+#   1 on error
+#   0 on success.
+# SOURCE
+_sqlite_get_tschema_from_file () {
+
+  local ans=0
+  local schemafile="$1"
+  local tname="$2"
+
+  if [ ! -f "$schemafile" ] ; then
+    error_generate "(_sqlite_get_tschema_from_file): Invalid file $schemafile." "0"
+    return 1
+  fi
+
+  if [ -z "$tname" ] ; then
+    error_generate "(_sqlite_get_tschema_from_file): Invalid table name $tname." ""
+    return 1
+  fi
+
+  local sed_pattern="/CREATE TABLE ${tname} (.*/,/);/p"
+
+  _sqlite_ans=$(cat $schemafile | sed -n "$sed_pattern")
+
+  if [ $? -ne 0 ] ; then
+    ans=1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(_sqlite_get_tschema_from_file): For table $tname in schema $schemafile found:\n$_sqlite_ans\n"
+
+  return $ans
+
+}
+#***
+
 
 # vim: syn=sh filetype=sh ts=2 sw=2

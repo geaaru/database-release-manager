@@ -75,11 +75,13 @@ done
 #######################################################
 
 show_help () {
-   for i in $modules ; do
-      if type -t ${i}_show_help > /dev/null ; then
-         ${i}_show_help
-      fi
-   done
+  local i=""
+
+  for i in $modules ; do
+    if type -t ${i}_show_help > /dev/null ; then
+      ${i}_show_help
+    fi
+  done
 }
 
 load_profile () {
@@ -96,6 +98,8 @@ load_profile () {
 # return 1 error or help message
 check_cmdline_args () {
    local normal_help=1
+   local i=""
+   local x=""
 
    if [[ $# -eq 0 || $# -lt 2 ]] ; then
       if [ x$1 == x"-v" ] ; then
@@ -162,7 +166,7 @@ main () {
       if type -t _${name}_init > /dev/null ; then
 
          [[ $DEBUG && $DEBUG == true ]] && echo "Call init method of the module $name"
-         _${name}_init
+         _${name}_init "$@"
       fi
       if type -t ${name}_version > /dev/null ; then
         version=`${name}_version`
@@ -182,7 +186,7 @@ main () {
      if type -t _${name}_post_init > /dev/null ; then
 
          [[ $DEBUG ]] && echo "Call post_init method of the module $name"
-         _${name}_post_init
+         _${name}_post_init "$@"
 
      fi
    done

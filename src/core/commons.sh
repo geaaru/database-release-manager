@@ -26,11 +26,19 @@ error_handled () {
 #   Print input message and exit with value 1.
 # INPUTS
 #   msg       - message to print in stdout.
+#   exit_call - Possible values:
+#                   0 -> not execute exit 1,
+#                   1 -> execute. Default.
 # SOURCE
 error_generate () {
 
+  local exit_call=${2:-1}
+
   echo -en "$1\n"
-  exit 1
+
+  if [[ $exit_call -eq 1 || $exit_call == "1" ]] ; then
+    exit 1
+  fi
 
 }
 #****

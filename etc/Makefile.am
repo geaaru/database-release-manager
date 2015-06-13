@@ -3,7 +3,7 @@
 # $Id$
 # License: GPL 2.0
 
-EXTRA_DIST = dbrm.conf.example.in dbm_sqlite_schema.sql
+EXTRA_DIST = dbrm.conf.example.in dbm_sqlite_schema.sql ssl_sqlite_schema.sql
 DISTCLEANFILES = dbrm.conf.example @CONFIG_FILE_NAME@
 CLEANFILES = dbrm.conf.example @CONFIG_FILE_NAME@
 
@@ -14,6 +14,10 @@ dist_share_DATA = \
 
 etcdir = $(CONFIG_FILE_DIR)
 dist_etc_DATA = @CONFIG_FILE_NAME@
+
+ext_scriptdir = $(MODULES_DIR)/extensions-scripts/
+dist_ext_script_DATA = \
+		ssl_sqlite_schema.sql
 
 @CONFIG_FILE_NAME@:
 	cp dbrm.conf.example @CONFIG_FILE_NAME@

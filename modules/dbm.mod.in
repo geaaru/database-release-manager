@@ -13,6 +13,19 @@ dbm_version="@PACKAGE_VERSION@"
 
 dbm_schema=@SHAREDIR@/dbm_sqlite_schema.sql
 
+dbm_tables="
+  ScriptTypes
+  DatabaseAdapters
+  Releases
+  Branches
+  ReleasesDependencies
+  Scripts
+  ScriptRelInhibitions
+  ScriptRelDedicated
+  Profiles
+  Extensions
+"
+
 #****f* dbm/dbm_version
 # FUNCTION
 #  Show version of dbm module.
@@ -69,6 +82,8 @@ dbm_long_help () {
    echo -en "\tset_profile             Set default profile of the project.\n"
    echo -en "\tinfo                    Show informations about dbm parameters and project.\n"
    echo -en "\tshell                   Enter on sqlite dbm database.\n"
+   echo -en "\tupgrade                 Check if dbrm database is align to last release and\n"
+   echo -en "\t                        create new tables.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -115,6 +130,7 @@ dbm_show_help () {
    echo -en "\tset_profile             Set default profile of the project.\n"
    echo -en "\tinfo                    Show informations about dbm parameters and project.\n"
    echo -en "\tshell                   Enter on sqlite dbm database.\n"
+   echo -en "\tupgrade                 Check if dbrm database is align to last release and\n"
    echo -en "===========================================================================\n"
 
    return 0
@@ -2332,6 +2348,21 @@ dbm_move_script () {
 }
 #***
 
+#****f* dbm/upgrade
+# FUNCTION
+#   Upgrade DRBM databaes with last revision.
+# SOURCE
+dbm_upgrade () {
+
+  # Shift first two input param
+  shift 2
+
+  _dbm_upgrade "$@" || return 1
+
+  return 0
+
+}
+
 
 ##################################################################
 # Internal functions
@@ -2372,6 +2403,17 @@ _dbm_post_init () {
     if [[ -z "$DRM_PROFILE" || $DRM_PROFILE -eq 0 ]] ; then
       [[ $DEBUG ]] && echo "(dbm_post_init: Create sqlite internal db file: $DRM_DB)"
       _sqlite_create -c "$DRM_DB" -s "$dbm_schema" || error_handled "Error on create $DRM_DB file."
+
+      _dbm_exts_check_extensions "0" || error_handled "Error on iniziale extensions."
+
+    fi
+
+  else
+
+    if [[ x"$2" != x"upgrade" && x"$2" != x"shell" && x"$2" != x"info" ]] ; then
+      # Check if it is needed an upgrade
+      _dbm_exts_check_dbm || error_handled \
+        "Execute 'dbrm dbm upgrade' to upgrade internal database."
     fi
 
   fi
@@ -2399,6 +2441,45 @@ _dbm_post_init () {
   [[ $DEBUG ]] && echo "(dbm_post_init: Use undo script: $DBM_UNDO_SCRIPT.)"
 
   export DBM_UNDO_SCRIPT DBM_HISTORY
+
+}
+#***
+
+
+#****f* dbm/_dbm_upgrade
+# FUNCTION
+#  Internal function for upgrade and/or verify DBRM database file.
+# SOURCE
+_dbm_upgrade () {
+
+  local i=0
+  local tschema=""
+
+  # Check if all tables are present
+  for i in $dbm_tables ; do
+
+    if _sqlite_exists_table -c "$DRM_DB" -t "$i" ; then
+
+      _sqlite_get_tschema_from_file "$dbm_schema" "$i" || \
+        error_generate "Error on retrieve schema of the table $i."
+
+      query="$_sqlite_ans"
+
+      _sqlite_query -c "$DRM_DB" -q "$query" || \
+        error_handled "Error on create table $i."
+
+      out_handler_print "Created table $i correctly."
+
+    fi
+
+  done
+
+  # Check if all modules are present on Extensions table.
+  _dbm_exts_check_extensions || error_generate "Error on verify extentensions."
+
+  # Check it is needed execute upgrade scripts for dbm module.
+
+  return 0
 
 }
 #***
