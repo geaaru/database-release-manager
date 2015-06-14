@@ -36,9 +36,13 @@ ssl_long_help () {
    echo -en "\tlong_help               Show long help informations\n"
    echo -en "\tshow_help               Show command list.\n"
    echo -en "\tversion                 Show module version.\n"
-   echo -en "\tcreate                  Create a self installer tarball of current\n"
-   echo -en "\t                        project.\n"
+   echo -en "\tcreate                  Add a new entry to tunnel master data inside\n"
+   echo -en "\t                        dbrm database.\n"
+   echo -en "\tenable                  Active an existing tunnel.\n"
+   echo -en "\tdisable                 Disable an active tunnel.\n"
+   echo -en "\tlist                    Show list of tunnels.\n"
    echo -en "\tinit                    Initialize SSL extension.\n"
+   echo -en "\tdelete                  Delete an new entry from tunnel list.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -58,9 +62,14 @@ ssl_show_help () {
    echo -en "\tlong_help               Show long help informations\n"
    echo -en "\tshow_help               Show command list.\n"
    echo -en "\tversion                 Show module version.\n"
-   echo -en "\tcreate                  Create a self installer tarball of current\n"
-   echo -en "\t                        project.\n"
+   echo -en "\tcreate                  Add a new entry to tunnel master data inside\n"
+   echo -en "\t                        dbrm database.\n"
+   echo -en "\tenable                  Active an existing tunnel.\n"
+   echo -en "\tdisable                 Disable an active tunnel.\n"
+   echo -en "\tlist                    Show list of tunnels.\n"
    echo -en "\tinit                    Initialize SSL extension.\n"
+   echo -en "\tdeinit                  Remove SSL extension table.\n"
+   echo -en "\tdelete                  Delete an new entry from tunnel list.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -74,14 +83,14 @@ ssl_show_help () {
 # SOURCE
 ssl_create () {
 
-  local result=1
-
   # Shift first two input param
   shift 2
 
-  _ssl_create_args "$@" || return $result
+  _ssl_check_ext || error_handled ""
 
-  _ssl_create || return $result
+  _ssl_create_args "$@" || return 1
+
+  _ssl_add_tunnel || error_handled ""
 
   return 0
 
@@ -109,30 +118,227 @@ ssl_init () {
 }
 #***
 
-##################################################################
-# Internal functions
-##################################################################
-
-
-#****f* ssl/_ssl_create
+#****f* ssl/ssl_deinit
 # FUNCTION
-#   Handle create method.
+#  Remove SSL extension from DBRM database.
 # SOURCE
-_ssl_create () {
+ssl_deinit () {
 
-  local result=1
+  local query=""
 
-  _ssl_check_ext
+  _ssl_check_ext "0" || \
+    error_handled "SSL Extension is not installed. Nothing to do."
+
+  query="
+    DROP TABLE SslTunnels
+  "
+
+  confirmation_question \
+    "Are you sure to remove SSL Extension? All yours data will be lost. [yes/no]: "
+  if [ $? -eq 0 ] ; then
+
+    _sqlite_query -c "$DRM_DB" -q "$query" || error_handled \
+      "Error on remove SSL Extension table."
+
+  fi
+
+  return 0
+
+}
+#***
+
+#****f* ssl/ssl_delete
+# FUNCTION
+#  Delete a tunnel.
+# SOURCE
+ssl_delete () {
+
+  # Shift first two input param
+  shift 2
+
+  _ssl_check_ext || error_handled ""
+
+  _ssl_delete_args "$@" || return 1
+
+  _ssl_delete || error_handled ""
+
+  return 0
+
+}
+#***
+
+#****f* ssl/ssl_list
+# FUNCTION
+#  Show list of tunnels.
+# SOURCE
+ssl_list () {
+
+  local id_tunnel=""
+  local name=""
+  local remote_host=""
+  local remote_port=""
+  local tunnel_host=""
+  local tunnel_hport=""
+  local tunnel_user=""
+  local reverse=""
+  local local_port=""
+  local local_host=""
+  local n_tunnels=0
+  local counter=1
+  local name_size=10
+  local rhost_size=15
+  local thost_size=15
+  local tuser_size=10
+
+  # Shift first two input param
+  shift 2
+
+  _ssl_check_ext || error_handled ""
+
+  _ssl_count_tunnels
+  n_tunnels=$?
+
+  if [ $n_tunnels -eq 0 ] ; then
+    out_handler_print "No tunnels available."
+
+  else
+
+    _ssl_get_list || error_handled ""
+
+    out_ttitle="SSL Tunnels"
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="ID"
+    out_headers[1]="NAME"
+    out_headers[2]="REMOTE HOST"
+    out_headers[3]="R PORT"
+    out_headers[4]="TUNNEL HOST"
+    out_headers[5]="T HPORT"
+    out_headers[6]="T USER"
+    out_headers[7]="REVERSE"
+    out_headers[8]="LOCAL PORT"
+    out_headers[9]="LOCAL HOST"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;32m"
+    out_el_pre[2]="\e[1;31m"
+    out_el_pre[3]="\e[1;34m"
+    out_el_pre[4]="\e[1;30m"
+    out_el_pre[5]="\e[1;35m"
+    out_el_pre[6]="\e[1;29m"
+    out_el_pre[7]="\e[1;36m"
+    out_el_pre[8]="\e[1;37m"
+    out_el_pre[9]="\e[1;31m"
+
+    out_el_post[0]="\e[m"
+
+    IFS=$'\n'
+    for row in $_sqlite_ans ; do
+
+      id_tunnel=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      name=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+      remote_host=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+      remote_port=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+      tunnel_host=`echo $row | awk '{split($0,a,"|"); print a[5]}'`
+      tunnel_hport=`echo $row | awk '{split($0,a,"|"); print a[6]}'`
+      tunnel_user=`echo $row | awk '{split($0,a,"|"); print a[7]}'`
+      reverse=`echo $row | awk '{split($0,a,"|"); print a[8]}'`
+      local_port=`echo $row | awk '{split($0,a,"|"); print a[9]}'`
+      local_host=`echo $row | awk '{split($0,a,"|"); print a[10]}'`
+
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${id_tunnel}\""
+      eval "row${counter}[1]=\"${name}\""
+      eval "row${counter}[2]=\"${remote_host}\""
+      eval "row${counter}[3]=\"${remote_port}\""
+      eval "row${counter}[4]=\"${tunnel_host}\""
+      eval "row${counter}[5]=\"${tunnel_hport}\""
+      eval "row${counter}[6]=\"${tunnel_user}\""
+      if [ $reverse -eq 1 ] ; then
+        eval "row${counter}[7]=\"Y\""
+      else
+        eval "row${counter}[7]=\"N\""
+      fi
+      eval "row${counter}[8]=\"${local_port}\""
+      eval "row${counter}[9]=\"${local_host}\""
+
+      if [ ${#name} -ge $name_size ] ; then
+        name_size=$((${#name}+1))
+      fi
+
+      if [ ${#remote_host} -ge $rhost_size ] ; then
+        rhost_size=$((${#remote_host}+1))
+      fi
+
+      if [ ${#tunnel_host} -ge $thost_size ] ; then
+        thost_size=$((${#tunnel_host}+1))
+      fi
+
+      if [ ${#tunnel_user} -ge $tuser_size ] ; then
+        tuser_size=$((${#tunnel_user}+1))
+      fi
+
+      let counter++
+    done
+    unset IFS
+
+    out_tabs[0]=6
+    out_tabs[1]=$name_size
+    out_tabs[2]=$rhost_size
+    out_tabs[3]=8
+    out_tabs[4]=$thost_size
+    out_tabs[5]=8
+    out_tabs[6]=$tuser_size
+    out_tabs[7]=8
+    out_tabs[8]=12
+    out_tabs[9]=10
+
+    out_handler_print_arr
+
+  fi
+
+  out_handler_clean
+
+  return 0
+
+}
+#***
+
+#****f* ssl/ssl_enable
+# FUNCTION
+#   Activate a tunnel
+# RETURN VALUES
+#   1 on error
+#   0 on success
+# SOURCE
+ssl_enable () {
+
+  # Shift first two input param
+  shift 2
+
+  _ssl_check_ext || error_handled ""
+
+  _ssl_enable_args "$@" || error_handled ""
+
+  # TODO
 
 
   return 0
 }
 #***
 
+
+##################################################################
+# Internal functions
+##################################################################
+
 #****f* ssl/_ssl_check_ext
 # FUNCTION
 #   Check presence of ssl extensions table.
-# RETURN VALUE
+# RETURN VALUES
 #  1  if extension is not present.
 #  0  if extension is present
 # SOURCE
@@ -150,7 +356,7 @@ _ssl_check_ext () {
 
     if [[ $ssl_gen_err -eq 1 || $ssl_gen_err == "1" ]] ; then
       error_generate \
-        "Ssl extensions is not present on current DBRM db.\nExecute ssl init command and try again."
+        "Ssl extensions is not installed on current DBRM db.\nExecute ssl init command and try again."
     fi
 
     return 1
@@ -170,8 +376,8 @@ _ssl_create_args () {
   [[ $DEBUG ]] && echo -en "(_ssl_create_args args: $@)\n"
 
   local short_options="h"
-  local long_options="on-local-port:remote-host:remote-port:tunnel-hport:tunnel-host:"
-  local long_options="tunnel-user:name:help"
+  local long_options="on-local-port: remote-host: remote-port: tunnel-hport: tunnel-host:"
+  long_options="$long_options tunnel-user: name: help reverse on-local-host:"
 
   $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || \
     error_handled "Invalid parameters"
@@ -190,6 +396,9 @@ _ssl_create_args () {
   DBRM_SSL_TUN_PORT=""
   DBRM_SSL_TUN_USER=""
   DBRM_SSL_TUN_NAME=""
+  DBRM_SSL_TUN_REVERSE=0
+  DBRM_SSL_REVERSE=""
+  DBRM_SSL_LHOST=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -226,6 +435,13 @@ _ssl_create_args () {
         DBRM_SSL_TUN_NAME="$2"
         shift
         ;;
+      --on-local-host)
+        DBRM_SSL_LHOST="$2"
+        shift
+        ;;
+      --reverse)
+        DBRM_SSL_TUN_REVERSE=1
+        ;;
       *)
         error_generate "Invalid parameter $1."
         ;;
@@ -245,6 +461,10 @@ _ssl_create_args () {
     error_generate "Missing --tunnel-host option."
   fi
 
+  if [[ $DBRM_SSL_TUN_REVERSE -eq 1 && -z "$DBRM_SSL_LHOST" ]] ; then
+    error_generate "Missing --on-local-host option when --reverse is enable."
+  fi
+
   return 0
 }
 #***
@@ -255,14 +475,404 @@ _ssl_create_args () {
 # SOURCE
 _ssl_create_help () {
 
-  echo -en "[--on-local-port port]  Local port where binding tcp flow versun remote host\n"
+  echo -en "[--on-local-port port]  Local port where binding tcp flow versus remote host\n"
   echo -en "                        through ssl tunnel.\n"
+  echo -en "[--on-local-host host]  Host (local or an host reachable without tunnel)\n"
+  echo -en "                        that will be available in remote host with reverse tunnel.\n"
   echo -en "[--remote-host host]    Host to reach through ssl tunnel.\n"
-  echo -en "[--remote-port port]    Port of remote host to reach through ssl tunnel.\n"
+  echo -en "[--remote-port port]    Port of remote host to reach through ssl tunnel or for\n"
+  echo -en "                        reverse tunnel, port in binding to remote host for reach\n"
+  echo -en "                        local host.\n"
   echo -en "[--tunnel-host host]    Host to use for reach remote host.\n"
   echo -en "[--tunnel-hport port]   Port of host used for tunnel. Default is 22.\n"
   echo -en "[--tunnel-user user]    User to use on tunnel creation. Default is current user.\n"
   echo -en "[--name name]           Name of the tunnel.\n"
+  echo -en "[--reverse]             Reverse tunnel.\n"
+  echo -en "\n"
+
+  return 0
+}
+#***
+
+
+#****f* ssl/_ssl_inst_tunnel
+# FUNCTION
+#   Insert tunnel information to SslTunnels table.
+#   Save on _ssl_id_tunnel variable id of the tunnel.
+# DESCRIPTION
+#   An example of reverse tunnel:
+#     ssh -R 127.0.0.1:9999:127.0.0.1:80 -p 12722 -l geaaru 127.0.0.1
+#   Where:
+#     - remote_host  = 127.0.0.1
+#     - remote_port  = 9999
+#     - tunnel_host  = 127.0.0.1
+#     - tunnel_hport = 12722
+#     - tunnel_user  = geaaru
+#     - local_port   = 80
+#     - local_host   = 127.0.0.1
+#     - reverse      = 1
+#   An example of tunnel:
+#     ssh -L 12345:remotesite.com:80 utente@serversshremoto.com
+#   Where:
+#     - remote_host  = remotesite.com
+#     - remote_port  = 80
+#     - tunnel_host  = serversshremote.com
+#     - tunnel_hport = 22
+#     - tunnel_user  = utente
+#     - local_port   = 12345
+#     - local_host   = NULL
+#     - reverse      = 0
+# RETURN VALUE
+#   1 on error
+#   0 on success.
+# SOURCE
+_ssl_add_tunnel () {
+
+  local query=""
+  local remote_port="22"
+  local tunnel_port="22"
+  local local_port="22"
+  local local_host="NULL"
+  local tunnel_user=""
+
+  if [ $DBRM_SSL_TUN_REVERSE -eq 1 ] ; then
+    local_host="'$DBRM_SSL_LHOST'"
+  fi
+
+  if [ -n "$DBRM_SSL_REMOTE_PORT" ] ; then
+    remote_port="${DBRM_SSL_REMOTE_PORT}"
+  fi
+
+  if [ -n "$DBRM_SSL_TUN_PORT" ] ; then
+    tunnel_port="$DBRM_SSL_TUN_PORT"
+  fi
+
+  if [ -n "$DBRM_SSL_TUN_USER" ] ; then
+    tunnel_user="$DBRM_SSL_TUN_USER"
+  fi
+
+  if [ -n "$DBRM_SSL_LPORT" ] ; then
+    local_port="$DBRM_SSL_LPORT"
+  fi
+
+  query="
+    INSERT INTO SslTunnels
+    (name, remote_host, remote_port,
+     tunnel_host, tunnel_hport, tunnel_user,
+     reverse_flag, local_port, local_host)
+    VALUES (
+      '${DBRM_SSL_TUN_NAME}',
+      '${DBRM_SSL_REMOTE_HOST}',
+      ${remote_port},
+      '${DBRM_SSL_TUN_HOST}',
+      '${tunnel_port}',
+      '${tunnel_user}',
+      ${DBRM_SSL_TUN_REVERSE},
+      ${local_port},
+      ${local_host})
+  "
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled \
+    "(_ssl_add_tunnel): Error on insert tunnel $DBRM_SSL_TUN_NAME."
+
+  return 0
+}
+#***
+
+
+#****f* ssl/_ssl_delete
+# FUNCTION
+#   Handle create method.
+# SOURCE
+_ssl_delete () {
+
+  local result=1
+  local query=""
+  local msg=""
+
+  # TODO: Check if session is active
+
+  _ssl_exist_tunnel "${DBRM_SSL_TUN_NAME}${DBRM_SSL_ID_TUNNEL}" || \
+    error_generate "Tunnel ${DBRM_SSL_ID_TUNNEL}${DBRM_SSL_TUN_NAME} doesn't exist."
+
+  if [ -n "${DBRM_SSL_ID_TUNNEL}" ] ; then
+    where="WHERE id_tunnel = ${DBRM_SSL_ID_TUNNEL}"
+    msg="with Id ${DBRM_SSL_ID_TUNNEL}"
+  else
+    where="WHERE name = '${DBRM_SSL_TUN_NAME}'"
+    msg="with name ${DBRM_SSL_TUN_NAME}"
+  fi
+
+  confirmation_question "Are you sure to remove tunnel ${msg}? [yes/no]: "
+  if [ $? -eq 0 ] ; then
+
+    query="
+      DELETE FROM SslTunnels
+      ${where}
+    "
+
+    _sqlite_query -c "$DRM_DB" -q "$query" || error_handled \
+      "(_ssl_delete): Error on delete tunnel ${msg}."
+
+  fi
+
+  return 0
+}
+#***
+
+
+#****f* ssl/_ssl_delete_args
+# FUNCTION
+#   Parse command line arguments of delete method.
+# SOURCE
+_ssl_delete_args () {
+
+  [[ $DEBUG ]] && echo -en "(_ssl_delete_args args: $@)\n"
+
+  local short_options="h"
+  local long_options="id-tunnel: help"
+
+  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || \
+    error_handled "Invalid parameters"
+
+  if [ $# -lt 2 ] ; then
+    _ssl_delete_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_ssl_delete_args: Found $# params)\n"
+
+  DBRM_SSL_ID_TUNNEL=""
+  DBRM_SSL_TUN_NAME=""
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -h|--help)
+        _ssl_delete_help
+        return 1
+        ;;
+      --id-tunnel)
+        DBRM_SSL_ID_TUNNEL="$2"
+        shift
+        ;;
+      --name)
+        DBRM_SSL_TUN_NAME="$2"
+        shift
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+    esac
+    shift
+  done
+
+  if [[ -z "$DBRM_SSL_TUN_NAME" && -z "$DBRM_SSL_ID_TUNNEL" ]] ; then
+    error_generate "Missing --name or --id-tunnel option."
+  fi
+
+  if [[ -n "$DBRM_SSL_TUN_NAME" && -n "$DBRM_SSL_ID_TUNNEL" ]] ; then
+    error_generate "Use only --name or --id-tunnel option."
+  fi
+
+  return 0
+}
+#***
+
+#****f* ssl/_ssl_delete_help
+# FUNCTION
+#   Print help message of delete method.
+# SOURCE
+_ssl_delete_help () {
+
+  echo -en "[--name name]           Name of the tunnel to delete.\n"
+  echo -en "[--id-tunnel id]        Id of the tunnel to delete.\n"
+  echo -en "\n"
+
+  return 0
+}
+#***
+
+#****f* ssl/_ssl_exist_tunnel
+# FUNCTION
+#   Check if exists tunnel.
+# INPUT
+#   id_tunnel  Id of the tunnel to check if exists.
+#   name       Name of the tunnel to check if exists.
+# RETURN
+#   1  on error or if record is not present.
+#   0  if tunnel is present.
+# SOURCE
+_ssl_exist_tunnel() {
+
+  local id_tunnel="$1"
+  local name="$2"
+  local where=""
+  local query=""
+
+  [[ -z "$id_tunnel" && -z "$name" ]] && return 1
+
+  if [ -n "$id_tunnel" ] ; then
+    where="WHERE id_tunnel = $id_tunnel"
+  else
+    where="WHERE name = '$name'"
+  fi
+
+  query="
+    SELECT COUNT(1) as res
+    FROM SslTunnels
+    ${where}
+  "
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled \
+    "(_ssl_exist_tunnel): Error on check if tunnel ${id_tunnel}${name} exists."
+
+  if [ x"$_sqlite_ans" != x"1" ] ; then 
+    return 1
+  fi
+
+  return 0
+}
+#***
+
+#****f* ssl/_ssl_get_list
+# FUNCTION
+#   Return list of active tunnel or if id_tunnel/name is passed
+#   information about a single tunnel.
+#   Data are saved on $_sqlite_ans variable.
+# INPUT
+#   id_tunnel  (optional) Id of the tunnel.
+#   name       (optional) Name of the tunnel.
+# RETURN
+#   1  on error
+#   0  on success
+# SOURCE
+_ssl_get_list () {
+
+  local id_tunnel="$1"
+  local name="$2"
+  local where=""
+  local query=""
+
+  if [ -n "$id_tunnel" ] ; then
+    where="WHERE id_tunnel = $id_tunnel"
+  else
+    if [ -n "$name" ] ; then
+      where="WHERE name = '$name'"
+    fi
+  fi
+
+  query="
+    SELECT *
+    FROM SslTunnels
+    ${where}
+  "
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled \
+    "(_ssl_get_list): Error on data about tunnels."
+
+  return 0
+}
+#***
+
+#****f* ssl/_ssl_count_tunnels
+# FUNCTION
+#   Return number of tunnels.
+# RETURN
+#   N  number of tunnels.
+# SOURCE
+_ssl_count_tunnels () {
+
+  local query=""
+
+  query="
+    SELECT COUNT(1)
+    FROM SslTunnels
+  "
+
+  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled \
+    "(_ssl_count_tunnels): Error on count tunnels."
+
+  if [ -z "$_sqlite_ans" ] ; then
+    error_generate "Error on count tunnels."
+  fi
+
+  return $_sqlite_ans
+}
+#***
+
+#****f* ssl/_ssl_enable_args
+# FUNCTION
+#   Parse command line arguments of enable method.
+# SOURCE
+_ssl_enable_args () {
+
+  [[ $DEBUG ]] && echo -en "(_ssl_enable_args args: $@)\n"
+
+  local short_options="h"
+  local long_options="id-tunnel: name: auto-increment help"
+
+  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || \
+    error_handled "Invalid parameters"
+
+  if [ $# -lt 2 ] ; then
+    _ssl_enable_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_ssl_enable_args: Found $# params)\n"
+
+  DBRM_SSL_ID_TUNNEL=""
+  DBRM_SSL_TUN_NAME=""
+  DBRM_SSL_TUN_AUTOINCREMENT=0
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -h|--help)
+        _ssl_enable_help
+        return 1
+        ;;
+      --id-tunnel)
+        DBRM_SSL_ID_TUNNEL="$2"
+        shift
+        ;;
+      --name)
+        DBRM_SSL_TUN_NAME="$2"
+        shift
+        ;;
+      --auto-increment)
+        DBRM_SSL_TUN_AUTOINCREMENT=1
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+    esac
+    shift
+  done
+
+  if [[ -z "$DBRM_SSL_TUN_NAME" && -z "$DBRM_SSL_ID_TUNNEL" ]] ; then
+    error_generate "Missing --name or --id-tunnel option."
+  fi
+
+  if [[ -n "$DBRM_SSL_TUN_NAME" && -n "$DBRM_SSL_ID_TUNNEL" ]] ; then
+    error_generate "Use only --name or --id-tunnel option."
+  fi
+
+  return 0
+}
+#***
+
+#****f* ssl/_ssl_enable_help
+# FUNCTION
+#   Print help message of enable method.
+# SOURCE
+_ssl_enable_help () {
+
+  echo -en "[--name name]           Name of the tunnel to activate.\n"
+  echo -en "[--id-tunnel id]        Id of the tunnel to activate.\n"
+  echo -en "[--auto-increment]      If local port is busy, automatically\n"
+  echo -en "                        increment port until a free port is found.\n"
   echo -en "\n"
 
   return 0

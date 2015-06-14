@@ -16,8 +16,6 @@ CREATE TABLE SslTunnels (
   local_port            INTEGER NOT NULL DEFAULT 0,
   -- Identify local host for reverse tunnel
   local_host            TEXT,
-  -- Identify remote local port for reverse tunnel.
-  remote_lport          INTEGER,
 
   CONSTRAINT uc_tun_name UNIQUE(name)
 );

@@ -5,7 +5,7 @@
 # License: GPL 2.0
 #------------------------------------------------
 
-#****f*
+#****f* dbm/_dbm_exts_check_extensions
 # FUNCTION
 #   Check if all extensions/modules are present on table
 #   Extensions. If not insert row with version.
@@ -61,7 +61,7 @@ _dbm_exts_check_extensions () {
 }
 #***
 
-#****f*
+#****f* dbm/_dbm_exts_is_present
 # FUNCTION
 #  Check if an extension is present on Extensions table.
 #  Save extension version to _ext_version variable.
@@ -92,7 +92,7 @@ _dbm_exts_is_present () {
 }
 #***
 
-#****f*
+#****f* dbm/_dbm_exts_inst_extension
 # FUNCTION
 #  Install a new extension in Extensions table.
 # RETURN VALUE
@@ -129,7 +129,7 @@ _dbm_exts_inst_extension () {
 }
 #***
 
-#****f*
+#****f* dbm/_dbm_exts_update_extension
 # FUNCTION
 #  Update extension row in Extensions table.
 # RETURN VALUE
@@ -159,7 +159,7 @@ _dbm_exts_update_extension () {
 }
 #***
 
-#****f*
+#****f* dbm/_dbm_exts_check_dbm
 # FUNCTION
 #  Check if dbm module is upgraded.
 # RETURN VALUE

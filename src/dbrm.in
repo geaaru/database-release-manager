@@ -196,9 +196,9 @@ main () {
 
    # Check if there is a deinit method
    for i in $modules ; do
-      if type -t ${i}_deinit > /dev/null ; then
+      if type -t _${i}_deinit > /dev/null ; then
          [[ $DEBUG ]] && echo "Call deinit method of the module $i"
-         ${i}_deinit
+         _${i}_deinit
       fi
    done
 
