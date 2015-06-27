@@ -384,6 +384,7 @@ out_stdout_print () {
 out_stdout_clean () {
 
   local ans=0
+  local i=0
 
   if [ "${#out_rows[@]}" -gt 0 ] ; then
     for i in ${!out_rows[@]} ; do

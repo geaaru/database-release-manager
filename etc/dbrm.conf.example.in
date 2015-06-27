@@ -64,3 +64,11 @@ DRM_DB=$LOCAL_DIR/dbrm.db
 # Default profile path is $HOME/.local/share/dbrm/profiles
 # DRM_PROFILES_PATH=$HOME/.local/share/dbrm/profiles
 
+##########################################################
+# Section related with SSL module
+##########################################################
+# Set file where SSL module write active SSL tunnels
+# informations.
+# Default path si $HOME/.local/share/dbrm/dbrm_ssl_tuns
+# DBRM_SSL_ACTIVE_TUN_FILE=$HOME/.local/share/dbrm/dbrm_ssl_tuns
+#
