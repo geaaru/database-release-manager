@@ -449,6 +449,8 @@ ssl_enable () {
   _ssl_add_tun2file "$DBRM_SSL_ACTIVE_TUN_FILE" "${id_tunnel}" "${local_port}" "${ssh_pid}" || \
     error_generate "Error on save active tunnel to file $DBRM_SSL_ACTIVE_TUN_FILE."
 
+  out_handler_print "Tunnel ${id_tunnel} is now active with pid $ssh_pid."
+
   unset ssh_pid
 
   return 0
@@ -1294,8 +1296,9 @@ _ssl_start_tun () {
     -o ServerAliveInterval=30 \
     -o ServerAliveCountMax=4 \
     -o ExitOnForwardFailure=yes \
+    -o StrictHostKeyChecking=no \
+    -o CheckHostIP=no \
   "
-
   if [ $DBRM_SSL_TUN_DEF_OPTS -eq 0 ] ; then
     def_opts=""
   fi
