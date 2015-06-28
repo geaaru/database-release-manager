@@ -1064,7 +1064,7 @@ _ssl_enable_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_ssl_enable_args args: $@)\n"
 
   local short_options="h"
-  local long_options="id-tunnel: name: auto-increment help no-def-opts"
+  local long_options="id-tunnel: name: auto-increment help no-def-opts use-sshpass"
 
   $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || \
     error_handled "Invalid parameters"
@@ -1080,6 +1080,7 @@ _ssl_enable_args () {
   DBRM_SSL_TUN_NAME=""
   DBRM_SSL_TUN_AUTOINCREMENT=0
   DBRM_SSL_TUN_DEF_OPTS=1
+  DBRM_SSL_USE_SSHPASS=0
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -1102,6 +1103,9 @@ _ssl_enable_args () {
       --no-def-opts)
         DBRM_SSL_TUN_DEF_OPTS=0
         ;;
+      --use-sshpass)
+        DBRM_SSL_USE_SSHPASS=1
+        ;;
       *)
         error_generate "Invalid parameter $1."
         ;;
@@ -1115,6 +1119,15 @@ _ssl_enable_args () {
 
   if [[ -n "$DBRM_SSL_TUN_NAME" && -n "$DBRM_SSL_ID_TUNNEL" ]] ; then
     error_generate "Use only --name or --id-tunnel option."
+  fi
+
+  if [[ $DBRM_SSL_USE_SSHPASS -eq 1 && -z "${SSHPASS}" ]] ; then
+    error_generate "Set SSHPASS environment variable with --use-sshpass."
+  fi
+
+  if [ $DBRM_SSL_USE_SSHPASS -eq 1 ] ; then
+    commons_exists_prog "sshpass" "-V"
+    error_handled "sshpash program not found.\nCheck your PATH or remove --use-sshpass option."
   fi
 
   return 0
@@ -1211,6 +1224,11 @@ _ssl_enable_help () {
   echo -en "                        This param is optional.\n"
   echo -en "[--no-def-opts]         Disable default options used on tunnel.\n"
   echo -en "                        This param is optional.\n"
+  echo -en "[--use-sshpass]         Use sshpass for send password to ssh session.\n"
+  echo -en "                        For security considerations a best way is to use\n"
+  echo -en "                        ssh key authentication.\n"
+  echo -en "                        On use sshpass set SSHPASS env variable with\n"
+  echo -en "                        password string.\n"
   echo -en "\n"
 
   return 0
@@ -1292,13 +1310,17 @@ _ssl_start_tun () {
 
   local def_opts=" \
     -T \
-    -N \
     -o ServerAliveInterval=30 \
     -o ServerAliveCountMax=4 \
     -o ExitOnForwardFailure=yes \
     -o StrictHostKeyChecking=no \
     -o CheckHostIP=no \
   "
+
+  if [ $DBRM_SSL_USE_SSHPASS -eq 0 ] ; then
+    def_opts="$def_opts -N "
+  fi
+
   if [ $DBRM_SSL_TUN_DEF_OPTS -eq 0 ] ; then
     def_opts=""
   fi
@@ -1313,7 +1335,11 @@ _ssl_start_tun () {
     "(_ssl_start_tun): Tun. ${id_tunnel} cmd: ssh ${def_opts} ${opts} ${ssl_url}\n"
 
   # TODO: check if use nohup or other solutions.
-  ssh ${def_opts} ${opts} ${ssl_url} &
+  if [ $DBRM_SSL_USE_SSHPASS -eq 1 ] ; then
+    sshpass -e ssh ${def_opts} ${opts} ${ssl_url} > /dev/null 2>&1 &
+  else
+    ssh ${def_opts} ${opts} ${ssl_url} > /dev/null 2>&1 &
+  fi
   ssh_pid=$!
 
   if [ x"$?" != x"0" ] ; then

@@ -19,7 +19,7 @@ error_handled () {
       exit 1
    fi
 }
-#****
+#***
 
 #****f* commons/error_generate
 # FUNCTION
@@ -41,7 +41,7 @@ error_generate () {
   fi
 
 }
-#****
+#***
 
 #****f* commons/check_var
 # FUNCTION
@@ -64,7 +64,7 @@ check_var () {
 
   return 0
 }
-#****
+#***
 
 #****f* commons/escape_var
 # FUNCTION
@@ -86,7 +86,7 @@ escape_var () {
 
   return 0
 }
-#****
+#***
 
 escape2oct_var () {
 
@@ -103,6 +103,7 @@ escape2oct_var () {
 
   return 0
 }
+#***
 
 #****f* commons/confirmation_question
 # FUNCTION
@@ -129,7 +130,7 @@ confirmation_question () {
 
    return 1
 }
-#****
+#***
 
 #****f* commons/push_spaces
 # FUNCTION
@@ -150,7 +151,7 @@ push_spaces () {
 
   return 0
 }
-#****
+#***
 
 #****f* commons/get_spaces_str
 # FUNCTION
@@ -191,5 +192,38 @@ get_space_str () {
 
   return 0
 }
+#***
+
+#****f* commons/commons_exists_prog
+# FUNCTION
+#   Check if a program is available on current PATH.
+# INPUTS
+#   program     Name of the program.
+#   options     Override default (-v) option on check presence. Optional.
+# RETURN VALUE
+#   0 if program exists
+#   1 if program doesn't exist or invalid input param.
+# SOURCE
+commons_exists_prog () {
+
+  local prog="$1"
+  local opts="$2"
+  local check_opts="-v"
+  local ans=0
+
+  [ -z "${prog}" ] && return 1
+
+  if [ -n "${opts}" ] ; then
+    check_opts="${opts}"
+  fi
+
+  ${prog} ${check_opts} > /dev/null 2>&1
+  if [ $? -ne 0 ] ; then
+    ans=1
+  fi
+
+  return $ans
+}
+#***
 
 # vim: syn=sh filetype=sh
