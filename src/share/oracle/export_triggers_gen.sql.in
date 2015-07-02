@@ -28,8 +28,8 @@ BEGIN
       select 'spool '||triggersdir||'trg'||InitCap(REPLACE(LOWER(t_name.object_name), 'trg', ''))||'.sql' into res from dual;
       dbms_output.put_line (res); 
       select 'select REPLACE(REPLACE(REPLACE(TRG, '' "''||OWNER||''"."'', '' "''), ''EDITIONABLE '', ''''),  
-             ''ALTER TRIGGER "'||UPPER(t_name.object_name)||'" ENABLE
-'', '''') AS TRG from '||
+             ''ALTER TRIGGER "'||UPPER(t_name.object_name)||'" ENABLE'', 
+             ''/''||CHR(10)||''ALTER TRIGGER "'||UPPER(t_name.object_name)||'" ENABLE;'') AS TRG from '||
              '('||
                   'select TRIM(dbms_metadata.GET_DDL(''TRIGGER'',u.object_name)) AS TRG, ' || 
                   '(select username from user_users) AS OWNER '||
