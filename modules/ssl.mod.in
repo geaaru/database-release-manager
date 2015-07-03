@@ -267,10 +267,30 @@ ssl_list () {
         fi
 
         if [ -n "${ssl_active_pids[${id_tunnel}]}" ] ; then
+
           pid="${ssl_active_pids[${id_tunnel}]}"
+
+          # Check if process is already running
+
+          _ssl_check_ssl_pid "$pid"
+
+          if [ $? -ne 1 ] ; then
+
+            [[ $DEBUG && $DEBUG == true ]] && echo -en \
+              "Id tunnel ${id_tunnel} is not alive. I reset database.\n"
+
+            _ssl_del_tun2file "$DBRM_SSL_ACTIVE_TUN_FILE" "${id_tunnel}" || \
+              error_generate \
+              "Error on remove tunnel ${id_tunnel} from file ${DBRM_SSL_ACTIVE_TUN_FILE}."
+
+            pid="-"
+
+          else
+            id_tunnel="${id_tunnel}*"
+          fi
+
         fi
 
-        id_tunnel="${id_tunnel}*"
       fi
 
       eval "row${counter}[0]=\"${id_tunnel}\""
