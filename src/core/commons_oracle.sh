@@ -157,6 +157,29 @@ EOF
 }
 #***
 
+#****f* commons_oracle/commons_oracle_shell
+# FUNCTION
+#   Enter on command line shell of Oracle Database server.
+# RETURN VALUE
+#   n   exit value of sqlplus command.
+#   1   on error
+# SOURCE
+commons_oracle_shell () {
+
+  if [ -z "$SQLPLUS" ] ; then
+    return 1
+  fi
+
+  if [ -z "$sqlplus_auth" ] ; then
+    return 1
+  fi
+
+  $SQLPLUS -L $sqlplus_auth
+
+  return $?
+}
+#***
+
 #****f* commons_oracle/commons_oracle_download_all_packages
 # FUNCTION
 #   Download all packages to ORACLE_DIR/package directory.

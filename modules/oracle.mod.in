@@ -42,6 +42,7 @@ oracle_long_help () {
    echo -en "\ttest_connection         Test connection versus database.\n"
    echo -en "\tdownload                Download packages/triggers/views/etc.\n"
    echo -en "\tcompile                 Compile packages/triggers/views/etc.\n"
+   echo -en "\tshell                   Enter on sqlplus shell of current configuration.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -63,6 +64,7 @@ oracle_show_help () {
    echo -en "\ttest_connection         Test connection versus database.\n"
    echo -en "\tdownload                Download packages/triggers/views/etc.\n"
    echo -en "\tcompile                 Compile packages/triggers/views/etc.\n"
+   echo -en "\tshell                   Enter on sqlplus shell of current configuration.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -173,6 +175,32 @@ oracle_download () {
 }
 #***
 
+#****f* oracle/oracle_shell
+# FUNCTION
+#   Shell command that permit to enter of sqlplus shell with current active credentials.
+# SEE ALSO
+#   _oracle_connections_args
+oracle_shell () {
+
+  # Shift first two input param
+  shift 2
+
+  _oracle_check_status
+
+  _oracle_help_message="do_help"
+
+  _oracle_connections_args "$@" || error_handled ""
+
+  commons_oracle_check_vars
+
+  sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD"
+
+  commons_oracle_check_connection || error_handled "SQLPlus was unable to connect the DB with the supplied credentials"
+
+  commons_oracle_shell || error_handled "Exit value $?."
+
+  return 0
+}
 
 ##################################################################
 # Internal functions
@@ -256,6 +284,7 @@ _oracle_connections_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_connections_args args: $@)\n"
 
   local short_options="S:U:P:hD:t:"
+  local long_options="help"
 
   $(set -- $(getopt -u -q -o "$short_options" -- "$@")) || error_handled "Invalid parameters"
 
@@ -269,7 +298,7 @@ _oracle_connections_args () {
       -U) ORACLE_USER="$2";shift;;
       -D) ORACLE_DIR="$2";shift;;
       -t) TNS_ADMIN="$2";shift;;
-      -h)
+      -h|--help)
         if [ ! -z "$_oracle_help_message" ] ; then
           echo -en "[-S oracle_sid]         Override Oracle SID (or set ORACLE_SID on configuration file).\n"
           echo -en "[-P oracle_pwd]         Override Oracle Password (or set ORACLE_PWD on configuration file).\n"
