@@ -281,6 +281,7 @@ _sqlite_check_db () {
 #   -t [table name]           Set table name to verify. Used only
 #                             on _sqlite_exists_table function.
 #   -f [sqlite file]          Script to execute on sqlite database.
+#   -p                        Print output to shell
 # RESULT
 #   Variables defined:
 #     * SQLITEDB: path of sqlite database. If not set it is used value
@@ -298,12 +299,17 @@ _sqlite_check_db () {
 _sqlite_check_args () {
   [[ $DEBUG ]] && echo -en "(_sqlite_check_args args: $@)\n"
 
+  SQLITE_PRINT=0
+
   # Reinitialize opt index position
   OPTIND=1
-  while getopts "c:s:q:t:f:" opts "$@" ; do
+  while getopts "pc:s:q:t:f:" opts "$@" ; do
     case $opts in
       # sqlite_create params
       c) SQLITEDB="$OPTARG";;
+
+      p) SQLITE_PRINT=1 ;;
+
       s) SQLITE_SCHEMA="$OPTARG";;
 
       # sqlite_query params
@@ -463,6 +469,10 @@ _sqlite_query_ () {
   result=$?
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_sqlite_query_ ans:\n$_sqlite_ans\n)\n"
+
+  if [ x"${SQLITE_PRINT}" == x"1" ] ; then
+    echo -en "${_sqlite_ans}\n"
+  fi
 
   return $result
 }
