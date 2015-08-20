@@ -44,6 +44,7 @@ mariadb_long_help () {
    echo -en "\tdrop                    Drop procedures/triggers/views/etc.\n"
    echo -en "\tcreate                  Create foreign keys/index/etc..\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
+   echo -en "\tinitenv                 Create default directories if not present.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -69,12 +70,54 @@ mariadb_show_help () {
    echo -en "\tdrop                    Drop procedures/triggers/views/etc.\n"
    echo -en "\tcreate                  Create foreign keys/index/etc..\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
+   echo -en "\tinitenv                 Create default directories if not present.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
    return 0
 }
 #***
+
+
+#****f* mariadb/mariadb_initenv
+# FUNCTION
+#   Create all directories used by mariadb extensions.
+# SOURCE
+mariadb_initenv () {
+
+  local result=1
+  local ndirs=0
+  local directories="
+     procedures
+     triggers
+     functions
+     views
+     foreign_keys
+     indexes
+     creation_scripts
+     update_scripts
+     schemas
+  "
+
+  # Shift first two input param
+  shift 2
+
+  _mariadb_initenv_args "$@" || error_handled ""
+
+  for d in $directories ; do
+
+    # Check if foreign key directory
+    if [[ ! -d ${MARIADB_INIT_DIR}/$d ]] ; then
+      mkdir -p ${MARIADB_INIT_DIR}/$d || error_generate "Error on create directory $d."
+      let ndirs++
+    fi
+
+  done
+
+  out_handler_print "Directories created: ${ndirs}."
+
+  return 0
+}
 
 #****f* mariadb/mariadb_shell
 # FUNCTION
@@ -2583,5 +2626,102 @@ _mariadb_create () {
   return $ans
 }
 #***
+
+
+#****f* mariadb/_mariadb_initenv_args
+# FUNCTION
+#   Internal function for parse command line arguments related to
+#   initenv command.
+# DESCRIPTION
+#   * --to-current-dir     Initialize current directory.
+#   * --to-dir target      Initialize target directory.
+#   * --help|-h            Show help message.
+# SOURCE
+_mariadb_initenv_args () {
+
+  local short_options="h"
+  local long_options="to-dir: help to-current-dir"
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_initenv_args [$#]: $@)\n"
+
+  if [ $# -eq 0 ] ; then
+    _mariadb_initenv_help
+    return 1
+  fi
+
+  #set `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || \
+  #  error_handled "Invalid parameters"
+  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || \
+    error_handled "Invalid parameters"
+
+  MARIADB_INIT_CURRDIR=0
+  MARIADB_INIT_DIR=""
+  MARIADB_INIT_TARGETDIR=0
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_initenv_args [$#]: $@)\n"
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      --to-current-dir)
+        MARIADB_INIT_CURRDIR=1
+        ;;
+      --to-dir)
+        MARIADB_INIT_TARGETDIR=1
+        MARIADB_INIT_DIR="$2"
+        shift
+        ;;
+      --enable-profiles)
+        MARIADB_INIT_PROFILES=1
+        ;;
+      -h|--help)
+        _mariadb_initenv_help
+        return 1
+        ;;
+      --)
+        error_generate "Invalid parameter."
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+    esac
+    shift
+
+  done
+
+  if [[ $MARIADB_INIT_CURRDIR -eq 1 && $MARIADB_INIT_TARGETDIR -eq 1 ]] ; then
+    out_handler_print "Use only --to-dir or --to-current-dir option."
+    return 1
+  fi
+
+  if [[ $MARIADB_INIT_TARGETDIR -eq 1 ]] ; then
+    if [ ! -d $MARIADB_INIT_DIR ] ; then
+      out_handler_print "Invalid directory $DBM_INIT_DIR."
+      return 1
+    fi
+  else
+
+    # Set MARIADB_INIT_DIR to .
+    MARIADB_INIT_DIR=.
+  fi
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_initenv_help
+# FUNCTION
+#   Help of the mariadb initenv command.
+# SOURCE
+_mariadb_initenv_help () {
+
+  echo -en "[--to-current-dir]      Initialize current directory [.].\n"
+  echo -en "[--to-dir target]       Initialize target directory.\n"
+  echo -en "[--help|-h]             Show help message.\n"
+  echo -en "\n"
+
+  return 0
+}
+#***
+
 
 # vim: syn=sh filetype=sh ts=2 sw=2

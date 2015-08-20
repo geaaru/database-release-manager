@@ -6,6 +6,101 @@
 #------------------------------------------------
 
 
+#****f* dbm/_dbm_initenv_help
+# FUNCTION
+#   Help of the dbm initenv command.
+# SOURCE
+_dbm_initenv_help () {
+
+  echo -en "[--to-current-dir]      Initialize current directory [.].\n"
+  echo -en "[--to-dir target]       Initialize target directory.\n"
+  echo -en "[--enable-profiles]     Enable profiles mode and create related directories.\n"
+  echo -en "[--help|-h]             Show help message.\n"
+  echo -en "\n"
+
+  return 0
+}
+#***
+
+
+#****f* dbm/_dbm_check_initenv_args
+# FUNCTION
+#   Internal function for parse command line arguments related to
+#   initenv command.
+# DESCRIPTION
+#   * --to-current-dir     Initialize current directory.
+#   * --to-dir target      Initialize target directory.
+#   * --enable-profiles    Enable profiles mode.
+#   * --help|-h            Show help message.
+# SOURCE
+_dbm_check_initenv_args () {
+
+  [[ $DEBUG ]] && echo -en "(_dbm_check_initenv_args: $@)\n"
+
+  local short_options="h"
+  local long_options="to-dir: help to-current-dir enable-profiles"
+
+  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || \
+    error_handled "Invalid parameters"
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_initenv_args: Found $# params)\n"
+
+  if [ $# -lt 0 ] ; then
+    _dbm_initenv_help
+    return 1
+  fi
+
+  DBM_INIT_CURRDIR=0
+  DBM_INIT_DIR=""
+  DBM_INIT_TARGETDIR=0
+  DBM_INIT_PROFILES=0
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      --to-current-dir)
+        DBM_INIT_CURRDIR=1
+        ;;
+      --to-dir)
+        DBM_INIT_TARGETDIR=1
+        DBM_INIT_DIR="$2"
+        shift
+        ;;
+      --enable-profiles)
+        DBM_INIT_PROFILES=1
+        ;;
+      -h|--help)
+        _dbm_initenv_help
+        return 1
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+    esac
+    shift
+
+  done
+
+  if [[ $DBM_INIT_CURRDIR -eq 1 && $DBM_INIT_TARGETDIR -eq 1 ]] ; then
+    out_handler_print "Use only --to-dir or --to-current-dir option."
+    return 1
+  fi
+
+  if [[ $DBM_INIT_TARGETDIR -eq 1 ]] ; then
+    if [ ! -d $DBM_INIT_DIR ] ; then
+      out_handler_print "Invalid directory $DBM_INIT_DIR."
+      return 1
+    fi
+  else
+
+    # Set DBM_INIT_DIR to .
+    DBM_INIT_DIR=.
+  fi
+
+  return 0
+}
+#***
+
 _dbm_ins_rel_help () {
 
   echo -en "[-n name]               Release Name.\n"

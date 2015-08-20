@@ -12,6 +12,9 @@ MODULES_DIR="@MODULES_DIR@"
 LOCAL_DIR=~/.local/share/dbrm
 LOCAL_CONFIG_FILE=$LOCAL_DIR/dbrm.conf
 
+# Logfile of dbrm module
+#LOGFILE=$LOCAL_DIR/dbrm.log
+
 # SQLite DRM database.
 # Default is $HOME/.local/
 DRM_DB=$LOCAL_DIR/dbrm.db

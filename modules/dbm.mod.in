@@ -84,6 +84,8 @@ dbm_long_help () {
    echo -en "\tshell                   Enter on sqlite dbm database.\n"
    echo -en "\tupgrade                 Check if dbrm database is align to last release and\n"
    echo -en "\t                        create new tables.\n"
+   echo -en "\tinitenv                 Create a new empty dbrm database and a dbrm.conf\n"
+   echo -en "\t                        on current directory.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -131,6 +133,8 @@ dbm_show_help () {
    echo -en "\tinfo                    Show informations about dbm parameters and project.\n"
    echo -en "\tshell                   Enter on sqlite dbm database.\n"
    echo -en "\tupgrade                 Check if dbrm database is align to last release and\n"
+   echo -en "\tinitenv                 Create a new empty dbrm database and a dbrm.conf\n"
+   echo -en "\t                        on current directory.\n"
    echo -en "===========================================================================\n"
 
    return 0
@@ -190,6 +194,97 @@ dbm_info () {
   done
 
   return 0
+}
+#***
+
+
+#****f* dbm/dbm_initenv
+# FUNCTION
+#  Create a new empty dbrm database and copy example file
+#  of dbrm.conf.
+# SOURCE
+dbm_initenv () {
+
+  local ans=0
+  local v=""
+  local dbrm_profiles_options=""
+
+  shift 2
+
+  _dbm_check_initenv_args "$@" || return 1
+
+  if [ -f $DBM_INIT_DIR/dbrm.conf ] ; then
+    out_handler_print "File dbrm.conf is already present. I do nothing."
+    ans=1
+  else
+
+    if [ -e $DBM_INIT_DIR/dbrm.db ] ; then
+      out_handler_print "File $DBM_INIT_DIR/dbrm.db already exits."
+      return 1
+    fi
+
+    cp $CONFIG_FILE_STUB $DBM_INIT_DIR/dbrm.conf || error_handled \
+      "Unexpected error on copy dbrm.conf stub file to local directory."
+
+    if [ $DBM_INIT_PROFILES -eq 1 ] ; then
+
+      if [ -d ${DBM_INIT_DIR}/dbrm-profiles ] ; then
+        out_handler_print \
+          "Profiles directory ${DBM_INIT_DIR}/dbrm-profiles already exits. I do nothing."
+        return 1
+      fi
+
+      # Create profiles directory
+      mkdir ${DBM_INIT_DIR}/dbrm-profiles || error_handled \
+        "Error on create ${DBM_INIT_DIR}/dbrm-profiles directory."
+
+      dbrm_profiles_options="DRM_PROFILE=1
+DRM_PROFILES_PATH=\${LOCAL_DIR}/dbrm-profiles
+"
+
+    fi
+
+    v="# Database Release Manager configuration file
+LOCAL_DIR=${DBM_INIT_DIR}
+LOCAL_CONFIG_FILE=\${LOCAL_DIR}/dbrm.conf
+LOGFILE=\${LOCAL_DIR}/dbrm.log
+DRM_DB=${DBM_INIT_DIR}/dbrm.db
+${dbrm_profiles_options}
+"
+    # Create dbrm file
+    echo -en "${v}" > ${DBM_INIT_DIR}/dbrm.conf
+
+    . ${DBM_INIT_DIR}/dbrm.conf
+
+    # Create an empty database
+    _sqlite_create -c "$DRM_DB" -s "$dbm_schema" || \
+      error_handled "Error on create $DRM_DB file."
+
+    _dbm_exts_check_extensions "0" || \
+      error_handled "Error on initialize extensions."
+
+    if [ $DBM_INIT_PROFILES -eq 1 ] ; then
+      # Create dev.conf profile file
+      cp $CONFIG_FILE_STUB ${DBM_INIT_DIR}/dbrm-profiles/dev.conf || error_handled \
+        "Unexpected error on copy dbrm.conf stub file to dev.conf profile file."
+
+      # Insert dev profile to DRM db.
+      dbm_add_profile "dbrm" "add_profile" "--name" "develop" "--file" "dev.conf" "--default" ||
+        error_handled "Error on add default profile."
+
+      out_handler_print \
+        "Directory is now initialized.\nModify dev.conf file under dbrm-profile directory for complete configuration."
+
+    else
+
+      out_handler_print \
+        "Directory is now initialized.\nModify dbrm.conf file for complete configuration."
+
+    fi
+
+  fi
+
+  return $ans
 }
 #***
 
@@ -2404,7 +2499,7 @@ _dbm_post_init () {
       [[ $DEBUG ]] && echo "(dbm_post_init: Create sqlite internal db file: $DRM_DB)"
       _sqlite_create -c "$DRM_DB" -s "$dbm_schema" || error_handled "Error on create $DRM_DB file."
 
-      _dbm_exts_check_extensions "0" || error_handled "Error on iniziale extensions."
+      _dbm_exts_check_extensions "0" || error_handled "Error on initialize extensions."
 
     fi
 
