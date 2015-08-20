@@ -156,6 +156,9 @@ mysql_source_file () {
   if [[ ! -z "$avoid_tmz" && x"$avoid_tmz" == x"1" ]] ; then
     tz=""
   fi
+  if [[ ! -z "$MARIADB_IGNORE_TMZ" && $MARIADB_IGNORE_TMZ -eq 1 ]] ; then
+    tz=""
+  fi
   local sql="$(cat $f)"
 
 
@@ -224,6 +227,9 @@ mysql_cmd_4var () {
 
   local tz="SET time_zone = '$MARIADB_TMZ';"
   if [[ -n "$avoid_tmz" && x"$avoid_tmz" == x"1" ]] ; then
+    tz=""
+  fi
+  if [[ ! -z "$MARIADB_IGNORE_TMZ" && $MARIADB_IGNORE_TMZ -eq 1 ]] ; then
     tz=""
   fi
 

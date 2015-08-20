@@ -1061,6 +1061,7 @@ commons_mariadb_get_indexes_list () {
       S.COMMENT,
       S.INDEX_COMMENT
     "
+    # On Mysql 5.1 INDEX_COMMENT is not available.
 
   fi
 
