@@ -801,7 +801,7 @@ _mariadb_compile_args () {
 #   * --with-pk-indexes   Download also primary key indexes. To use with --all|--index|--all-indexes
 #   * --all-tables        Download all tables definition.
 #   * --file [f]          (optional) File where write tables definitions.
-#                         Default is creation_script/initial_ddl.sql
+#                         Default is creation_scripts/initial_ddl.sql
 #   * --table [name]      Download table description of table name.
 # SEE ALSO
 #   _mariadb_connections_args for a list of connection arguments
@@ -968,7 +968,7 @@ _mariadb_download_help () {
   echo -en "[--table name]           Download schema of a particular table\n"
   echo -en "                         This option could be used with --file.\n"
   echo -en "[--file file]            (optional) File where write tables definitions.\n"
-  echo -en "                         Default is creation_script/initial_ddl.sql\n"
+  echo -en "                         Default is creation_scripts/initial_ddl.sql\n"
   echo -en "Note: For argument with value if it isn't passed value argument is ignored.\n"
 
   return 0
@@ -1732,7 +1732,7 @@ _mariadb_download () {
   fi # end $MARIADB_DOWNLOAD_ALL
 
   # Check for all-tables or single table
-  local f="${LOCAL_DIR}/creation_script/initial_ddl.sql"
+  local f="${LOCAL_DIR}/creation_scripts/initial_ddl.sql"
 
   if [ -n "$MARIADB_DOWNLOAD_FILE" ] ; then
     f="${MARIADB_DOWNLOAD_FILE}"

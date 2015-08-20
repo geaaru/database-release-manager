@@ -249,19 +249,19 @@ _package_copy_pj_mariadb_files () {
   local files=""
 
   local adapter_dirs="
-    creation_script
+    creation_scripts
     foreign_keys
     functions
     procedures
     indexes
     triggers
-    update_script
+    update_scripts
     views
   "
 
   for dir in ${adapter_dirs} ; do
 
-    # Check if exists creation_script directory
+    # Check if exists creation_scripts directory
     if [[ -d ${LOCAL_DIR}/${dir} ]] ; then
 
       mkdir ${pj_dir}/${dir} || \
