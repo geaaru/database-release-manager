@@ -972,6 +972,11 @@ commons_mariadb_get_fkeys_list () {
   local mode="$5"
   local all_column=""
   local fk_name=""
+  local ext_custom_column=""
+  local ext_all_columns=""
+
+  # NOTE: Currently if all is not an empty string
+  #       I think that custom_column is not used.
 
   if [ -n "$all" ] ; then
     all_column="
@@ -988,6 +993,22 @@ commons_mariadb_get_fkeys_list () {
     # RC.MATCH_OPTION,
     # For now only possible value for this field is None.
     # See: http://dev.mysql.com/doc/refman/5.7/en/referential-constraints-table.html
+
+    ext_all_columns="
+      TMP.CONSTRAINT_NAME,
+      TMP.TABLE_NAME,
+      TMP.COLUMN_NAME,
+      TMP.REFERENCED_TABLE_NAME,
+      TMP.REFERENCED_COLUMN_NAME,
+      TMP.UPDATE_RULE,
+      TMP.DELETE_RULE
+    "
+
+  else
+
+    # TODO: Currently replace only KCU table.
+    ext_custom_column=${custom_column//KCU./TMP.}
+
   fi
 
   if [ -n "${fkey_name}" ] ; then
@@ -1003,23 +1024,27 @@ commons_mariadb_get_fkeys_list () {
   fi
 
   local cmd="
-    SELECT ${all_column} ${custom_column}
-    FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TS,
-         INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU,
-         INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS RC
-    WHERE TS.TABLE_SCHEMA = '$MARIADB_DB'
-    AND TS.CONSTRAINT_SCHEMA = '$MARIADB_DB'
-    AND KCU.TABLE_SCHEMA = '$MARIADB_DB'
-    AND RC.CONSTRAINT_SCHEMA = KCU.TABLE_SCHEMA
-    AND TS.CONSTRAINT_TYPE = 'FOREIGN KEY'
-    AND TS.CONSTRAINT_NAME = KCU.CONSTRAINT_NAME
-    AND RC.CONSTRAINT_NAME = TS.CONSTRAINT_NAME
-    AND RC.UNIQUE_CONSTRAINT_SCHEMA = KCU.TABLE_SCHEMA
-    AND KCU.REFERENCED_TABLE_NAME IS NOT NULL
-    ${fk_name}
-    ${andwhere}
-    GROUP BY KCU.CONSTRAINT_NAME
-    ORDER BY TS.TABLE_NAME, TS.CONSTRAINT_NAME"
+    SELECT CONCAT_WS('|', ${ext_all_columns} ${ext_custom_column}) AS ANS
+    FROM (
+      SELECT ${all_column} ${custom_column}
+      FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TS,
+           INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU,
+           INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS RC
+      WHERE TS.TABLE_SCHEMA = '$MARIADB_DB'
+      AND TS.CONSTRAINT_SCHEMA = '$MARIADB_DB'
+      AND KCU.TABLE_SCHEMA = '$MARIADB_DB'
+      AND RC.CONSTRAINT_SCHEMA = KCU.TABLE_SCHEMA
+      AND TS.CONSTRAINT_TYPE = 'FOREIGN KEY'
+      AND TS.CONSTRAINT_NAME = KCU.CONSTRAINT_NAME
+      AND RC.CONSTRAINT_NAME = TS.CONSTRAINT_NAME
+      AND RC.UNIQUE_CONSTRAINT_SCHEMA = KCU.TABLE_SCHEMA
+      AND KCU.REFERENCED_TABLE_NAME IS NOT NULL
+      ${fk_name}
+      ${andwhere}
+      GROUP BY KCU.CONSTRAINT_NAME
+      ORDER BY TS.TABLE_NAME, TS.CONSTRAINT_NAME
+    ) TMP
+  "
 
   mysql_cmd_4var "_mariadb_ans" "$cmd" || return 1
 
@@ -1831,12 +1856,12 @@ commons_mariadb_download_fkey () {
   commons_mariadb_get_fkeys_list "1" "" "$name" || \
     error_handled "Error on retrieve data about foreign key $name."
 
-  table=`echo $_mariadb_ans | awk '{split($0,a," "); print a[2]}'`
-  cname=`echo $_mariadb_ans | awk '{split($0,a," "); print a[3]}'`
-  rtable=`echo $_mariadb_ans | awk '{split($0,a," "); print a[4]}'`
-  rcname=`echo $_mariadb_ans | awk '{split($0,a," "); print a[5]}'`
-  ur=`echo $_mariadb_ans | awk '{split($0,a," "); print a[6]}'`
-  dr=`echo $_mariadb_ans | awk '{split($0,a," "); print a[7]}'`
+  table=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[2]}'`
+  cname=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[3]}'`
+  rtable=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[4]}'`
+  rcname=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[5]}'`
+  ur=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[6]}'`
+  dr=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[7]}'`
 
   if [ x"${dr}" != x"RESTRICT" ] ; then
     on_delete="ON DELETE ${dr}"
@@ -1897,7 +1922,7 @@ commons_mariadb_download_all_fkeys () {
     IFS=$'\n'
     for row in $_mariadb_ans ; do
 
-      name=`echo $row | awk '{split($0,a," "); print a[1]}'`
+      name=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
 
       unset IFS
       commons_mariadb_download_fkey "$name"
@@ -1948,7 +1973,7 @@ commons_mariadb_drop_fkey () {
     commons_mariadb_get_fkeys_list "" "KCU.CONSTRAINT_NAME, KCU.TABLE_NAME" "${name}" || \
       error_handled "Error on get data of foreign key $name."
 
-    tname=`echo $_mariadb_ans | awk '{split($0,a," "); print a[2]}'`
+    tname=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[2]}'`
 
     cmd="
       USE \`${MARIADB_DB}\` ;

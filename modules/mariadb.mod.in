@@ -2238,11 +2238,11 @@ _mariadb_show_foreign_keys () {
     IFS=$'\n'
     for row in $_mariadb_ans ; do
 
-      name=`echo $row | awk '{split($0,a," "); print a[1]}'`
-      table=`echo $row | awk '{split($0,a," "); print a[2]}'`
-      cname=`echo $row | awk '{split($0,a," "); print a[3]}'`
-      rtable=`echo $row | awk '{split($0,a," "); print a[4]}'`
-      rcname=`echo $row | awk '{split($0,a," "); print a[5]}'`
+      name=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      table=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+      cname=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+      rtable=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+      rcname=`echo $row | awk '{split($0,a,"|"); print a[5]}'`
 
       out_rows[$counter]="row"${counter}
 
@@ -2343,12 +2343,12 @@ _mariadb_show_fkey () {
     IFS=$'\n'
     for row in $_mariadb_ans ; do
 
-      table=`echo $row | awk '{split($0,a," "); print a[2]}'`
-      cname=`echo $row | awk '{split($0,a," "); print a[3]}'`
-      rtable=`echo $row | awk '{split($0,a," "); print a[4]}'`
-      rcname=`echo $row | awk '{split($0,a," "); print a[5]}'`
-      ur=`echo $row | awk '{split($0,a," "); print a[6]}'`
-      dr=`echo $row | awk '{split($0,a," "); print a[7]}'`
+      table=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+      cname=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+      rtable=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+      rcname=`echo $row | awk '{split($0,a,"|"); print a[5]}'`
+      ur=`echo $row | awk '{split($0,a,"|"); print a[6]}'`
+      dr=`echo $row | awk '{split($0,a,"|"); print a[7]}'`
 
       out_rows[$counter]="row"${counter}
 
