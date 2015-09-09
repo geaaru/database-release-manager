@@ -5,6 +5,27 @@
 # License: GPL 2.0
 #------------------------------------------------
 
+
+#****f* commons/assertNot
+# FUNCTION
+#   Check if last command result (passed in input). If result is equal to res_value
+#   param print message to stdout and exit with value 1.
+# INPUTS
+#   result    - result value of command.
+#   inv_res   - check if result value is equal to this value.(numeric value).
+#   msg       - message to print if result is not equal to zero.
+# SOURCE
+assertNot () {
+  local result=$1
+  local inv_res=$2
+   if [ $result -eq $inv_res ] ; then
+      echo -en "$3\n"
+      exit 1
+   fi
+}
+#***
+
+
 #****f* commons/error_handled
 # FUNCTION
 #   Check if last command result. If result is not equal to 0 then

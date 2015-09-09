@@ -651,6 +651,10 @@ _mariadb_connections_args () {
 #                         could be used more of one time.
 #   * --force             For foreign keys it means that fkey is dropped and add again
 #                         also if it is present.
+#   * --fk-table [t]      Table name of foreign key to compile. To use with --fkey.
+#                         If this param is missing dbrm try to identify table
+#                         name. If there are more or one fkey with same name
+#                         then elaboration is blocked.
 # SEE ALSO
 #   _mariadb_connections_args for a list of connection arguments
 # SOURCE
@@ -660,7 +664,9 @@ _mariadb_compile_args () {
 
   local short_options="d:U:P:hH:D:t:"
   local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
-  long_options="$long_options all-triggers id-script: file: all-functions all-procedures all-views all-foreign-keys all trigger: function: view: procedure: exclude: fkey: force"
+  long_options="$long_options all-triggers id-script: file: all-functions all-procedures "
+  long_options="$long_options all-views all-foreign-keys all trigger: function: view: "
+  long_options="$long_options procedure: exclude: fkey: force fk-table:"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -686,6 +692,7 @@ _mariadb_compile_args () {
   MARIADB_COMPILE_ID_SCRIPT=""
   MARIADB_COMPILE_FILE=""
   MARIADB_COMPILE_FKEY=""
+  MARIADB_COMPILE_FKTABLE=""
   MARIADB_COMPILE_FORCE=0
   local MARIADB_COMPILE_EXC_RCVD=0
 
@@ -746,6 +753,10 @@ _mariadb_compile_args () {
         MARIADB_COMPILE_FKEY="$2"
         shift
         ;;
+      --fk-table)
+        MARIADB_COMPILE_FKTABLE="$2"
+        shift
+        ;;
       --exclude)
         if [ $MARIADB_COMPILE_EXC_RCVD -eq 0 ] ; then
           MARIADB_COMPILE_FILES_EXCLUDED="$2"
@@ -803,6 +814,10 @@ _mariadb_compile_args () {
 #   * --file [f]          (optional) File where write tables definitions.
 #                         Default is creation_scripts/initial_ddl.sql
 #   * --table [name]      Download table description of table name.
+#   * --fk-table [t]      Table name of foreign key to download. To use with --foreign-key.
+#                         If this param is missing dbrm try to identify table
+#                         name. If there are more or one fkey with same name
+#                         then elaboration is blocked.
 # SEE ALSO
 #   _mariadb_connections_args for a list of connection arguments
 # SOURCE
@@ -815,6 +830,7 @@ _mariadb_download_args () {
   long_options="$long_options all-triggers all-id-script: file: all-functions all-procedures all-views"
   long_options="$long_options all trigger: function: view: procedure: all-foreign-keys foreign-key:"
   long_options="$long_options all-indexes index: index-table: with-pk-indexes all-tables file: table:"
+  long_options="$long_options fk-table:"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -845,6 +861,7 @@ _mariadb_download_args () {
   MARIADB_DOWNLOAD_ITABLE=""
   MARIADB_DOWNLOAD_FILE=""
   MARIADB_DOWNLOAD_TABLE=""
+  MARIADB_DOWNLOAD_FKTABLE=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -920,6 +937,10 @@ _mariadb_download_args () {
         MARIADB_DOWNLOAD_TABLE="$2"
         shift
         ;;
+      --fk-table)
+        MARIADB_DOWNLOAD_FKTABLE="$2"
+        shift
+        ;;
 
       -h|--help)
         _mariadb_download_help
@@ -969,6 +990,10 @@ _mariadb_download_help () {
   echo -en "                         This option could be used with --file.\n"
   echo -en "[--file file]            (optional) File where write tables definitions.\n"
   echo -en "                         Default is creation_scripts/initial_ddl.sql\n"
+  echo -en "[--fk-table tname]       Table name of foreign key to download. To use with --foreign-key.\n"
+  echo -en "                         If this param is missing dbrm try to identify table\n"
+  echo -en "                         name. If there are more or one fkey with same name\n"
+  echo -en "                         then elaboration is blocked.\n"
   echo -en "Note: For argument with value if it isn't passed value argument is ignored.\n"
 
   return 0
@@ -1101,6 +1126,8 @@ _mariadb_show_args () {
 #   * --fkey [fk]         Drop foreign key fk
 #   * --index [i]         Drop index i. (Require --index-table param)
 #   * --index-table [it]  Table of the index to drop. To use with --index.
+#   * --fk-table          Table of the foreign key to drop. If there are more of one foreign key
+#                         I use same table name.
 # SEE ALSO
 #   _mariadb_connections_args for a list of connection arguments
 # SOURCE
@@ -1110,7 +1137,7 @@ _mariadb_drop_args () {
 
   local short_options="d:U:P:hH:D:t:"
   local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
-  long_options="$long_options fkey: index: index-table:"
+  long_options="$long_options fkey: index: index-table: fk-table:"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -1122,6 +1149,7 @@ _mariadb_drop_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_drop_args: Found $# params)\n"
 
   MARIADB_DROP_FKEYS=""
+  MARIADB_DROP_FKTABLE=""
   MARIADB_DROP_INDEX=""
   MARIADB_DROP_TINDEX=""
   MARIADB_DROP_FKEY_NAMES=0
@@ -1139,6 +1167,10 @@ _mariadb_drop_args () {
       --fkey)
         MARIADB_DROP_FKEYS[$MARIADB_DROP_FKEY_NAMES]="$2"
         let MARIADB_DROP_FKEY_NAMES++
+        shift
+        ;;
+      --fk-table)
+        MARIADB_DROP_FKTABLE="$2"
         shift
         ;;
       --index)
@@ -1177,6 +1209,8 @@ _mariadb_drop_args () {
 #   * -h                   Show help message
 #   * --fkey [fk_name]     Create a foreign key with name $fk_name.
 #   * --index [iname]      Create an index with name $iname.
+#   * --auto-naming        Use automatic naming convention of foreign key
+#   *                      and index.
 #   * --on-table [tname]   Table where create database entity.
 #   * --on-column [cname]  Column/Columns where create database entity.
 #   * --ref-table [rtname] Reference table related with database entity to create.
@@ -1193,7 +1227,10 @@ _mariadb_create_args () {
   local short_options="d:U:P:hH:D:t:"
   local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
   long_options="$long_options fkey: on-table: on-column: ref-table: ref-column: index: itype:"
+  long_options="$long_options auto-naming"
   local ans=0
+  local s=""
+  local naming=""
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -1202,7 +1239,7 @@ _mariadb_create_args () {
     return 1
   fi
 
-  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_drop_args: Found $# params)\n"
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_craete_args: Found $# params)\n"
 
   MARIADB_CREATE_FKEY_ACTION=0
   MARIADB_CREATE_INDEX_ACTION=0
@@ -1213,7 +1250,9 @@ _mariadb_create_args () {
   MARIADB_CREATE_REF_COLUMNS=""
   MARIADB_CREATE_ITYPE=""
   MARIADB_CREATE_INDEX=""
+  MARIADB_CREATE_AUTONAMING=0
 
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_create_args args: $@)\n"
   while [ $# -gt 0 ] ; do
     case "$1" in
 
@@ -1223,6 +1262,9 @@ _mariadb_create_args () {
         ;;
       --ignore-timezone)
         # do nothing
+        ;;
+      --auto-naming)
+        MARIADB_CREATE_AUTONAMING=1
         ;;
       --fkey)
         MARIADB_CREATE_FKEY="$2"
@@ -1279,7 +1321,7 @@ _mariadb_create_args () {
 
   if [ $MARIADB_CREATE_FKEY_ACTION -eq 1 ] ; then
 
-    if [ -z "$MARIADB_CREATE_FKEY" ] ; then
+    if [[ -z "$MARIADB_CREATE_FKEY" && $MARIADB_CREATE_AUTONAMING -eq 0 ]] ; then
 
       echo "Invalid foreign key name supply."
       ans=1
@@ -1298,24 +1340,67 @@ _mariadb_create_args () {
 
     fi
 
-  elif [ $MARIADB_CREATE_INDEX_ACTION -eq 1 ] ; then
+    if [ $MARIADB_CREATE_AUTONAMING -eq 1 ] ; then
 
-    if [[ -z "$MARIADB_CREATE_INDEX" ||
-      -z "$MARIADB_CREATE_ON_TABLE" ||
-      -z "$MARIADB_CREATE_ON_COLUMNS" ]] ; then
+      # Naming convention for index:
+      # ${TABLE_NAME}-fk_${MARIADB_CREATE_ON_COLUMNS}-${FKEY_NAME}
+      # For MARIADB_CREATE_ON_COLUMNS variable I replace ',' with '_'
 
-      echo "Missing mandatary parameters for index."
-      ans=1
+      s=${MARIADB_CREATE_ON_COLUMNS//,/_}
+
+      naming="fk_${s}"
+      if [[ ! -z "${MARIADB_CREATE_FKEY}" && "${MARIADB_CREATE_FKEY}" != "-" ]] ; then
+        naming="${naming}-${MARIADB_CREATE_FKEY}"
+      fi
+
+      MARIADB_CREATE_FKEY="${naming}"
 
     fi
 
-    if [[ -n "$MARIADB_CREATE_ITYPE" &&
-      "$MARIADB_CREATE_ITYPE" != "UNIQUE" &&
-      "$MARIADB_CREATE_ITYPE" != "SPATIAL" &&
-      "$MARIADB_CREATE_ITYPE" != "FULLTEXT" ]] ; then
+  elif [ $MARIADB_CREATE_INDEX_ACTION -eq 1 ] ; then
 
-      echo "Invalid value of --itype field. Possible values are UNIQUE,SPATIAL or FULLTEXT"
+    if [[ -z "$MARIADB_CREATE_INDEX" && $MARIADB_CREATE_AUTONAMING -eq 0 ]] ; then
+      echo "Invalid index name."
       ans=1
+    else
+
+      if [[ -z "$MARIADB_CREATE_ON_TABLE" ||
+        -z "$MARIADB_CREATE_ON_COLUMNS" ]] ; then
+
+        echo "Missing mandatary parameters for index."
+        ans=1
+
+      fi
+
+      if [[ -n "$MARIADB_CREATE_ITYPE" &&
+        "$MARIADB_CREATE_ITYPE" != "UNIQUE" &&
+        "$MARIADB_CREATE_ITYPE" != "SPATIAL" &&
+        "$MARIADB_CREATE_ITYPE" != "FULLTEXT" ]] ; then
+
+        echo "Invalid value of --itype field. Possible values are UNIQUE,SPATIAL or FULLTEXT"
+        ans=1
+
+      fi
+
+      if [ $MARIADB_CREATE_AUTONAMING -eq 1 ] ; then
+
+        # Naming convention for index:
+        # ${INDEX_COLUMNS}-${ITYPE}-${INDEX}
+        # For INDEX_COLUMNS variable I replace ',' with '_'
+
+        s=${MARIADB_CREATE_ON_COLUMNS//,/_}
+
+        naming="${s}"
+        if [ ! -z "$MARIADB_CREATE_ITYPE"  ] ; then
+          naming="${naming}-${MARIADB_CREATE_ITYPE}"
+        fi
+        if [[ ! -z "$MARIADB_CREATE_INDEX}" && "$MARIADB_CREATE_INDEX" != "-" ]] ; then
+          naming="${naming}-${MARIADB_CREATE_INDEX}"
+        fi
+
+        MARIADB_CREATE_INDEX="${naming}"
+
+      fi
 
     fi
 
@@ -1375,6 +1460,10 @@ _mariadb_compile_help () {
   echo -en "[--file file]            Compile a particular file. (Use ABS Path or relative path from current dir.)\n"
   echo -en "[--force]                For foreign keys it means that fkey is dropped and add again also if\n"
   echo -en "                         already present.\n"
+  echo -en "[--fk-table tname]       Table name of foreign key to compile. To use with --fkey.\n"
+  echo -en "                         If this param is missing dbrm try to identify table\n"
+  echo -en "                         name. If there are more or one fkey with same name\n"
+  echo -eb "                         then elaboration is blocked.\n"
   echo -en "Note: For argument with value if it isn't passed value argument is ignored.\n"
 
   return 0
@@ -1413,7 +1502,8 @@ _mariadb_drop_help () {
   echo -en "                         This option could be use only one time.\n"
   echo -en "[--index-table NAME]     Table name of index to drop from database.\n"
   echo -en "                         To use with --index.\n"
-
+  echo -en "[--fk-table NAME]        Table name of the foreign key/keys to drop.\n"
+  echo -en "                         To use optional with --fkey.\n"
   return 0
 }
 #***
@@ -1430,6 +1520,8 @@ _mariadb_create_help () {
   echo -en "[--index INAME]          Create index [INAME] file, ready for compilation.\n"
   echo -en "                         Others mandatary parameters: --on-table,--on-column.\n"
   echo -en "                         Others optional parameters: --itype.\n"
+  echo -en "[--auto-naming]          Use automatic naming convention of foreign key\n"
+  echo -en "                         and index used by dbrm.\n"
   echo -en "[--on-table TNAME]       Choice table where create database entity.\n"
   echo -en "[--on-column CNAME]      Choice column or columns (ex. col1,col2) related to db entity to.\n"
   echo -en "                         create.\n"
@@ -1444,6 +1536,14 @@ _mariadb_create_help () {
   echo -en "\n"
   echo -en "Example2: - Create an index on table T1 to columns col1,col2\n"
   echo -en "\$> dbrm mariadb create --index idx_test --on-table T1 --on-column \"col1,col2\"\n"
+  echo -en "\n"
+  echo -en "Example3: - Create an index on table T1 to columns col1,col2 with automatic naming\n"
+  echo -en "\$> dbrm mariadb create --index \"-\" --on-table T1 --on-column \"col1,col2\" --auto-naming\n"
+  echo -en "\n"
+  echo -en "Example4: - Create a foreign key on table T1 on columns col1,col2 referenced by table T2 with\n"
+  echo -en "            automatic naming.\n"
+  echo -en "\$> dbrm mariadb create --fkey \"-\" --on-table T1 --on-column \"col1,col2\"\n"
+  echo -en "                       --ref-table T2 --ref-column \"col1,col2\" --auto-naming\n"
 
   return 0
 }
@@ -1565,9 +1665,11 @@ _mariadb_compile () {
       if [ ! -z "$MARIADB_COMPILE_FKEY" ] ; then
 
         f="${MARIADB_COMPILE_FKEY/.sql/}"
+        f=$(basename ${f})
 
-        commons_mariadb_compile_fkey "${MARIADB_DIR}/foreign_keys/$f.sql" "" "$MARIADB_COMPILE_FORCE" || \
-          error_handled "Error on compile file $f.sql"
+        commons_mariadb_compile_fkey "${MARIADB_DIR}/foreign_keys/${f}.sql" "" \
+          "$MARIADB_COMPILE_FORCE" "$MARIADB_COMPILE_FKTABLE" || \
+          error_handled "Error on compile file ${f}.sql"
 
       fi
 
@@ -1706,7 +1808,8 @@ _mariadb_download () {
 
       if [ -n "$MARIADB_DOWNLOAD_FKEY" ] ; then
 
-        commons_mariadb_download_fkey "$MARIADB_DOWNLOAD_FKEY" || error_handled "Error on download foreign key."
+        commons_mariadb_download_fkey "$MARIADB_DOWNLOAD_FKEY" "$MARIADB_DOWNLOAD_FKTABLE"  \
+          || error_handled "Error on download foreign key."
       fi
 
     fi
@@ -1776,8 +1879,10 @@ _mariadb_drop () {
     do
 
       f="${MARIADB_DROP_FKEYS[$i]/.sql/}"
+      f="$(basename "$f")"
 
-      commons_mariadb_drop_fkey "$f" || error_handled "Error on drop foreign key $f."
+      commons_mariadb_drop_fkey "$f" "" "${MARIADB_DROP_FKTABLE}" || \
+        error_handled "Error on drop foreign key $f."
 
       out_handler_print "Foreign key ${f} dropped.\n"
 

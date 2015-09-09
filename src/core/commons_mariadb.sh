@@ -223,6 +223,7 @@ commons_mariadb_compile_file () {
 #   msg      - message to insert on logging file relative to input file.
 #   force    - if foreign key is present and force is equal to 1, then
 #              foreign key is dropped and added again.
+#   fk_table - table of the foreign key
 # RETURN VALUE
 #   0 on success
 #   1 on error
@@ -234,35 +235,83 @@ commons_mariadb_compile_fkey () {
   local f=$1
   local msg=$2
   local force="$3"
+  local fk_table="$4"
   local f_base=$(basename "$f")
-  local fk="${f_base/.sql/}"
+  local fk_dir=$(dirname "$f")
+  local fk_str="${f_base/.sql/}"
+  local fk=""
   local fk_is_present=1
+  local fktname=""
+
+  # Try to check if is present table name from filename
+  fktname=$(echo $fk_str | awk 'match($0, /[a-zA-Z]+/) { print substr($0, RSTART, RLENGTH) }')
+  fk=$(echo $fk_str | awk 'match($0, /[-]/) { print substr($0, RSTART + 1) }')
+
+  if [ -z "${fk_table}" ] ; then
+
+    [ -n "${fktname}" ] && fk_table="${fktname}"
+
+  elif [[ -n "${fk_table}" && -n "${fk}" ]] ; then
+    # POST: fk_str contains both fk key name and fk key table.
+    #       I check if fk_table in input is equal to fktname (string catch from fr_str)
+    if [ "${fk_table}" != "${fktname}" ] ; then
+      _logfile_write "(mariadb) Foreign key ${fk_str} is not related with table ${fk_table}." || return 1
+
+      error_generate "Foreign key ${fk_str} is not related with table ${fk_table}."
+    fi
+
+  fi
+
+  [ -z "${fk}" ] && fk="${fk_str}"
+
+  # Check if foreign key already present
+  commons_mariadb_check_if_exist_fkey "${fk}" "${fk_table}"
+  fk_is_present=$?
+
+  # If fktname is empty and fk_table is not available and foreign key is present
+  # I try to retrieve table name
+  if [[ -z "${fk_table}" && $fk_is_present -eq 0 ]] ; then
+
+    commons_mariadb_get_fkeys_list "" "KCU.CONSTRAINT_NAME, KCU.TABLE_NAME" "${fk}" || \
+      error_handled "Error on get data of foreign key $fk."
+
+    fk_table=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[2]}'`
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en \
+    "( commons_mariadb_compile_fkey: (${fk_str}) I use fkey ${fk} for table ${fk_table} (${fktname}) (force = ${force}))\n"
+
+  [ ! -e $f ] && f=${fk_dir}/${fk_table}-${fk}.sql
 
   if [ ! -e $f ] ; then
     _logfile_write "(mariadb) File $f not found." || return 1
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(mariadb) File $f not found.\n"
     return 1
   fi
 
-  [[ $DEBUG && $DEBUG == true ]] && \
-    echo -en "( commons_mariadb_compile_fkey: Try to compile foreign key ${fk} (${force})...)\n"
-
-  # Check if foreign key already present
-  commons_mariadb_check_if_exist_fkey "${fk}"
-  fk_is_present=$?
+  [[ $DEBUG && $DEBUG == true ]] && echo -en \
+    "( commons_mariadb_compile_fkey: Try to compile foreign key ${fk} for table ${fk_table} (${force})...)\n"
 
   if [[ $fk_is_present -eq 0 && x"${force}" == x"1" ]] ; then
     # POST: foreign is is present and force is equal to 1.
 
-    commons_mariadb_drop_fkey "${fk}" || return 1
+    commons_mariadb_drop_fkey "${fk}" "" "${fk_table}" || return 1
 
     commons_mariadb_compile_file "$f" "$msg" || return 1
 
   elif [ $fk_is_present -eq 0 ] ; then
 
     [[ $DEBUG && $DEBUG == true ]] && \
-      echo -en "( commons_mariadb_compile_fkey: foreign key ${f} is already present. Nothing to do.)\n"
+      echo -en "( commons_mariadb_compile_fkey: foreign key ${fk} for table ${fk_table} is already present. Nothing to do.)\n"
 
     _logfile_write "(mariadb) Foreign key ${fk} is already present. Nothing to do." || return 1
+
+  elif [ $fk_is_present -eq 2 ] ; then
+
+    [[ $DEBUG && $DEBUG == true ]] && \
+      echo -en "( commons_mariadb_compile_fkey: foreign key ${fk} exists for different tables.\nSet table param.)\n"
+
+    _logfile_write "(mariadb) Foreign key ${fk} exists for different tables. Set table param for compilation." || return 1
 
   else
 
@@ -813,6 +862,8 @@ commons_mariadb_check_if_exist_view () {
 #   Check if exists foreign keys with name in input on schema.
 # RETURN VALUE
 #   1 if not exists
+#   2 if argument tname is not present this means that there are
+#     two foreign key with same name.
 #   0 if exists
 # SEE ALSO
 #   mysql_cmd_4var
@@ -821,18 +872,27 @@ commons_mariadb_check_if_exist_fkey () {
 
   local result=1
   local name="$1"
+  local tname="$2"
   local errmsg="Error on check if exists foreign key with $name."
-  local cmd="
+  local cmd=""
+  local andWhere=""
+
+  if [ -n "${tname}" ] ; then
+    andWhere="AND TABLE_NAME = '${tname}'"
+  fi
+
+  cmd="
     SELECT COUNT(1) AS CNT
     FROM
     (
-      SELECT CONSTRAINT_NAME
+      SELECT CONSTRAINT_NAME, TABLE_NAME
       FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
       WHERE TABLE_SCHEMA = '$MARIADB_DB'
       AND CONSTRAINT_TYPE = 'FOREIGN KEY'
       AND CONSTRAINT_SCHEMA = '$MARIADB_DB'
       AND CONSTRAINT_NAME = '$name'
-      GROUP BY CONSTRAINT_NAME
+      ${andWhere}
+      GROUP BY CONSTRAINT_NAME, TABLE_NAME
      ) TMP "
 
   mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || return $result
@@ -843,6 +903,8 @@ commons_mariadb_check_if_exist_fkey () {
 
   if [ x"$MYSQL_OUTPUT" == x"1" ] ; then
     result=0
+  elif [ x"$MYSQL_OUTPUT" == x"2" ] ; then
+    result=2
   fi
 
   return $result
@@ -1822,6 +1884,7 @@ commons_mariadb_download_all_triggers () {
 #   Download a foreign key to MARIADB_DIR/foreign_keys directory.
 # INPUTS
 #   name    - name of the foreign key to download.
+#   tname   - table name related with foreign key to download.
 # RETURN VALUE
 #   1 on error
 #   0 on success
@@ -1832,10 +1895,10 @@ commons_mariadb_download_all_triggers () {
 commons_mariadb_download_fkey () {
 
   local name="${1/.sql/}"
+  local table="${2}"
   name=`basename $name`
   local fkeysdir="${MARIADB_DIR}/foreign_keys"
-  local f="$fkeysdir/$name.sql"
-  local table=""
+  local f=""
   local cname=""
   local rtable=""
   local rcname=""
@@ -1843,17 +1906,19 @@ commons_mariadb_download_fkey () {
   local dr=""
   local on_delete=""
   local on_update=""
+  local res=""
 
-  commons_mariadb_check_if_exist_fkey "$name" || error_handled "Foreign key $name not found."
+  commons_mariadb_check_if_exist_fkey "$name" "${table}"
+  res=$?
+  assertNot "$res" "2" "No table name supply and found more of one foreign key with name ${name}. Set table name."
+  assertNot "$res" "1" "Foreign key ${name} not found."
 
   if [ ! -e "$fkeysdir" ] ; then
     mkdir "$fkeysdir"
   fi
 
-  [ -f "$f" ] && rm -f "$f"
-
   # Retrieve data about foreign key
-  commons_mariadb_get_fkeys_list "1" "" "$name" || \
+  commons_mariadb_get_fkeys_list "1" "" "$name" "${table}" || \
     error_handled "Error on retrieve data about foreign key $name."
 
   table=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[2]}'`
@@ -1887,6 +1952,9 @@ ALTER TABLE \`${table}\`
   ;
 "
 
+  f="${fkeysdir}/${table}-${name}.sql"
+  [ -f "$f" ] && rm -f "$f"
+
   echo -en "$out" > $f
 
   return 0
@@ -1907,6 +1975,7 @@ commons_mariadb_download_all_fkeys () {
 
   local n_rec=0
   local name=""
+  local tname=""
   local i=1
 
   commons_mariadb_count_fkeys
@@ -1916,20 +1985,21 @@ commons_mariadb_download_all_fkeys () {
 
   if [ $n_rec -gt 0 ] ; then
 
-    commons_mariadb_get_fkeys_list "" "KCU.CONSTRAINT_NAME" || \
+    commons_mariadb_get_fkeys_list "" "KCU.CONSTRAINT_NAME, KCU.TABLE_NAME" || \
       error_handled "Error on get foreign key name list."
 
     IFS=$'\n'
     for row in $_mariadb_ans ; do
 
       name=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      tname=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
 
       unset IFS
-      commons_mariadb_download_fkey "$name"
+      commons_mariadb_download_fkey "$name" "${tname}"
       if [ $? -ne 0 ] ; then
-        echo -en "Error on download foreign key $name ($i of $n_rec).\n"
+        echo -en "Error on download foreign key $name of table ${tname} ($i of $n_rec).\n"
       else
-        echo -en "Download foreign key $name ($i of $n_rec).\n"
+        echo -en "Download foreign key $name of table ${tname} ($i of $n_rec).\n"
       fi
       let i++
       IFS=$'\n'
@@ -1957,23 +2027,51 @@ commons_mariadb_drop_fkey () {
   local is_present=1
   local name="$1"
   local avoid_warn="$2"
-  local tname=""
+  local fk_tname=""
+  local fk=""
+  local tname="$3"
   local cmd=""
 
   _logfile_write "(mariadb) Start drop foreign key: $name" || return 1
 
-  commons_mariadb_check_if_exist_fkey "$name"
+  # Try to check if is present table name from filename
+  fktname=$(echo $name | awk 'match($0, /[a-zA-Z]+/) { print substr($0, RSTART, RLENGTH ) }')
+  fk=$(echo $name | awk 'match($0, /[-]/) { print substr($0, RSTART + 1) }')
+
+  if [ -z "${tname}" ] ; then
+
+    [ -n "${fktname}" ] && tname="${fktname}"
+
+  elif [[ -n "${tname}" && -n "${fk}" ]] ; then
+    # POST: fk_str contains both fk key name and fk key table.
+    #       I check if tname in input is equal to fktname (string catch from fr_str)
+    if [ "${tname}" != "${fktname}" ] ; then
+      _logfile_write "(mariadb) WARNING: Foreign key ${name} is not related with table ${tname}." || return 1
+
+      fk="${name}"
+      # error_generate "Foreign key ${name} is not related with table ${tname}."
+    fi
+  fi
+
+  [ -z "${fk}" ] && fk="${name}"
+
+  commons_mariadb_check_if_exist_fkey "$fk" "${tname}"
   is_present=$?
 
-  [[ $DEBUG && $DEBUG == true ]] && \
-    echo -en "(commons_mariadb_drop: Dropping foreign key $name (is_present = $is_present).\n"
+  # If fktname is empty and fk_table is not available and foreign key is present
+  # I try to retrieve table name
+  if [[ -z "${tname}" && $fk_is_present -eq 0 ]] ; then
 
-  if [ $is_present -eq 0 ] ; then
-
-    commons_mariadb_get_fkeys_list "" "KCU.CONSTRAINT_NAME, KCU.TABLE_NAME" "${name}" || \
-      error_handled "Error on get data of foreign key $name."
+    commons_mariadb_get_fkeys_list "" "KCU.CONSTRAINT_NAME, KCU.TABLE_NAME" "${fk}" || \
+      error_handled "Error on get data of foreign key $fk."
 
     tname=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[2]}'`
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(commons_mariadb_drop: Dropping foreign key $fk of table ${tname} (is_present = $is_present).\n"
+
+  if [ $is_present -eq 0 ] ; then
 
     cmd="
       USE \`${MARIADB_DB}\` ;
@@ -1985,6 +2083,11 @@ commons_mariadb_drop_fkey () {
     local ans=$?
 
     _logfile_write "Result = $ans\n$MYSQL_OUTPUT" || return 1
+
+  elif [ $is_present -eq 2 ] ; then
+
+    _logfile_write \
+      "Table name not set and found more of one foreign key with name ${name}.\nSet table name and try again." || return 1
 
   else
 
@@ -2282,7 +2385,7 @@ commons_mariadb_create_fkey_file () {
   local is_present=1
   local content=""
   local fkeysdir="${MARIADB_DIR}/foreign_keys"
-  local f="$fkeysdir/${name}.sql"
+  local f="${fkeysdir}/${table}-${name}.sql"
 
   # Check if exists foreign_keys or create it
   if [[ ! -d ${fkeysdir} ]] ; then
