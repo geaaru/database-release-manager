@@ -1231,6 +1231,9 @@ _mariadb_create_args () {
   local ans=0
   local s=""
   local naming=""
+  local reg_com=""
+  local reg_tname=""
+  local reg_reftname=""
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -1343,12 +1346,24 @@ _mariadb_create_args () {
     if [ $MARIADB_CREATE_AUTONAMING -eq 1 ] ; then
 
       # Naming convention for index:
-      # ${TABLE_NAME}-fk_${MARIADB_CREATE_ON_COLUMNS}-${FKEY_NAME}
+      # REGEX_COMPOSITION=${REGEX_TABLE_NAME}-${REGEX_TABLE_REF}_
+      # ${TABLE_NAME}-fk_${REGEX_COMPOSITION}${MARIADB_CREATE_ON_COLUMNS}-${FKEY_NAME}
       # For MARIADB_CREATE_ON_COLUMNS variable I replace ',' with '_'
 
+      awk_code='{ \
+        m=match($0, /[_|-].*/) ; \
+        if (m) \
+          print substr($0, 0, 1) substr($0, RSTART + 1, 1) ; \
+        else \
+          print substr($0, 0, 1) \
+      }'
+
+      reg_tname=`echo ${MARIADB_CREATE_ON_TABLE} | awk "${awk_code}"`
+      reg_reftname=`echo ${MARIADB_CREATE_REF_TABLE} | awk "${awk_code}"`
+      reg_com="${reg_tname}${reg_reftname}_"
       s=${MARIADB_CREATE_ON_COLUMNS//,/_}
 
-      naming="fk_${s}"
+      naming="fk_${reg_com}${s}"
       if [[ ! -z "${MARIADB_CREATE_FKEY}" && "${MARIADB_CREATE_FKEY}" != "-" ]] ; then
         naming="${naming}-${MARIADB_CREATE_FKEY}"
       fi
@@ -1387,7 +1402,6 @@ _mariadb_create_args () {
         # Naming convention for index:
         # ${INDEX_COLUMNS}-${ITYPE}-${INDEX}
         # For INDEX_COLUMNS variable I replace ',' with '_'
-
         s=${MARIADB_CREATE_ON_COLUMNS//,/_}
 
         naming="${s}"
@@ -1544,6 +1558,8 @@ _mariadb_create_help () {
   echo -en "            automatic naming.\n"
   echo -en "\$> dbrm mariadb create --fkey \"-\" --on-table T1 --on-column \"col1,col2\"\n"
   echo -en "                       --ref-table T2 --ref-column \"col1,col2\" --auto-naming\n"
+  echo -en "\n"
+  echo -en "NOTE: foreign key name is unique on database."
 
   return 0
 }
