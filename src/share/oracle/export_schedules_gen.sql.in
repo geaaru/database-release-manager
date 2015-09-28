@@ -23,14 +23,14 @@ BEGIN
    FOR t_name IN (select u.object_name 
    from user_objects u 
    where object_type = 'SCHEDULE' 
-   AND SUBSTR(u.object_name, 1, 1) = UPPER('j') 
+   AND SUBSTR(u.object_name, 1, 1) = UPPER('s') 
    AND u.object_name = UPPER(schedulename)) LOOP
  --   AND u.object_name = UPPER('PKREQUEST')) LOOP
-      select 'spool '||schedulesdir||'vw'||InitCap(LOWER(t_name.object_name))||'.sql' into res from dual;
+      select 'spool '||schedulesdir||'sch'||InitCap(LOWER(t_name.object_name))||'.sql' into res from dual;
       dbms_output.put_line (res); 
-      select 'select REPLACE(REPLACE(JB, '' "''||OWNER||''"."'', '' "''), ''EDITIONABLE '', '''') AS VW from '||
+      select 'select REPLACE(REPLACE(SCH, '' "''||OWNER||''"."'', '' "''), ''EDITIONABLE '', '''') AS SCH from '||
                     '('||
-                       'select TRIM(dbms_metadata.GET_DDL(''PROCOBJ'',u.object_name)) AS JB, '||
+                       'select TRIM(dbms_metadata.GET_DDL(''PROCOBJ'',u.object_name)) AS SCH, '||
                        '(select username from user_users) AS OWNER '||
                        'from user_objects u '||
                        'where object_type = ''SCHEDULE'' '||

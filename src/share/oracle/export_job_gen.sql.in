@@ -27,7 +27,7 @@ BEGIN
    AND SUBSTR(u.object_name, 1, 1) = UPPER('j') 
    AND u.object_name = UPPER(jobname)) LOOP
  --   AND u.object_name = UPPER('PKREQUEST')) LOOP
-      select 'spool '||jobsdir||'vw'||InitCap(LOWER(t_name.object_name))||'.sql' into res from dual;
+      select 'spool '||jobsdir||'job'||InitCap(LOWER(t_name.object_name))||'.sql' into res from dual;
       dbms_output.put_line (res); 
       select 'select REPLACE(REPLACE(JB, '' "''||OWNER||''"."'', '' "''), ''EDITIONABLE '', '''') AS VW from '||
                     '('||
