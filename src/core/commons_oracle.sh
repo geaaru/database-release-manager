@@ -1375,6 +1375,59 @@ commons_oracle_compile_all_views () {
 }
 #***
 
+
+
+#****f* commons_oracle/commons_oracle_compile_all_jobs
+# FUNCTION
+#   Compile all jobs under ORACLE_DIR/jobs directory.
+# INPUTS
+#   msg          - message to write on logfile before and after
+#                  compilation.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+#   commons_oracle_compile_all_from_dir
+# SOURCE
+commons_oracle_compile_all_jobs () {
+
+  local msg="$1"
+  local directory="$ORACLE_DIR/jobs"
+
+  commons_oracle_compile_all_from_dir "$directory" "of all jobs" "$msg" || return 1
+
+  return 0
+}
+#***
+
+
+#****f* commons_oracle/commons_oracle_compile_all_schedules
+# FUNCTION
+#   Compile all schedules under ORACLE_DIR/schedules directory.
+# INPUTS
+#   msg          - message to write on logfile before and after
+#                  compilation.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+#   commons_oracle_compile_all_from_dir
+# SOURCE
+commons_oracle_compile_all_schedules () {
+
+  local msg="$1"
+  local directory="$ORACLE_DIR/schedules"
+
+  commons_oracle_compile_all_from_dir "$directory" "of all schedules" "$msg" || return 1
+
+  return 0
+}
+#***
+
+
+
 #****f* commons_oracle/commons_oracle_compile_all_from_dir
 # FUNCTION
 #   Compile all files with .sql extension from input directory
