@@ -696,6 +696,374 @@ commons_oracle_download_create_export_view() {
 }
 #***
 
+
+
+
+
+
+
+
+
+
+#****f* commons_oracle/commons_oracle_download_all_jobs
+# FUNCTION
+#   Download all functions from schema to ORACLE_DIR/jobs directory.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_oracle_download_create_export_jobs
+#   sqlplus_file
+# SOURCE
+commons_oracle_download_all_jobs() {
+
+  local jobsdir=${ORACLE_DIR}/jobs
+  local export_jobs_sql=${jobsdir}/export_job.sql
+
+  _logfile_write "Start download of all jobs." || return 1
+
+  commons_oracle_download_create_export_jobs
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_jobs_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of all jobs." || return 1
+
+  return $ans
+}
+#***
+
+#****f* commons_oracle/commons_oracle_download_create_export_jobs
+# FUNCTION
+#   Create export_jobs_file script used for download all jobs.
+# DESCRIPTION
+#   If script is present and creation date has less of 7200 seconds
+#   then this function do nothing.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+# SOURCE
+commons_oracle_download_create_export_jobs() {
+
+  local jobsdir=${ORACLE_DIR}/jobs
+  local export_jobs_sql=${jobsdir}/export_job.sql
+  local export_jobs_file=${jobsdir}/export_job_gen.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+  if [[ ! -e ${export_jobs_file} || ! -e ${export_jobs_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_jobs_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_jobs_sql} file." || return 1
+
+    # Create export_job.sql file
+    _logfile_write "sed -e 's:JOBS_DIR:'${jobsdir}/':g' \
+      \"$_oracle_scripts/export_jobs_gen.sql.in\" > \"${export_jobs_file}\""
+    sed -e 's:JOBS_DIR:'${jobsdir}'/:g' "$_oracle_scripts/export_jobs_gen.sql.in" > "${export_jobs_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_jobs_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_jobs_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_jobs_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+#***
+
+#****f* commons_oracle/commons_oracle_download_job
+# FUNCTION
+#   Download a particular job to ORACLE_DIR/jobs directory.
+# INPUTS
+#   job-name    - name of the job to download.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_oracle_download_create_export_job
+#   sqlplus_file
+# SOURCE
+commons_oracle_download_job() {
+
+  local jobname=${1/.sql/}
+  local jobsdir=${ORACLE_DIR}/jobs
+  local export_job_sql=${jobsdir}/export_job_${jobname}.sql
+
+  _logfile_write "Start download of the job ${jobname}." || return 1
+
+  commons_oracle_download_create_export_job $jobname
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_job_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of the job ${jobname}." || return 1
+
+  return $ans
+}
+#***
+
+#****f* commons_oracle/commons_oracle_download_create_export_job
+# FUNCTION
+#   Create export_job_file script used for download a particular
+#   job.
+# DESCRIPTION
+#   If script is present and creation date has less of 7200 seconds
+#   then this function do nothing.
+# INPUTS
+#   job-name       - name of the job to insert on export script.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+# SOURCE
+commons_oracle_download_create_export_job() {
+
+  local jobname=${1/.sql/}
+
+  local jobsdir=${ORACLE_DIR}/jobs
+  local export_job_sql=${jobsdir}/export_job_${jobname}.sql
+  local export_job_file=${jobsdir}/export_jobs_gen_${jobname}.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+  if [[ ! -e ${export_job_file} || ! -e ${export_job_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_job_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_job_sql} file." || return 1
+
+    # Create export_job_${jobname}.sql file
+    _logfile_write "sed -e 's:JOBS_DIR:'${jobsdir}/':g' \
+      \"$_oracle_scripts/export_job_gen.sql.in\" > \"${export_job_file}\""
+    sed -e 's:JOBS_DIR:'${jobsdir}'/:g' "$_oracle_scripts/export_job_gen.sql.in" > "${export_job_file}"
+
+    # Replace JOB_NAME string
+    _logfile_write "sed -i -e 's:JOB_NAME:'${jobname}':g' \"${export_job_file}\""
+    sed -i -e 's:JOB_NAME:'${jobname}':g' "${export_job_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_job_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_job_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_job_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+#***
+
+
+
+
+
+
+
+
+
+#****f* commons_oracle/commons_oracle_download_all_jobs
+# FUNCTION
+#   Download all functions from schema to ORACLE_DIR/schedules directory.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_oracle_download_create_export_schedules
+#   sqlplus_file
+# SOURCE
+commons_oracle_download_all_schedules() {
+
+  local schedulesdir=${ORACLE_DIR}/jobs
+  local export_schedules_sql=${schedulesdir}/export_schedule.sql
+
+  _logfile_write "Start download of all schedules." || return 1
+
+  commons_oracle_download_create_export_schedules
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_schedules_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of all schedules." || return 1
+
+  return $ans
+}
+#***
+
+#****f* commons_oracle/commons_oracle_download_create_export_schedules
+# FUNCTION
+#   Create export_schedules_file script used for download all schedules.
+# DESCRIPTION
+#   If script is present and creation date has less of 7200 seconds
+#   then this function do nothing.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+# SOURCE
+commons_oracle_download_create_export_schedules() {
+
+  local schedulesdir=${ORACLE_DIR}/jobs
+  local export_schedules_sql=${schedulesdir}/export_schedule.sql
+  local export_schedules_file=${schedulesdir}/export_schedule_gen.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+  if [[ ! -e ${export_schedules_file} || ! -e ${export_schedules_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_schedules_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_schedules_sql} file." || return 1
+
+    # Create export_schedule.sql file
+    _logfile_write "sed -e 's:SCHEDULES_DIR:'${schedulesdir}/':g' \
+      \"$_oracle_scripts/export_schedules_gen.sql.in\" > \"${export_schedules_file}\""
+    sed -e 's:SCHEDULES_DIR:'${schedulesdir}'/:g' "$_oracle_scripts/export_schedules_gen.sql.in" > "${export_schedules_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_schedules_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_schedules_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_schedules_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+#***
+
+#****f* commons_oracle/commons_oracle_download_schedule
+# FUNCTION
+#   Download a particular schedule to ORACLE_DIR/schedules directory.
+# INPUTS
+#   schedule-name    - name of the schedule to download.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_oracle_download_create_export_schedule
+#   sqlplus_file
+# SOURCE
+commons_oracle_download_schedule() {
+
+  local schedulename=${1/.sql/}
+  local schedulesdir=${ORACLE_DIR}/jobs
+  local export_schedule_sql=${schedulesdir}/export_schedule_${schedulename}.sql
+
+  _logfile_write "Start download of the schedule ${schedulename}." || return 1
+
+  commons_oracle_download_create_export_schedule $schedulename
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_schedule_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of the schedule ${schedulename}." || return 1
+
+  return $ans
+}
+#***
+
+#****f* commons_oracle/commons_oracle_download_create_export_schedule
+# FUNCTION
+#   Create export_schedule_file script used for download a particular
+#   schedule.
+# DESCRIPTION
+#   If script is present and creation date has less of 7200 seconds
+#   then this function do nothing.
+# INPUTS
+#   schedule-name       - name of the schedule to insert on export script.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   sqlplus_file
+# SOURCE
+commons_oracle_download_create_export_schedule() {
+
+  local schedulename=${1/.sql/}
+
+  local schedulesdir=${ORACLE_DIR}/jobs
+  local export_schedule_sql=${schedulesdir}/export_schedule_${schedulename}.sql
+  local export_schedule_file=${schedulesdir}/export_schedules_gen_${schedulename}.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+  if [[ ! -e ${export_schedule_file} || ! -e ${export_schedule_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_schedule_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_schedule_sql} file." || return 1
+
+    # Create export_schedule_${schedulename}.sql file
+    _logfile_write "sed -e 's:SCHEDULES_DIR:'${schedulesdir}/':g' \
+      \"$_oracle_scripts/export_schedule_gen.sql.in\" > \"${export_schedule_file}\""
+    sed -e 's:SCHEDULES_DIR:'${schedulesdir}'/:g' "$_oracle_scripts/export_schedule_gen.sql.in" > "${export_schedule_file}"
+
+    # Replace SCHEDULE_NAME string
+    _logfile_write "sed -i -e 's:SCHEDULE_NAME:'${schedulename}':g' \"${export_schedule_file}\""
+    sed -i -e 's:SCHEDULE_NAME:'${schedulename}':g' "${export_schedule_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_schedule_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_schedule_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_schedule_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+#***
+
+
+
+
+
+
+
+
 #****f* commons_oracle/commons_oracle_download_all_triggers
 # FUNCTION
 #   Download all triggers from schema to ORACLE_DIR/triggers directory.
