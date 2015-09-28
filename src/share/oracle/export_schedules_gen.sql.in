@@ -7,7 +7,7 @@ SET TERM OFF
 SET FEEDBACK OFF
 set SERVEROUTPUT on
 
-spool SCHEDULES_DIRexport_view.sql
+spool SCHEDULES_DIRexport_schedule.sql
 select 'SET LONG 400000' from dual;
 select 'SET PAGESIZE 0' from dual;
 select 'SET LINESIZE 800' from dual;
@@ -18,15 +18,15 @@ select 'SET FEEDBACK OFF' from dual;
 select 'set SERVEROUTPUT on' from dual;
 DECLARE
    res VARCHAR2(500);
-   jobsdir VARCHAR2(500) := 'SCHEDULES_DIR';
+   schedulesdir VARCHAR2(500) := 'SCHEDULES_DIR';
 BEGIN
    FOR t_name IN (select u.object_name 
    from user_objects u 
    where object_type = 'SCHEDULE' 
    AND SUBSTR(u.object_name, 1, 1) = UPPER('j') 
-   AND u.object_name = UPPER(viewname)) LOOP
+   AND u.object_name = UPPER(schedulename)) LOOP
  --   AND u.object_name = UPPER('PKREQUEST')) LOOP
-      select 'spool '||viewsdir||'vw'||InitCap(LOWER(t_name.object_name))||'.sql' into res from dual;
+      select 'spool '||schedulesdir||'vw'||InitCap(LOWER(t_name.object_name))||'.sql' into res from dual;
       dbms_output.put_line (res); 
       select 'select REPLACE(REPLACE(JB, '' "''||OWNER||''"."'', '' "''), ''EDITIONABLE '', '''') AS VW from '||
                     '('||
