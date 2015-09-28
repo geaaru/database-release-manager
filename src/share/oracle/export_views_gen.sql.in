@@ -1,7 +1,7 @@
 SET LONG 400000
 SET PAGESIZE 0
-SET LINESIZE 300
-SET LONGC 300
+SET LINESIZE 800
+SET LONGC 800
 SET TRIMSPOOL ON
 SET TERM OFF
 SET FEEDBACK OFF
@@ -10,8 +10,8 @@ set SERVEROUTPUT on
 spool VIEWS_DIRexport_view.sql
 select 'SET LONG 400000' from dual;
 select 'SET PAGESIZE 0' from dual;
-select 'SET LINESIZE 300' from dual;
-select 'SET LONGC 300' from dual;
+select 'SET LINESIZE 800' from dual;
+select 'SET LONGC 800' from dual;
 select 'SET TRIMSPOOL ON' from dual; 
 select 'SET TERM OFF' from dual;
 select 'SET FEEDBACK OFF' from dual;
