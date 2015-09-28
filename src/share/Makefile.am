@@ -11,7 +11,11 @@ EXTRA_DIST = \
 				 oracle/export_trigger_gen.sql.in \
 				 oracle/export_triggers_gen.sql.in \
 				 oracle/export_view_gen.sql.in \
-				 oracle/export_views_gen.sql.in
+				 oracle/export_views_gen.sql.in \
+				 oracle/export_job_gen.sql.in \
+				 oracle/export_jobs_gen.sql.in \
+				 oracle/export_schedule_gen.sql.in \
+				 oracle/export_schedules_gen.sql.in
 
 DISTCLEANFILES =
 
@@ -24,5 +28,9 @@ dist_oracle_DATA = \
 						 oracle/export_trigger_gen.sql.in \
 						 oracle/export_triggers_gen.sql.in \
 						 oracle/export_view_gen.sql.in \
-						 oracle/export_views_gen.sql.in
+						 oracle/export_views_gen.sql.in \
+				 		 oracle/export_job_gen.sql.in \
+						 oracle/export_jobs_gen.sql.in \
+						 oracle/export_schedule_gen.sql.in \
+						 oracle/export_schedules_gen.sql.in
 
