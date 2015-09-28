@@ -897,7 +897,7 @@ commons_oracle_download_create_export_job() {
 # SOURCE
 commons_oracle_download_all_schedules() {
 
-  local schedulesdir=${ORACLE_DIR}/jobs
+  local schedulesdir=${ORACLE_DIR}/schedules
   local export_schedules_sql=${schedulesdir}/export_schedule.sql
 
   _logfile_write "Start download of all schedules." || return 1
@@ -931,7 +931,7 @@ commons_oracle_download_all_schedules() {
 # SOURCE
 commons_oracle_download_create_export_schedules() {
 
-  local schedulesdir=${ORACLE_DIR}/jobs
+  local schedulesdir=${ORACLE_DIR}/schedules
   local export_schedules_sql=${schedulesdir}/export_schedule.sql
   local export_schedules_file=${schedulesdir}/export_schedule_gen.sql
 
@@ -980,7 +980,7 @@ commons_oracle_download_create_export_schedules() {
 commons_oracle_download_schedule() {
 
   local schedulename=${1/.sql/}
-  local schedulesdir=${ORACLE_DIR}/jobs
+  local schedulesdir=${ORACLE_DIR}/schedules
   local export_schedule_sql=${schedulesdir}/export_schedule_${schedulename}.sql
 
   _logfile_write "Start download of the schedule ${schedulename}." || return 1
@@ -1019,7 +1019,7 @@ commons_oracle_download_create_export_schedule() {
 
   local schedulename=${1/.sql/}
 
-  local schedulesdir=${ORACLE_DIR}/jobs
+  local schedulesdir=${ORACLE_DIR}/schedules
   local export_schedule_sql=${schedulesdir}/export_schedule_${schedulename}.sql
   local export_schedule_file=${schedulesdir}/export_schedules_gen_${schedulename}.sql
 
