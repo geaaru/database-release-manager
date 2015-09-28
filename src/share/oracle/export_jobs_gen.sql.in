@@ -23,8 +23,7 @@ BEGIN
    FOR t_name IN (select u.object_name 
    from user_objects u 
    where object_type = 'JOB' 
-   AND SUBSTR(u.object_name, 1, 1) = UPPER('j') 
-   AND u.object_name = UPPER(jobname)) LOOP
+   AND SUBSTR(u.object_name, 1, 1) = UPPER('j')) LOOP
  --   AND u.object_name = UPPER('PKREQUEST')) LOOP
       select 'spool '||jobsdir||'job_'||InitCap(LOWER(t_name.object_name))||'.sql' into res from dual;
       dbms_output.put_line (res); 
