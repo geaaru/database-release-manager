@@ -1128,6 +1128,7 @@ _mariadb_show_args () {
 #   * --index-table [it]  Table of the index to drop. To use with --index.
 #   * --fk-table          Table of the foreign key to drop. If there are more of one foreign key
 #                         I use same table name.
+#   * --all-fkeys         Drop all foreign key of the database.
 # SEE ALSO
 #   _mariadb_connections_args for a list of connection arguments
 # SOURCE
@@ -1137,7 +1138,7 @@ _mariadb_drop_args () {
 
   local short_options="d:U:P:hH:D:t:"
   local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
-  long_options="$long_options fkey: index: index-table: fk-table:"
+  long_options="$long_options fkey: index: index-table: fk-table: all-fkeys all-indexes"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -1153,6 +1154,8 @@ _mariadb_drop_args () {
   MARIADB_DROP_INDEX=""
   MARIADB_DROP_TINDEX=""
   MARIADB_DROP_FKEY_NAMES=0
+  MARIADB_DROP_ALLFKEYS=0
+  MARIADB_DROP_ALLIDX=0
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -1181,6 +1184,12 @@ _mariadb_drop_args () {
         MARIADB_DROP_TINDEX="$2"
         shift
         ;;
+      --all-fkeys)
+        MARIADB_DROP_ALLFKEYS=1
+        ;;
+      --all-indexes)
+        MARIADB_DROP_ALLIDX=1
+        ;;
       -h|--help)
         _mariadb_drop_help
         return 1
@@ -1195,6 +1204,14 @@ _mariadb_drop_args () {
 
     shift
   done
+
+  if [[ $MARIADB_DROP_ALLFKEYS -eq 1 && $MARIADB_DROP_FKEY_NAMES -gt 0 ]] ; then
+    out_handler_print "Drop all foreign keys is been selected. I ignore all single options."
+  fi
+
+  if [[ $MARIADB_DROP_ALLIDX -eq 1 && -n $MARIADB_DROP_INDEX ]] ; then
+    out_handler_print "Drop all indexes is been selected. I ignore all single options."
+  fi
 
   return 0
 
@@ -1518,6 +1535,9 @@ _mariadb_drop_help () {
   echo -en "                         To use with --index.\n"
   echo -en "[--fk-table NAME]        Table name of the foreign key/keys to drop.\n"
   echo -en "                         To use optional with --fkey.\n"
+  echo -en "[--all-fkeys]            Drop all foreign keys from current database.\n"
+  echo -en "[--all-indexes]          Drop all not primary indexes from current database.\n"
+
   return 0
 }
 #***
@@ -1884,38 +1904,112 @@ _mariadb_drop () {
 
   local fk=""
   local f=""
+  local fkeys=""
+  local table=""
+  local cnt=0
+  local indexes=""
+  local idx=""
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_drop args: $@)\n"
 
   # Drop single foreign key
 
-  if [ $MARIADB_DROP_FKEY_NAMES -gt 0 ] ; then
+  if [ $MARIADB_DROP_ALLFKEYS -gt 0 ] ; then
 
-    for i in ${!MARIADB_DROP_FKEYS[@]}
-    do
+    # Retrieve foreign keys list
+    commons_mariadb_get_fkeys_list "" "KCU.CONSTRAINT_NAME, KCU.TABLE_NAME" || \
+      error_handled "Error on retrieve list of foreign keys."
 
-      f="${MARIADB_DROP_FKEYS[$i]/.sql/}"
-      f="$(basename "$f")"
+    fkeys=$_mariadb_ans
 
-      commons_mariadb_drop_fkey "$f" "" "${MARIADB_DROP_FKTABLE}" || \
-        error_handled "Error on drop foreign key $f."
+    IFS=$'\n'
+    for row in $fkeys ; do
 
-      out_handler_print "Foreign key ${f} dropped.\n"
+      fk=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      table=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+
+      unset IFS
+
+      commons_mariadb_drop_fkey "${fk}" "" "${table}" || \
+        error_handled "Error on drop foreign key ${fk} from table ${table}."
+
+      out_handler_print "Foreign key ${fk} from table ${table} dropped.\n"
+
+      let cnt++
+
+      IFS=$'\n'
 
     done
+    unset IFS
+
+    out_handler_print "Dropped ${cnt} foreign keys."
+
+  else
+
+    if [ $MARIADB_DROP_FKEY_NAMES -gt 0 ] ; then
+
+      for i in ${!MARIADB_DROP_FKEYS[@]}
+      do
+
+        f="${MARIADB_DROP_FKEYS[$i]/.sql/}"
+        f="$(basename "$f")"
+
+        commons_mariadb_drop_fkey "$f" "" "${MARIADB_DROP_FKTABLE}" || \
+          error_handled "Error on drop foreign key $f."
+
+        out_handler_print "Foreign key ${f} dropped."
+
+      done
+
+    fi
 
   fi
 
-  # Drop single index
+  if [ $MARIADB_DROP_ALLIDX -eq 1 ] ; then
 
-  if [[ -n "$MARIADB_DROP_INDEX" && -n "$MARIADB_DROP_TINDEX" ]] ; then 
+    # Retrieve indexes list
+    commons_mariadb_get_indexes_list "not_primary" "S.TABLE_NAME,S.INDEX_NAME" || \
+      error_handled "Error on retrieve list of indexes."
 
-    commons_mariadb_drop_index "${MARIADB_DROP_INDEX}" "${MARIADB_DROP_TINDEX}" || \
-      error_handled "Error on drop index ${MARIADB_DROP_INDEX} from table ${MARIADB_DROP_TINDEX}."
+    indexes=$_mariadb_ans
 
-    out_handler_print "Index ${MARIADB_DROP_INDEX} from table ${MARIADB_DROP_TINDEX} dropped.\n"
+    IFS=$'\n'
+    for row in $indexes ; do
+
+      table=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      idx=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+
+      unset IFS
+
+      commons_mariadb_drop_index "${idx}" "${table}" || \
+        error_handled "Error on drop index ${idx} from table ${table}."
+
+      out_handler_print "Index ${idx} from table ${table} dropped."
+
+      let cnt++
+
+      IFS=$'\n'
+
+    done
+    unset IFS
+
+    out_handler_print "Dropped ${cnt} indexes."
+
+  else
+    # Drop single index
+
+    if [[ -n "$MARIADB_DROP_INDEX" && -n "$MARIADB_DROP_TINDEX" ]] ; then 
+
+      commons_mariadb_drop_index "${MARIADB_DROP_INDEX}" "${MARIADB_DROP_TINDEX}" || \
+        error_handled "Error on drop index ${MARIADB_DROP_INDEX} from table ${MARIADB_DROP_TINDEX}."
+
+      out_handler_print "Index ${MARIADB_DROP_INDEX} from table ${MARIADB_DROP_TINDEX} dropped.\n"
+
+    fi
 
   fi
+
+  out_handler_clean
 
   return 0
 }
