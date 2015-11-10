@@ -192,7 +192,7 @@ commons_oracle_shell () {
 # SOURCE
 commons_oracle_download_all_packages() {
 
-  local packagesdir=${ORACLE_DIR}/package
+  local packagesdir=${ORACLE_DIR}/packages
   local export_packages_sql=${packagesdir}/export_packages.sql
 
   _logfile_write "Start download of all packages." || return 1
@@ -226,7 +226,7 @@ commons_oracle_download_all_packages() {
 # SOURCE
 commons_oracle_download_create_export_packages() {
 
-  local packagesdir=${ORACLE_DIR}/package
+  local packagesdir=${ORACLE_DIR}/packages
   local export_packages_sql=${packagesdir}/export_packages.sql
   local export_packages_file=${packagesdir}/export_packages_gen.sql
 
@@ -279,7 +279,7 @@ commons_oracle_download_create_export_package() {
 
   local packagename=${1/.sql/}
 
-  local packagesdir=${ORACLE_DIR}/package
+  local packagesdir=${ORACLE_DIR}/packages
   local export_package_sql=${packagesdir}/export_package_${packagename}.sql
   local export_package_file=${packagesdir}/export_packages_gen_${packagename}.sql
 
@@ -332,7 +332,7 @@ commons_oracle_download_create_export_package() {
 commons_oracle_download_package() {
 
   local packagename=${1/.sql/}
-  local packagesdir=${ORACLE_DIR}/package
+  local packagesdir=${ORACLE_DIR}/packages
   local export_package_sql=${packagesdir}/export_package_${packagename}.sql
 
   _logfile_write "Start download of the package ${packagename}." || return 1
