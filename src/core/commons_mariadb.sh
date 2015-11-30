@@ -281,9 +281,9 @@ commons_mariadb_compile_fkey () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en \
     "( commons_mariadb_compile_fkey: (${fk_str}) I use fkey ${fk} for table ${fk_table} (${fktname}) (force = ${force}))\n"
 
-  [ ! -e $f ] && f=${fk_dir}/${fk_table}-${fk}.sql
+  [ ! -e "${f}" ] && f=${fk_dir}/${fk_table}-${fk}.sql
 
-  if [ ! -e $f ] ; then
+  if [ ! -e "${f}" ] ; then
     _logfile_write "(mariadb) File $f not found." || return 1
     [[ $DEBUG && $DEBUG == true ]] && echo -en "(mariadb) File $f not found.\n"
     return 1
@@ -471,6 +471,10 @@ commons_mariadb_compile_all_from_dir () {
   _logfile_write "(mariadb) Start compilation $msg_head: $msg" || return 1
 
   for i in $directory/*.sql ; do
+
+    if [ ! -f "${i}" ]  ; then
+      continue
+    fi
 
     fk_is_present=1
     exc=0
