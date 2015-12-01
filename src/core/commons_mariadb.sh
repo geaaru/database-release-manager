@@ -244,7 +244,7 @@ commons_mariadb_compile_fkey () {
   local fktname=""
 
   # Try to check if is present table name from filename
-  fktname=$(echo $fk_str | awk 'match($0, /[a-zA-Z]+/) { print substr($0, RSTART, RLENGTH) }')
+  fktname=$(echo $fk_str | awk 'match($0, /[a-zA-Z_]+/) { print substr($0, RSTART, RLENGTH) }')
   fk=$(echo $fk_str | awk 'match($0, /[-]/) { print substr($0, RSTART + 1) }')
 
   if [ -z "${fk_table}" ] ; then
@@ -324,6 +324,117 @@ commons_mariadb_compile_fkey () {
 }
 #***
 
+#****f* commons_mariadb/commons_mariadb_compile_idx
+# FUNCTION
+#   Compile file related with index of a table to database.
+# DESCRIPTION
+#   Output of the compilation is saved on MYSQL_OUTPUT variable.
+# INPUTS
+#   f        - path of the file to compile
+#   msg      - message to insert on logging file relative to input file.
+#   force    - if foreign key is present and force is equal to 1, then
+#              index is dropped and added again.
+#   fk_table - table of the index
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   mysql_file
+# SOURCE
+commons_mariadb_compile_idx () {
+
+  local f=$1
+  local msg=$2
+  local force="$3"
+  local idx_table="$4"
+  local f_base=$(basename "$f")
+  local idx_dir=$(dirname "$f")
+  local idx_str="${f_base/.sql/}"
+  local idx=""
+  local idx_is_present=1
+  local idxtname=""
+
+  # Try to check if is present table name from filename
+  # TODO: show how handle table with "-" on name.
+  idxtname=$(echo $idx_str | awk 'match($0, /[a-zA-Z_]+/) { print substr($0, RSTART, RLENGTH) }')
+  idx=$(echo $idx_str | awk 'match($0, /[-]/) { print substr($0, RSTART + 1) }')
+
+  if [ -z "${idx_table}" ] ; then
+
+    [ -n "${idxtname}" ] && idx_table="${idxtname}"
+
+  elif [[ -n "${idx_table}" && -n "${idx}" ]] ; then
+    # POST: idx_str contains both index name and index table.
+    #       I check if idx_table in input is equal to idxtname (string catch from idx_str)
+    if [ "${idx_table}" != "${idxtname}" ] ; then
+      _logfile_write "(mariadb) Index ${idx_str} is not related with table ${idx_table}." || return 1
+
+      error_generate "Index ${idx_str} is not related with table ${idx_table}."
+    fi
+
+  fi
+
+  [ -z "${idx}" ] && idx="${idx_str}"
+
+  # Check if foreign key already present
+  commons_mariadb_check_if_exist_index "${idx}" "${idx_table}"
+  idx_is_present=$?
+
+  # If idxtname is empty and idx_table is not available and index is present
+  # I try to retrieve table name
+  if [[ -z "${idx_table}" && $idx_is_present -eq 0 ]] ; then
+
+    commons_mariadb_get_indexes_list "not_primary" "S.INDEX_NAME, S.TABLE_NAME" "${idx}" || \
+      error_handled "Error on get data of index $idx."
+
+    idx_table=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[2]}'`
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en \
+    "( commons_mariadb_compile_idx: (${idx_str}) I use index ${idx} for table ${idx_table} (${idxtname}) (force = ${force}))\n"
+
+  [ ! -e "${f}" ] && f=${idx_dir}/${idx_table}-${idx}.sql
+
+  if [ ! -e "${f}" ] ; then
+    _logfile_write "(commons_mariadb_compile_idx) File $f not found." || return 1
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(mariadb) File $f not found.\n"
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en \
+    "( commons_mariadb_compile_idx: Try to compile index ${idx} for table ${idx_table} (${force})...)\n"
+
+  if [[ $idx_is_present -eq 0 && x"${force}" == x"1" ]] ; then
+    # POST: index is present and force is equal to 1.
+
+    commons_mariadb_drop_index "${idx}" "${idx_table}" || return 1
+
+    commons_mariadb_compile_file "$f" "$msg" || return 1
+
+  elif [ $idx_is_present -eq 0 ] ; then
+
+    [[ $DEBUG && $DEBUG == true ]] && \
+      echo -en "( commons_mariadb_compile_idx: index ${idx} for table ${idx_table} is already present. Nothing to do.)\n"
+
+    _logfile_write "(mariadb) Index ${idx} is already present. Nothing to do." || return 1
+
+  elif [ $idx_is_present -eq 2 ] ; then
+
+    [[ $DEBUG && $DEBUG == true ]] && \
+      echo -en "( commons_mariadb_compile_idx: index ${idx} exists for different tables.\nSet table param.)\n"
+
+    _logfile_write "(mariadb) Index ${idx} exists for different tables. Set table param for compilation." || return 1
+
+  else
+
+    # POST: index not present. I compile it.
+    commons_mariadb_compile_file "$f" "$msg" || return 1
+
+  fi
+
+  return 0
+}
+#***
 
 
 #****f* commons_mariadb/commons_mariadb_compile_all_procedures
@@ -440,6 +551,31 @@ commons_mariadb_compile_all_fkeys () {
 }
 #***
 
+#****f* commons_mariadb/commons_mariadb_compile_all_idxs
+# FUNCTION
+#   Compile all files under MARIADB_DIR/indexes directory.
+# INPUTS
+#   msg      - message to insert on logging file relative to input file.
+#   force    - if equals to 1, force compilation of all indexes also if already present.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   commons_mariadb_compile_all_from_dir
+# SOURCE
+commons_mariadb_compile_all_idxs () {
+
+  local msg="$1"
+  local force="$2"
+  local directory="$MARIADB_DIR/indexes"
+
+  commons_mariadb_compile_all_from_dir "$directory" "of all indexes" "$msg" "idx" "${force}" || \
+    return 1
+
+  return 0
+}
+#***
+
 #****f* commons_mariadb/commons_mariadb_compile_all_from_dir
 # FUNCTION
 #   Compile all files from input directory with .sql extension.
@@ -508,6 +644,12 @@ commons_mariadb_compile_all_from_dir () {
     if [[ -n "$dtype" && x"$dtype" == x"fkey" ]] ; then
 
       commons_mariadb_compile_fkey "$i" "$msg" "${closure}"
+
+    fi
+
+    if [[ -n "$dtype" && x"$dtype" == x"idx" ]] ; then
+
+      commons_mariadb_compile_idx "$i" "$msg" "${closure}"
 
     else
 

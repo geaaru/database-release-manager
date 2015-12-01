@@ -666,7 +666,7 @@ _mariadb_compile_args () {
   local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
   long_options="$long_options all-triggers id-script: file: all-functions all-procedures "
   long_options="$long_options all-views all-foreign-keys all trigger: function: view: "
-  long_options="$long_options procedure: exclude: fkey: force fk-table:"
+  long_options="$long_options procedure: exclude: fkey: force fk-table: all-indexes"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -685,6 +685,7 @@ _mariadb_compile_args () {
   MARIADB_COMPILE_ALL_PROCEDURES=0
   MARIADB_COMPILE_ALL_VIEWS=0
   MARIADB_COMPILE_ALL_FKEYS=0
+  MARIADB_COMPILE_ALL_INDEXES=0
   MARIADB_COMPILE_PROCEDURE=""
   MARIADB_COMPILE_TRIGGER=""
   MARIADB_COMPILE_FUNCTION=""
@@ -721,6 +722,9 @@ _mariadb_compile_args () {
         ;;
       --all-foreign-keys)
         MARIADB_COMPILE_ALL_FKEYS=1
+        ;;
+      --all-indexes)
+        MARIADB_COMPILE_ALL_INDEXES=1
         ;;
       --all)
         MARIADB_COMPILE_ALL=1
@@ -1477,6 +1481,8 @@ _mariadb_compile_help () {
   echo -en "[--all-views]            Compile all views present on MARIADB_DIR subdirectories.\n"
   echo -en "[--all-foreign-keys]     Compile all foreign keys present on MARIADB_DIR subdirectories\n"
   echo -en "                         if not present on database. (Use --force to drop and compile again fkey).\n"
+  echo -en "[--all-indexes]          Compile all indexes present on MARIADB_DIR subdirectories\n"
+  echo -en "                         if not present on database. (Use --force to drop and compile again index).\n"
   echo -en "[--all]                  Compile all procedures, triggers, functions and views present under\n"
   echo -en "                         MARIADB_DIR subdirectories.\n"
   echo -en "[--procedure name]       Compile a particular procedure under MARIADB_DIR/procedures directory.\n"
@@ -1489,12 +1495,12 @@ _mariadb_compile_help () {
   echo -en "                          configuration variable).\n"
   echo -en "[--id-script id]         Compile a particular script registered under MARIADB_DIR/<directory>/.\n"
   echo -en "[--file file]            Compile a particular file. (Use ABS Path or relative path from current dir.)\n"
-  echo -en "[--force]                For foreign keys it means that fkey is dropped and add again also if\n"
+  echo -en "[--force]                For foreign keys it means that fkey/index is dropped and add again also if\n"
   echo -en "                         already present.\n"
   echo -en "[--fk-table tname]       Table name of foreign key to compile. To use with --fkey.\n"
   echo -en "                         If this param is missing dbrm try to identify table\n"
   echo -en "                         name. If there are more or one fkey with same name\n"
-  echo -eb "                         then elaboration is blocked.\n"
+  echo -en "                         then elaboration is blocked.\n"
   echo -en "Note: For argument with value if it isn't passed value argument is ignored.\n"
 
   return 0
@@ -1708,6 +1714,15 @@ _mariadb_compile () {
           error_handled "Error on compile file ${f}.sql"
 
       fi
+
+    fi
+
+    # Check for all-indexes
+
+    if [ $MARIADB_COMPILE_ALL_INDEXES -eq 1 ] ; then
+
+      commons_mariadb_compile_all_idxs "" $MARIADB_COMPILE_FORCE || \
+        error_handled "Error on compile all indexes."
 
     fi
 
