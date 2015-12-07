@@ -86,6 +86,8 @@ package_create () {
 
   _package_copy_dbrm_files
 
+  _package_copy_extra_data
+
   _package_handle_profile_params
 
   _package_tar_files
@@ -132,6 +134,10 @@ _package_init_tmpdir () {
   for i in $dbm_dirs ; do
     mkdir -p $i || error_handled "Error on create directory $i."
   done
+
+  if [[ $DBRM_PACKAGE_EXTRA_FILES -gt 0 || $DBRM_PACKAGE_EXTRA_DIRS -gt 0 ]] ; then
+    mkdir -p ${DBRM_PACKAGE_TMPDIR}/extra
+  fi
 
   return 0
 }
@@ -287,6 +293,44 @@ _package_copy_pj_oracle_files () {
 
 }
 
+_package_copy_extra_data () {
+
+  local i=""
+
+  if [[ $DBRM_PACKAGE_EXTRA_FILES -gt 0 ]] ; then
+
+    [[ $DEBUG && $DEBUG == true ]] && \
+      echo -en "(_package_copy_extra_data): Begin copy of extra files...\n"
+
+    for i in ${!DBRM_PACKAGE_EXTRA_FILE[@]}
+    do
+
+      [[ $DEBUG && $DEBUG == true ]] && \
+        echo -en "(_package_copy_extra_data): Copy file ${DBRM_PACKAGE_EXTRA_FILE[$i]} to extra directory.\n"
+
+      cp -f ${DBRM_PACKAGE_EXTRA_FILE[$i]} ${DBRM_PACKAGE_TMPDIR}/extra/
+    done
+
+  fi
+
+  if [[ ${DBRM_PACKAGE_EXTRA_DIRS} -gt 0 ]] ; then
+
+    [[ $DEBUG && $DEBUG == true ]] && \
+      echo -en "(_package_copy_extra_data): Begin copy of extra directories...\n"
+
+    for i in ${!DBRM_PACKAGE_EXTRA_DIR[@]}
+    do
+      [[ $DEBUG && $DEBUG == true ]] && \
+        echo -en "(_package_copy_extra_data): Copy directory ${DBRM_PACKAGE_EXTRA_FILE[$i]} to extra directory.\n"
+
+      cp -rf ${DBRM_PACKAGE_EXTRA_DIR[$i]} ${DBRM_PACKAGE_TMPDIR}/extra/
+    done
+
+  fi
+
+  return 0
+}
+
 _package_copy_dbrm_files () {
 
   local dbrmfiles_dir="$DBRM_PACKAGE_TMPDIR/dbrm-files"
@@ -416,9 +460,10 @@ _package_create_args () {
   [[ $DEBUG ]] && echo -en "(_package_create_args args: $@)\n"
 
   local short_options="h"
-  local long_options="dirname:to:exclude:help"
+  local long_options="dirname: to: exclude: include-file: include-dir: help"
 
-  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
+  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || \
+    error_handled "Invalid parameters"
 
   if [ $# -lt 2 ] ; then
     _package_create_help
@@ -431,6 +476,10 @@ _package_create_args () {
   DBRM_PACKAGE_EXCLUDED_FILES=0
   DBRM_PACKAGE_EXCLUDED=""
   DBRM_PACKAGE_DIRNAME=""
+  DBRM_PACKAGE_EXTRA_DIRS=0
+  DBRM_PACKAGE_EXTRA_DIR=""
+  DBRM_PACKAGE_EXTRA_FILES=0
+  DBRM_PACKAGE_EXTRA_FILE=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -444,12 +493,22 @@ _package_create_args () {
         shift
         ;;
       --exclude)
-        let DBRM_PACKAGE_EXCLUDED_FILES++
         DBRM_PACKAGE_EXCLUDED[$DBRM_PACKAGE_EXCLUDED_FILES]="$2"
+        let DBRM_PACKAGE_EXCLUDED_FILES++
         shift
         ;;
       --dirname)
         DBRM_PACKAGE_DIRNAME="$2"
+        shift
+        ;;
+      --include-dir)
+        DBRM_PACKAGE_EXTRA_DIR[$DBRM_PACKAGE_EXTRA_DIRS]="$2"
+        let DBRM_PACKAGE_EXTRA_DIRS++
+        shift
+        ;;
+      --include-file)
+        DBRM_PACKAGE_EXTRA_FILE[$DBRM_PACKAGE_EXTRA_FILES]="$2"
+        let DBRM_PACKAGE_EXTRA_FILES++
         shift
         ;;
       *)
@@ -475,6 +534,10 @@ _package_create_help () {
   echo -en "                        main directory inside target tarball tree.\n"
   echo -en "                        This option is optional. Default is current\n"
   echo -en "                        directory name.\n"
+  echo -en "[--include-dir d]       Include extra directory on tarball.\n"
+  echo -en "                        This option could be repeated.\n"
+  echo -en "[--include-file f]      Include extra file on tarball.\n"
+  echo -en "                        This option could be repeated.\n"
   echo -en "\n"
 
   return 0
