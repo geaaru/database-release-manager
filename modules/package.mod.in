@@ -171,7 +171,7 @@ _package_tar_files () {
 _package_handle_profile_params () {
 
   local pj_dir="$DBRM_PACKAGE_TMPDIR/project"
-  local profiles_dir="${pj_dir}/dbrm/profiles/"
+  local profiles_dir="${pj_dir}/dbrm-profiles/"
   local query=""
 
   [[ $DEBUG && $DEBUG == true ]] && \
@@ -179,7 +179,7 @@ _package_handle_profile_params () {
 
   if [[ $DRM_PROFILE -eq 1 ]] ; then
 
-    # For now just copy all profiles under project/dbrm/profiles directory.
+    # For now just copy all profiles under project/dbrm-profiles/profiles directory.
     mkdir -p ${profiles_dir} || error_handled "Error on create directory ${profiles_dir}."
 
     query="
@@ -240,8 +240,11 @@ _package_copy_project_files () {
   cp ${LOCAL_CONFIG_FILE} ${pj_dir}/ || error_handled "Error on copy LOCAL_CONFIG_FILE."
 
   # Replace LOCAL_DIR of dbrm.conf file to ./project/
-  sed -i -e 's/LOCAL_DIR=.*/LOCAL_DIR=.\/project/g' ${pj_dir}/dbrm.conf ||
+  sed -i -e 's/LOCAL_DIR=.*/LOCAL_DIR=.\/project/g' ${pj_dir}/dbrm.conf || \
     error_handled "Error on fix LOCAL_DIR on ${pj_dir}/dbrm.conf file."
+  # Override environment DRM_PROFILES_PATH with default tree
+  sed -i -e 's:DRM_PROFILES_PATH=.*:DRM_PROFILES_PATH=\$LOCAL_DIR/dbrm-profiles/:g' ${pj_dir}/dbrm.conf || \
+    error_handled "Error on fix DRM_PROFILES_PATH on ${pj_dir}/dbrm.conf file."
 
   # Copy current dbrm.db file under ./project
   cp ${DRM_DB} ${pj_dir} || error_handled "Error on copy dbrm.db file to ${pj_dir}."
