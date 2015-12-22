@@ -1283,6 +1283,8 @@ commons_mariadb_get_indexes_list () {
   local all_column=""
   local andWhere_name=""
   local andWhere_type=""
+  local ext_custom_column=""
+  local ext_all_columns=""
 
   if [ -z "$custom_column" ] ; then
     all_column="
@@ -1295,6 +1297,21 @@ commons_mariadb_get_indexes_list () {
       S.INDEX_COMMENT
     "
     # On Mysql 5.1 INDEX_COMMENT is not available.
+
+    ext_all_columns="
+      TMP.TABLE_NAME,
+      TMP.NON_UNIQUE,
+      TMP.INDEX_NAME,
+      TMP.KEY_COLUMNS,
+      TMP.INDEX_TYPE,
+      TMP.COMMENT,
+      TMP.INDEX_COMMENT
+
+    "
+  else
+
+    # TODO: Currently replace only KCU table.
+    ext_custom_column=${custom_column//S./TMP.}
 
   fi
 
@@ -1317,21 +1334,25 @@ commons_mariadb_get_indexes_list () {
   fi
 
   local cmd="
-    SELECT ${all_column} ${custom_column}
-    FROM  INFORMATION_SCHEMA.STATISTICS S
-    WHERE S.TABLE_SCHEMA = '$MARIADB_DB'
-    ${andWhere_name}
-    ${andWhere_iname}
-    ${andWhere_type}
-    AND S.INDEX_NAME NOT IN (
-        SELECT TC.CONSTRAINT_NAME AS INDEX_NAME
-        FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
-        WHERE TC.TABLE_SCHEMA = '$MARIADB_DB'
-        AND TC.CONSTRAINT_SCHEMA = TC.TABLE_SCHEMA
-        AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY'
-    )
-    GROUP BY S.TABLE_NAME, S.INDEX_NAME
-    ORDER BY S.TABLE_NAME, S.INDEX_NAME"
+    SELECT CONCAT_WS('|', ${ext_all_columns} ${ext_custom_column}) AS ANS
+    FROM (
+      SELECT ${all_column} ${custom_column}
+      FROM  INFORMATION_SCHEMA.STATISTICS S
+      WHERE S.TABLE_SCHEMA = '$MARIADB_DB'
+      ${andWhere_name}
+      ${andWhere_iname}
+      ${andWhere_type}
+      AND S.INDEX_NAME NOT IN (
+          SELECT TC.CONSTRAINT_NAME AS INDEX_NAME
+          FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
+          WHERE TC.TABLE_SCHEMA = '$MARIADB_DB'
+          AND TC.CONSTRAINT_SCHEMA = TC.TABLE_SCHEMA
+          AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY'
+      )
+      GROUP BY S.TABLE_NAME, S.INDEX_NAME
+      ORDER BY S.TABLE_NAME, S.INDEX_NAME
+    ) TMP
+  "
 
   mysql_cmd_4var "_mariadb_ans" "$cmd" || return 1
 
@@ -2292,11 +2313,11 @@ commons_mariadb_download_index () {
     error_handled "Error on retrieve data about index key $name on table ${tname}."
 
   # TODO: add support to comment and index comment
-  table=`echo $_mariadb_ans | awk '{split($0,a," "); print a[1]}'`
-  not_unique=`echo $_mariadb_ans | awk '{split($0,a," "); print a[2]}'`
-  iname=`echo $_mariadb_ans | awk '{split($0,a," "); print a[3]}'`
-  keys=`echo $_mariadb_ans | awk '{split($0,a," "); print a[4]}'`
-  itype=`echo $_mariadb_ans | awk '{split($0,a," "); print a[5]}'`
+  table=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[1]}'`
+  not_unique=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[2]}'`
+  iname=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[3]}'`
+  keys=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[4]}'`
+  itype=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[5]}'`
 
   if [ "${iname}" == 'PRIMARY' ] ; then
 
@@ -2378,8 +2399,8 @@ commons_mariadb_download_all_indexes () {
     IFS=$'\n'
     for row in $_mariadb_ans ; do
 
-      tname=`echo $row | awk '{split($0,a," "); print a[1]}'`
-      iname=`echo $row | awk '{split($0,a," "); print a[2]}'`
+      tname=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      iname=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
 
       unset IFS
       commons_mariadb_download_index "${iname}" "${tname}"
@@ -2439,7 +2460,7 @@ commons_mariadb_drop_index () {
       commons_mariadb_get_indexes_list "all" "" "${tname}" "${name}" || \
         error_handled "Error on get index data."
 
-      keys=`echo $_mariadb_ans | awk '{split($0,a," "); print a[4]}' | tr "," " "`
+      keys=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[4]}' | tr "," " "`
       karr=($keys)
 
       for k in ${!karr[@]} ; do
@@ -2734,7 +2755,7 @@ commons_mariadb_get_table_def () {
 
     def="${def},\n"
     commons_mariadb_get_indexes_list "primary" "" "${tname}"
-    local keys=`echo $_mariadb_ans | awk '{split($0,a," "); print a[4]}'`
+    local keys=`echo $_mariadb_ans | awk '{split($0,a,"|"); print a[4]}'`
     local pkey=""
 
     get_space_str "pkey" "0" "" "${pre_spaces}"

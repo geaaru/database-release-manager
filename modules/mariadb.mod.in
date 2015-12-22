@@ -2760,12 +2760,11 @@ _mariadb_show_indexes () {
     IFS=$'\n'
     for row in $_mariadb_ans ; do
 
-      table=`echo $row | awk '{split($0,a," "); print a[1]}'`
-      unique=`echo $row | awk '{split($0,a," "); print a[2]}'`
-      iname=`echo $row | awk '{split($0,a," "); print a[3]}'`
-      keys_cols=`echo $row | awk '{split($0,a," "); print a[4]}'`
-      index_type=`echo $row | awk '{split($0,a," "); print a[5]}'`
-
+      table=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      unique=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+      iname=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+      keys_cols=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+      index_type=`echo $row | awk '{split($0,a,"|"); print a[5]}'`
 
       # Convert iname
       if [ -n "${unique}" ] ; then
