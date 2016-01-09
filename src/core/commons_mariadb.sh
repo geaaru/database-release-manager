@@ -213,6 +213,51 @@ commons_mariadb_compile_file () {
 }
 #***
 
+#****f* commons_mariadb/commons_mariadb_source_file
+# FUNCTION
+#   Compile file on database (with source command).
+# DESCRIPTION
+#   Output of the compilation is saved on MYSQL_OUTPUT variable.
+# INPUTS
+#   f        - path of the file to compile
+#   msg      - message to insert on logging file relative to input file.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   mysql_source_file
+# SOURCE
+commons_mariadb_source_file () {
+
+  local f=$1
+  local msg=$2
+  local f_base=$(basename "$f")
+
+  if [ ! -e $f ] ; then
+    _logfile_write "(mariadb) File $f not found." || return 1
+    return 1
+  fi
+
+  _logfile_write "(mariadb) Start compilation/source (file $f_base): $msg" || return 1
+
+  echo "(mariadb) Start compilation/source (file $f_base): $msg"
+
+  MYSQL_OUTPUT=""
+
+  mysql_source_file "MYSQL_OUTPUT" "$f"
+  local ans=$?
+
+  _logfile_write "\n$MYSQL_OUTPUT" || return 1
+
+  _logfile_write "(mariadb) End compilation/source (file $f_base, result => $ans): $msg" || return 1
+
+  echo -en "(mariadb) End compilation/source (file $f_base, result => $ans): $msg\n"
+
+  return $ans
+
+}
+#***
+
 #****f* commons_mariadb/commons_mariadb_compile_fkey
 # FUNCTION
 #   Compile file related with foreign key on database.

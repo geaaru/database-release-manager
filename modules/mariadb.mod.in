@@ -636,7 +636,8 @@ _mariadb_connections_args () {
 #   * -h                  Show help message
 #   * --all-triggers      Compile all triggers files.
 #   * --id-script [id]    Compile a particular script with input id.
-#   * --file [file_path]  Compile a file
+#   * --file [file_path]  Compile a file.
+#   * --dumpfile [f]      Compile a file related with a mysql dump.
 #   * --all-functions     Compile all functions files.
 #   * --all-views         Compile all views
 #   * --all-foreign-keys  Compile all foreign keys if not present. (Use --force to drop and compile
@@ -667,6 +668,7 @@ _mariadb_compile_args () {
   long_options="$long_options all-triggers id-script: file: all-functions all-procedures "
   long_options="$long_options all-views all-foreign-keys all trigger: function: view: "
   long_options="$long_options procedure: exclude: fkey: force fk-table: all-indexes"
+  long_options="$long_options dumpfile:"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -692,6 +694,7 @@ _mariadb_compile_args () {
   MARIADB_COMPILE_VIEW=""
   MARIADB_COMPILE_ID_SCRIPT=""
   MARIADB_COMPILE_FILE=""
+  MARIADB_COMPILE_DUMPFILE=""
   MARIADB_COMPILE_FKEY=""
   MARIADB_COMPILE_FKTABLE=""
   MARIADB_COMPILE_FORCE=0
@@ -751,6 +754,10 @@ _mariadb_compile_args () {
         ;;
       --file)
         MARIADB_COMPILE_FILE="$2"
+        shift
+        ;;
+      --dumpfile)
+        MARIADB_COMPILE_DUMPFILE="$2"
         shift
         ;;
       --fkey)
@@ -1495,6 +1502,9 @@ _mariadb_compile_help () {
   echo -en "                          configuration variable).\n"
   echo -en "[--id-script id]         Compile a particular script registered under MARIADB_DIR/<directory>/.\n"
   echo -en "[--file file]            Compile a particular file. (Use ABS Path or relative path from current dir.)\n"
+  echo -en "                         For dump file use --dumpfile option.\n"
+  echo -en "[--dumpfile file]        Compile a dump file. (Use ABS Path or relative path from current dir.)\n"
+  echo -en "                         Currently, this option doesn't replace schema reference automatically.\n"
   echo -en "[--force]                For foreign keys it means that fkey/index is dropped and add again also if\n"
   echo -en "                         already present.\n"
   echo -en "[--fk-table tname]       Table name of foreign key to compile. To use with --fkey.\n"
@@ -1614,7 +1624,16 @@ _mariadb_compile () {
   # Compile single file if available
   if [ ! -z "$MARIADB_COMPILE_FILE" ] ; then
 
-    commons_mariadb_compile_file "$MARIADB_COMPILE_FILE" "File $MARIADB_COMPILE_FILE" || error_handled "Error on compile file $MARIADB_COMPILE_FILE."
+    commons_mariadb_compile_file "$MARIADB_COMPILE_FILE" "File $MARIADB_COMPILE_FILE" || \
+      error_handled "Error on compile file $MARIADB_COMPILE_FILE."
+
+  fi
+
+  # Compile single dump file if available
+  if [ ! -z "$MARIADB_COMPILE_DUMPFILE" ] ; then
+
+    commons_mariadb_source_file "$MARIADB_COMPILE_DUMPFILE" "File $MARIADB_COMPILE_DUMPFILE" || \
+      error_handled "Error on compile (with source) file $MARIADB_COMPILE_DUMPFILE."
 
   fi
 

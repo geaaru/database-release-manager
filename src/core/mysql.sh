@@ -159,8 +159,6 @@ mysql_source_file () {
   if [[ ! -z "$MARIADB_IGNORE_TMZ" && $MARIADB_IGNORE_TMZ -eq 1 ]] ; then
     tz=""
   fi
-  local sql="$(cat $f)"
-
 
   if [ -n "$MARIADB_SHOW_COLUMNS" ] ; then
     opts=""
