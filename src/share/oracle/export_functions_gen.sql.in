@@ -25,7 +25,7 @@ BEGIN
    where object_type = 'FUNCTION' )
    --AND u.object_name like UPPER ('FC')||'%')
    LOOP
-      select 'spool '||functionsdir||InitCap(LOWER(t_name.object_name))||'.sql' into res from dual;
+      select 'spool '||functionsdir||'fc'||InitCap(REPLACE(LOWER(t_name.object_name), 'fc', ''))||'.sql' into res from dual;
       dbms_output.put_line (res); 
       select 'select REPLACE(REPLACE(FNC, '' "''||OWNER||''"."'', '' "''), ''EDITIONABLE '', '''') AS FNC from '||
              '('||
