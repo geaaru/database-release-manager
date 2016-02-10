@@ -899,6 +899,7 @@ commons_mariadb_count_indexes () {
   local tname=$1
   local idx_types="$2"
   local andwhere=""
+  local andWhere_type=""
 
   if [ -n "$tname" ] ; then
     andwhere="AND TABLE_NAME = '$tname'"
@@ -917,21 +918,24 @@ commons_mariadb_count_indexes () {
   local cmd="
     SELECT COUNT(1) AS CNT
     FROM (
-       SELECT TABLE_NAME, INDEX_NAME
-      FROM  INFORMATION_SCHEMA.STATISTICS
-      WHERE TABLE_SCHEMA = '$MARIADB_DB'
-      AND INDEX_NAME NOT IN (
-          SELECT TC.CONSTRAINT_NAME AS INDEX_NAME
-          FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
-          WHERE TC.TABLE_SCHEMA = '$MARIADB_DB'
-          AND TC.CONSTRAINT_SCHEMA = TC.TABLE_SCHEMA
-          AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY'
+      SELECT *
+      FROM (
+        SELECT TABLE_NAME, INDEX_NAME
+        FROM  INFORMATION_SCHEMA.STATISTICS S
+        WHERE S.TABLE_SCHEMA = '$MARIADB_DB'
+        ${andWhere_type}
+        ${andwhere}
+        GROUP BY S.TABLE_NAME, S.INDEX_NAME
+        ORDER BY S.TABLE_NAME, S.INDEX_NAME
+      ) IDX
+      WHERE IDX.INDEX_NAME NOT IN (
+            SELECT TC.CONSTRAINT_NAME AS INDEX_NAME
+            FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
+            WHERE TC.TABLE_SCHEMA = '$MARIADB_DB'
+            AND TC.CONSTRAINT_SCHEMA = TC.TABLE_SCHEMA
+            AND TC.CONSTRAINT_TYPE = 'FOREIGN KEY'
       )
-      ${andWhere_type}
-      ${andwhere}
-      GROUP BY TABLE_NAME, INDEX_NAME
-      ORDER BY TABLE_NAME, INDEX_NAME
-    ) T
+    ) TMP
   "
 
   mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" "" "1" || error_handled ""
