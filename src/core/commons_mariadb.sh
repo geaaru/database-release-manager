@@ -292,6 +292,10 @@ commons_mariadb_compile_fkey () {
   fktname=$(echo $fk_str | awk 'match($0, /[a-zA-Z_]+/) { print substr($0, RSTART, RLENGTH) }')
   fk=$(echo $fk_str | awk 'match($0, /[-]/) { print substr($0, RSTART + 1) }')
 
+  [[ $DEBUG && $DEBUG == true ]] && echo -en \
+    "(commons_mariadb_compile_fkey: f = ${f}, force = ${force}, fk_table"\
+    " = ${fk_table}, fktname = ${fktname}, fk = ${fk}, fk_str = ${fk_str}.\n"
+
   if [ -z "${fk_table}" ] ; then
 
     [ -n "${fktname}" ] && fk_table="${fktname}"
@@ -686,19 +690,24 @@ commons_mariadb_compile_all_from_dir () {
     # If file is excluded go to the next
     [ $exc -eq 1 ] && continue
 
+    [[ $DEBUG && $DEBUG == true ]] && echo -en \
+      "(commons_mariadb_compile_all_from_dir: compile file [$i].\n"
+
     if [[ -n "$dtype" && x"$dtype" == x"fkey" ]] ; then
 
       commons_mariadb_compile_fkey "$i" "$msg" "${closure}"
 
-    fi
-
-    if [[ -n "$dtype" && x"$dtype" == x"idx" ]] ; then
-
-      commons_mariadb_compile_idx "$i" "$msg" "${closure}"
-
     else
 
-      commons_mariadb_compile_file "$i" "$msg"
+      if [[ -n "$dtype" && x"$dtype" == x"idx" ]] ; then
+
+        commons_mariadb_compile_idx "$i" "$msg" "${closure}"
+
+      else
+
+        commons_mariadb_compile_file "$i" "$msg"
+
+      fi
 
     fi
 
