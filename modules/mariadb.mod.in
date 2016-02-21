@@ -1139,7 +1139,9 @@ _mariadb_show_args () {
 #   * --index-table [it]  Table of the index to drop. To use with --index.
 #   * --fk-table          Table of the foreign key to drop. If there are more of one foreign key
 #                         I use same table name.
+#   * --trigger [name]    Drop a particular trigger.
 #   * --all-fkeys         Drop all foreign key of the database.
+#   * --all-triggers      Drop all trigger of the database.
 # SEE ALSO
 #   _mariadb_connections_args for a list of connection arguments
 # SOURCE
@@ -1150,6 +1152,7 @@ _mariadb_drop_args () {
   local short_options="d:U:P:hH:D:t:"
   local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
   long_options="$long_options fkey: index: index-table: fk-table: all-fkeys all-indexes"
+  long_options="$long_options trigger: all-triggers"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -1167,6 +1170,9 @@ _mariadb_drop_args () {
   MARIADB_DROP_FKEY_NAMES=0
   MARIADB_DROP_ALLFKEYS=0
   MARIADB_DROP_ALLIDX=0
+  MARIADB_DROP_ALLTRIGGERS=0
+  MARIADB_DROP_TRIGGER_NAMES=0
+  MARIADB_DROP_TRIGGERS=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -1201,6 +1207,14 @@ _mariadb_drop_args () {
       --all-indexes)
         MARIADB_DROP_ALLIDX=1
         ;;
+      --trigger)
+        MARIADB_DROP_TRIGGERS[$MARIADB_DROP_TRIGGER_NAMES]="$2"
+        let MARIADB_DROP_TRIGGER_NAMES++
+        shift
+        ;;
+      --all-triggers)
+        MARIADB_DROP_ALLTRIGGERS=1
+        ;;
       -h|--help)
         _mariadb_drop_help
         return 1
@@ -1222,6 +1236,10 @@ _mariadb_drop_args () {
 
   if [[ $MARIADB_DROP_ALLIDX -eq 1 && -n $MARIADB_DROP_INDEX ]] ; then
     out_handler_print "Drop all indexes is been selected. I ignore all single options."
+  fi
+
+  if [[ $MARIADB_DROP_ALLTRIGGERS -eq 1 && $MARIADB_DROP_TRIGGER_NAMES -gt 0 ]] ; then
+    out_handler_print "Drop all triggers is been selected. I ignore all single option."
   fi
 
   return 0
@@ -1553,6 +1571,8 @@ _mariadb_drop_help () {
   echo -en "                         To use optional with --fkey.\n"
   echo -en "[--all-fkeys]            Drop all foreign keys from current database.\n"
   echo -en "[--all-indexes]          Drop all not primary indexes from current database.\n"
+  echo -en "[--all-triggers]         Drop all trigger of the database.\n"
+  echo -en "[--trigger NAME]         Drop trigger [NAME] from database.\n"
 
   return 0
 }
@@ -1942,6 +1962,8 @@ _mariadb_drop () {
   local table=""
   local cnt=0
   local indexes=""
+  local triggers=""
+  local trigger=""
   local idx=""
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_drop args: $@)\n"
@@ -2038,6 +2060,57 @@ _mariadb_drop () {
         error_handled "Error on drop index ${MARIADB_DROP_INDEX} from table ${MARIADB_DROP_TINDEX}."
 
       out_handler_print "Index ${MARIADB_DROP_INDEX} from table ${MARIADB_DROP_TINDEX} dropped.\n"
+
+    fi
+
+  fi
+
+  if [ $MARIADB_DROP_ALLTRIGGERS -eq 1 ] ; then
+
+    # Retrieve triggers list
+    commons_mariadb_get_triggers_list || \
+      error_handled "Error on retrieve list of triggers."
+
+    triggers=$_mariadb_ans
+
+    IFS=$'\n'
+    for row in $triggers ; do
+
+      trigger=`echo $row | awk '{split($0,a," "); print a[1]}'`
+      table=`echo $row | awk '{split($0,a," "); print a[2]}'`
+
+      unset IFS
+
+      commons_mariadb_drop_trigger "${trigger}" "${table}" || \
+        error_handled "Error on drop trigger ${trigger} from table ${table}."
+
+      out_handler_print "Trigger ${trigger} from table ${table} dropped."
+
+      let cnt++
+
+      IFS=$'\n'
+
+    done
+    unset IFS
+
+    out_handler_print "Dropped ${cnt} triggers."
+
+  else
+
+    if [ $MARIADB_DROP_TRIGGER_NAMES -gt 0 ] ; then
+
+      for i in ${!MARIADB_DROP_TRIGGERS[@]}
+      do
+
+        f="${MARIADB_DROP_TRIGGERS[$i]/.sql/}"
+        f="$(basename "$f")"
+
+        commons_mariadb_drop_trigger "$f" || \
+          error_handled "Error on drop trigger $f."
+
+        out_handler_print "Trigger ${f} dropped."
+
+      done
 
     fi
 

@@ -1627,6 +1627,9 @@ commons_mariadb_get_views_list () {
 #****f* commmons_mariadb/commons_mariadb_check_if_exist_trigger
 # FUNCTION
 #   Check if exists a trigger with name in input on schema.
+# INPUTS
+#   name         - name of the trigger
+#   tname        - name of the table of the trigger to check. (optional).
 # RETURN VALUE
 #   1 if not exists
 #   0 if exists
@@ -1637,7 +1640,14 @@ commons_mariadb_check_if_exist_trigger () {
 
   local result=1
   local name="$1"
+  local tname="$2"
   local errmsg="Error on check if exists trigger $name."
+  local whereCond=""
+
+  if [ -n "${tname}" ] ; then
+    whereCond="AND EVENT_OBJECT_TABLE = '${tname}'"
+  fi
+
   local cmd="
     SELECT COUNT(1) AS CNT
     FROM INFORMATION_SCHEMA.TRIGGERS
@@ -1645,7 +1655,9 @@ commons_mariadb_check_if_exist_trigger () {
     AND TRIGGER_NAME = '$name' 
     AND ACTION_TIMING IN ('BEFORE', 'AFTER')
     AND EVENT_MANIPULATION IN ('INSERT', 'UPDATE', 'DELETE')
-    AND ACTION_STATEMENT IS NOT NULL;"
+    AND ACTION_STATEMENT IS NOT NULL
+    ${whereCond}
+  "
 
   mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || return $result
 
@@ -2991,5 +3003,64 @@ ${TABLE_DEF}
 
 }
 #***
+
+#****f* commmons_mariadb/commons_mariadb_drop_trigger
+# FUNCTION
+#   Drop a trigger from database if exists.
+# INPUTS
+#   name         - name of the trigger to drop.
+#   table_name   - name of the table related with the trigger to drop.
+#   avoid_warn   - if argument $3 is not empty and trigger doesn't exist no warning are printed.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SOURCE
+commons_mariadb_drop_trigger () {
+
+  local is_present=1
+  local name="$1"
+  local tname="$2"
+  local avoid_warn="$3"
+  local cmd=""
+
+  local keys=""
+  local extra=""
+  local ctype=""
+  local is_nullable=""
+  local null=""
+
+  _logfile_write "(mariadb) Start drop trigger: $name (table ${tname}) " || return 1
+
+  commons_mariadb_check_if_exist_trigger "${name}" "${tname}"
+  is_present=$?
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(commons_mariadb_drop_trigger: Dropping trigger $name from table ${tname} (is_present = $is_present).\n"
+
+  if [ $is_present -eq 0 ] ; then
+
+    cmd="
+      USE \`${MARIADB_DB}\` ;
+      DROP TRIGGER \`${name}\`
+    "
+    mysql_cmd_4var "MYSQL_OUTPUT" "$cmd"
+    local ans=$?
+
+    _logfile_write "Result = $ans\n$MYSQL_OUTPUT" || return 1
+
+  else
+
+    if [ -z "$avoid_warn" ] ; then
+      _logfile_write "\nWARNING: Trigger $name on table ${tname} not present." || return 1
+    fi
+
+  fi
+
+  _logfile_write "(mariadb) End drop trigger: $name (table ${tname})" || return 1
+
+  return 0
+}
+#***
+
 
 # vim: syn=sh filetype=sh
