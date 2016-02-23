@@ -26,7 +26,11 @@ BEGIN
    where object_type = 'PACKAGE' 
    AND SUBSTR(u.object_name, 1, 2) = UPPER('pk')
    AND u.object_name = UPPER(packagename)) LOOP
-      select 'spool '||packagesdir||'pk'||InitCap(REPLACE(LOWER(t_name.object_name), 'pk', ''))||'.sql' into res from dual;
+      SELECT CASE WHEN SUBSTR(LOWER(t_name.object_name),1 ,2) = 'pk'
+                  THEN 'spool '||packagesdir||'pk'||InitCap(REPLACE(LOWER(t_name.object_name), 'pk', ''))||'.sql'
+                  ELSE 'spool '||packagesdir||InitCap(LOWER(t_name.object_name))||'.sql'
+             END into res
+      FROM dual;   
       dbms_output.put_line (res); 
       dbms_output.put_line ('BEGIN'); 
       select 'dbms_metadata.set_transform_param( DBMS_METADATA.SESSION_TRANSFORM, ''SPECIFICATION'', TRUE );' into res from dual;
