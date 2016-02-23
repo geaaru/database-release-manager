@@ -22,8 +22,7 @@ DECLARE
 BEGIN
    FOR t_name IN (select u.object_name 
    from user_objects u 
-   where object_type = 'VIEW' 
-   AND SUBSTR(u.object_name, 1, 1) = UPPER('v')) LOOP
+   where object_type = 'VIEW') LOOP
 --   AND u.object_name = UPPER('PKREQUEST')) LOOP
       SELECT CASE WHEN SUBSTR(LOWER(t_name.object_name),1 ,2) = 'vw'
                   THEN 'spool '||viewsdir||'vw'||InitCap(REPLACE(LOWER(t_name.object_name), 'vw', ''))||'.sql'
