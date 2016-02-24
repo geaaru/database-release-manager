@@ -28,7 +28,7 @@ BEGIN
  --   AND u.object_name = UPPER('PKREQUEST')) LOOP
       SELECT CASE WHEN SUBSTR(LOWER(t_name.object_name),1 ,2) = 'vw'
                   THEN 'spool '||viewsdir||'vw'||InitCap(REPLACE(LOWER(t_name.object_name), 'vw', ''))||'.sql'
-                  ELSE 'spool '||viewsdir||InitCap(LOWER(t_name.object_name))||'.sql'
+                  ELSE 'spool '||viewsdir||LOWER(t_name.object_name)||'.sql'
              END into res
       FROM dual;   
       dbms_output.put_line (res); 
