@@ -1356,6 +1356,8 @@ _ssl_start_tun () {
 
   # TODO: check if use nohup or other solutions.
   if [ $DBRM_SSL_USE_SSHPASS -eq 1 ] ; then
+    [[ $DEBUG && $DEBUG == true ]] && echo -en \
+      "(_ssl_start_tun_sshpas): Tun. ${id_tunnel} cmd: sshpass -e  ssh ${def_opts} ${opts} ${ssl_url}\n"
     sshpass -e ssh ${def_opts} ${opts} ${ssl_url} > /dev/null 2>&1 &
   else
     ssh ${def_opts} ${opts} ${ssl_url} > /dev/null 2>&1 &

@@ -96,6 +96,7 @@ mariadb_initenv () {
      indexes
      creation_scripts
      update_scripts
+     schedulers
      schemas
   "
 

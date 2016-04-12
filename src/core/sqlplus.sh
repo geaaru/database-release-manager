@@ -76,13 +76,26 @@ sqlplus_cmd_4var() {
   local rm_lf=$3
   local v=""
   local feedback="$4"
+  local custom_opts="$5"
+  local opts=""
 
-  if [[ $feedback == '' ]] ; then
-    feedback="off"
+  if [[ -n "${custom_opts}" ]] ; then
+
+    opts="${custom_opts}; "
+
+  else
+
+    if [[ $feedback == '' ]] ; then
+      feedback="off"
+    fi
+
+    opts="set echo off heading off feedback $feedback;"
   fi
 
+  [[ $DEBUG && $DEBUG == true ]] && echo "(sqlplus: opts = $opts)"
+
   v=$($SQLPLUS -S -l $sqlplus_auth 2>&1 <<EOF
-set echo off heading off feedback $feedback;
+$opts
 $cmd;
 exit;
 EOF

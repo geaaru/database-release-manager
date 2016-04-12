@@ -877,14 +877,6 @@ commons_oracle_download_create_export_job() {
 }
 #***
 
-
-
-
-
-
-
-
-
 #****f* commons_oracle/commons_oracle_download_all_jobs
 # FUNCTION
 #   Download all functions from schema to ORACLE_DIR/schedules directory.
@@ -1056,13 +1048,6 @@ commons_oracle_download_create_export_schedule() {
 
 }
 #***
-
-
-
-
-
-
-
 
 #****f* commons_oracle/commons_oracle_download_all_triggers
 # FUNCTION

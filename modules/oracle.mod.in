@@ -43,6 +43,7 @@ oracle_long_help () {
    echo -en "\tdownload                Download packages/triggers/views/etc.\n"
    echo -en "\tcompile                 Compile packages/triggers/views/etc.\n"
    echo -en "\tshell                   Enter on sqlplus shell of current configuration.\n"
+   echo -en "\tquery                   Execute directly a query on current database.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -65,6 +66,7 @@ oracle_show_help () {
    echo -en "\tdownload                Download packages/triggers/views/etc.\n"
    echo -en "\tcompile                 Compile packages/triggers/views/etc.\n"
    echo -en "\tshell                   Enter on sqlplus shell of current configuration.\n"
+   echo -en "\tquery                   Execute directly a query on current database.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -201,6 +203,38 @@ oracle_shell () {
 
   return 0
 }
+#***
+
+#****f* oracle/oracle_query
+# FUNCTION
+#   Execute directly a query to database.
+# SEE ALSO
+#   _oracle_connections_args
+oracle_query () {
+
+  # Shift first two input params
+  shift 2
+
+  _oracle_check_status
+
+  _oracle_help_message="do_help"
+
+  _oracle_connections_args "$@"
+
+  _oracle_query_args "$@" || error_handled ""
+
+  commons_oracle_check_vars
+
+  sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD"
+
+  commons_oracle_check_connection || error_handled "SQLPlus was unable to connect the DB with the supplied credentials"
+
+  _oracle_query || error_handled ""
+
+  return 0
+}
+#***
+
 
 ##################################################################
 # Internal functions
@@ -299,7 +333,7 @@ _oracle_connections_args () {
       -D) ORACLE_DIR="$2";shift;;
       -t) TNS_ADMIN="$2";shift;;
       -h|--help)
-        if [ ! -z "$_oracle_help_message" ] ; then
+        if [ -n "$_oracle_help_message" ] ; then
           echo -en "[-S oracle_sid]         Override Oracle SID (or set ORACLE_SID on configuration file).\n"
           echo -en "[-P oracle_pwd]         Override Oracle Password (or set ORACLE_PWD on configuration file).\n"
           echo -en "[-U oracle_user]        Override Oracle schema/user (or set ORACLE_USER on configuration file).\n"
@@ -470,6 +504,7 @@ _oracle_download_help () {
 
   return 0
 }
+#***
 
 #****f* oracle/_oracle_compile_args
 # FUNCTION
@@ -963,5 +998,153 @@ _oracle_compile_id_script () {
 }
 #***
 
+#****f* oracle/_oracle_query_help
+# FUNCTION
+#   Print help message of query command.
+# SOURCE
+_oracle_query_help () {
 
+  echo -en "[--stdin-query]         Set this option for query send from standard input.\n"
+  echo -en "[--logging]             Enable logging of the query to log file\n"
+  echo -en "[--query QUERY]         Query to execute.\n"
+  echo -en "[--output-opts OPTS]    Customize sqlplus output options.\n"
+  echo -en "                        Default are: set echo off heading off feedback off wrap off\n"
+
+  return 0
+}
+#***
+
+#****f* oracle/_oracle_query_args
+# FUNCTION
+#   Internal function for parse command line argument relative to download command.
+# DESCRIPTION
+#   * --stdin-query       Query send through standard input.
+#   * --query             Query to execute
+#   * --logging           Enable logging to file.
+#   * --output-opts OPTS  Customize sqlplus output format.
+# SEE ALSO
+#   _oracle_connections_args
+# SOURCE
+_oracle_query_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_query_args args: $@)\n"
+
+  local short_options="S:U:P:hD:t:"
+  local long_options="stdin-query query: logging output-opts:"
+  long_options="$long_options help"
+
+  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
+
+  if [ $# -lt 1 ] ; then # is there at least one param (--)
+    _oracle_query_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_query_args: Found $# params)\n"
+
+  ORACLE_QUERY_STDIN=0
+  ORACLE_QUERY_CMDLINE=0
+  ORACLE_QUERY_LOGGING=0
+  ORACLE_QUERY_STR=""
+  ORACLE_QUERY_SQLPLUS_OPTS=""
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -S|-U|-P|-D|-t)
+        shift
+        # do nothing
+        ;;
+
+      --stdin-query)
+        ORACLE_QUERY_STDIN=1
+        ;;
+      --logging)
+        ORACLE_QUERY_LOGGING=1
+        ;;
+      --query)
+        ORACLE_QUERY_CMDLINE=1
+        ORACLE_QUERY_STR="$2"
+        shift
+        ;;
+      --output-opts)
+        ORACLE_QUERY_SQLPLUS_OPTS="$2"
+        shift
+        ;;
+
+      -h|--help)
+        _oracle_query_help
+        return 1
+        ;;
+      --)
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+
+    esac
+
+    shift
+  done
+
+  if [[ $ORACLE_QUERY_STDIN -eq 1 && $ORACLE_QUERY_CMDLINE -gt 1 ]] ; then
+    out_handler_print "Both --query and --stdin-query options set. Only one possible."
+  fi
+
+  if [[ $ORACLE_QUERY_STDIN -eq 0 && $ORACLE_QUERY_CMDLINE -eq 0 ]] ; then
+    out_handler_print "Mandatory parameter --query or --stdin-query options missing."
+  fi
+
+  if [[ $ORACLE_QUERY_CMDLINE -eq 1 && -z "$ORACLE_QUERY_STR" ]] ; then
+    out_handler_print "Invalid query string."
+  fi
+
+
+  return 0
+}
+#***
+
+#****f* oracle/_oracle_init
+# FUNCTION
+#   Internal function called on initialization of the oracle module.
+# DESCRIPTION
+# SOURCE
+_oracle_query () {
+
+  local res=0
+  local sqlopts="set echo off heading off feedback off wrap off"
+
+  ORACLE_ANS=""
+
+  [[ $ORACLE_QUERY_LOGGING -eq 1 ]] && \
+    _logfile_write "(oracle) Executing query: ${ORACLE_QUERY_STR}"
+
+  if [[ -n "${ORACLE_QUERY_SQLPLUS_OPTS}" ]] ; then
+    sqlopts="${ORACLE_QUERY_SQLPLUS_OPTS}"
+  fi
+
+  if [[ $ORACLE_QUERY_STDIN -eq 1 ]] ; then
+
+    ORACLE_QUERY_STR=$(</dev/stdin)
+
+    [[ $DEBUG && $DEBUG == true ]] && \
+      echo -en "(_oracle_query: From stdin read:\n${ORACLE_QUERY_STR})\n"
+
+  fi
+
+  sqlplus_cmd_4var "ORACLE_ANS" "${ORACLE_QUERY_STR}" "" "" "${sqlopts}"
+  res=$?
+
+
+  if [[ $ORACLE_QUERY_LOGGING -eq 1 ]] ; then
+    _logfile_write "\n${ORACLE_ANS}" || return 1
+    _logfile_write "(oracle) End query (${ORACLE_QUERY_STR}): result => $res." || return 1
+  else
+    out_handler_print "${ORACLE_ANS}"
+  fi
+
+
+  return $res
+}
+#***
 # vim: syn=sh filetype=sh ts=2 sw=2
