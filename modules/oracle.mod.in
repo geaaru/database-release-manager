@@ -1116,13 +1116,6 @@ _oracle_query () {
 
   ORACLE_ANS=""
 
-  [[ $ORACLE_QUERY_LOGGING -eq 1 ]] && \
-    _logfile_write "(oracle) Executing query: ${ORACLE_QUERY_STR}"
-
-  if [[ -n "${ORACLE_QUERY_SQLPLUS_OPTS}" ]] ; then
-    sqlopts="${ORACLE_QUERY_SQLPLUS_OPTS}"
-  fi
-
   if [[ $ORACLE_QUERY_STDIN -eq 1 ]] ; then
 
     ORACLE_QUERY_STR=$(</dev/stdin)
@@ -1130,6 +1123,13 @@ _oracle_query () {
     [[ $DEBUG && $DEBUG == true ]] && \
       echo -en "(_oracle_query: From stdin read:\n${ORACLE_QUERY_STR})\n"
 
+  fi
+
+  [[ $ORACLE_QUERY_LOGGING -eq 1 ]] && \
+    _logfile_write "(oracle) Executing query:\n${ORACLE_QUERY_STR}"
+
+  if [[ -n "${ORACLE_QUERY_SQLPLUS_OPTS}" ]] ; then
+    sqlopts="${ORACLE_QUERY_SQLPLUS_OPTS}"
   fi
 
   sqlplus_cmd_4var "ORACLE_ANS" "${ORACLE_QUERY_STR}" "" "" "${sqlopts}"
