@@ -625,6 +625,30 @@ commons_mariadb_compile_all_idxs () {
 }
 #***
 
+
+#****f* commons_mariadb/commons_mariadb_compile_all_events
+# FUNCTION
+#   Compile all files under MARIADB_DIR/schedulers directory.
+# INPUTS
+#   msg      - message to insert on logging file relative to input file.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SEE ALSO
+#   commons_mariadb_compile_all_from_dir
+# SOURCE
+commons_mariadb_compile_all_events () {
+
+  local msg="$1"
+  local directory="$MARIADB_DIR/schedulers"
+
+  commons_mariadb_compile_all_from_dir "$directory" "of all events" "$msg" || return 1
+
+  return 0
+}
+#***
+
+
 #****f* commons_mariadb/commons_mariadb_compile_all_from_dir
 # FUNCTION
 #   Compile all files from input directory with .sql extension.
@@ -886,6 +910,31 @@ commons_mariadb_count_views () {
 
   if [ -z "$MYSQL_OUTPUT" ] ; then
     error_generate "Error on count views."
+  fi
+
+  return $MYSQL_OUTPUT
+}
+#***
+
+#****f* commons_mariadb/commons_mariadb_count_events
+# FUNCTION
+#   Count number of events present on schema.
+# RETURN VALUE
+#   Number of events available on schema.
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
+commons_mariadb_count_events () {
+
+  local cmd="
+    SELECT COUNT(1) AS CNT
+    FROM INFORMATION_SCHEMA.EVENTS
+    WHERE EVENT_SCHEMA = '$MARIADB_DB';"
+
+  mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" "" "1" || error_handled ""
+
+  if [ -z "$MYSQL_OUTPUT" ] ; then
+    error_generate "Error on count events."
   fi
 
   return $MYSQL_OUTPUT
@@ -1542,6 +1591,37 @@ commons_mariadb_exist_table () {
 }
 #***
 
+
+#****f* commmons_mariadb/commons_mariadb_exist_event
+# FUNCTION
+#   Check if exists event in input.
+# RETURN VALUE
+#   1 on error or if event is not exists.
+#   0 if event exists.
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
+commons_mariadb_exist_event () {
+
+  local ename="$1"
+  local result=1
+
+  local cmd="
+    SELECT COUNT(1)
+    FROM INFORMATION_SCHEMA.EVENTS
+    WHERE EVENT_SCHEMA = '$MARIADB_DB'
+    AND EVENT_NAME = '$ename'"
+
+  mysql_cmd_4var "MYSQL_OUTPUT" "$cmd" || return 1
+
+  if [ x"$MYSQL_OUTPUT" == x"1" ] ; then
+    result=0
+  fi
+
+  return $result
+}
+#***
+
 #****f* commmons_mariadb/commons_mariadb_get_procedures_list
 # FUNCTION
 #   Save on _mariadb_ans variable list of procedures defined on schema.
@@ -1602,6 +1682,71 @@ commons_mariadb_get_functions_list () {
 }
 #***
 
+#****f* commmons_mariadb/commons_mariadb_get_events_list
+# FUNCTION
+#   Save on _mariadb_ans variable list of events defined on schema.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   mysql_cmd_4var
+# SOURCE
+commons_mariadb_get_events_list () {
+
+  local opt=$1
+  local ename=$2
+  local add_columns=""
+  local and_where=""
+
+  if [ -n "$opt" ] ; then
+    if [[ "${opt}" == 'all' ]] ; then
+      add_columns="
+        ,
+        DEFINER,
+        TIME_ZONE,
+        EVENT_TYPE,
+        COALESCE(EXECUTE_AT, ''),
+        COALESCE(INTERVAL_VALUE, ''),
+        COALESCE(INTERVAL_FIELD, ''),
+        COALESCE(STARTS, ''),
+        COALESCE(ENDS, ''),
+        STATUS,
+        ON_COMPLETION,
+        CREATED,
+        LAST_ALTERED,
+        COALESCE(LAST_EXECUTED, ''),
+        COALESCE(EVENT_COMMENT)
+      "
+    else
+      add_columns="
+        ,
+        DEFINER,
+        TIME_ZONE,
+        EVENT_TYPE,
+        STATUS,
+        CREATED,
+        COALESCE(LAST_EXECUTED, '')
+      "
+    fi
+  fi
+
+  if [ -n "${ename}" ] ; then
+    and_where="AND EVENT_NAME = '${ename}'"
+  fi
+
+  local cmd="
+    SELECT CONCAT_WS('|', EVENT_NAME ${add_columns}) AS ANS
+    FROM INFORMATION_SCHEMA.EVENTS
+    WHERE EVENT_SCHEMA = '$MARIADB_DB'
+    ${and_where}
+  "
+
+  mysql_cmd_4var "_mariadb_ans" "$cmd" || return 1
+
+  return 0
+}
+
+#***
 #****f* commmons_mariadb/commons_mariadb_get_views_list
 # FUNCTION
 #   Save on _mariadb_ans variable list of views defined on schema.
@@ -1879,6 +2024,149 @@ $MYSQL_OUTPUT
 }
 #***
 
+#****f* commmons_mariadb/commons_mariadb_download_event
+# FUNCTION
+#   Download a trigger to MARIADB_DIR/events directory.
+# INPUTS
+#   name    - name of the event to download.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_mariadb_exist_event
+#   mysql_cmd_4var
+# SOURCE
+commons_mariadb_download_event () {
+
+  local result=1
+  local name="${1/.sql/}"
+  local with_tz="$2"
+  name=`basename $name`
+
+  local eventsdir="${MARIADB_DIR}/schedulers"
+  local f="$eventsdir/$name.sql"
+
+  commons_mariadb_exist_event "$name" || error_handled "Event $name not found."
+
+  if [ ! -e "$eventsdir" ] ; then
+    mkdir "$eventsdir"
+  fi
+
+  [ -f "$f" ] && rm -f "$f"
+
+  # Retrieve event data
+  commons_mariadb_get_events_list "all" "${name}" || \
+    error_handled "Error on get data of event ${name}."
+
+  local row=$_mariadb_ans
+  local def=`echo $row | awk '{split($row,a,"|"); print a[2]}'`
+  local tzone=`echo $row | awk '{split($row,a,"|"); print a[3]}'`
+  local etype=`echo $row | awk '{split($row,a,"|"); print a[4]}'`
+  local exec_at=`echo $row | awk '{split($row,a,"|"); print a[5]}'`
+  local int_field=`echo $row | awk '{split($row,a,"|"); print a[7]}'`
+  local int_value=`echo $row | awk '{split($row,a,"|"); print a[6]}'`
+  local starts=`echo $row | awk '{split($row,a,"|"); print a[8]}'`
+  local ends=`echo $row | awk '{split($row,a,"|"); print a[9]}'`
+  local status=`echo $row | awk '{split($row,a,"|"); print a[10]}'`
+  local on_completion=`echo $row | awk '{split($row,a,"|"); print a[11]}'`
+  local comment=`echo $row | awk '{split($row,a,"|"); print a[15]}'`
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(commons_mariadb_download_event: def = '${def}', tzone = '${tzone}', " \
+      "etype = '${etype}', exec_at = '${exec_at}', int_field = '${int_field}', " \
+      "int_value = '${int_value}', starts = '${starts}', ends = '${ends}', " \
+      "status = '${status}', on_completion = '${on_completion}', comment = '${comment}'.\n"
+
+
+  local query="
+    SELECT EVENT_DEFINITION
+    FROM INFORMATION_SCHEMA.EVENTS
+    WHERE EVENT_NAME = '$name' AND EVENT_SCHEMA = '$MARIADB_DB';"
+
+  mysql_cmd_4var "MYSQL_OUTPUT" "$query" || return $result
+
+  if [ -z "$MYSQL_OUTPUT" ] ; then
+    error_generate "Error on download data of the event $name."
+  fi
+
+  local at_row=""
+  local starts_row=""
+  local ends_row=""
+  local every_row=""
+  local comm_row=""
+  local status_row=""
+  local on_compl_row=""
+
+  if [ -n "${exec_at}" ] ; then
+    at_row="AT '${exec_at}'"
+  fi
+  if [[ -n "${int_field}" && -n "${int_value}" ]] ; then
+    if [ -n "${at_row}" ] ; then
+      every_row="\n  EVERY ${int_value} ${int_field}"
+    else
+      every_row="EVERY ${int_value} ${int_field}"
+    fi
+  fi
+  if [[ -n "${on_completion}" && ${on_completion} != "NOT PRESERVE" ]] ; then
+    on_compl_row="\n  ON COMPLETION PRESERVE"
+  fi
+  if [ -n "${starts}" ] ; then
+    starts_row="\n  STARTS '${starts}'"
+  fi
+  if [ -n "${ends}" ] ; then
+    ends_row="\n  ENDS '${ends}'"
+  fi
+  if [[ -n "${status}" ]] ; then
+    if [ "${status}" == "ENABLED" ] ; then
+      status_row="ENABLE"
+    else
+      if [ "${status}" == 'SLAVESIDE_DISABLED' ] ; then
+        status_row="DISABLE SLAVE"
+      else # DISABLED
+        status_row="DISABLE"
+      fi
+    fi
+  fi
+
+  if [[ -n "${comment}" ]] ; then
+    comm_row="\n  COMMENT '${comment}'"
+  fi
+
+  local set_tz=""
+  if [[ -n "${with_tz}" && "${with_tz}" == "1" ]] ; then
+    set_tz="SET time_zone = '${tzone}' \$\$"
+  fi
+
+  # TODO: check if add IF NOT EXISTS.
+
+  local out="
+-- \$Id\$
+
+DELIMITER \$\$
+USE \`DB_NAME\`\$\$
+
+${set_tz}
+CREATE EVENT
+  \`${name}\`
+  ON SCHEDULE
+  ${at_row}${every_row}${starts_row}${ends_row}${on_compl_row}
+  ${status_row}${comm_row}
+  DO
+    $MYSQL_OUTPUT
+  \$\$
+
+DELIMITER ;
+"
+
+  unset MYSQL_BODY
+
+  echo -en "$out" > $f
+
+  return 0
+}
+#***
+
+
 #****f* commmons_mariadb/commons_mariadb_download_view
 # FUNCTION
 #   Download a view to MARIADB_DIR/views directory.
@@ -2106,6 +2394,57 @@ commons_mariadb_download_all_triggers () {
         echo -en "Error on download trigger $name ($i of $n_rec).\n"
       else
         echo -en "Download trigger $name ($i of $n_rec).\n"
+      fi
+      let i++
+      IFS=$'\n'
+
+    done
+    unset IFS
+
+  fi
+
+  return 0
+}
+#***
+
+#****f* commmons_mariadb/commons_mariadb_download_all_events
+# FUNCTION
+#   Download all events to MARIADB_DIR/schedulers directory.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SEE ALSO
+#   commons_mariadb_count_events
+#   commons_mariadb_download_event
+# SOURCE
+commons_mariadb_download_all_events () {
+
+  local n_rec=0
+  local name=""
+  local i=1
+  local with_tz="$1"
+
+  commons_mariadb_count_events
+  n_rec=$?
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(_commons_mariadb_download_all_events: Found $n_rec events.\n"
+
+  if [ $n_rec -gt 0 ] ; then
+
+    commons_mariadb_get_events_list "view" || error_handled "Error on get events name list."
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      name=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+
+      unset IFS
+      commons_mariadb_download_event "$name" "${with_tz}"
+      if [ $? -ne 0 ] ; then
+        echo -en "Error on download event $name ($i of $n_rec).\n"
+      else
+        echo -en "Download event $name ($i of $n_rec).\n"
       fi
       let i++
       IFS=$'\n'
@@ -3057,6 +3396,56 @@ commons_mariadb_drop_trigger () {
   fi
 
   _logfile_write "(mariadb) End drop trigger: $name (table ${tname})" || return 1
+
+  return 0
+}
+#***
+
+#****f* commmons_mariadb/commons_mariadb_drop_event
+# FUNCTION
+#   Drop a event from database if exists.
+# INPUTS
+#   name         - name of the event to drop.
+#   avoid_warn   - if argument $2 is not empty and event doesn't exist no warning are printed.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SOURCE
+commons_mariadb_drop_event () {
+
+  local is_present=1
+  local ename="$1"
+  local avoid_warn="$2"
+  local cmd=""
+
+  _logfile_write "(mariadb) Start drop event: $ename " || return 1
+
+  commons_mariadb_exist_event "${ename}"
+  is_present=$?
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(commons_mariadb_drop_event: Dropping event $ename (is_present = $is_present).\n"
+
+  if [ $is_present -eq 0 ] ; then
+
+    cmd="
+      USE \`${MARIADB_DB}\` ;
+      DROP EVENT \`${ename}\`
+    "
+    mysql_cmd_4var "MYSQL_OUTPUT" "$cmd"
+    local ans=$?
+
+    _logfile_write "Result = $ans\n$MYSQL_OUTPUT" || return 1
+
+  else
+
+    if [ -z "$avoid_warn" ] ; then
+      _logfile_write "\nWARNING: Event $ename is not present." || return 1
+    fi
+
+  fi
+
+  _logfile_write "(mariadb) End drop event: $ename." || return 1
 
   return 0
 }
