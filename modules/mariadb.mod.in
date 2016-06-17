@@ -327,6 +327,15 @@ mariadb_show () {
 
     fi
 
+    # Show variables
+    if [ $MARIADB_SHOW_GLOBAL_VARS -eq 1 ] ; then
+
+      _mariadb_show_global_vars "${MARIADB_SHOW_VARFILTER}"
+
+      out_handler_print "\n"
+
+    fi
+
   fi
 
   if [ $MARIADB_SHOW_TABLES_DESCR -gt 0 ] ; then
@@ -1079,6 +1088,8 @@ _mariadb_download_help () {
 #   * --event [name]      Show detail of event [name].
 #   * --table [name]      Show detail of table [name].
 #   * --fkey [name]       Show detail of foreign key [name].
+#   * --global-vars       Show global variables of the Mysql instance.
+#   * --vars-filter       Apply filter to list of variables.
 # SEE ALSO
 #   _mariadb_connections_args for a list of connection arguments
 # SOURCE
@@ -1089,7 +1100,7 @@ _mariadb_show_args () {
   local short_options="d:U:P:hH:D:t:"
   local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
   long_options="$long_options triggers functions procedures views tables all foreign-keys indexes table: fkey:"
-  long_options="$long_options table-def events event:"
+  long_options="$long_options table-def events event: global-vars vars-filter:"
 
   set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
 
@@ -1098,7 +1109,7 @@ _mariadb_show_args () {
     return 1
   fi
 
-  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_download_args: Found $# params)\n"
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_show_args: Found $# params)\n"
 
   MARIADB_SHOW_ALL=0
   MARIADB_SHOW_ALL_PROCEDURES=0
@@ -1113,6 +1124,8 @@ _mariadb_show_args () {
   MARIADB_SHOW_FKEYS_DESCR=0
   MARIADB_SHOW_TABLE_DEF=0
   MARIADB_SHOW_EVENT_DESCR=0
+  MARIADB_SHOW_GLOBAL_VARS=0
+  MARIADB_SHOW_VARFILTER=""
   MARIADB_SHOW_TABLES=""
   MARIADB_SHOW_EVENTS=""
   MARIADB_SHOW_FKEYS=""
@@ -1155,6 +1168,9 @@ _mariadb_show_args () {
       --all)
         MARIADB_SHOW_ALL=1
         ;;
+      --global-vars)
+        MARIADB_SHOW_GLOBAL_VARS=1
+        ;;
       --table)
         MARIADB_SHOW_TABLES[$MARIADB_SHOW_TABLES_DESCR]="$2"
         let MARIADB_SHOW_TABLES_DESCR++
@@ -1171,6 +1187,10 @@ _mariadb_show_args () {
       --fkey)
         MARIADB_SHOW_FKEYS[$MARIADB_SHOW_FKEYS_DESCR]="$2"
         let MARIADB_SHOW_FKEYS_DESCR++
+        shift
+        ;;
+      --vars-filter)
+        MARIADB_SHOW_VARFILTER="$2"
         shift
         ;;
       -h|--help)
@@ -1571,9 +1591,10 @@ _mariadb_show_help () {
   echo -en "[--fkey FKEY_NAME]       Show detail of a foreign key. This option could be repeated.\n"
   echo -en "[--event EVENT_NAME]     Show detail of a event. This option could be repeated.\n"
   echo -en "[--table-def]            Show table definition SQL (To use with --table).\n"
+  echo -en "[--global-vars]          Show global variables of the instance.\n"
+  echo -en "[--vars-filter FILTER]   Apply filter in LIKE as %FILTER% (To use with --global-vars).\n"
 
   return 0
-
 }
 #***
 
@@ -3416,6 +3437,66 @@ _mariadb_show_event () {
     out_handler_print_arr
 
   fi
+
+  out_handler_clean
+
+  return 0
+
+}
+#***
+
+
+#****f* mariadb/_mariadb_show_global_vars
+# FUNCTION
+#   Internal function that print all global variable of the instance.
+# SOURCE
+_mariadb_show_global_vars () {
+
+  local filter="$1"
+  local vname=""
+  local vvalue=""
+  local counter=1
+  local name_size=20
+
+  commons_mariadb_show_gvars "${filter}" ||
+    error_handled "Error on retrieve global variables."
+
+  out_hsep=1
+  out_prepost_mode="any"
+  out_htabs_mode="tabs"
+  out_ttitle="GLOBAL VARIABLES"
+
+  out_headers[0]="VARIABLE_NAME"
+  out_headers[1]="VARIABLE_VALUE"
+
+  out_el_pre[0]="\e[1;33m"
+  out_el_pre[1]="\e[1;37m"
+
+  out_el_post[0]="\e[m"
+
+  IFS=$'\n'
+  for row in $_mariadb_ans ; do
+
+    vname=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+    vvalue=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+
+    out_rows[$counter]="row"${counter}
+
+    eval "row${counter}[0]=\"${vname}\""
+    eval "row${counter}[1]=\"${vvalue}\""
+
+    if [ ${#vname} -ge $name_size ] ; then
+      name_size=$((${#vname}+1))
+    fi
+
+    let counter++
+
+  done
+  unset IFS
+
+  out_tabs[0]=$name_size
+
+  out_handler_print_arr
 
   out_handler_clean
 

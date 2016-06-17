@@ -3451,5 +3451,37 @@ commons_mariadb_drop_event () {
 }
 #***
 
+#****f* commmons_mariadb/commons_mariadb_show_gvars
+# FUNCTION
+#   Retrieve global variables.
+# INPUTS
+#   filter         - filter apply to SELECT of variables.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SOURCE
+commons_mariadb_show_gvars () {
+
+  local filter="$1"
+  local cmd=""
+  local and_where=""
+
+  if [ -n "${filter}" ] ; then
+    and_where="
+     WHERE LOWER(VARIABLE_NAME)
+     LIKE CONCAT('%', LOWER('${filter}'), '%')"
+  fi
+
+  local cmd="
+    SELECT CONCAT_WS('|', LOWER(VARIABLE_NAME),COALESCE(VARIABLE_VALUE, ''))
+    FROM INFORMATION_SCHEMA.GLOBAL_VARIABLES
+    ${and_where}
+  "
+
+  mysql_cmd_4var "_mariadb_ans" "$cmd" || return 1
+
+  return 0
+}
+#***
 
 # vim: syn=sh filetype=sh
