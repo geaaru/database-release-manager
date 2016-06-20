@@ -1787,6 +1787,7 @@ _mariadb_compile () {
       if [ ! -z "$MARIADB_COMPILE_PROCEDURE" ] ; then
 
         f="${MARIADB_COMPILE_PROCEDURE/.sql/}"
+        f=$(basename ${f})
         commons_mariadb_compile_file "$MARIADB_DIR/procedures/$f.sql" "" || error_handled "Error on compile file $f.sql"
 
       fi
@@ -1803,6 +1804,7 @@ _mariadb_compile () {
       if [ ! -z "$MARIADB_COMPILE_TRIGGER" ] ; then
 
         f="${MARIADB_COMPILE_TRIGGER/.sql/}"
+        f=$(basename ${f})
         commons_mariadb_compile_file "$MARIADB_DIR/triggers/$f.sql" "" || error_handled "Error on compile file $f.sql"
 
       fi
@@ -1820,6 +1822,7 @@ _mariadb_compile () {
       if [ ! -z "$MARIADB_COMPILE_FUNCTION" ] ; then
 
         f="${MARIADB_COMPILE_FUNCTION/.sql/}"
+        f=$(basename ${f})
         commons_mariadb_compile_file "$MARIADB_DIR/functions/$f.sql" "" || error_handled "Error on compile file $f.sql"
 
       fi
@@ -1837,6 +1840,7 @@ _mariadb_compile () {
       if [ ! -z "$MARIADB_COMPILE_VIEW" ] ; then
 
         f="${MARIADB_COMPILE_VIEW/.sql/}"
+        f=$(basename ${f})
         commons_mariadb_compile_file "$MARIADB_DIR/views/$f.sql" "" || error_handled "Error on compile file $f.sql"
 
       fi
@@ -1886,6 +1890,8 @@ _mariadb_compile () {
       if [ ! -z "$MARIADB_COMPILE_EVENT" ] ; then
 
         f="${MARIADB_COMPILE_EVENT/.sql/}"
+        f=$(basename ${f})
+
         commons_mariadb_compile_file "$MARIADB_DIR/schedulers/$f.sql" "" || error_handled "Error on compile file $f.sql"
 
       fi
