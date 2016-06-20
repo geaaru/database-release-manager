@@ -175,7 +175,7 @@ _package_handle_profile_params () {
   local query=""
 
   [[ $DEBUG && $DEBUG == true ]] && \
-    echo -en "(_package_copy_project_files: Begin handling of profile parameters... \n"
+    echo -en "(_package_handle_profile_params: Begin handling of profile parameters... \n"
 
   if [[ $DRM_PROFILE -eq 1 ]] ; then
 
@@ -266,6 +266,7 @@ _package_copy_pj_mariadb_files () {
     triggers
     update_scripts
     views
+    schedulers
   "
 
   for dir in ${adapter_dirs} ; do
