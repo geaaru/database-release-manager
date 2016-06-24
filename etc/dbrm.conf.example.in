@@ -20,7 +20,7 @@ LOCAL_CONFIG_FILE=$LOCAL_DIR/dbrm.conf
 DRM_DB=$LOCAL_DIR/dbrm.db
 
 # SQL Connector Adapter:
-# Supported adapter are: sqlite|mariadb|oracle
+# Supported adapter are: sqlite|mariadb|oracle|psql
 #SQLCA="oracle|mariadb"
 #SQLCA="mariadb|oracle"
 #SQLCA="sqlite"
@@ -31,6 +31,9 @@ DRM_DB=$LOCAL_DIR/dbrm.db
 # ORACLE_SID="sid"
 # ORACLE_DIR=/dir_oracle_files
 # ORACLE_COMPILE_FILES_EXCLUDED="pkTest.sql" For exclude particular files on compilation.
+
+# Oracle tnsnames.ora file directory
+# TNS_ADMIN=/xxx
 
 # For mariadb/mysql authentication set these variables
 # MARIADB_USER="user"
@@ -51,9 +54,19 @@ DRM_DB=$LOCAL_DIR/dbrm.db
 # Enable support of mysql >=5.6 with environment password.
 # MYSQL5_6_ENV_PWD="1"
 
+# For postgresql authentication set thes variables
+# POSTGRESQL_USER="user"
+# POSTGRESQL_PWD="pwd"
+# POSTGRESQL_DB="database"
+# POSTGRESQL_SCHEMA="schama"
+# POSTGRESQL_HOST="host"
+# POSTGRESQL_DIR="/dir_mariadb_files
+# POSTGRESQL_TMZ="UTC" Timezone used on session. Default is UTC.
+# POSTGRESQL_COMPILE_FILES_EXCLUDED=""
+#
+# Add -v to see executed statement on log.
+# POSTGRESQL_EXTRA_OPTIONS=""
 
-# Oracle tnsnames.ora file directory
-# TNS_ADMIN=/xxx
 
 # Path of SQLITE3 database
 #SQLITEDB=@SQLITEDB@
