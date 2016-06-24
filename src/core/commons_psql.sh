@@ -70,6 +70,71 @@ commons_psql_check_client () {
 }
 #****
 
+#****f* commons_psql/commons_psql_check_client_dump
+# FUNCTION
+#   Check if pg_dump client program is present on system.
+#   If present POSTGRESQL_CLIENT_DUMP variable with abs path is set.
+# DESCRIPTION
+#   Function check if it is set "pg_dump" variable:
+#   * if it is not set then try to find path through 'which' program
+#   * if it is set then check if path is correct and program exists.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
+commons_psql_check_client_dump () {
+
+  if [ -z "$pg_dump" ] ; then
+
+    # POST: pg_dump variable not set
+    tmp=`which pg_dump 2> /dev/null`
+    var=$?
+
+    if [ $var -eq 0 ] ; then
+
+      [[ $DEBUG && $DEBUG == true ]] && echo -en "Use pg_dump: $tmp\n"
+
+      POSTGRESQL_CLIENT_DUMP=$tmp
+
+      unset tmp
+
+    else
+
+      error_generate "pg_dump program not found"
+
+      return 1
+
+    fi
+
+  else
+
+    # POST: pg_dump variable already set
+
+    # Check if file is correct
+    if [ -f "$pg_dump" ] ; then
+
+      [[ $DEBUG && $DEBUG == true ]] && echo -en "Use pg_dump: $pg_dump\n"
+
+      POSTGRESQL_CLIENT_DUMP=$pg_dump
+
+    else
+
+      error_generate "$pg_dump program invalid."
+
+      return 1
+
+    fi
+
+  fi
+
+  export POSTGRESQL_CLIENT_DUMP
+
+  return 0
+
+}
+#****
+
+
 #****f* commons_psql/commons_psql_check_vars
 # FUNCTION
 #   Check if are present mandatary psql environment variables.
@@ -138,6 +203,7 @@ EOF
 commons_psql_shell () {
 
   local opts=""
+  local errorCode=""
 
   if [ -z "$POSTGRESQL_CLIENT" ] ; then
     return 1
@@ -147,11 +213,55 @@ commons_psql_shell () {
     return 1
   fi
 
-  # TODO: Enable -A options through a variable option.
+  # Disable Pagination
+  opts="-P pager=off"
+
   [[ $DEBUG && $DEBUG == true ]] && \
     echo -en "(commons_psql_shell) Try connection with $opts $POSTGRESQL_EXTRA_OPTIONS $psql_auth.\n"
 
   $POSTGRESQL_CLIENT $opts $POSTGRESQL_EXTRA_OPTIONS $psql_auth
+
+  errorCode=$?
+  if [ ${errorCode} -ne 0 ] ; then
+    return 1
+  fi
+
+  unset errorCode
+
+  return 0
+}
+#***
+
+#****f* commons_psql/commons_psql_dump
+# FUNCTION
+#   Dump database or schema from Postgresql server.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
+commons_psql_dump () {
+
+  local opts=""
+  local targetfile="$1"
+  local onlySchema="${2:-1}"
+  local errorCode=""
+
+  if [ -z "$POSTGRESQL_CLIENT_DUMP" ] ; then
+    return 1
+  fi
+
+  if [ -z "$psql_auth" ] ; then
+    return 1
+  fi
+
+  if [[ -n "$POSTGRESQL_SCHEMA" && ${onlySchema} -eq 1 ]] ; then
+    opts="-n ${POSTGRESQL_SCHEMA}"
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(commons_psql_dump) Try connection with $opts $POSTGRESQL_EXTRA_OPTIONS $psql_auth.\n"
+
+  $POSTGRESQL_CLIENT_DUMP $opts $POSTGRESQL_EXTRA_OPTIONS $psql_auth > ${targetfile}
 
   errorCode=$?
   if [ ${errorCode} -ne 0 ] ; then

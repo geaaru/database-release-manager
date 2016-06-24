@@ -39,6 +39,7 @@ psql_long_help () {
    echo -en "\tversion                 Show module version.\n"
    echo -en "\ttest_connection         Test connection versus database.\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
+   echo -en "\tdump                    Dump database resources.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -59,6 +60,7 @@ psql_show_help () {
    echo -en "\tversion                 Show module version.\n"
    echo -en "\ttest_connection         Test connection versus database.\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
+   echo -en "\tdump                    Dump database resources.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -99,7 +101,7 @@ psql_shell () {
 
 #****f* psql/psql_test_connection
 # FUNCTION
-#   Test connection to Mysql/MariaDB server.
+#   Test connection to PostgreSQL server.
 # SEE ALSO
 #   _psql_connections_args for list of available arguments.
 # SOURCE
@@ -123,6 +125,52 @@ psql_test_connection () {
   commons_psql_check_connection || error_handled "psql client was unable to connect to DB with supplied credentials."
 
   out_handler_print "Connected to $POSTGRESQL_DB with user $POSTGRESQL_USER correctly."
+
+  out_handler_clean
+
+  return 0
+}
+#***
+
+#****f* psql/psql_dump
+# FUNCTION
+#   Dump database schema.
+# SEE ALSO
+#   _psql_connections_args for list of available arguments.
+#   _psql_dump_args
+# SOURCE
+psql_dump () {
+
+  local result=1
+
+  # Shift first two input param
+  shift 2
+
+  _psql_check_status
+
+  commons_psql_check_client_dump || error_handled ""
+
+  _psql_help_message="print_help"
+
+  _psql_connections_args "$@" || error_handled ""
+
+  _psql_dump_args "$@" || error_handled ""
+
+  commons_psql_check_vars || error_handled ""
+
+  psql_set_auth_var "$POSTGRESQL_DB" "$POSTGRESQL_USER" "$POSTGRESQL_PWD" "$POSTGRESQL_HOST" ""
+
+  commons_psql_check_connection || error_handled "psql client was unable to connect to DB with supplied credentials."
+
+  local dir="$(dirname ${POSTGRESQL_DUMPFILE})"
+  if [ ! -d "${dir}" ] ; then
+    mkdir ${dir} || error_handled "Error on create directory ${dir} for dump."
+  fi
+
+  commons_psql_dump "${POSTGRESQL_DUMPFILE}" || \
+    error_handled "Error on dump schema ${POSTGRESQL_SCHEMA}."
+
+  out_handler_print "Dump of $POSTGRESQL_SCHEMA executed correctly to: ${POSTGRESQL_DUMPFILE}."
 
   out_handler_clean
 
@@ -196,6 +244,8 @@ _psql_check_status () {
 }
 #***
 
+
+
 #****f* psql/_psql_connections_args
 # FUNCTION
 #   Parse command line and define environment variables.
@@ -229,7 +279,8 @@ _psql_connections_args () {
   local short_options="U:P:hH:D:t:S:"
   local long_options="database: timezone: conn-options: ignore-timezone help"
 
-  set -- `getopt -u -q -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
+  $(set -- $(getopt -u -q -o "$short_options" -l "$long_options" -- "$@")) || \
+    error_handled "Invalid parameters"
 
   [ $# -lt 1 ] && return 0 # is there at least one param (--)
 
@@ -266,10 +317,11 @@ _psql_connections_args () {
       --help|-h)
         if [ -n "$_psql_help_message" ] ; then
           _psql_connection_help
+          return 0
         fi
         return 1
         ;;
-      *)
+      *|--)
         ;;
 
     esac
@@ -281,6 +333,62 @@ _psql_connections_args () {
   return 0
 }
 #***
+
+
+#****f* psql/_psql_dump_args
+# FUNCTION
+#   Parse command line for dump command.
+# DESCRIPTION
+#   Available commands line are:
+#   * --to file           File where save dump.
+#   * -h                  Show help message
+# SOURCE
+_psql_dump_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_psql_dump_args args: $@)\n"
+
+  local conn_s_options="U:P:hH:D:t:S:"
+  local conn_l_options="database: timezone: conn-options: ignore-timezone help"
+  local short_options="${conn_s_options}"
+  local long_options="${conn_l_options} help to:"
+
+  local ddate=$(date +%Y%m%d_%H%M%S)
+  POSTGRESQL_DUMPFILE=${POSTGRESQL_DIR}/dumps/dump_${POSTGRESQL_SCHEMA}_${ddate}.sql
+
+  $(set -- $(getopt -u -q -o "$short_options" -l "$long_options" -- "$@")) || \
+    error_handled "Invalid parameters"
+
+  [ $# -lt 1 ] && return 0 # is there at least one param (--)
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -U|-P|-D|-H|-S|--database|--timezone|--conn-options)
+        shift
+      ;;
+      --ignore-timezone)
+        ;;
+      --to)
+        POSTGRESQL_DUMPFILE="$2"
+        shift
+        ;;
+      --help|-h)
+        _psql_dump_help
+        return 1
+        ;;
+      *|--)
+        ;;
+
+    esac
+
+    shift
+
+  done
+
+  return 0
+}
+#***
+
 
 #****f* psql/_psql_connection_help
 # FUNCTION
@@ -305,5 +413,19 @@ _psql_connection_help () {
 #***
 
 
+#****f* psql/_psql_dump_help
+# FUNCTION
+#   Internal function that print help message of dump options.
+# SOURCE
+_psql_dump_help () {
+
+  echo "
+[--to file]              Indicate target file where execute dump.
+                         Default is \${POSTGRESQL_DIR}/dumps/dump_\${POSTGRESQL_SCHEMA}_YYYYMMDD_HHmmss.sql
+"
+
+  return 0
+}
+#***
 
 # vim: syn=sh filetype=sh
