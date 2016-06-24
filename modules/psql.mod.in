@@ -1,0 +1,309 @@
+#!/bin/bash
+#------------------------------------------------
+# Author(s): Geaaru, geaaru@gmail.com
+# $Id$
+# License: GPL 2.0
+#------------------------------------------------
+
+name="psql"
+psql_authors="Geaaru"
+psql_creation_date="June 24, 2016"
+psql_version="@PACKAGE_VERSION@"
+psql_status="0"
+
+
+#****f* psql/psql_version
+# FUNCTION
+#  Show version of psql module.
+# SOURCE
+psql_version() {
+  echo -en "Version: ${psql_version}\n"
+  return 0
+}
+#***
+
+#****f* psql/psql_long_help
+# FUNCTION
+#   Show long help message.
+# SOURCE
+psql_long_help () {
+
+   echo -en "===========================================================================\n"
+   echo -en "Module [psql]:\n"
+   echo -en "Author(s): ${psql_authors}\n"
+   echo -en "Created: ${psql_creation_date}\n"
+   echo -en "Version: ${psql_version}\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "\tlong_help               Show long help informations\n"
+   echo -en "\tshow_help               Show command list.\n"
+   echo -en "\tversion                 Show module version.\n"
+   echo -en "\ttest_connection         Test connection versus database.\n"
+   echo -en "\tshell                   Enter on command line shell of database.\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "===========================================================================\n"
+
+   return 0
+}
+#***
+
+#****f* psql/psql_show_help
+# FUNCTION
+#   Show help message.
+# SOURCE
+psql_show_help () {
+   echo -en "===========================================================================\n"
+   echo -en "Module [psql]:\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "\tlong_help               Show long help informations\n"
+   echo -en "\tshow_help               Show command list.\n"
+   echo -en "\tversion                 Show module version.\n"
+   echo -en "\ttest_connection         Test connection versus database.\n"
+   echo -en "\tshell                   Enter on command line shell of database.\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "===========================================================================\n"
+
+   return 0
+}
+#***
+
+#****f* psql/psql_shell
+# FUNCTION
+#   Enter on command line shell of Mysql/MariaDB server
+# SEE ALSO
+#   _psql_connections_args for list of available arguments.
+# SOURCE
+psql_shell () {
+
+  local result=1
+
+  # Shift first two input param
+  shift 2
+
+  _psql_check_status
+
+  _psql_help_message="print_help"
+
+  _psql_connections_args "$@" || error_handled ""
+
+  commons_psql_check_vars || error_handled ""
+
+  psql_set_auth_var "$POSTGRESQL_DB" "$POSTGRESQL_USER" "$POSTGRESQL_PWD" "$POSTGRESQL_HOST" "${POSTGRESQL_SCHEMA}"
+
+  commons_psql_check_connection || error_handled "psql client was unable to connect to DB with supplied credentials."
+
+  commons_psql_shell || error_handled "Error on enter on command line shell."
+
+  return 0
+}
+#***
+
+#****f* psql/psql_test_connection
+# FUNCTION
+#   Test connection to Mysql/MariaDB server.
+# SEE ALSO
+#   _psql_connections_args for list of available arguments.
+# SOURCE
+psql_test_connection () {
+
+  local result=1
+
+  # Shift first two input param
+  shift 2
+
+  _psql_check_status
+
+  _psql_help_message="print_help"
+
+  _psql_connections_args "$@" || error_handled ""
+
+  commons_psql_check_vars || error_handled ""
+
+  psql_set_auth_var "$POSTGRESQL_DB" "$POSTGRESQL_USER" "$POSTGRESQL_PWD" "$POSTGRESQL_HOST" "${POSTGRESQL_SCHEMA}"
+
+  commons_psql_check_connection || error_handled "psql client was unable to connect to DB with supplied credentials."
+
+  out_handler_print "Connected to $POSTGRESQL_DB with user $POSTGRESQL_USER correctly."
+
+  out_handler_clean
+
+  return 0
+}
+#***
+
+
+##################################################################
+# Internal functions
+##################################################################
+
+#****f* psql/_psql_init
+# FUNCTION
+#   Internal function called on initialization of the psql module.
+# DESCRIPTION
+#   Mariadb module is usable when SQLCA variable contains psql string.
+#   So, if psql module is enabled then these check are done:
+#   * verify presence of mysql client program
+#   * check if POSTGRESQL_USER variable is set. This variable define user to use
+#     on connection to database.
+#   * check if POSTGRESQL_PWD variable is set. This variable define password to use
+#     on connection to database.
+#   * check if defined POSTGRESQL_DB variable. This variable define name of the
+#     schema to use on connection.
+#   * check if defined POSTGRESQL_DIR variable. This variable define path where
+#     save/retrieve files to compile.
+#   * if defined POSTGRESQL_TMZ then default UTC value is overrided. This variable
+#     is used to set TMZ on active connection to database.
+# SOURCE
+_psql_init () {
+
+  if [[ ! -z "$SQLCA"  && "$SQLCA" =~ .*psql.* ]] ; then
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_psql_init: Check requirements of the psql module.)\n"
+
+    commons_psql_check_client || error_handled ""
+
+    if [ -z $POSTGRESQL_TMZ ] ; then
+      POSTGRESQL_TMZ='UTC'
+    fi
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_psql_init: All requirements are present. Continue my work.)\n"
+
+    psql_status="1"
+
+  else
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_psql_init: Nothing to do.)\n"
+
+  fi
+
+  return 0
+}
+#***
+
+#****f* psql/_psql_check_status
+# FUNCTION
+#   Check status of the psql module.
+# RETURN VALUE
+#   0 if module is enable.
+#   exit if not enabled.
+# SOURCE
+_psql_check_status () {
+
+  if [ x"$psql_status" = x"0" ] ; then
+    error_generate "psql is not enable. Enable it with SQLCA variable"
+  fi
+
+  return 0
+}
+#***
+
+#****f* psql/_psql_connections_args
+# FUNCTION
+#   Parse command line and define environment variables.
+# DESCRIPTION
+#   Available commands line are:
+#   * -U [user]           Override username variable used on connection. If not present it is used
+#                         POSTGRESQL_USER variable from configuration file.
+#   * -P [pwd]            Override password variable used on connection. If not present it is used
+#                         POSTGRESQL_PWD variable from configuration file.
+#   * -D [dir path]       To define path where save/retrieve files to download/compile. This option
+#                         override POSTGRESQL_DIR variable of configuration file.
+#   * -H                  Override database host. If not present it is used POSTGRESQL_HOST variable
+#                         from configuration file.
+#   * -S [schema]         Override schema name variable used on connection. If not present is is used
+#                         POSTGRESQL_SCHEMA variable from configuration file.
+#   * --database [db]     Override database name variable used on connection. If not present it is used
+#                         POSTGRESQL_DB variable from configuration file.
+#   * --timezone [tmz]    Override Timezone variable used on connection initialization. If not present
+#                         it is used POSTGRESQL_TMZ variable from cofnfiguration file.
+#   * --ignore-timezone   Avoid initialization of Timezone on connection. If not present it is used
+#                         POSTGRESQL_IGNORE_TMZ variable from configuration file.
+#   * --conn-options [option]
+#                         Permit to configure extra connection parameters. This option could be used
+#                         more of one time.
+#   * -h                  Show help message
+# SOURCE
+_psql_connections_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_psql_connections_args args: $@)\n"
+
+  local short_options="U:P:hH:D:t:S:"
+  local long_options="database: timezone: conn-options: ignore-timezone help"
+
+  set -- `getopt -u -q -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
+
+  [ $# -lt 1 ] && return 0 # is there at least one param (--)
+
+  local POSTGRESQL_EXTRAS_ENABLE=0
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -U) POSTGRESQL_USER="$2";shift;;
+      -P) POSTGRESQL_PWD="$2";shift;;
+      -D) POSTGRESQL_DIR="$2";shift;;
+      -H) POSTGRESQL_HOST="$2";shift;;
+      -S) POSTGRESQL_SCHEMA="$2";shift;;
+      --database)
+        POSTGRESQL_DB="$2"
+        shift
+        ;;
+      --timezone)
+        POSTGRESQL_TMZ="$2"
+        shift
+        ;;
+      --ignore-timezone)
+        POSTGRESQL_IGNORE_TMZ=1
+        ;;
+      --conn-options)
+        if [ $POSTGRESQL_EXTRAS_ENABLE -eq 0 ] ; then
+          POSTGRESQL_EXTRAS_ENABLE=1
+          POSTGRESQL_EXTRA_OPTIONS="$2"
+        else
+          POSTGRESQL_EXTRA_OPTIONS="$POSTGRESQL_EXTRA_OPTIONS $2"
+        fi
+        shift
+        ;;
+      --help|-h)
+        if [ -n "$_psql_help_message" ] ; then
+          _psql_connection_help
+        fi
+        return 1
+        ;;
+      *)
+        ;;
+
+    esac
+
+    shift
+
+  done
+
+  return 0
+}
+#***
+
+#****f* psql/_psql_connection_help
+# FUNCTION
+#   Internal function that print help message of connection options.
+# SOURCE
+_psql_connection_help () {
+
+  echo "
+[-P psql_pwd]            Override POSTGRESQL_PWD variable.
+[-U psql_user]           Override POSTGRESQL_USER with username of the connection.
+[-H psql_host]           Override POSTGRESQL_HOST with host of the database.
+[-D psql_dir]            Override POSTGRESQL_DIR directory where save/retrieve script/functions, etc.
+[-S psql_schema]         Override POSTGRESQL_SCHEMA variable with schema of the database instance.
+[--database db]          Override POSTGRESQL_DB variable for database name.
+[--timezone tmz]         Override POSTGRESQL_TMZ variable for set timezone on connection session.
+[--conn-options opts]    Override POSTGRESQL_EXTRA_OPTIONS variable for enable extra connection options.
+[--ignore-timezone]      Set POSTGRESQL_IGNORE_TMZ variable to 1 for disable initial timezone settings.
+"
+
+  return 0
+}
+#***
+
+
+
+# vim: syn=sh filetype=sh
