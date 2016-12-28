@@ -39,6 +39,7 @@ psql_long_help () {
    echo -en "\tversion                 Show module version.\n"
    echo -en "\ttest_connection         Test connection versus database.\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
+   echo -en "\show                     Show data from database.\n"
    echo -en "\tdump                    Dump database resources.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
@@ -60,6 +61,7 @@ psql_show_help () {
    echo -en "\tversion                 Show module version.\n"
    echo -en "\ttest_connection         Test connection versus database.\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
+   echo -en "\show                     Show data from database.\n"
    echo -en "\tdump                    Dump database resources.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
@@ -173,6 +175,39 @@ psql_dump () {
   out_handler_print "Dump of $POSTGRESQL_SCHEMA executed correctly to: ${POSTGRESQL_DUMPFILE}."
 
   out_handler_clean
+
+  return 0
+}
+#***
+
+#****f* psql/psql_show
+# FUNCTION
+#   Show data of Postgresql schema, database.
+# SEE ALSO
+#   _psql_connections_args for list of available arguments.
+# SOURCE
+psql_show () {
+
+  local result=1
+
+  # Shift first two input param
+  shift 2
+
+  _psql_check_status
+
+  _psql_help_message="print_help"
+
+  _psql_connections_args "$@" || error_handled ""
+
+  _psql_show_args "$@" || error_handled ""
+
+  commons_psql_check_vars || error_handled ""
+
+  psql_set_auth_var "$POSTGRESQL_DB" "$POSTGRESQL_USER" "$POSTGRESQL_PWD" "$POSTGRESQL_HOST" "${POSTGRESQL_SCHEMA}"
+
+  commons_psql_check_connection || error_handled "psql client was unable to connect to DB with supplied credentials."
+
+  commons_psql_shell || error_handled "Error on enter on command line shell."
 
   return 0
 }
@@ -389,6 +424,53 @@ _psql_dump_args () {
 }
 #***
 
+#****f* psql/_psql_show_args
+# FUNCTION
+#   Parse command line for show command.
+# DESCRIPTION
+#   Available commands line are:
+#   * --tables            Show list of tables of the database.
+#   * -h                  Show help message
+# SOURCE
+_psql_show_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_psql_show_args args: $@)\n"
+
+  local conn_s_options="U:P:hH:D:t:S:"
+  local conn_l_options="database: timezone: conn-options: ignore-timezone help"
+  local short_options="${conn_s_options}"
+  local long_options="${conn_l_options} help :"
+
+  $(set -- $(getopt -u -q -o "$short_options" -l "$long_options" -- "$@")) || \
+    error_handled "Invalid parameters"
+
+  [ $# -lt 1 ] && return 0 # is there at least one param (--)
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -U|-P|-D|-H|-S|--database|--timezone|--conn-options)
+        shift
+      ;;
+      --ignore-timezone)
+        ;;
+      --help|-h)
+        _psql_show_help
+        return 1
+        ;;
+      *|--)
+        ;;
+
+    esac
+
+    shift
+
+  done
+
+  return 0
+}
+#***
+
 
 #****f* psql/_psql_connection_help
 # FUNCTION
@@ -422,6 +504,22 @@ _psql_dump_help () {
   echo "
 [--to file]              Indicate target file where execute dump.
                          Default is \${POSTGRESQL_DIR}/dumps/dump_\${POSTGRESQL_SCHEMA}_YYYYMMDD_HHmmss.sql
+"
+
+  return 0
+}
+#***
+
+#****f* psql/_psql_show_help
+# FUNCTION
+#   Internal function that print help message of show command.
+# SOURCE
+_psql_show_help () {
+
+  echo "
+
+[--tables]               Show list of tables present on database.
+
 "
 
   return 0
