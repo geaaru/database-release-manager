@@ -737,6 +737,7 @@ _oracle_compile () {
       if [ ! -z "$ORACLE_COMPILE_PACKAGE" ] ; then
 
         f="${ORACLE_COMPILE_PACKAGE/.sql/}"
+        f=$(basename $f)
         commons_oracle_compile_file "$ORACLE_DIR/packages/$f.sql" "" || error_handled "Error on compile file $f.sql"
 
       fi
@@ -754,6 +755,7 @@ _oracle_compile () {
       if [ ! -z "$ORACLE_COMPILE_TRIGGER" ] ; then
 
         f="${ORACLE_COMPILE_TRIGGER/.sql/}"
+        f=$(basename $f)
         commons_oracle_compile_file "$ORACLE_DIR/triggers/$f.sql" "" || error_handled "Error on compile file $f.sql"
 
       fi
@@ -771,6 +773,7 @@ _oracle_compile () {
       if [ ! -z "$ORACLE_COMPILE_FUNCTION" ] ; then
 
         f="${ORACLE_COMPILE_FUNCTION/.sql/}"
+        f=$(basename $f)
         commons_oracle_compile_file "$ORACLE_DIR/functions/$f.sql" "" || error_handled "Error on compile file $f.sql"
 
       fi
@@ -788,6 +791,7 @@ _oracle_compile () {
       if [ ! -z "$ORACLE_COMPILE_VIEW" ] ; then
 
         f="${ORACLE_COMPILE_VIEW/.sql/}"
+        f=$(basename $f)
         commons_oracle_compile_file "$ORACLE_DIR/views/$f.sql" "" || error_handled "Error on compile file $f.sql"
 
       fi
@@ -805,6 +809,7 @@ _oracle_compile () {
       if [ ! -z "$ORACLE_COMPILE_JOBS" ] ; then
 
         f="${ORACLE_COMPILE_JOBS/.sql/}"
+        f=$(basename $f)
         commons_oracle_compile_file "$ORACLE_DIR/jobs/$f.sql" "" || error_handled "Error on compile file $f.sql"
 
       fi
@@ -822,6 +827,7 @@ _oracle_compile () {
       if [ ! -z "$ORACLE_COMPILE_SCHEDULES" ] ; then
 
         f="${ORACLE_COMPILE_SCHEDULES/.sql/}"
+        f=$(basename $f)
         commons_oracle_compile_file "$ORACLE_DIR/schedules/$f.sql" "" || error_handled "Error on compile file $f.sql"
 
       fi
