@@ -6,3 +6,9 @@ configure
 config.*
 *.swp
 *.log
+install-sh
+missing
+etc/dbrm.conf
+etc/dbrm.conf.example
+modules/*.mod
+src/dbrm
