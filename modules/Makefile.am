@@ -15,7 +15,8 @@ EXTRA_DIST = \
 				 out_stdout.mod.in \
 				 ssl.mod.in \
 				 package.mod.in \
-				 psql.mod.in
+				 psql.mod.in \
+				 sweeper.mod.in
 
 modules = \
 			 dbm.mod \
@@ -29,7 +30,8 @@ modules = \
 			 out_stdout.mod \
 			 ssl.mod \
 			 package.mod \
-			 psql.mod
+			 psql.mod \
+			 sweeper.mod
 
 DISTCLEANFILES = $(modules)
 CLEANFILES = $(modules)
