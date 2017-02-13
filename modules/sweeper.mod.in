@@ -36,8 +36,8 @@ sweeper_long_help () {
   echo -en "\tshow_help               Show command list.\n"
   echo -en "\tversion                 Show module version.\n"
   echo -en "\tcompress                Compress files in folder (and subfolder) older than <days>\n"
-  echo -en "\texpunge                 Expunge files in folder (and subfolder) older than <days>\n"
-  echo -en "\t                        project.\n"
+  echo -en "\texpunge                 Expunge files in folder (and subfolder) older than <days> and\n"
+  echo -en "\t                        Remove empty folders.\n"
   echo -en "---------------------------------------------------------------------------\n"
   echo -en "===========================================================================\n"
 
@@ -57,9 +57,10 @@ sweeper_show_help () {
   echo -en "\tlong_help               Show long help informations\n"
   echo -en "\tshow_help               Show command list.\n"
   echo -en "\tversion                 Show module version.\n"
-  echo -en "\tcompress                Compress files in folder (and subfolder) older than <days>\n"
-  echo -en "\texpunge                 Expunge files in folder (and subfolder) older than <days>. Remove empty folders.\n"
-  echo -en "\t                        project.\n"
+  echo -en "\tcompress                Compress files in folder (and subfolder)\n"
+  echo -en "\t                        older than <days>\n"
+  echo -en "\texpunge                 Expunge files in folder (and subfolder)\n"
+  echo -en "\t                        older than <days> and remove empty folders.\n"
   echo -en "---------------------------------------------------------------------------\n"
   echo -en "===========================================================================\n"
 
@@ -72,9 +73,17 @@ sweeper_show_help () {
 #  Compress command function.
 # SOURCE
 sweeper_compress () {
+  local out=""
   shift 2
   _sweeper_compress_args "$@" || return 1
-
+  
+  _logfile_write "sweeper_compress... START
+    source-dir:      ${DBRM_SWEEPER_SRCDIR}
+    compressed-file: ${DBRM_SWEEPER_DESTDIR}/${tar_name} 
+    source-filter:   ${DBRM_SWEEPER_REGEX} 
+    age:             ${DBRM_SWEEPER_AGE} 
+    clean-src:       ${DBRM_SWEEPER_REMOVE_SRC_FILES} 
+    clean-empty-dir: ${DBRM_SWEEPER_REMOVE_EMPTY_DIR}"
 
   #Gatering all files matching
   [[ $DEBUG && $DEBUG == true ]] && echo find ${DBRM_SWEEPER_SRCDIR} -type f -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" -exec readlink -f {} \;
@@ -83,14 +92,17 @@ sweeper_compress () {
 
   #Generate tar file containing file matched
   tar_options="zcvf"-
-  tar ${tar_options} ${DBRM_SWEEPER_DESTDIR}/${tar_name} ${file_list}
+  
+  out=$(tar ${tar_options} ${DBRM_SWEEPER_DESTDIR}/${tar_name} ${file_list})
+  echo "${out}"
+  _logfile_write "tar: ${out}"
 
   #Eventually generate log file with content of tar
   if [ ! -z "${DBRM_SWEEPER_ARCHIVE_PATH}" ]; then
     file_count=$(echo ${file_list} | wc -w )
 
     echo -en "-------$(date +%F_%R) compressing ---------------------------------\n\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-    echo -en "    source-dir:      ${DBRM_SWEEPER_SRCDIR}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+    echo -en "    source-n"dir:      ${DBRM_SWEEPER_SRCDIR}\ >> ${DBRM_SWEEPER_ARCHIVE_PATH}
     echo -en "    compressed-file: ${DBRM_SWEEPER_DESTDIR}/${tar_name}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
     echo -en "    source-filter:   ${DBRM_SWEEPER_REGEX}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
     echo -en "    age:             ${DBRM_SWEEPER_AGE}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
@@ -111,11 +123,16 @@ sweeper_compress () {
 
   #Eventually removing tarred files and empty directories
   if [ "${DBRM_SWEEPER_REMOVE_SRC_FILES}" -eq "1" ]; then
-    rm ${file_list}
+    out=$(rm ${file_list})
+    echo "${out}"
+    _logfile_write "remove: ${out}"
   fi
   if [ "${DBRM_SWEEPER_REMOVE_EMPTY_DIR}" -eq "1" ]; then
-    find ${DBRM_SWEEPER_SRCDIR}/* -type d -empty -delete
+    out=$(find ${DBRM_SWEEPER_SRCDIR}/* -type d -empty -delete)
+    echo "${out}"
+    _logfile_write "remove empty dir: ${out}"
   fi
+  _logfile_write "sweeper_compress... END"
 
 }
 
@@ -124,17 +141,28 @@ sweeper_compress () {
 #  Compress expunge function.
 # SOURCE
 sweeper_expunge () {
+  local out=""
   shift 2
   _sweeper_expunge_args "$@" || return 1
 
+  _logfile_write "sweeper_compress... START
+    source-dir:      ${DBRM_SWEEPER_SRCDIR}
+    compressed-file: ${DBRM_SWEEPER_DESTDIR}/${tar_name} 
+    source-filter:   ${DBRM_SWEEPER_REGEX} 
+    age:             ${DBRM_SWEEPER_AGE}"
 
   #Gatering all files matching
   file_list="$(find ${DBRM_SWEEPER_SRCDIR} -type f -mtime ${DBRM_SWEEPER_AGE} -exec readlink -f {} \;)"
 
   #Deleting files and empty folders
-  rm ${file_list}
-  find ${DBRM_SWEEPER_SRCDIR} -type d -empty -delete
-
+  out=$(rm ${file_list})
+  echo "${out}"
+  _logfile_write "remove: ${out}"
+  
+  
+  out=$(find ${DBRM_SWEEPER_SRCDIR} -type d -empty -delete)
+  echo "${out}"
+  _logfile_write "remove empty dirs: ${out}"
 
   #Eventually generate log file with content of tar
   if [ ! -z "${DBRM_SWEEPER_ARCHIVE_PATH}" ]; then
@@ -157,7 +185,7 @@ sweeper_expunge () {
 
     echo -en '\n--------------------------------------------------------------------\n\n' >> ${DBRM_SWEEPER_ARCHIVE_PATH}
   fi
-
+  _logfile_write "sweeper_expunge... END"
 }
 
 #****f* ssl/_sweeper_compress_args
@@ -267,13 +295,18 @@ _sweeper_compress_help () {
   echo -en "                         Default -source-dir/* .\n"
   echo -en "[--dest-dir dir]         Target directory where .tar file will be created.\n"
   echo -en "[--age days]             Procedure affect only files older than <days>.\n"
-  echo -en "[--gen-archive path]     Generate archive log to files contained in tar.\n"    
+  echo -en "[--gen-archive path]     Generate archive log to files contained in tar.\n"
   echo -en "[--clean-src]            Remove compressed source files.\n"
   echo -en "[--clean-empty-dir]      Remove empty dirs from source-dir.\n"
   echo -en "\n"
   echo -en "Examples: \n"
-  echo -en " dbrm sweeper compress --context-name test_ctx --source-dir /playground --dest-dir /tmp --age 10 --gen-archive /tmp/tmp.archive --source-filter '.*' --clean-src --clean-empty-dir \n":
-
+  echo -en "$> dbrm sweeper compress --context-name test_ctx --source-dir /playground \ \n"
+  echo -en "                         --dest-dir /tmp --age 10 --gen-archive /tmp/tmp.archive \ \n"
+  echo -en "                         --source-filter '.*log' --clean-src --clean-empty-dir \n"
+  echo -en "\n"
+  echo -en "$> dbrm sweeper compress --context-name test_ctx --source-dir /playground  \ \n"
+  echo -en "                         --dest-dir /tmp --age 10 --gen-archive /tmp/tmp.archive \ \n"
+  echo -en "                         --clean-src --clean-empty-dir \n"
   return 0
 }
 #***
@@ -375,9 +408,15 @@ _sweeper_expunge_help () {
   echo -en "[--source-filter regex]  Define regoular expression to filter source files\n"
   echo -en "                         Default -source-dir/* .\n"
   echo -en "[--age days]             Procedure affect only files older than <days>.\n"
-  echo -en "[--gen-archive path]     Generate archive log containing the list of deleted files..\n"
-
+  echo -en "[--gen-archive path]     Generate archive log containing the list of deleted files.\n"
   echo -en "\n"
+  echo -en "Examples: \n"
+  echo -en "$> dbrm sweeper expunge  --context-name test_ctx --source-dir /playground \ \n"
+  echo -en "                         --dest-dir /tmp --age 10 --gen-archive /tmp/tmp.archive \ \n"
+  echo -en "                         --source-filter '.*log'\n"
+  echo -en "\n"
+  echo -en "$> dbrm sweeper expunge  --context-name test_ctx --source-dir /playground  \ \n"
+  echo -en "                         --dest-dir /tmp --age 10 --gen-archive /tmp/tmp.archive \ \n"
 
   return 0
 }
