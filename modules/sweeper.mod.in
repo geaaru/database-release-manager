@@ -74,9 +74,14 @@ sweeper_show_help () {
 # SOURCE
 sweeper_compress () {
   local out=""
+  local tar_name=""
+  local file_list=""
+  local file_count=""
+  local tar_options=""
   shift 2
+
   _sweeper_compress_args "$@" || return 1
-  
+
   _logfile_write "sweeper_compress... START
     source-dir:      ${DBRM_SWEEPER_SRCDIR}
     compressed-file: ${DBRM_SWEEPER_DESTDIR}/${tar_name} 
@@ -87,12 +92,12 @@ sweeper_compress () {
 
   #Gatering all files matching
   [[ $DEBUG && $DEBUG == true ]] && echo find ${DBRM_SWEEPER_SRCDIR} -type f -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" -exec readlink -f {} \;
-  file_list="$(find ${DBRM_SWEEPER_SRCDIR} -type f -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" -exec readlink -f {} \;)"
   tar_name=${DBRM_SWEEPER_CONTEXT}_$(date +%F_%R).tar.gz
 
   #Generate tar file containing file matched
   tar_options="zcvf"-
-  
+
+  file_list="$(find ${DBRM_SWEEPER_SRCDIR} -type f -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" -exec readlink -f {} \;)"
   out=$(tar ${tar_options} ${DBRM_SWEEPER_DESTDIR}/${tar_name} ${file_list})
   echo "${out}"
   _logfile_write "tar: ${out}"
@@ -142,6 +147,9 @@ sweeper_compress () {
 # SOURCE
 sweeper_expunge () {
   local out=""
+  local file_list=""
+  local file_count=""
+
   shift 2
   _sweeper_expunge_args "$@" || return 1
 
@@ -158,10 +166,10 @@ sweeper_expunge () {
   out=$(rm ${file_list})
   echo "${out}"
   _logfile_write "remove: ${out}"
-  
-  
+
+
   out=$(find ${DBRM_SWEEPER_SRCDIR} -type d -empty -delete)
-  echo "${out}"
+  echo ${out}
   _logfile_write "remove empty dirs: ${out}"
 
   #Eventually generate log file with content of tar
@@ -188,7 +196,7 @@ sweeper_expunge () {
   _logfile_write "sweeper_expunge... END"
 }
 
-#****f* ssl/_sweeper_compress_args
+#****f* sweeper/_sweeper_compress_args
 # FUNCTION
 #   Parse command line arguments of compress method.
 # SOURCE
@@ -311,7 +319,7 @@ _sweeper_compress_help () {
 }
 #***
 
-#****f* ssl/_sweeper_expunge_args
+#****f* sweeper/_sweeper_expunge_args
 # FUNCTION
 #   Parse command line arguments of expunge method.
 # SOURCE
