@@ -15,7 +15,7 @@ ssl_version="0.1.0"
 #   Show version of ssl module
 # SOURCE
 ssl_version () {
-  echo -en "Version: ${package_version}\n"
+  echo -en "Version: ${ssl_version}\n"
 
   return 0
 }
@@ -28,10 +28,10 @@ ssl_version () {
 ssl_long_help () {
 
    echo -en "===========================================================================\n"
-   echo -en "Module [${name}]:\n"
-   echo -en "Author(s): ${package_authors}\n"
-   echo -en "Created: ${package_creation_date}\n"
-   echo -en "Version: ${package_version}\n"
+   echo -en "Module [ssl]:\n"
+   echo -en "Author(s): ${ssl_authors}\n"
+   echo -en "Created: ${ssl_creation_date}\n"
+   echo -en "Version: ${ssl_version}\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "\tlong_help               Show long help informations\n"
    echo -en "\tshow_help               Show command list.\n"
@@ -57,7 +57,7 @@ ssl_long_help () {
 ssl_show_help () {
 
    echo -en "===========================================================================\n"
-   echo -en "Module [${name}]:\n"
+   echo -en "Module [ssl]:\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "\tlong_help               Show long help informations\n"
    echo -en "\tshow_help               Show command list.\n"
