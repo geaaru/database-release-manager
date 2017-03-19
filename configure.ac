@@ -98,6 +98,9 @@ AC_CONFIG_FILES([
                  src/dbrm
                  src/core/Makefile
                  src/share/Makefile
+                 docs/Makefile
+                 docs/sphinx/Makefile
+                 docs/sphinx/conf.py
                 ])
 
 AC_OUTPUT
