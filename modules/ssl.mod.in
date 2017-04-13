@@ -821,7 +821,7 @@ _ssl_delete () {
 
   # TODO: Check if session is active
 
-  _ssl_exist_tunnel "${DBRM_SSL_TUN_NAME}${DBRM_SSL_ID_TUNNEL}" || \
+  _ssl_exists_tun "${DBRM_SSL_ID_TUNNEL}" "${DBRM_SSL_TUN_NAME}" || \
     error_generate "Tunnel ${DBRM_SSL_ID_TUNNEL}${DBRM_SSL_TUN_NAME} doesn't exist."
 
   if [ -n "${DBRM_SSL_ID_TUNNEL}" ] ; then
@@ -917,48 +917,6 @@ _ssl_delete_help () {
   echo -en "[--name name]           Name of the tunnel to delete.\n"
   echo -en "[--id-tunnel id]        Id of the tunnel to delete.\n"
   echo -en "\n"
-
-  return 0
-}
-#***
-
-#****f* ssl/_ssl_exist_tunnel
-# FUNCTION
-#   Check if exists tunnel.
-# INPUT
-#   id_tunnel  Id of the tunnel to check if exists.
-#   name       Name of the tunnel to check if exists.
-# RETURN
-#   1  on error or if record is not present.
-#   0  if tunnel is present.
-# SOURCE
-_ssl_exist_tunnel() {
-
-  local id_tunnel="$1"
-  local name="$2"
-  local where=""
-  local query=""
-
-  [[ -z "$id_tunnel" && -z "$name" ]] && return 1
-
-  if [ -n "$id_tunnel" ] ; then
-    where="WHERE id_tunnel = $id_tunnel"
-  else
-    where="WHERE name = '$name'"
-  fi
-
-  query="
-    SELECT COUNT(1) as res
-    FROM SslTunnels
-    ${where}
-  "
-
-  _sqlite_query -c "$DRM_DB" -q "$query" || error_handled \
-    "(_ssl_exist_tunnel): Error on check if tunnel ${id_tunnel}${name} exists."
-
-  if [ x"$_sqlite_ans" != x"1" ] ; then 
-    return 1
-  fi
 
   return 0
 }
