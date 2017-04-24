@@ -5,9 +5,7 @@
 # License: GPL 2.0
 #------------------------------------------------
 
-
-# return 0 on success (show $_sqlite_ans variable for number)
-# return 1 on error
+# dbm__dbm_how_many_profiles
 _dbm_how_many_profiles () {
 
   local query=""
@@ -16,13 +14,17 @@ _dbm_how_many_profiles () {
 
   return 0
 }
+# dbm__dbm_how_many_profiles_end
 
+# dbm__dbm_get_profile_by_name
 _dbm_get_profile_by_name () {
 
   local query=""
   local name="$1"
 
-  check_var "DRM_PROFILES_PATH" || error_handled "You must define DRM_PROFILES_PATH variable on configuration file"
+  check_var "DRM_PROFILES_PATH" || \
+    error_handled \
+    "You must define DRM_PROFILES_PATH variable on configuration file"
 
   query="
     SELECT conf_file
@@ -45,7 +47,9 @@ _dbm_get_profile_by_name () {
   return 0
 
 }
+# dbm__dbm_get_profile_by_name_end
 
+# dbm__dbm_get_default_profile_filepath
 _dbm_get_default_profile_filepath () {
 
   local query=""
@@ -73,9 +77,9 @@ _dbm_get_default_profile_filepath () {
 
   return 0
 }
+# dbm__dbm_get_default_profile_filepath_end
 
-# return 0 if exists
-# return 1 if not exists
+# dbm__dbm_check_if_exist_prof_byid
 _dbm_check_if_exist_prof_byid () {
 
   local id_profile="$1"
@@ -93,9 +97,9 @@ _dbm_check_if_exist_prof_byid () {
 
   return 0
 }
+# dbm__dbm_check_if_exist_prof_byid_end
 
-# return 0 if exists
-# return 1 if not exists
+# dbm__dbm_check_if_exist_prof_byname
 _dbm_check_if_exist_prof_byname () {
 
   local profile_name="$1"
@@ -113,9 +117,9 @@ _dbm_check_if_exist_prof_byname () {
 
   return 0
 }
+# dbm__dbm_check_if_exist_prof_byname_end
 
-# return 0 if exists
-# return 1 if not exists
+# dbm__dbm_check_if_exist_rel
 _dbm_check_if_exist_rel () {
 
   local rel_name="$1"
@@ -131,7 +135,9 @@ _dbm_check_if_exist_rel () {
 
   return 0
 }
+# dbm__dbm_check_if_exist_rel_end
 
+# dbm__dbm_retrieve_script_data
 _dbm_retrieve_script_data () {
 
   local id_script="$1"
@@ -172,7 +178,9 @@ _dbm_retrieve_script_data () {
 
   return 0
 }
+# dbm__dbm_retrieve_script_data_end
 
+# dbm__dbm_retrieve_first_release
 _dbm_retrieve_first_release () {
 
   local name="$1"
@@ -186,7 +194,8 @@ _dbm_retrieve_first_release () {
     LIMIT 1
   "
 
-  _sqlite_query -c "$DRM_DB" -q "$query" || error_generate "Unexpected error on retrieve first release for project $name"
+  _sqlite_query -c "$DRM_DB" -q "$query" || \
+    error_generate "Unexpected error on retrieve first release for project $name"
 
   if [ -z "$_sqlite_ans" ] ; then
     error_generate "No release found for project $name"
@@ -197,9 +206,9 @@ _dbm_retrieve_first_release () {
 
   return 0
 }
+# dbm__dbm_retrieve_first_release_end
 
-# return 0 if exists
-# return 1 if not exists
+# dbm__dbm_check_if_exist_id_script
 _dbm_check_if_exist_id_script () {
 
   local id_script="$1"
@@ -219,9 +228,9 @@ _dbm_check_if_exist_id_script () {
 
   return 0
 }
+# dbm__dbm_check_if_exist_id_script_end
 
-# return 0 if exists
-# generate error if doesn't exits.
+# dbm__dbm_check_if_exist_id_branch
 _dbm_check_if_exist_id_branch () {
 
   local id_branch="$1"
@@ -235,9 +244,9 @@ _dbm_check_if_exist_id_branch () {
 
   return 0
 }
+# dbm__dbm_check_if_exist_id_branch_end
 
-# return 0 if exists
-# generate error if doesn't exits.
+# dbm__dbm_check_if_exist_id_rel
 _dbm_check_if_exist_id_rel () {
 
   local id_release="$1"
@@ -251,7 +260,9 @@ _dbm_check_if_exist_id_rel () {
 
   return 0
 }
+# dbm__dbm_check_if_exist_id_rel_end
 
+# dbm__dbm_retrieve_field_rel
 _dbm_retrieve_field_rel () {
 
   local field="$1"
@@ -270,7 +281,9 @@ _dbm_retrieve_field_rel () {
 
   return 0
 }
+# dbm__dbm_retrieve_field_rel_end
 
+# dbm__dbm_retrieve_field_rel_byid
 _dbm_retrieve_field_rel_byid () {
 
   local field="$1"
@@ -288,8 +301,9 @@ _dbm_retrieve_field_rel_byid () {
 
   return 0
 }
+# dbm__dbm_retrieve_field_rel_byid_end
 
-
+# dbm__dbm_retrieve_field_script
 _dbm_retrieve_field_script () {
 
   local field="$1"
@@ -307,7 +321,9 @@ _dbm_retrieve_field_script () {
 
   return 0
 }
+# dbm__dbm_retrieve_field_script_end
 
+# dbm__dbm_get_table_schema
 _dbm_get_table_schema () {
 
   local table="$1"
@@ -318,7 +334,9 @@ _dbm_get_table_schema () {
 
   return 0
 }
+# dbm__dbm_get_table_schema_end
 
+# dbm__dbm_remove_all_scripts_rel_inhib
 _dbm_remove_all_scripts_rel_inhib () {
 
   local id_release="$1"
@@ -394,7 +412,9 @@ _dbm_remove_all_scripts_rel_inhib () {
 
   return 0
 }
+# dbm__dbm_remove_all_scripts_rel_inhib_end
 
+# dbm__dbm_remove_release
 _dbm_remove_release () {
 
   local id_release="$1"
@@ -441,7 +461,9 @@ _dbm_remove_release () {
 
   return 0
 }
+# dbm__dbm_remove_release_end
 
+# dbm__dbm_update_idorder
 _dbm_update_idorder () {
 
   local id_branch="$1"
@@ -491,7 +513,9 @@ _dbm_update_idorder () {
 
   return 0
 }
+# dbm__dbm_update_idorder_end
 
+# dbm__dbm_remove_all_scripts_rel_ded
 _dbm_remove_all_scripts_rel_ded () {
 
   local id_release="$1"
@@ -567,21 +591,26 @@ _dbm_remove_all_scripts_rel_ded () {
 
   return 0
 }
+# dbm__dbm_remove_all_scripts_rel_ded_end
 
+# dbm__dbm_save2undo
 _dbm_save2undo () {
-
     local msg="$1"
 
     echo "$msg" >> $DBM_UNDO_SCRIPT
 
+    return $?
 }
+# dbm__dbm_save2undo_end
 
+# dbm__dbm_save2history
 _dbm_save2history () {
-
     local msg="$1"
 
     echo "$msg" >> $DBM_HISTORY
 
+    return $?
 }
+# dbm__dbm_save2history_end
 
 # vim: syn=sh filetype=sh

@@ -11,20 +11,14 @@ logfile_creation_date="May 6, 2013"
 logfile_version="@PACKAGE_VERSION@"
 logfile_status="0"
 
-#****f* logfile/logfile_version
-# FUNCTION
-#   Show version of logfile module.
-# SOURCE
+# logfile_logfile_version
 logfile_version () {
    echo -en "Version: ${logfile_version}\n"
    return 0
 }
-#***
+# logfile_logfile_version_end
 
-#****f* logfile/logfile_long_help
-# FUNCTION
-#   Show long help message.
-# SOURCE
+# logfile_logfile_long_help
 logfile_long_help () {
 
    echo -en "===========================================================================\n"
@@ -44,12 +38,9 @@ logfile_long_help () {
 
    return 0
 }
-#***
+# logfile_logfile_long_help_end
 
-#****f* logfile/logfile_show_help
-# FUNCTION
-#   Show help message.
-# SOURCE
+# logfile_logfile_show_help
 logfile_show_help () {
 
    echo -en "===========================================================================\n"
@@ -66,12 +57,9 @@ logfile_show_help () {
 
    return 0
 }
-#***
+# logfile_logfile_show_help_end
 
-#****f* logfile/logfile_info
-# FUNCTION
-#   Show informations and settings about logfile module.
-# SOURCE
+# logfile_logfile_info
 logfile_info () {
 
    echo -en "===========================================================================\n"
@@ -83,23 +71,9 @@ logfile_info () {
    echo -en "===========================================================================\n"
 
 }
-#***
+# logfile_logfile_info_end
 
-#****f* logfile/logfile_write
-# FUNCTION
-#   Write a message to logfile.
-# INPUTS
-#   $1: dbrm
-#   $2: write
-#   $3: message to write on logfile.
-# SEE ALSO
-#   _logfile_write
-# EXAMPLE
-#   dbrm logfile write "My message to write on LOGFILE!"
-# RETURN VALUE
-#   1 on error.
-#   0 on success.
-# SOURCE
+# logfile_logfile_write
 logfile_write () {
 
   local result=0
@@ -113,12 +87,9 @@ logfile_write () {
 
   return $result
 }
-#***
+# logfile_logfile_write_end
 
-#****f* logfile/logfile_reset
-# FUNCTION
-#   Remove logfile configured.
-# SOURCE
+# logfile_logfile_reset
 logfile_reset () {
 
   local res=0
@@ -144,23 +115,13 @@ logfile_reset () {
 
   return $res
 }
-#***
+# logfile_logfile_reset_end
 
 ##################################################################
 # Internal functions
 ##################################################################
 
-#****f* logfile/_logfile_write
-# FUNCTION
-#   Internal function that write input message to logfile.
-# INPUTS
-#   $1: message to write on logfile.
-# EXAMPLE
-#   _logfile_write "My message to write on LOGFILE!!!"
-# RETURN VALUE
-#   1 on error.
-#   0 on success.
-# SOURCE
+# logfile__logfile_write
 _logfile_write () {
 
   local msg=$1
@@ -179,15 +140,9 @@ _logfile_write () {
   return 0
 
 }
-#***
+# logfile__logfile_write_end
 
-#****f* logfile/_logfile_init
-# FUNCTION
-#   Internal function called on initialization of logfile module.
-# DESCRIPTION
-#   Check if it is defined LOGFILE variable and if is set check if file is writable.
-#   If LOGFILE variable is not set then logfile module is automatically disabled.
-# SOURCE
+# logfile__logfile_init
 _logfile_init () {
 
   if [ -z "$LOGFILE" ] ; then
@@ -201,6 +156,6 @@ _logfile_init () {
 
   fi
 }
-#***
+# logfile__logfile_init_end
 
 # vim: syn=sh filetype=sh ts=2 sw=2

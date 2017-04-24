@@ -5,11 +5,7 @@
 # License: GPL 2.0
 #------------------------------------------------
 
-#****f* dbm/_dbm_exts_check_extensions
-# FUNCTION
-#   Check if all extensions/modules are present on table
-#   Extensions. If not insert row with version.
-# SOURCE
+# dbm__dbm_exts_check_extensions
 _dbm_exts_check_extensions () {
 
   local ans=0
@@ -59,16 +55,9 @@ _dbm_exts_check_extensions () {
 
   return $ans
 }
-#***
+# dbm__dbm_exts_check_extensions_end
 
-#****f* dbm/_dbm_exts_is_present
-# FUNCTION
-#  Check if an extension is present on Extensions table.
-#  Save extension version to _ext_version variable.
-# RETURN VALUE
-#   1 on error or if extension is not present.
-#   0 if extension is present.
-# SOURCE
+# dbm__dbm_exts_is_present
 _dbm_exts_is_present () {
 
   local ext="$1"
@@ -81,7 +70,7 @@ _dbm_exts_is_present () {
 
   _sqlite_query -c "$DRM_DB" -q "$query" || return 1
 
-  if [[ x"$_sqlite_ans" == x" " || x"$_sqlite_ans" == x"" ]] ; then
+  if [[ x"$_sqlite_ans" == x"\ " || x"$_sqlite_ans" == x"" ]] ; then
     # Extension is not present.
     return 1
   fi
@@ -90,15 +79,9 @@ _dbm_exts_is_present () {
 
   return 0
 }
-#***
+# dbm__dbm_exts_is_present_end
 
-#****f* dbm/_dbm_exts_inst_extension
-# FUNCTION
-#  Install a new extension in Extensions table.
-# RETURN VALUE
-#   1 on error
-#   0 on success.
-# SOURCE
+# dbm__dbm_exts_inst_extension
 _dbm_exts_inst_extension () {
 
   local ename="$1"
@@ -127,15 +110,9 @@ _dbm_exts_inst_extension () {
 
   return 0
 }
-#***
+# dbm__dbm_exts_inst_extension_end
 
-#****f* dbm/_dbm_exts_update_extension
-# FUNCTION
-#  Update extension row in Extensions table.
-# RETURN VALUE
-#   1 on error
-#   0 on success.
-# SOURCE
+# dbm__dbm_exts_update_extension
 _dbm_exts_update_extension () {
 
   local ename="$1"
@@ -157,15 +134,9 @@ _dbm_exts_update_extension () {
 
   return 0
 }
-#***
+# dbm__dbm_exts_update_extension_end
 
-#****f* dbm/_dbm_exts_check_dbm
-# FUNCTION
-#  Check if dbm module is upgraded.
-# RETURN VALUE
-#   1 on error or an 'dbrm dbm upgrade' is needed.
-#   0 if dbm is updated.
-# SOURCE
+# dbm__dbm_exts_check_dbm
 _dbm_exts_check_dbm () {
 
   if _sqlite_exists_table -c "$DRM_DB" -t "Extensions" ; then
@@ -180,7 +151,6 @@ _dbm_exts_check_dbm () {
 
   return 0
 }
-#***
-
+# dbm__dbm_exts_check_dbm_end
 
 # vim: syn=sh filetype=sh

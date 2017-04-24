@@ -13,6 +13,7 @@ dbm_version="@PACKAGE_VERSION@"
 
 dbm_schema=@SHAREDIR@/dbm_sqlite_schema.sql
 
+# List of tables of sqlite database used by dbm modules.
 dbm_tables="
   ScriptTypes
   DatabaseAdapters
@@ -26,21 +27,15 @@ dbm_tables="
   Extensions
 "
 
-#****f* dbm/dbm_version
-# FUNCTION
-#  Show version of dbm module.
-# SOURCE
+# dbm_dbm_version
 dbm_version() {
    echo -en "Version: ${dbm_version}\n"
 
    return 0
 }
-#***
+# dbm_dbm_version_end
 
-#****f* dbm/dbm_long_help
-# FUNCTION
-#  Show long help message.
-# SOURCE
+# dbm_dbm_long_help
 dbm_long_help () {
 
    echo -en "===========================================================================\n"
@@ -91,12 +86,9 @@ dbm_long_help () {
 
    return 0
 }
-#***
+# dbm_dbm_long_help_end
 
-#****f* dbm/dbm_show_help
-# FUNCTION
-#  Show help message.
-# SOURCE
+# dbm_dbm_show_help
 dbm_show_help () {
 
    echo -en "===========================================================================\n"
@@ -141,12 +133,9 @@ dbm_show_help () {
 
    return 0
 }
-#***
+# dbm_dbm_show_help_end
 
-#****f* dbm/dbm_info
-# FUNCTION
-#  Show profiles list
-# SOURCE
+# dbm_dbm_info
 dbm_info () {
 
   local fields="LOCAL_DIR
@@ -197,14 +186,10 @@ dbm_info () {
 
   return 0
 }
-#***
+# dbm_dbm_info_end
 
 
-#****f* dbm/dbm_initenv
-# FUNCTION
-#  Create a new empty dbrm database and copy example file
-#  of dbrm.conf.
-# SOURCE
+# dbm_dbm_initenv
 dbm_initenv () {
 
   local ans=0
@@ -288,12 +273,9 @@ ${dbrm_profiles_options}
 
   return $ans
 }
-#***
+# dbm_dbm_initenv_end
 
-#****f* dbm/dbm_shell
-# FUNCTION
-#  Enter on dbm sqlite database file.
-# SOURCE
+# dbm_dbm_shell
 dbm_shell () {
 
   shift 2
@@ -302,12 +284,10 @@ dbm_shell () {
 
   return 0
 }
+# dbm_dbm_shell_end
 #***
 
-#****f* dbm/dbm_show_profiles
-# FUNCTION
-#  Show profiles list
-# SOURCE
+# dbm_dbm_show_profiles
 dbm_show_profiles () {
 
   _dbm_how_many_profiles || error_handled "Unexpected error!"
@@ -407,12 +387,9 @@ dbm_show_profiles () {
 
   return 0
 }
-#***
+# dbm_dbm_show_profiles
 
-#****f* dbm/dbm_show_releases
-# FUNCTION
-#  Show releases history.
-# SOURCE
+# dbm_dbm_show_releases
 dbm_show_releases () {
 
   _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM Releases" || error_handled "Unexpected error!"
@@ -550,12 +527,9 @@ dbm_show_releases () {
 
   return 0
 }
-#***
+# dbm_dbm_show_releases_end
 
-#****f* dbm/dbm_show_scripts
-# FUNCTION
-#  Show list of the scripts registered.
-# SOURCE
+# dbm_dbm_show_scripts
 dbm_show_scripts () {
 
   _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM Scripts" || error_handled "Unexpected error!"
@@ -643,12 +617,9 @@ dbm_show_scripts () {
 
   return 0
 }
-#***
+# dbm_dbm_show_scripts_end
 
-#****f* dbm/dbm_show_script_types
-# FUNCTION
-#  Show list of script types.
-# SOURCE
+# dbm_dbm_show_script_types
 dbm_show_script_types () {
 
   _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM ScriptTypes" || error_handled "Unexpected error!"
@@ -704,12 +675,9 @@ dbm_show_script_types () {
 
   return 0
 }
-#***
+# dbm_show_script_types_end
 
-#****f* dbm/dbm_show_rel_dep
-# FUNCTION
-#  Show list of releases dependencies.
-# SOURCE
+# dbm_dbm_show_rel_dep
 dbm_show_rel_dep () {
 
   _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM ReleasesDependencies" || error_handled "Unexpected error!"
@@ -769,12 +737,9 @@ dbm_show_rel_dep () {
 
   return 0
 }
-#***
+# dbm_dbm_show_rel_dep
 
-#****f* dbm/dbm_show_inhibit_scripts
-# FUNCTION
-#  Show list of inhibitions scripts for releases.
-# SOURCE
+# dbm_dbm_show_inhibit_scripts
 dbm_show_inhibit_scripts () {
 
   _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM ScriptRelInhibitions" || error_handled "Unexpected error!"
@@ -804,7 +769,7 @@ dbm_show_inhibit_scripts () {
 
     out_el_post[0]="\e[m"
 
-    out_tabs[0]="15"
+    out_tabs[0]="16"
 
     IFS=$'\n'
     for row in $_sqlite_ans ; do
@@ -839,12 +804,9 @@ dbm_show_inhibit_scripts () {
 
   return 0
 }
-#***
+# dbm_dbm_show_inhibit_scripts_end
 
-#****f* dbm/dbm_show_rel_ded_scripts
-# FUNCTION
-#  Show list of releases dedicated scripts.
-# SOURCE
+# dbm_dbm_show_rel_ded_scripts
 dbm_show_rel_ded_scripts () {
 
   _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM ScriptRelDedicated" || error_handled "Unexpected error!"
@@ -909,12 +871,9 @@ dbm_show_rel_ded_scripts () {
 
   return 0
 }
-#***
+# dbm_dbm_show_rel_ded_scripts_end
 
-#****f* dbm/dbm_show_adapters
-# FUNCTION
-#  Show list of adapters availables.
-# SOURCE
+# dbm_dbm_show_adapters
 dbm_show_adapters  () {
 
   _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM DatabaseAdapters" || error_handled "Unexpected error!"
@@ -969,14 +928,9 @@ dbm_show_adapters  () {
 
   return 0
 }
-#***
+# dbm_dbm_show_adapters_end
 
-#****f* dbm/dbm_move_release
-# FUNCTION
-#  Move releases position.
-# SEE ALSO
-#  _dbm_check_move_release_args for arguments list.
-# SOURCE
+# dbm_dbm_move_release
 dbm_move_release () {
 
   local result=1
@@ -1240,14 +1194,9 @@ dbm_move_release () {
 
   return $result
 }
-#***
+# dbm_dbm_move_release_end
 
-#****f* dbm/dbm_update_release
-# FUNCTION
-#  Update information about a particular release.
-# SEE ALSO
-#  _dbm_check_upd_release_args for list of arguments.
-# SOURCE
+# dbm_dbm_update_release
 dbm_update_release () {
 
   local result=1
@@ -1336,14 +1285,9 @@ dbm_update_release () {
 
   return $result
 }
-#***
+# dbm_dbm_update_release_end
 
-#****f* dbm/dbm_add_profile
-# FUNCTION
-#  Insert a new profile.
-# SEE ALSO
-#  _dbm_check_add_prof_args for list of accepted arguments.
-# SOURCE
+# dbm_dbm_add_profile
 dbm_add_profile () {
 
   local result=1
@@ -1411,14 +1355,9 @@ dbm_add_profile () {
 
   return 0
 }
-#***
+# dbm_dbm_add_profile_end
 
-#****f* dbm/dbm_del_profile
-# FUNCTION
-#  Delete a profile.
-# SEE ALSO
-#  _dbm_check_prof_args for list of accepted arguments.
-# SOURCE
+# dbm_dbm_del_profile
 dbm_del_profile () {
 
   local result=1
@@ -1456,14 +1395,9 @@ dbm_del_profile () {
 
   return 0
 }
-#***
+# dbm_dbm_del_profile_end
 
-#****f* dbm/dbm_set_profile
-# FUNCTION
-#  Set default profile.
-# SEE ALSO
-#  _dbm_check_prof_args for list of accepted arguments.
-# SOURCE
+# dbm_dbm_set_profile
 dbm_set_profile () {
 
   local result=1
@@ -1523,20 +1457,15 @@ dbm_set_profile () {
 
   _sqlite_query -c "$DRM_DB" -q "$query" || error_handled "Error on set profile $profile."
 
-  out_handler_print "Default profile $profile is now default."
+  out_handler_print "Profile $profile is now set as default."
 
   out_handler_clean
 
   return 0
 }
-#***
+# dbm_dbm_set_profile_end
 
-#****f* dbm/dbm_insert_release
-# FUNCTION
-#  Insert a new release.
-# SEE ALSO
-#  _dbm_check_ins_rel_args for list of accepted arguments.
-# SOURCE
+# dbm_dbm_insert_release
 dbm_insert_release () {
 
   local result=1
@@ -1600,14 +1529,9 @@ dbm_insert_release () {
 
   return $result
 }
-#***
+# dbm_dbm_insert_release
 
-#****f* dbm/dbm_remove_release
-# FUNCTION
-#  Remove a release.
-# SEE ALSO
-#  _dbm_check_rem_rel_args for list of valid arguments.
-# SOURCE
+# dbm_remove_release
 dbm_remove_release () {
 
   local result=1
@@ -1658,20 +1582,17 @@ dbm_remove_release () {
 
     _dbm_update_idorder $id_branch || error_handled "Unexpected error on update id_order"
 
+    out_handler_print "Release $DBM_REL_ID is been removed."
+
   fi
 
   result=0
 
   return $result
 }
-#***
+# dbm_remove_release_end
 
-#****f* dbm/dbm_remove_script
-# FUNCTION
-#  Remove a script from a release.
-# SEE ALSO
-#  _dbm_check_rm_script_args for list of valid arguments.
-# SOURCE
+# dbm_dbm_remove_script
 dbm_remove_script () {
 
   local result=1
@@ -1695,14 +1616,9 @@ dbm_remove_script () {
 
   return $result
 }
-#***
+# dbm_dbm_remove_script_end
 
-#****f* dbm/dbm_update_script
-# FUNCTION
-#  Update information about a script.
-# SEE ALSO
-#  _dbm_check_upd_script_args for list of valid arguments.
-# SOURCE
+# dbm_dbm_update_script
 dbm_update_script () {
 
   local result=1
@@ -1828,14 +1744,9 @@ dbm_update_script () {
 
   return $result
 }
-#***
+# dbm_dbm_update_script_end
 
-#****f* dbm/dbm_insert_script
-# FUNCTION
-#  Insert a new script to a release.
-# SEE ALSO
-#  _dbm_check_ins_script_args for list of valid arguments.
-# SOURCE
+# dbm_dbm_insert_script
 dbm_insert_script () {
 
   local result=1
@@ -1888,14 +1799,9 @@ dbm_insert_script () {
 
   return $result
 }
-#***
+# dbm_dbm_insert_script_end
 
-#****f* dbm/dbm_insert_script_type
-# FUNCTION
-#  Insert a script type.
-# SEE ALSO
-#  _dbm_check_ins_script_type_args for list of valid arguments.
-# SOURCE
+# dbm_dbm_insert_script_type
 dbm_insert_script_type () {
 
   local result=1
@@ -1924,14 +1830,9 @@ dbm_insert_script_type () {
 
   return $result
 }
-#***
+# dbm_dbm_insert_script_type_end
 
-#****f* dbm/dbm_insert_rel_dep
-# FUNCTION
-#  Insert a release dependency.
-# SEE ALSO
-#  _dbm_check_rel_dep_args for list of valid arguments.
-# SOURCE
+# dbm_dbm_insert_rel_dep
 dbm_insert_rel_dep () {
 
   local result=1
@@ -1959,21 +1860,16 @@ dbm_insert_rel_dep () {
   ans=$?
 
   if [ x"$ans" = x"0" ] ; then
-    echo "Insert release dependencty to $DBM_REL_NAME v.$DBM_REL_VERSION_TO correctly."
+    echo "Insert release dependency to $DBM_REL_NAME v.$DBM_REL_VERSION_TO correctly."
   fi
 
   result=$ans
 
   return $result
 }
-#***
+# dbm_dbm_insert_rel_dep
 
-#****f* dbm/dbm_remove_rel_dep
-# FUNCTION
-#  Remove a release dependency.
-# SEE ALSO
-#  _dbm_check_rel_dep_args for list of valid arguments.
-# SOURCE
+# dbm_dbm_remove_rel_dep
 dbm_remove_rel_dep () {
 
   local result=1
@@ -2003,14 +1899,9 @@ dbm_remove_rel_dep () {
 
   return $result
 }
-#***
+# dbm_dbm_remove_rel_dep_end
 
-#****f* dbm/dbm_insert_inhibit_script
-# FUNCTION
-#  Insert a release inhibited script.
-# SEE ALSO
-#  _dbm_check_inhibit_script_args for list of valid arguments.
-# SOURCE
+# dbm_dbm_insert_inhibit_script
 dbm_insert_inhibit_script () {
 
   local result=1
@@ -2045,14 +1936,9 @@ dbm_insert_inhibit_script () {
 
   return $result
 }
-#***
+# dbm_dbm_insert_inhibit_script_end
 
-#****f* dbm/dbm_insert_ded_script
-# FUNCTION
-#  Insert a release dedicated script.
-# SEE ALSO
-#  _dbm_check_inhibit_script_args for list of valid arguments.
-# SOURCE
+# dbm_dbm_insert_ded_script
 dbm_insert_ded_script () {
 
   local result=1
@@ -2087,14 +1973,9 @@ dbm_insert_ded_script () {
 
   return $result
 }
-#***
+# dbm_dbm_insert_ded_script_end
 
-#****f* dbm/dbm_remove_inhibit_script
-# FUNCTION
-#  Remove a release inhibition script.
-# SEE ALSO
-#  _dbm_check_inhibit_script_args for list of valid arguments.
-# SOURCE
+# dbm_dbm_remove_inhibit_script
 dbm_remove_inhibit_script () {
 
   local result=1
@@ -2126,14 +2007,9 @@ dbm_remove_inhibit_script () {
 
   return $result
 }
-#***
+# dbm_dbm_remove_inhibit_script_end
 
-#****f* dbm/dbm_remove_ded_script
-# FUNCTION
-#  Remove a release dedicated script.
-# SEE ALSO
-#  _dbm_check_inhibit_script_args for list of valid arguments.
-# SOURCE
+# dbm_dbm_remove_ded_script
 dbm_remove_ded_script () {
 
   local result=1
@@ -2165,12 +2041,9 @@ dbm_remove_ded_script () {
 
   return $result
 }
-#***
+# dbm_dbm_remove_ded_script_end
 
-#****f* dbm/dbm_show_branches
-# FUNCTION
-#  Show list of branches.
-# SOURCE
+# dbm_dbm_show_branches
 dbm_show_branches () {
 
   _sqlite_query -c "$DRM_DB" -q "SELECT COUNT(1) AS R FROM Branches" || error_handled "Unexpected error!"
@@ -2239,14 +2112,9 @@ dbm_show_branches () {
 
   return 0
 }
-#***
+# dbm_dbm_show_branches
 
-#****f* dbm/dbm_insert_branch
-# FUNCTION
-#  Insert a new branch.
-# SEE ALSO
-#  _dbm_check_ins_bra_args for a list of valid arguments.
-# SOURCE
+# dbm_dbm_insert_branch
 dbm_insert_branch () {
 
   local result=1
@@ -2276,14 +2144,9 @@ dbm_insert_branch () {
 
   return $result
 }
-#***
+# dbm_dbm_insert_branch_end
 
-#****f* dbm/dbm_move_script
-# FUNCTION
-#  Move a release script.
-# SEE ALSO
-#  _dbm_check_move_script_args for a list of valid arguments.
-# SOURCE
+# dbm_move_script
 dbm_move_script () {
 
   local result=1
@@ -2443,12 +2306,9 @@ dbm_move_script () {
 
   return $result
 }
-#***
+# dbm_move_script_end
 
-#****f* dbm/upgrade
-# FUNCTION
-#   Upgrade DRBM databaes with last revision.
-# SOURCE
+# dbm_dbm_upgrade
 dbm_upgrade () {
 
   # Shift first two input param
@@ -2459,16 +2319,14 @@ dbm_upgrade () {
   return 0
 
 }
+# dbm_dbm_upgrade_end
 
 
 ##################################################################
 # Internal functions
 ##################################################################
 
-#****f* dbm/_dbm_init
-# FUNCTION
-#  Internal function called on initialization of dbm module.
-# SOURCE
+# dbm__dbm_init
 _dbm_init() {
 
   # Load dbm module files
@@ -2478,19 +2336,9 @@ _dbm_init() {
 
   return 0
 }
-#***
+# dbm__dbm_init_end
 
-#****f* dbm/_dbm_post_init
-# FUNCTION
-#  Internal function called after initialization of dbm module.
-# DESCRIPTION
-#  On this function is:
-#     * check if is exists internal sqlite database (DRM_DB variable) otherwise is created.
-#     * check if is defined DBM_UNDO_SCRIPT variable relative to undo commands.
-#       If is not defined then $LOCAL_DIR/dbm_undo.sh script file is used.
-#     * check if is defined DBM_HISTORY variable relative to command history log.
-#       If is not defined then $LOCAL_DIR/.dbm_history file is used.
-# SOURCE
+# dbm__dbm_post_init
 _dbm_post_init () {
 
   # Check if exists DRM_DB
@@ -2538,15 +2386,11 @@ _dbm_post_init () {
   [[ $DEBUG ]] && echo "(dbm_post_init: Use undo script: $DBM_UNDO_SCRIPT.)"
 
   export DBM_UNDO_SCRIPT DBM_HISTORY
-
 }
-#***
+# dbm__dbm_post_init_end
 
 
-#****f* dbm/_dbm_upgrade
-# FUNCTION
-#  Internal function for upgrade and/or verify DBRM database file.
-# SOURCE
+# dbm__dbm_upgrade
 _dbm_upgrade () {
 
   local i=0
@@ -2574,11 +2418,11 @@ _dbm_upgrade () {
   # Check if all modules are present on Extensions table.
   _dbm_exts_check_extensions || error_generate "Error on verify extentensions."
 
-  # Check it is needed execute upgrade scripts for dbm module.
+  # Check if it is needed execute upgrade scripts for dbm module.
 
   return 0
 
 }
-#***
+# dbm__dbm_upgrade_end
 
 # vim: syn=sh filetype=sh ts=2 sw=2
