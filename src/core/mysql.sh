@@ -5,20 +5,7 @@
 # License: GPL 2.0
 #------------------------------------------------
 
-#****f* mysql/mysql_set_auth_var
-# FUNCTION
-#   Set mysql_auth variable with
-#   authentication string like: -u username --password=pwd database.
-# INPUTS
-#   db        Name of the schema to use.
-#   user      User to use on authentication.
-#   pwd       Password to use on authentication
-#   host      Optionally host of the database server.
-# DESCRIPTION
-#   Set mysql_auth variable with arguments to use with mysql client program.
-# RETURN VALUE
-#   0 always.
-# SOURCE
+# mysql_mysql_set_auth_var
 mysql_set_auth_var () {
 
   local db=$1
@@ -46,34 +33,9 @@ mysql_set_auth_var () {
 
   return 0
 }
-#****
+# mysql_mysql_set_auth_var_end
 
-#****f* mysql/mysql_file
-# FUNCTION
-#   Compile a file and save output to input variable
-# INPUTS
-#   $1      Name of the variable where is save output command.
-#   $2      File to compile.
-#   $3      Flag to avoid set of timezone on session (1 to avoid, 0 to leave default).
-#           (Optional)
-# DESCRIPTION
-#   Inside function are used these external variables:
-#   * MARIADB_IGNORE_TMZ: this variable is used as an alternative to set third parameter
-#                         of the function and avoid set of timezone on session.
-#   * MARIADB_TMZ: timezone to use on session. Default is UTC.
-#   * MARIADB_SHOW_COLUMNS: if this variable is set remove '-N' option from mysql client
-#                           command to print column data.
-#   * MARIADB_CLIENT: Path of mysql client.
-#   * MARIADB_EXTRA_OPTIONS: Extra options for mysql client.
-#   * MARIADB_DB: name of the schema to use.
-#   * MARIADB_ENABLE_COMMENTS: With value 0 (disable) or 1 (enable) insert of comments
-#                              in compilation. Default is 0.
-#   NOTE: This command try to replace string `DB_NAME` with name of the schema
-#         defined on MARIADB_DB variable.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SOURCE
+# mysql_mysql_file
 mysql_file () {
 
   local var=$1
@@ -118,32 +80,9 @@ EOF
   return $ans
 
 }
-#****
+# mysql_mysql_file_end
 
-#****f* mysql/mysql_source_file
-# FUNCTION
-#   Compile a file and save output to input variable.
-#   This command is an alternative to mysql_file function that use source command.
-# INPUTS
-#   $1      Name of the variable where is save output command.
-#   $2      File to compile.
-#   $3      Flag to avoid set of timezone on session (1 to avoid, 0 to leave default).
-#           (Optional)
-# DESCRIPTION
-#   Inside function are used these external variables:
-#   * MARIADB_IGNORE_TMZ: this variable is used as an alternative to set third parameter
-#                         of the function and avoid set of timezone on session.
-#   * MARIADB_TMZ: timezone to use on session. Default is UTC.
-#   * MARIADB_SHOW_COLUMNS: if this variable is set remove '-N' option from mysql client
-#                           command to print column data.
-#   * MARIADB_CLIENT: Path of mysql client.
-#   * MARIADB_EXTRA_OPTIONS: Extra options for mysql client.
-#   * MARIADB_ENABLE_COMMENTS: With value 0 (disable) or 1 (enable) insert of comments
-#                              in compilation. Default is 0.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SOURCE
+# mysql_mysql_source_file
 mysql_source_file () {
 
   local var=$1
@@ -187,32 +126,9 @@ EOF
   return $ans
 
 }
-#****
+# mysql_mysql_source_file_end
 
-#****f* mysql/mysql_cmd_4var
-# FUNCTION
-#   Execute an input statement on configured schema.
-# INPUTS
-#   var       Name of the variable where is save output command.
-#   cmd       Command to execute.
-#   rm_lf     If string length is not zero than from output command are remove LF.
-#   avoid_tmz Flag to avoid set of timezone on session (1 to avoid, 0 to leave default).
-#             (Optional)
-# DESCRIPTION
-#   Inside function are used these external variables:
-#   * MARIADB_IGNORE_TMZ: this variable is used as an alternative to set third parameter
-#                         of the function and avoid set of timezone on session.
-#   * MARIADB_TMZ: timezone to use on session. Default is UTC.
-#   * MARIADB_SHOW_COLUMNS: if this variable is set remove '-N' option from mysql client
-#                           command to print column data.
-#   * MARIADB_CLIENT: Path of mysql client.
-#   * MARIADB_EXTRA_OPTIONS: Extra options for mysql client.
-#   * MARIADB_ENABLE_COMMENTS: With value 0 (disable) or 1 (enable) insert of comments
-#                              in compilation. Default is 0.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SOURCE
+# mysql_mysql_cmd_4var
 mysql_cmd_4var () {
 
   set -f
@@ -269,6 +185,6 @@ EOF
 
   return $ans
 }
-#****
+# mysql_mysql_cmd_4var_end
 
 # vim: syn=sh filetype=sh

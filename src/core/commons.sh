@@ -6,15 +6,7 @@
 #------------------------------------------------
 
 
-#****f* commons/assertNot
-# FUNCTION
-#   Check if last command result (passed in input). If result is equal to res_value
-#   param print message to stdout and exit with value 1.
-# INPUTS
-#   result    - result value of command.
-#   inv_res   - check if result value is equal to this value.(numeric value).
-#   msg       - message to print if result is not equal to zero.
-# SOURCE
+# commons_assertNot
 assertNot () {
   local result=$1
   local inv_res=$2
@@ -23,16 +15,9 @@ assertNot () {
       exit 1
    fi
 }
-#***
+# commons_assertNot_end
 
-
-#****f* commons/error_handled
-# FUNCTION
-#   Check if last command result. If result is not equal to 0 then
-#   print a message to stdout and exit with value 1.
-# INPUTS
-#   msg       - message to print if result is not equal to zero.
-# SOURCE
+# commons_error_handled
 error_handled () {
    local result=$?
    if [ $result -ne 0 ] ; then
@@ -40,17 +25,9 @@ error_handled () {
       exit 1
    fi
 }
-#***
+# commons_error_handled_end
 
-#****f* commons/error_generate
-# FUNCTION
-#   Print input message and exit with value 1.
-# INPUTS
-#   msg       - message to print in stdout.
-#   exit_call - Possible values:
-#                   0 -> not execute exit 1,
-#                   1 -> execute. Default.
-# SOURCE
+# commons_error_generate
 error_generate () {
 
   local exit_call=${2:-1}
@@ -62,17 +39,9 @@ error_generate () {
   fi
 
 }
-#***
+# commons_error_generate_end
 
-#****f* commons/check_var
-# FUNCTION
-#   Check if variable with name in input contains a string or not.
-# INPUT
-#   var       Name of the variable to check.
-# RETURN VALUE
-#   1 length of the variable is zero.
-#   0 length of the variable is not zero.
-# SOURCE
+# commons_check_var
 check_var () {
 
   local var=$1
@@ -85,16 +54,9 @@ check_var () {
 
   return 0
 }
-#***
+# commons_check_var_end
 
-#****f* commons/escape_var
-# FUNCTION
-#   Escape content of the variable with input name.
-# INPUT
-#   var       Name of the variable to check.
-# RETURN VALUE
-#   0 always
-# SOURCE
+# commons_escape_var
 escape_var () {
 
   local name="$1"
@@ -107,8 +69,9 @@ escape_var () {
 
   return 0
 }
-#***
+# commons_escape_var_end
 
+# commons_escape2oct_var
 escape2oct_var () {
 
   local name="$1"
@@ -124,18 +87,9 @@ escape2oct_var () {
 
   return 0
 }
-#***
+# commons_escape2oct_var_end
 
-#****f* commons/confirmation_question
-# FUNCTION
-#   Use to generate an input question and manage response.
-# INPUTS
-#   msg         - message with question for user.
-# RETURN VALUE
-#   0   if user answer is yes.
-#   1   if user answer is no.
-#   2   if user answer empty.
-# SOURCE
+# commons_confirmation_question
 confirmation_question () {
    echo -en "$1"
    read ans
@@ -151,14 +105,9 @@ confirmation_question () {
 
    return 1
 }
-#***
+# commons_confirmation_question_end
 
-#****f* commons/push_spaces
-# FUNCTION
-#   Push spaces to stdout.
-# INPUTS
-#   n_spaces    Number of spaces to write.
-# SOURCE
+# commons_push_spaces
 push_spaces () {
 
   local n_spaces=$1
@@ -172,21 +121,9 @@ push_spaces () {
 
   return 0
 }
-#***
+# commons_push_spaces_end
 
-#****f* commons/get_spaces_str
-# FUNCTION
-#   Create a string with input "str" param at begin and N spaces
-#   where N is equal to max_chars - ${#str}
-# INPUTS
-#   var_name     Name of variable where save string with spaces.
-#   max_chars    Number of max chars of the string with spaces.
-#   str          String to insert at begin of save string.
-#   pre_spaces   Number of spaces to add before str. (Optional. default 0).
-# RETURN
-#   0 on success
-#   1 on error
-# SOURCE
+# commons_get_spaces_str
 get_space_str () {
   local var_name="$1"
   local max_chars="$2"
@@ -213,18 +150,9 @@ get_space_str () {
 
   return 0
 }
-#***
+# commons_get_spaces_str_end
 
-#****f* commons/commons_exists_prog
-# FUNCTION
-#   Check if a program is available on current PATH.
-# INPUTS
-#   program     Name of the program.
-#   options     Override default (-v) option on check presence. Optional.
-# RETURN VALUE
-#   0 if program exists
-#   1 if program doesn't exist or invalid input param.
-# SOURCE
+# commons_commons_exists_prog
 commons_exists_prog () {
 
   local prog="$1"
@@ -245,6 +173,6 @@ commons_exists_prog () {
 
   return $ans
 }
-#***
+# commons_commons_exists_prog_end
 
 # vim: syn=sh filetype=sh

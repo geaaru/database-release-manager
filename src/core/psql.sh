@@ -5,21 +5,7 @@
 # License: GPL 2.0
 #------------------------------------------------
 
-#****f* psql/psql_set_auth_var
-# FUNCTION
-#   Set psql_auth variable with
-#   authentication string like: -u username --password=pwd database.
-# INPUTS
-#   db        Name of the schema to use.
-#   user      User to use on authentication.
-#   pwd       Password to use on authentication
-#   host      Optionally host of the database server.
-#   schema    Optionally schema of the database server.
-# DESCRIPTION
-#   Set psql_auth variable with arguments to use with psql client program.
-# RETURN VALUE
-#   0 always.
-# SOURCE
+# psql_set_auth_var
 psql_set_auth_var () {
 
   local db=$1
@@ -47,32 +33,10 @@ psql_set_auth_var () {
 
   return 0
 }
-#****
+# psql_set_auth_var_end
 
 
-#****f* psql/psql_cmd_4var
-# FUNCTION
-#   Execute an input statement on configured schema.
-# INPUTS
-#   var       Name of the variable where is save output command.
-#   cmd       Command to execute.
-#   rm_lf     If string length is not zero than from output command are remove LF.
-#   avoid_tmz Flag to avoid set of timezone on session (1 to avoid, 0 to leave default).
-#             (Optional)
-# DESCRIPTION
-#   Inside function are used these external variables:
-#   * POSTGRESQL_IGNORE_TMZ: this variable is used as an alternative to set third parameter
-#                         of the function and avoid set of timezone on session.
-#   * POSTGRESQL_TMZ: timezone to use on session. Default is UTC.
-#   * POSTGRESQL_SHOW_COLUMNS: if this variable is set then columns are visibile on output
-#                              table. Default is hide columns.
-#   * POSTGRESQL_CLIENT: Path of psql client.
-#   * POSTGRESQL_FORMAT: Customize format options. Default is unaligned.
-#   * POSTGRESQL_EXTRA_OPTIONS: Extra options for psql client.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SOURCE
+# psql_psql_cmd_4var
 psql_cmd_4var () {
 
   set -f
@@ -145,6 +109,6 @@ EOF
 
   return $ans
 }
-#****
+# psql_psql_cmd_4var_end
 
 # vim: syn=sh filetype=sh

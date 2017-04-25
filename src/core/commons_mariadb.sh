@@ -5,20 +5,7 @@
 # License: GPL 2.0
 #------------------------------------------------
 
-
-
-#****f* commons_mariadb/commons_mariadb_check_client
-# FUNCTION
-#   Check if mysql client program is present on system.
-#   If present MARIADB_CLIENT variable with abs path is set.
-# DESCRIPTION
-#   Function check if it is set "mysql" variable:
-#   * if it is not set then try to find path through 'which' program
-#   * if it is set then check if path is correct and program exists.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SOURCE
+# commons_mariadb_commons_mariadb_check_client
 commons_mariadb_check_client () {
 
   if [ -z "$mysql" ] ; then
@@ -69,15 +56,9 @@ commons_mariadb_check_client () {
   return 0
 
 }
-#****
+# commons_mariadb_commons_mariadb_check_client_end
 
-#****f* commons_mariadb/commons_mariadb_check_vars
-# FUNCTION
-#   Check if are present mandatary mariadb environment variables.
-# RETURN VALUE
-#   0 all mandatary variables are present.
-#   1 on error
-# SOURCE
+# commons_mariadb_commons_mariadb_check_vars
 commons_mariadb_check_vars () {
 
   local commons_msg='variable on configuration file, through arguments or on current profile.'
@@ -90,15 +71,9 @@ commons_mariadb_check_vars () {
 
   return 0
 }
-#****
+# commons_mariadb_commons_mariadb_check_vars_end
 
-#****f* commons_mariadb/commons_mariadb_check_connection
-# FUNCTION
-#   Check connection to database.
-# RETURN VALUE
-#   0 when connection is ok
-#   1 on error
-# SOURCE
+# commons_mariadb_commons_mariadb_check_connection
 commons_mariadb_check_connection () {
 
   if [ -z "$MARIADB_CLIENT" ] ; then
@@ -127,15 +102,9 @@ EOF
 
   return 0
 }
-#***
+# commons_mariadb_commons_mariadb_check_connection_end
 
-#****f* commons_mariadb/commons_mariadb_shell
-# FUNCTION
-#   Enter on command line shell of Mysql/Mariadb server.
-# RETURN VALUE
-#   0 when connection is ok
-#   1 on error
-# SOURCE
+# commons_mariadb_commons_mariadb_shell
 commons_mariadb_shell () {
 
   local opts=""
@@ -166,22 +135,9 @@ commons_mariadb_shell () {
 
   return 0
 }
-#***
+# commons_mariadb_commons_mariadb_shell_end
 
-#****f* commons_mariadb/commons_mariadb_compile_file
-# FUNCTION
-#   Compile file on database.
-# DESCRIPTION
-#   Output of the compilation is saved on MYSQL_OUTPUT variable.
-# INPUTS
-#   f        - path of the file to compile
-#   msg      - message to insert on logging file relative to input file.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SEE ALSO
-#   mysql_file
-# SOURCE
+# commons_mariadb_commons_mariadb_compile_file
 commons_mariadb_compile_file () {
 
   local f=$1
@@ -211,7 +167,7 @@ commons_mariadb_compile_file () {
   return $ans
 
 }
-#***
+# commons_mariadb_commons_mariadb_compile_file_end
 
 #****f* commons_mariadb/commons_mariadb_source_file
 # FUNCTION

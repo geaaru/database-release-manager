@@ -5,19 +5,7 @@
 # License: GPL 2.0
 #------------------------------------------------
 
-
-#****f* commons_psql/commons_psql_check_client
-# FUNCTION
-#   Check if psql client program is present on system.
-#   If present POSTGRESQL_CLIENT variable with abs path is set.
-# DESCRIPTION
-#   Function check if it is set "psql" variable:
-#   * if it is not set then try to find path through 'which' program
-#   * if it is set then check if path is correct and program exists.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SOURCE
+# commons_psql_commons_psql_check_client
 commons_psql_check_client () {
 
   if [ -z "$psql" ] ; then
@@ -51,7 +39,7 @@ commons_psql_check_client () {
 
       [[ $DEBUG && $DEBUG == true ]] && echo -en "Use psql: $psql\n"
 
-      POSTGRESQL_CLIENT=$psql
+      POSTGRESQL_CLIENT=$psq
 
     else
 
@@ -68,20 +56,9 @@ commons_psql_check_client () {
   return 0
 
 }
-#****
+# commons_psql_commons_psql_check_client_end
 
-#****f* commons_psql/commons_psql_check_client_dump
-# FUNCTION
-#   Check if pg_dump client program is present on system.
-#   If present POSTGRESQL_CLIENT_DUMP variable with abs path is set.
-# DESCRIPTION
-#   Function check if it is set "pg_dump" variable:
-#   * if it is not set then try to find path through 'which' program
-#   * if it is set then check if path is correct and program exists.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SOURCE
+# commons_psql_commons_psql_check_client_dump
 commons_psql_check_client_dump () {
 
   if [ -z "$pg_dump" ] ; then
@@ -132,16 +109,9 @@ commons_psql_check_client_dump () {
   return 0
 
 }
-#****
+# commons_psql_commons_psql_check_client_dump_end
 
-
-#****f* commons_psql/commons_psql_check_vars
-# FUNCTION
-#   Check if are present mandatary psql environment variables.
-# RETURN VALUE
-#   0 all mandatary variables are present.
-#   1 on error
-# SOURCE
+# commons_psql_commons_psql_check_vars
 commons_psql_check_vars () {
 
   local commons_msg='variable on configuration file, through arguments or on current profile.'
@@ -153,16 +123,9 @@ commons_psql_check_vars () {
 
   return 0
 }
-#****
+# commons_psql_commons_psql_check_vars_end
 
-
-#****f* commons_psql/commons_psql_check_connection
-# FUNCTION
-#   Check connection to database.
-# RETURN VALUE
-#   0 when connection is ok
-#   1 on error
-# SOURCE
+# commons_psql_commons_psql_check_connection
 commons_psql_check_connection () {
 
   if [ -z "$POSTGRESQL_CLIENT" ] ; then
@@ -191,15 +154,9 @@ EOF
 
   return 0
 }
-#***
+# commons_psql_commons_psql_check_connection_end
 
-#****f* commons_psql/commons_psql_shell
-# FUNCTION
-#   Enter on command line shell of Postgresql server.
-# RETURN VALUE
-#   0 when connection is ok
-#   1 on error
-# SOURCE
+# commons_psql_commons_psql_shell
 commons_psql_shell () {
 
   local opts=""
@@ -230,15 +187,9 @@ commons_psql_shell () {
 
   return 0
 }
-#***
+# commons_psql_commons_psql_shell_end
 
-#****f* commons_psql/commons_psql_dump
-# FUNCTION
-#   Dump database or schema from Postgresql server.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SOURCE
+# commons_psql_commons_psql_dump
 commons_psql_dump () {
 
   local opts=""
@@ -272,6 +223,6 @@ commons_psql_dump () {
 
   return 0
 }
-#***
+# commons_psql_commons_psql_dump_end
 
 # vim: syn=sh filetype=sh

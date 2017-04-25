@@ -3,5 +3,11 @@
 .. toctree::
     :maxdepth: 2
 
-    Dbm <dbm.md>
-    Logfile <logfile.md>
+    Dbm Module <dbm.md>
+    Logfile Module <logfile.md>
+    Commons API <common.md>
+    Mysql API <mysql.md>
+    Sqlplus API <sqlplus.md>
+    Psql API <psql.md>
+    Commons Mariadb API <commons_mariadb.md>
+

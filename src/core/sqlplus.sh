@@ -5,14 +5,7 @@
 # License: GPL 2.0
 #------------------------------------------------
 
-#****f* sqlplus/sqlplus_set_sqlplus_auth_var
-# FUNCTION
-#   Set sqlplus_auth variable with authentication string like: USER/PASSWD@TNSNAME.
-# INPUTS
-#   db    Schema to use.
-#   user  User to use.
-#   pwd   Password to use.
-# SOURCE
+# sqlplus_set_sqlplus_auth_var
 sqlplus_set_sqlplus_auth_var () {
 
   local db=$1
@@ -23,19 +16,11 @@ sqlplus_set_sqlplus_auth_var () {
 
   [[ $DEBUG && $DEBUG == true ]] && echo "Use $sqlplus_auth"
 
+  return 0
 }
-#****
+# sqlplus_set_sqlplus_auth_var_end
 
-#****f* sqlplus/sqlplus_file
-# FUNCTION
-#   Compile a file and save output to input variable.
-# INPUTS
-#   var     Name of the variable where is saved output.
-#   f       File to compile.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SOURCES
+# sqlplus_sqlplus_file
 sqlplus_file() {
 
   local var=$1
@@ -58,16 +43,9 @@ EOF
 
   return $ans
 }
-#****
+# sqlplus_sqlplus_file_end
 
-#****f* sqlplus/sqlplus_cmd_4var
-# FUNCTION
-#   Execute an input statement/command to configured schema.
-# INPUTS
-#   var       Name of the variable where is saved output command.
-#   cmd       Command/statement to execute on configured schema.
-#   rm_lf     If string length is not zero than from output command are remove LF.
-#   feedback  Set feedback option value. If equal to empty string default value is "off".
+# sqlplus_sqlplus_cmd_4var
 sqlplus_cmd_4var() {
 
   set -f
@@ -124,7 +102,6 @@ EOF
   return $ans
 
 }
-#****
-
+# sqlplus_sqlplus_cmd_4var_end
 
 # vim: syn=sh filetype=sh

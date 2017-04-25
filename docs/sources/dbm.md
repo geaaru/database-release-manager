@@ -19,7 +19,7 @@ Currently, only management of profiles is a stable features; all others features
      - Contains path where retrieve dbrm modules files. Normally is set in general configuration file under /etc/dbrm.conf
    * - ``LOCAL_DIR``
      - Contains directory path of the project to manage.
-   * - ``LOCALC_CONFIG_FILE``
+   * - ``LOCAL_CONFIG_FILE``
      - Through this variable is possible override and customize dbrm properties set on generic configuration file.
    * - ``DRM_DB``
      - Contains path of Sqlite internal database used by dbrm. Default path is *$HOME/.local/share/dbrm/dbrm.db*
