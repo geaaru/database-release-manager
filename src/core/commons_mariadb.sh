@@ -169,20 +169,7 @@ commons_mariadb_compile_file () {
 }
 # commons_mariadb_commons_mariadb_compile_file_end
 
-#****f* commons_mariadb/commons_mariadb_source_file
-# FUNCTION
-#   Compile file on database (with source command).
-# DESCRIPTION
-#   Output of the compilation is saved on MYSQL_OUTPUT variable.
-# INPUTS
-#   f        - path of the file to compile
-#   msg      - message to insert on logging file relative to input file.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SEE ALSO
-#   mysql_source_file
-# SOURCE
+# commons_mariadb_commons_mariadb_source_file
 commons_mariadb_source_file () {
 
   local f=$1
@@ -212,25 +199,9 @@ commons_mariadb_source_file () {
   return $ans
 
 }
-#***
+# commons_mariadb_commons_mariadb_source_file_end
 
-#****f* commons_mariadb/commons_mariadb_compile_fkey
-# FUNCTION
-#   Compile file related with foreign key on database.
-# DESCRIPTION
-#   Output of the compilation is saved on MYSQL_OUTPUT variable.
-# INPUTS
-#   f        - path of the file to compile
-#   msg      - message to insert on logging file relative to input file.
-#   force    - if foreign key is present and force is equal to 1, then
-#              foreign key is dropped and added again.
-#   fk_table - table of the foreign key
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SEE ALSO
-#   mysql_file
-# SOURCE
+# commons_mariadb_commons_mariadb_compile_fkey
 commons_mariadb_compile_fkey () {
 
   local f=$1
@@ -327,25 +298,9 @@ commons_mariadb_compile_fkey () {
 
   return 0
 }
-#***
+# commons_mariadb_commons_mariadb_compile_fkey_end
 
-#****f* commons_mariadb/commons_mariadb_compile_idx
-# FUNCTION
-#   Compile file related with index of a table to database.
-# DESCRIPTION
-#   Output of the compilation is saved on MYSQL_OUTPUT variable.
-# INPUTS
-#   f        - path of the file to compile
-#   msg      - message to insert on logging file relative to input file.
-#   force    - if foreign key is present and force is equal to 1, then
-#              index is dropped and added again.
-#   fk_table - table of the index
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SEE ALSO
-#   mysql_file
-# SOURCE
+# commons_mariadb_commons_mariadb_compile_idx
 commons_mariadb_compile_idx () {
 
   local f=$1
@@ -439,20 +394,10 @@ commons_mariadb_compile_idx () {
 
   return 0
 }
-#***
+# commons_mariadb_commons_mariadb_compile_idx_end
 
 
-#****f* commons_mariadb/commons_mariadb_compile_all_procedures
-# FUNCTION
-#   Compile all files under MARIADB_DIR/procedures directory.
-# INPUTS
-#   msg      - message to insert on logging file relative to input file.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SEE ALSO
-#   commons_mariadb_compile_all_from_dir
-# SOURCE
+# commons_mariadb_commons_mariadb_compile_all_procedures
 commons_mariadb_compile_all_procedures () {
 
   local msg="$1"
@@ -462,19 +407,9 @@ commons_mariadb_compile_all_procedures () {
 
   return 0
 }
-#***
+# commons_mariadb_commons_mariadb_compile_all_procedures_end
 
-#****f* commons_mariadb/commons_mariadb_compile_all_triggers
-# FUNCTION
-#   Compile all files under MARIADB_DIR/triggers directory.
-# INPUTS
-#   msg      - message to insert on logging file relative to input file.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SEE ALSO
-#   commons_mariadb_compile_all_from_dir
-# SOURCE
+# commons_mariadb_commons_mariadb_compile_all_triggers
 commons_mariadb_compile_all_triggers () {
 
   local msg="$1"
@@ -484,19 +419,9 @@ commons_mariadb_compile_all_triggers () {
 
   return 0
 }
-#***
+# commons_mariadb_commons_mariadb_compile_all_triggers_end
 
-#****f* commons_mariadb/commons_mariadb_compile_all_functions
-# FUNCTION
-#   Compile all files under MARIADB_DIR/functions directory.
-# INPUTS
-#   msg      - message to insert on logging file relative to input file.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SEE ALSO
-#   commons_mariadb_compile_all_from_dir
-# SOURCE
+# commons_mariadb_commons_mariadb_compile_all_functions
 commons_mariadb_compile_all_functions () {
 
   local msg="$1"
@@ -506,19 +431,9 @@ commons_mariadb_compile_all_functions () {
 
   return 0
 }
-#***
+# commons_mariadb_commons_mariadb_compile_all_functions_end
 
-#****f* commons_mariadb/commons_mariadb_compile_all_views
-# FUNCTION
-#   Compile all files under MARIADB_DIR/views directory.
-# INPUTS
-#   msg      - message to insert on logging file relative to input file.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SEE ALSO
-#   commons_mariadb_compile_all_from_dir
-# SOURCE
+# commons_mariadb_commons_mariadb_compile_all_views
 commons_mariadb_compile_all_views () {
 
   local msg="$1"
@@ -528,21 +443,9 @@ commons_mariadb_compile_all_views () {
 
   return 0
 }
-#***
+# commons_mariadb_commons_mariadb_compile_all_views_end
 
-
-#****f* commons_mariadb/commons_mariadb_compile_all_fkeys
-# FUNCTION
-#   Compile all files under MARIADB_DIR/foreign_keys directory.
-# INPUTS
-#   msg      - message to insert on logging file relative to input file.
-#   force    - if equals to 1, force compilation of all foreign keys also if already present.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SEE ALSO
-#   commons_mariadb_compile_all_from_dir
-# SOURCE
+# commons_mariadb_commons_mariadb_compile_all_fkeys
 commons_mariadb_compile_all_fkeys () {
 
   local msg="$1"
@@ -554,20 +457,9 @@ commons_mariadb_compile_all_fkeys () {
 
   return 0
 }
-#***
+# commons_mariadb_commons_mariadb_compile_all_fkeys_end
 
-#****f* commons_mariadb/commons_mariadb_compile_all_idxs
-# FUNCTION
-#   Compile all files under MARIADB_DIR/indexes directory.
-# INPUTS
-#   msg      - message to insert on logging file relative to input file.
-#   force    - if equals to 1, force compilation of all indexes also if already present.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SEE ALSO
-#   commons_mariadb_compile_all_from_dir
-# SOURCE
+# commons_mariadb_commons_mariadb_compile_all_idxs
 commons_mariadb_compile_all_idxs () {
 
   local msg="$1"
@@ -579,20 +471,9 @@ commons_mariadb_compile_all_idxs () {
 
   return 0
 }
-#***
+# commons_mariadb_commons_mariadb_compile_all_idxs_end
 
-
-#****f* commons_mariadb/commons_mariadb_compile_all_events
-# FUNCTION
-#   Compile all files under MARIADB_DIR/schedulers directory.
-# INPUTS
-#   msg      - message to insert on logging file relative to input file.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SEE ALSO
-#   commons_mariadb_compile_all_from_dir
-# SOURCE
+# commons_mariadb_commons_mariadb_compile_all_events
 commons_mariadb_compile_all_events () {
 
   local msg="$1"
@@ -602,24 +483,10 @@ commons_mariadb_compile_all_events () {
 
   return 0
 }
-#***
+# commons_mariadb_commons_mariadb_compile_all_events_end
 
 
-#****f* commons_mariadb/commons_mariadb_compile_all_from_dir
-# FUNCTION
-#   Compile all files from input directory with .sql extension.
-# INPUTS
-#   directory   - Directory where there are files to compile.
-#   msg_head    - Title message insert on logfile before compile files.
-#   msg         - message insert on logfile before compile files.
-#   type        - (optional) identify type of directory: fkey|procedure|function|view.
-#   closure     - custom parameter with a value relative to type.
-# RETURN VALUE
-#   0 on success
-#   1 on error
-# SEE ALSO
-#   commons_mariadb_compile_file
-# SOURCE
+# commons_mariadb_commons_mariadb_compile_all_from_dir
 commons_mariadb_compile_all_from_dir () {
 
   local directory="$1"
@@ -700,21 +567,9 @@ commons_mariadb_compile_all_from_dir () {
   return 0
 
 }
-#***
+# commons_mariadb_commons_mariadb_compile_all_from_dir_end
 
-#****f* commons_mariadb/commons_mariadb_count_fkeys
-# FUNCTION
-#   Count number of foreign keys present on database.
-# INPUTS
-#   tname    (optional) table name to use on count foreign keys.
-#   mode     (optional) if tname is present this field could be used for identify
-#            count must be done for count foreign key of the table or foreign keys that
-#            reference table. Possible values are: "in" (default) | "ref"
-# RETURN VALUE
-#   number of foreign keys found.
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commons_mariadb_commons_mariadb_count_fkeys
 commons_mariadb_count_fkeys () {
 
   local tname=$1
@@ -765,16 +620,9 @@ commons_mariadb_count_fkeys () {
 
   return $MYSQL_OUTPUT
 }
-#***
+# commons_mariadb_commons_mariadb_count_fkeys_end
 
-#****f* commons_mariadb/commons_mariadb_count_procedures
-# FUNCTION
-#   Count number of procedures present on database.
-# RETURN VALUE
-#   number of procedures found.
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commons_mariadb_commons_mariadb_count_procedures
 commons_mariadb_count_procedures () {
 
   local cmd="
@@ -791,16 +639,9 @@ commons_mariadb_count_procedures () {
 
   return $MYSQL_OUTPUT
 }
-#***
+# commons_mariadb_commons_mariadb_count_procedures_end
 
-#****f* commons_mariadb/commons_mariadb_count_functions
-# FUNCTION
-#   Count number of functions present on schema.
-# RETURN VALUE
-#   number of functions found on schema.
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commons_mariadb_commons_mariadb_count_functions
 commons_mariadb_count_functions () {
 
   local cmd="
@@ -817,16 +658,9 @@ commons_mariadb_count_functions () {
 
   return $MYSQL_OUTPUT
 }
-#***
+# commons_mariadb_commons_mariadb_count_functions_end
 
-#****f* commons_mariadb/commons_mariadb_count_triggers
-# FUNCTION
-#   Count number of triggers defined on schema.
-# RETURN VALUE
-#   number of triggers found on schema.
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commons_mariadb_commons_mariadb_count_triggers
 commons_mariadb_count_triggers () {
 
   local cmd="
@@ -845,16 +679,9 @@ commons_mariadb_count_triggers () {
 
   return $MYSQL_OUTPUT
 }
-#***
+# commons_mariadb_commons_mariadb_count_triggers_end
 
-#****f* commons_mariadb/commons_mariadb_count_views
-# FUNCTION
-#   Count number of views present on schema.
-# RETURN VALUE
-#   Number of views available on schema.
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commons_mariadb_commons_mariadb_count_views
 commons_mariadb_count_views () {
 
   local cmd="
@@ -870,16 +697,9 @@ commons_mariadb_count_views () {
 
   return $MYSQL_OUTPUT
 }
-#***
+# commons_mariadb_commons_mariadb_count_views_end
 
-#****f* commons_mariadb/commons_mariadb_count_events
-# FUNCTION
-#   Count number of events present on schema.
-# RETURN VALUE
-#   Number of events available on schema.
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commons_mariadb_commons_mariadb_count_events
 commons_mariadb_count_events () {
 
   local cmd="
@@ -895,19 +715,9 @@ commons_mariadb_count_events () {
 
   return $MYSQL_OUTPUT
 }
-#***
+# commons_mariadb_commons_mariadb_count_events_end
 
-#****f* commons_mariadb/commons_mariadb_count_indexes
-# FUNCTION
-#   Count number of indexes present on database.
-# INPUTS
-#   - tname         Argument $1 if isn't an empty string identify table name.
-#   - idx_types     Argument $2 identify indexes types. Values are: "all" (default), "primary", "not_primary"
-# RETURN VALUE
-#   number of indexes found.
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commons_mariadb_commons_mariadb_count_indexes
 commons_mariadb_count_indexes () {
 
   local tname=$1
@@ -960,17 +770,9 @@ commons_mariadb_count_indexes () {
 
   return $MYSQL_OUTPUT
 }
-#***
+# commons_mariadb_commons_mariadb_count_indexes_end
 
-#****f* commmons_mariadb/commons_mariadb_check_if_exist_procedure
-# FUNCTION
-#   Check if exists procedure with name in input on schema.
-# RETURN VALUE
-#   1 if not exists
-#   0 if exists
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_check_if_exist_procedure
 commons_mariadb_check_if_exist_procedure () {
 
   local result=1
@@ -995,17 +797,9 @@ commons_mariadb_check_if_exist_procedure () {
 
   return $result
 }
-#***
+# commmons_mariadb_commons_mariadb_check_if_exist_procedure_end
 
-#****f* commmons_mariadb/commons_mariadb_check_if_exist_function
-# FUNCTION
-#   Check if exists function with name in input on schema.
-# RETURN VALUE
-#   1 if not exists
-#   0 if exists
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_check_if_exist_function
 commons_mariadb_check_if_exist_function () {
 
   local result=1
@@ -1030,17 +824,9 @@ commons_mariadb_check_if_exist_function () {
 
   return $result
 }
-#***
+# commmons_mariadb_commons_mariadb_check_if_exist_function_end
 
-#****f* commmons_mariadb/commons_mariadb_check_if_exist_view
-# FUNCTION
-#   Check if exists view with name in input on schema.
-# RETURN VALUE
-#   1 if not exists
-#   0 if exists
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_check_if_exist_view
 commons_mariadb_check_if_exist_view () {
 
   local result=1
@@ -1064,19 +850,9 @@ commons_mariadb_check_if_exist_view () {
 
   return $result
 }
-#***
+# commmons_mariadb_commons_mariadb_check_if_exist_view_end
 
-#****f* commmons_mariadb/commons_mariadb_check_if_exist_fkey
-# FUNCTION
-#   Check if exists foreign keys with name in input on schema.
-# RETURN VALUE
-#   1 if not exists
-#   2 if argument tname is not present this means that there are
-#     two foreign key with same name.
-#   0 if exists
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_check_if_exist_fkey
 commons_mariadb_check_if_exist_fkey () {
 
   local result=1
@@ -1118,20 +894,9 @@ commons_mariadb_check_if_exist_fkey () {
 
   return $result
 }
-#***
+# commmons_mariadb_commons_mariadb_check_if_exist_fkey_end
 
-#****f* commmons_mariadb/commons_mariadb_check_if_exist_index
-# FUNCTION
-#   Check if exists index with name and table name in input on schema.
-# INPUTS
-#   index_name   - Argument $1 identify index name.
-#   table_name   - Argument $2 identify table name.
-# RETURN VALUE
-#   1 if not exists
-#   0 if exists
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_check_if_exist_index
 commons_mariadb_check_if_exist_index () {
 
   local result=1
@@ -1169,17 +934,9 @@ commons_mariadb_check_if_exist_index () {
 
   return $result
 }
-#***
+# commmons_mariadb_commons_mariadb_check_if_exist_index_end
 
-#****f* commmons_mariadb/commons_mariadb_get_triggers_list
-# FUNCTION
-#   Save on _mariadb_ans variable list of triggers defined on schema.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_get_triggers_list
 commons_mariadb_get_triggers_list () {
 
   local result=1
@@ -1196,13 +953,9 @@ commons_mariadb_get_triggers_list () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_get_triggers_list_end
 
-#****f* commmons_mariadb/commons_mariadb_count_tables
-# FUNCTION
-# RETURN VALUE
-#   number of tables found.
-# SOURCE
+# commmons_mariadb_commons_mariadb_count_tables
 commons_mariadb_count_tables () {
 
   local cmd="
@@ -1218,22 +971,9 @@ commons_mariadb_count_tables () {
 
   return $MYSQL_OUTPUT
 }
-#***
+# commmons_mariadb_commons_mariadb_count_tables_end
 
-
-#****f* commmons_mariadb/commons_mariadb_get_fkeys_list
-# FUNCTION
-#   Save on _mariadb_ans variable list of foreign keys defined on schema.
-#   tname($4) (optional) table name to use on count foreign keys.
-#   mode($5)  (optional) if tname is present this field could be used for identify
-#             count must be done for count foreign key of the table or foreign keys that
-#             reference table. Possible values are: "in" (default) | "ref"
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_get_fkeys_list
 commons_mariadb_get_fkeys_list () {
 
   local all="$1"
@@ -1321,22 +1061,9 @@ commons_mariadb_get_fkeys_list () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_get_fkeys_list_end
 
-#****f* commmons_mariadb/commons_mariadb_get_indexes_list
-# FUNCTION
-#   Save on _mariadb_ans variable list of indexes defined on schema.
-# INPUTS
-#   - idx_types     Argument $1 identify indexes types. Values are: "all" (default), "primary", "not_primary"
-#   - custom_colum  Argument $2 if not empty defined list of column returned.
-#   - tname         Argument $3 if not empty define table name where search for indexes.
-#   - index_name    Argument $4 if not empty define index name.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_get_indexes_list
 commons_mariadb_get_indexes_list () {
 
   local idx_types="$1"
@@ -1369,7 +1096,6 @@ commons_mariadb_get_indexes_list () {
       TMP.INDEX_TYPE,
       TMP.COMMENT,
       TMP.INDEX_COMMENT
-
     "
   else
 
@@ -1424,17 +1150,9 @@ commons_mariadb_get_indexes_list () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_get_indexes_list_end
 
-#****f* commmons_mariadb/commons_mariadb_get_tables_list
-# FUNCTION
-#   Save on _mariadb_ans variable list of tables defined on schema.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_get_tables_list
 commons_mariadb_get_tables_list () {
 
   local all="$1"
@@ -1464,21 +1182,9 @@ commons_mariadb_get_tables_list () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_get_tables_list_end
 
-#****f* commmons_mariadb/commons_mariadb_desc_table
-# FUNCTION
-#   Save on _mariadb_ans variable list of columns of input table.
-# INPUTS
-#   tname          Argument $1 identify table name.
-#   custom_column  Argument $2 permit to customize return cursor if not empty.
-#   cname          Argument $3 permit to filter for column name if not empty.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_desc_table
 commons_mariadb_desc_table () {
 
   local tname="$1"
@@ -1515,17 +1221,9 @@ commons_mariadb_desc_table () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_desc_table_end
 
-#****f* commmons_mariadb/commons_mariadb_exist_table
-# FUNCTION
-#   Check if exists table in input.
-# RETURN VALUE
-#   1 on error or if table is not exists.
-#   0 if table exists.
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_exist_table
 commons_mariadb_exist_table () {
 
   local tname="$1"
@@ -1545,18 +1243,9 @@ commons_mariadb_exist_table () {
 
   return $result
 }
-#***
+# commmons_mariadb_commons_mariadb_exist_table_end
 
-
-#****f* commmons_mariadb/commons_mariadb_exist_event
-# FUNCTION
-#   Check if exists event in input.
-# RETURN VALUE
-#   1 on error or if event is not exists.
-#   0 if event exists.
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_exist_event
 commons_mariadb_exist_event () {
 
   local ename="$1"
@@ -1576,17 +1265,9 @@ commons_mariadb_exist_event () {
 
   return $result
 }
-#***
+# commmons_mariadb_commons_mariadb_exist_event_end
 
-#****f* commmons_mariadb/commons_mariadb_get_procedures_list
-# FUNCTION
-#   Save on _mariadb_ans variable list of procedures defined on schema.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_get_procedures_list
 commons_mariadb_get_procedures_list () {
 
   local all=$1
@@ -1606,17 +1287,9 @@ commons_mariadb_get_procedures_list () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_get_procedures_list_end
 
-#****f* commmons_mariadb/commons_mariadb_get_functions_list
-# FUNCTION
-#   Save on _mariadb_ans variable list of functions defined on schema.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_get_functions_list
 commons_mariadb_get_functions_list () {
 
   local all=$1
@@ -1636,17 +1309,9 @@ commons_mariadb_get_functions_list () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_get_functions_list_end
 
-#****f* commmons_mariadb/commons_mariadb_get_events_list
-# FUNCTION
-#   Save on _mariadb_ans variable list of events defined on schema.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_get_events_list
 commons_mariadb_get_events_list () {
 
   local opt=$1
@@ -1701,17 +1366,9 @@ commons_mariadb_get_events_list () {
 
   return 0
 }
+# commmons_mariadb_commons_mariadb_get_events_list_end
 
-#***
-#****f* commmons_mariadb/commons_mariadb_get_views_list
-# FUNCTION
-#   Save on _mariadb_ans variable list of views defined on schema.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_get_views_list
 commons_mariadb_get_views_list () {
 
   local cmd="
@@ -1723,20 +1380,9 @@ commons_mariadb_get_views_list () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_get_views_list_end
 
-#****f* commmons_mariadb/commons_mariadb_check_if_exist_trigger
-# FUNCTION
-#   Check if exists a trigger with name in input on schema.
-# INPUTS
-#   name         - name of the trigger
-#   tname        - name of the table of the trigger to check. (optional).
-# RETURN VALUE
-#   1 if not exists
-#   0 if exists
-# SEE ALSO
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_check_if_exist_trigger
 commons_mariadb_check_if_exist_trigger () {
 
   local result=1
@@ -1772,20 +1418,9 @@ commons_mariadb_check_if_exist_trigger () {
 
   return $result
 }
-#***
+# commmons_mariadb_commons_mariadb_check_if_exist_trigger_end
 
-#****f* commmons_mariadb/commons_mariadb_download_procedure
-# FUNCTION
-#   Download a procedure to MARIADB_DIR/procedures directory.
-# INPUTS
-#   name    - name of the procedure to download.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   commons_mariadb_check_if_exist_procedure
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_download_procedure
 commons_mariadb_download_procedure () {
 
   local name="${1/.sql/}"
@@ -1843,20 +1478,9 @@ $PROCEDURE_BODY
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_download_procedure_end
 
-#****f* commmons_mariadb/commons_mariadb_download_function
-# FUNCTION
-#   Download a function to MARIADB_DIR/functions directory.
-# INPUTS
-#   name    - name of the function to download.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   commons_mariadb_check_if_exist_function
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_download_function
 commons_mariadb_download_function () {
 
   local result=1
@@ -1917,20 +1541,9 @@ $FUNCTION_BODY
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_download_function_end
 
-#****f* commmons_mariadb/commons_mariadb_download_trigger
-# FUNCTION
-#   Download a trigger to MARIADB_DIR/triggers directory.
-# INPUTS
-#   name    - name of the trigger to download.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   commons_mariadb_check_if_exist_trigger
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_download_trigger
 commons_mariadb_download_trigger () {
 
   local result=1
@@ -1978,20 +1591,9 @@ $MYSQL_OUTPUT
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_download_trigger_end
 
-#****f* commmons_mariadb/commons_mariadb_download_event
-# FUNCTION
-#   Download a trigger to MARIADB_DIR/events directory.
-# INPUTS
-#   name    - name of the event to download.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   commons_mariadb_exist_event
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_download_event
 commons_mariadb_download_event () {
 
   local result=1
@@ -2120,21 +1722,10 @@ DELIMITER ;
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_download_event_end
 
 
-#****f* commmons_mariadb/commons_mariadb_download_view
-# FUNCTION
-#   Download a view to MARIADB_DIR/views directory.
-# INPUTS
-#   name    - name of the view to download.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   commons_mariadb_check_if_exist_view
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_download_view
 commons_mariadb_download_view () {
 
   local result=1
@@ -2176,18 +1767,9 @@ $MYSQL_OUTPUT
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_download_view_end
 
-#****f* commmons_mariadb/commons_mariadb_download_all_views
-# FUNCTION
-#   Download all views to MARIADB_DIR/views directory.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   commons_mariadb_get_views_list
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_download_all_views
 commons_mariadb_download_all_views () {
 
   local n_rec=0
@@ -2224,18 +1806,9 @@ commons_mariadb_download_all_views () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_download_all_views_end
 
-#****f* commmons_mariadb/commons_mariadb_download_all_procedures
-# FUNCTION
-#   Download all procedures to MARIADB_DIR/procedures directory.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   commons_mariadb_get_procedures_list
-#   commons_mariadb_download_procedure
-# SOURCE
+# commmons_mariadb_commons_mariadb_download_all_procedures
 commons_mariadb_download_all_procedures () {
 
   local n_rec=0
@@ -2268,18 +1841,9 @@ commons_mariadb_download_all_procedures () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_download_all_procedures_end
 
-#****f* commmons_mariadb/commons_mariadb_download_all_functions
-# FUNCTION
-#   Download all functions to MARIADB_DIR/functions directory.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   commons_mariadb_get_functions_list
-#   commons_mariadb_download_function
-# SOURCE
+# commmons_mariadb_commons_mariadb_download_all_functions
 commons_mariadb_download_all_functions () {
 
   local n_rec=0
@@ -2312,18 +1876,9 @@ commons_mariadb_download_all_functions () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_download_all_functions_end
 
-#****f* commmons_mariadb/commons_mariadb_download_all_triggers
-# FUNCTION
-#   Download all triggers to MARIADB_DIR/triggers directory.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   commons_mariadb_count_triggers
-#   commons_mariadb_download_trigger
-# SOURCE
+# commmons_mariadb_commons_mariadb_download_all_triggers
 commons_mariadb_download_all_triggers () {
 
   local n_rec=0
@@ -2361,18 +1916,9 @@ commons_mariadb_download_all_triggers () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_download_all_triggers_end
 
-#****f* commmons_mariadb/commons_mariadb_download_all_events
-# FUNCTION
-#   Download all events to MARIADB_DIR/schedulers directory.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   commons_mariadb_count_events
-#   commons_mariadb_download_event
-# SOURCE
+# commmons_mariadb_commons_mariadb_download_all_events
 commons_mariadb_download_all_events () {
 
   local n_rec=0
@@ -2412,21 +1958,9 @@ commons_mariadb_download_all_events () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_download_all_events_end
 
-#****f* commmons_mariadb/commons_mariadb_download_fkey
-# FUNCTION
-#   Download a foreign key to MARIADB_DIR/foreign_keys directory.
-# INPUTS
-#   name    - name of the foreign key to download.
-#   tname   - table name related with foreign key to download.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   commons_mariadb_check_if_exist_fkey
-#   mysql_cmd_4var
-# SOURCE
+# commmons_mariadb_commons_mariadb_download_fkey
 commons_mariadb_download_fkey () {
 
   local name="${1/.sql/}"
@@ -2494,18 +2028,9 @@ ALTER TABLE \`${table}\`
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_download_fkey_end
 
-#****f* commmons_mariadb/commons_mariadb_download_all_fkeys
-# FUNCTION
-#   Download all foreign keys to MARIADB_DIR/foreign_keys directory.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   commons_mariadb_count_fkeys
-#   commons_mariadb_download_fkey
-# SOURCE
+# commmons_mariadb_commons_mariadb_download_all_fkeys
 commons_mariadb_download_all_fkeys () {
 
   local n_rec=0
@@ -2546,17 +2071,9 @@ commons_mariadb_download_all_fkeys () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_download_all_fkeys_end
 
-#****f* commmons_mariadb/commons_mariadb_drop_fkey
-# FUNCTION
-#   Drop a foreign key from database if exists.
-# INPUT
-#   fkey   Name of the foreign key to drop.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SOURCE
+# commmons_mariadb_commons_mariadb_drop_fkey
 commons_mariadb_drop_fkey () {
 
   local is_present=1
@@ -2636,21 +2153,10 @@ commons_mariadb_drop_fkey () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_drop_fkey_end
 
-#****f* commmons_mariadb/commons_mariadb_download_index
-# FUNCTION
-#   Download a index key (primary, unique, spatial) to MARIADB_DIR/indexes directory.
-# INPUTS
-#   name         - name of the index key to download.
-#   table_name   - name of the table related with the key to download.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   commons_mariadb_check_if_exist_index
-#   mysql_cmd_4var
-# SOURCE
+
+# commmons_mariadb_commons_mariadb_download_index
 commons_mariadb_download_index () {
 
   local name="${1/.sql/}"
@@ -2729,18 +2235,9 @@ ALTER TABLE \`${table}\`
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_download_index_end
 
-#****f* commmons_mariadb/commons_mariadb_download_all_indexes
-# FUNCTION
-#   Download all indexes to MARIADB_DIR/indexes directory.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SEE ALSO
-#   commons_mariadb_count_indexes
-#   commons_mariadb_download_index
-# SOURCE
+# commmons_mariadb_commons_mariadb_download_all_indexes
 commons_mariadb_download_all_indexes () {
 
   local with_pk="$1"
@@ -2787,19 +2284,9 @@ commons_mariadb_download_all_indexes () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_download_all_indexes_end
 
-#****f* commmons_mariadb/commons_mariadb_drop_index
-# FUNCTION
-#   Drop a index from database if exists.
-# INPUTS
-#   name         - name of the index key to drop.
-#   table_name   - name of the table related with the key to drop.
-#   avoid_warn   - if argument $3 is not empty and index doesn't exist no warning are printed.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SOURCE
+# commmons_mariadb_commons_mariadb_drop_index
 commons_mariadb_drop_index () {
 
   local is_present=1
@@ -2895,21 +2382,9 @@ commons_mariadb_drop_index () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_drop_index_end
 
-#****f* commmons_mariadb/commons_mariadb_create_fkey_file
-# FUNCTION
-#   Create foreign key file for compilation.
-# INPUTS
-#   name         - name of the foreign key to create
-#   table_name   - name of the table where create foreign key.
-#   fk_columns   - list of columns related with foreign key.
-#   ref_table    - name of the table reference
-#   ref_columns  - list of the columns reference on foreign key.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SOURCE
+# commmons_mariadb_commons_mariadb_create_fkey_file
 commons_mariadb_create_fkey_file () {
 
   local name="$1"
@@ -2952,20 +2427,9 @@ ALTER TABLE \`${table}\`
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_create_fkey_file_end
 
-#****f* commmons_mariadb/commons_mariadb_create_index_file
-# FUNCTION
-#   Create index file for compilation.
-# INPUTS
-#   name         - name of the index to create
-#   table_name   - name of the table where create index.
-#   key_columns  - list of columns of the index.
-#   itype        - for particolar index could be contains "UNIQUE" | "FULLTEXT" | "SPATIAL"
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SOURCE
+# commmons_mariadb_commons_mariadb_create_index_file
 commons_mariadb_create_index_file () {
 
   local name="$1"
@@ -2999,21 +2463,14 @@ ALTER TABLE \`${table}\`
 
   echo -en "$content" > $f || error_generate "Error on write file $f."
 
-  _logfile_write "(mariadb) Create index ${name} on table ${table} (file ${f})" || return 1
+  _logfile_write "(mariadb) Create index ${name} on table ${table} (file ${f})" || \
+    return 1
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_create_index_file_end
 
-#****f* commmons_mariadb/commons_mariadb_get_table_def
-# FUNCTION
-#   Create table definition syntax and store it on TABLE_DEF variable.
-# INPUTS
-#   name         - name of the table
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SOURCE
+# commmons_mariadb_commons_mariadb_get_table_def
 commons_mariadb_get_table_def () {
 
   local tname="$1"
@@ -3153,19 +2610,9 @@ commons_mariadb_get_table_def () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_get_table_def_end
 
-
-#****f* commmons_mariadb/commons_mariadb_download_all_tables
-# FUNCTION
-#   Extract all tables definition and write its to a target file.
-# INPUTS
-#   file      file name path where save tables schema.
-#   tname     (optional) download only schema of a particular table.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SOURCE
+# commmons_mariadb_commons_mariadb_download_all_tables
 commons_mariadb_download_all_tables () {
 
   local f="$1"
@@ -3297,19 +2744,9 @@ ${TABLE_DEF}
   return 0
 
 }
-#***
+# commmons_mariadb_commons_mariadb_download_all_tables_end
 
-#****f* commmons_mariadb/commons_mariadb_drop_trigger
-# FUNCTION
-#   Drop a trigger from database if exists.
-# INPUTS
-#   name         - name of the trigger to drop.
-#   table_name   - name of the table related with the trigger to drop.
-#   avoid_warn   - if argument $3 is not empty and trigger doesn't exist no warning are printed.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SOURCE
+# commmons_mariadb_commons_mariadb_drop_trigger
 commons_mariadb_drop_trigger () {
 
   local is_present=1
@@ -3355,18 +2792,9 @@ commons_mariadb_drop_trigger () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_drop_trigger_end
 
-#****f* commmons_mariadb/commons_mariadb_drop_event
-# FUNCTION
-#   Drop a event from database if exists.
-# INPUTS
-#   name         - name of the event to drop.
-#   avoid_warn   - if argument $2 is not empty and event doesn't exist no warning are printed.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SOURCE
+# commmons_mariadb_commons_mariadb_drop_event
 commons_mariadb_drop_event () {
 
   local is_present=1
@@ -3405,17 +2833,9 @@ commons_mariadb_drop_event () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_drop_event_end
 
-#****f* commmons_mariadb/commons_mariadb_show_gvars
-# FUNCTION
-#   Retrieve global variables.
-# INPUTS
-#   filter         - filter apply to SELECT of variables.
-# RETURN VALUE
-#   1 on error
-#   0 on success
-# SOURCE
+# commmons_mariadb_commons_mariadb_show_gvars
 commons_mariadb_show_gvars () {
 
   local filter="$1"
@@ -3438,6 +2858,6 @@ commons_mariadb_show_gvars () {
 
   return 0
 }
-#***
+# commmons_mariadb_commons_mariadb_show_gvars_end
 
 # vim: syn=sh filetype=sh
