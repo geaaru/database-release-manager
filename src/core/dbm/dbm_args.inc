@@ -88,6 +88,7 @@ _dbm_check_initenv_args () {
 }
 #***
 
+# dbm__dbm_ins_rel_help
 _dbm_ins_rel_help () {
 
   echo -en "[-n name]               Release Name.\n"
@@ -101,7 +102,9 @@ _dbm_ins_rel_help () {
 
   return 0
 }
+# dbm__dbm_ins_rel_help_end
 
+# dbm__dbm_check_ins_rel_args
 _dbm_check_ins_rel_args () {
 
   [[ $DEBUG ]] && echo -en "(_dbm_check_ins_rel_args args: $@)\n"
@@ -170,11 +173,9 @@ _dbm_check_ins_rel_args () {
 
   return 0
 }
+# dbm__dbm_check_ins_rel_args_end
 
-#****f* dbm/_dbm_add_prof_help
-# FUNCTION
-#   Print help message of add_profile command.
-# SOURCE
+# dbm__dbm_add_prof_help
 _dbm_add_prof_help () {
 
   echo -en "[--name name]          Profile name to insert.\n"
@@ -184,32 +185,19 @@ _dbm_add_prof_help () {
 
   return 0
 }
-#***
+# dbm__dbm_add_prof_help_end
 
-#****f* dbm/_dbm_prof_help
-# FUNCTION
-#   Print help message of del_profile/set_profile command.
-# SOURCE
+# dbm__dbm_prof_help
 _dbm_prof_help () {
-
   echo -en "[--name profile_name]  Name of the profile.\n"
   echo -en "[--id id_profile]      Id of the profile.\n"
   echo -en "[-h]                   Show this help message.\n"
 
   return 0
 }
-#***
+# dbm__dbm_prof_help_end
 
-
-#****f* dbm/_dbm_check_prof_args
-# FUNCTION
-#   Internal function for parse command line arguments related to
-#   del_profile/set_profile command.
-# DESCRIPTION
-#   * --name profile_name  Name of the profile.
-#   * --id id_profile      Id of the profile.
-#   * -h                   Show help message.
-# SOURCE
+# dbm__dbm_check_prof_args
 _dbm_check_prof_args () {
 
   [[ $DEBUG ]] && echo -en "(_dbm_check_del_prof_args args: $@)\n"
@@ -217,7 +205,8 @@ _dbm_check_prof_args () {
   local short_options="h"
   local long_options="id: name:"
 
-  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
+  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) \
+    || error_handled "Invalid parameters"
 
   if [ $# -lt 2 ] ; then
     _dbm_prof_help
@@ -267,17 +256,9 @@ _dbm_check_prof_args () {
 
   return 0
 }
-#***
+# dbm__dbm_check_prof_args_end
 
-#****f* dbm/_dbm_check_add_prof_args
-# FUNCTION
-#   Internal function for parse command line arguments related to add_profile command.
-# DESCRIPTION
-#   * --default            Set profile as default.
-#   * --name               Set profile name.
-#   * --file               Set profile filename.
-#   * -h                   Show help message.
-# SOURCE
+# dbm__dbm_check_add_prof_args
 _dbm_check_add_prof_args () {
 
   [[ $DEBUG ]] && echo -en "(_dbm_check_add_prof_args args: $@)\n"
@@ -334,13 +315,19 @@ _dbm_check_add_prof_args () {
 
   return 0
 }
-#***
-
+# dbm__dbm_check_add_prof_args_end
 
 # Args for insert branch command
 _dbm_check_ins_bra_args () {
 
+  local ans=0
+
   [[ $DEBUG ]] && echo -en "(_dbm_check_ins_bra_args args: $@)\n"
+
+  help_msg() {
+        echo -en "[-n name]               Branch Name.\n"
+        echo -en "[-d YYYY-MM-DD]         Branch Date. (Use now if not available)\n"
+  }
 
   # Reinitialize opt index position
   OPTIND=1
@@ -350,8 +337,7 @@ _dbm_check_ins_bra_args () {
       n) DBM_BRA_NAME="$OPTARG";;
       d) DBM_BRA_DATE="$OPTARG";;
       h)
-        echo -en "[-n name]               Branch Name.\n"
-        echo -en "[-d YYYY-MM-DD]         Branch Date. (Use now if not available)\n"
+        help_msg
         return 1
         ;;
 
@@ -359,18 +345,19 @@ _dbm_check_ins_bra_args () {
   done
 
   if [ -z "$DBM_BRA_NAME" ] ; then
-    echo -en "[-n name]               Branch Name.\n"
-    echo -en "[-d YYYY-MM-DD]         Branch Date. (Use now if not available)\n"
-    return 1
-  fi
-
-  if [ -z "$DBM_BRA_DATE" ] ; then
-    DBM_BRA_DATE="DATETIME('now')"
+    help_msg
+    ans=1
   else
-    DBM_BRA_DATE="'$DBM_REL_DATE'"
+    if [ -z "$DBM_BRA_DATE" ] ; then
+      DBM_BRA_DATE="DATETIME('now')"
+    else
+      DBM_BRA_DATE="'$DBM_REL_DATE'"
+    fi
   fi
 
-  return 0
+  unset -f help_msg
+
+  return $ans
 }
 
 _dbm_ins_script_type_help () {

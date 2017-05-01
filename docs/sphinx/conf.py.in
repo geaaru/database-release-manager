@@ -4,10 +4,7 @@
 
 import sys
 import os
-
 import sphinx_bootstrap_theme
-
-
 import recommonmark
 from recommonmark.transform import AutoStructify
 
@@ -46,7 +43,6 @@ source_parsers = {
 project = u'Database Release Manager'
 copyright = u'2017, Geaaru'
 author = u'Geaaru'
-
 
 source_suffix = ['.md', '.rst' ]
 

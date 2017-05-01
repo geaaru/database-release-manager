@@ -1,5 +1,8 @@
 .. Index of Database Release Manager documentation
 
+Database Release Manager
+========================
+
 .. toctree::
     :maxdepth: 2
 

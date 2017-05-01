@@ -124,7 +124,6 @@
     </p>
     <p>
     {%- if show_copyright %}
-      dbrm
       {%- if hasdoc('copyright') %}
         {% trans path=pathto('copyright'), copyright=copyright|e %}&copy; <a href="{{ path }}">Copyright</a> {{ copyright }}.{% endtrans %}<br/>
       {%- else %}

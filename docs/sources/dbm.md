@@ -197,7 +197,7 @@ _Exit Values_:
 
 ```shell
 
-  $# dbrm dbm show_scripts -h
+  $# dbrm dbm show_scripts
   ===============================================================================================================
   ID  TYPE           ACTIVE  DIRECTORY           ID_RELEASE  ID_ORDER  UPDATE_DATE             FILENAME
   ===============================================================================================================
@@ -1602,5 +1602,160 @@ _Return_:
     :starthidden: True
     :start-after: dbm__dbm_check_initenv_args
     :end-before: dbm__dbm_check_initenv_args_end
+```
+
+#### _dbm_ins_rel_help
+
+Print on stdout help message of command `insert_releas`.
+
+_Return_:
+
+  * `0`: always
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_ins_rel_help
+    :end-before: dbm__dbm_ins_rel_help_end
+```
+
+#### _dbm_check_ins_rel_args
+
+Internal function for parse command line arguments related to
+`insert_release` command.
+
+_Command Arguments_:
+
+  * `-n RELEASE_NAME`: Name of the release to add.
+  * `-d YYYY-MM-DD`: Release date of the release to add.
+  * `-v VERSION`: Version of the release to add.
+  * `-a ADAPTER`: Adapter used by the release to add (default is oracle).
+  * `-o ID_ORDER`: Id order of the release to add.
+  * `-b BRANCH_ID`: Id of the branch connected to release to add.
+  * `-dir DIRECTORY`: Directory of the release to add.
+  * `-h`: Show insert_release command options.
+
+_Variables Used_:
+
+  * `DBM_REL_NAME`: Release name
+  * `DBM_REL_DATE`: Release date
+  * `DBM_REL_VERSION`: Release version
+  * `DBM_REL_ORDER`: Release order id.
+  * `DBM_REL_ADAPTER`: Release adapter
+  * `DBM_REL_BRANCH`: Release branch id.
+  * `DBM_REL_DIR`: Release directory.
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_exts.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_check_ins_rel_args
+    :end-before: dbm__dbm_check_ins_rel_args_end
+```
+
+#### _dbm_add_prof_help
+
+Print on stdout help message of `add_profile` command.
+
+_Return_:
+
+  * `0`: always
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_add_prof_help
+    :end-before: dbm__dbm_add_prof_help_end
+```
+
+#### _dbm_prof_help
+
+Print on stdout help message of `del_profile`/`set_profile` command.
+
+_Return_:
+
+  * `0`: always
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_prof_help
+    :end-before: dbm__dbm_prof_help_end
+```
+
+#### _dbm_check_prof_args
+
+Internal function for parse command line arguments related to
+`del_profile` and `set_profile` command.
+
+_Command Arguments_:
+
+  * `--name NAME`: Name of the profile.
+  * `--id ID_PROFILE`: Id of the profile
+  * `-h`: Show command options.
+
+_Variables Used_:
+
+  * `DBM_PROFILE_BYNAME`: Set to 1 if is set profile id. Default value is 0.
+  * `DBM_PROFILE_BYID`: Set to 1 if is set profile name. Default value is 0.
+  * `DBM_PROFILE_NAME`: Name of the profile.
+  * `DBM_PROFILE_ID`: Id of the profile.
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_prof_help
+    :end-before: dbm__dbm_prof_help_end
+```
+
+#### _dbm_check_add_prof_args
+
+Internal function for parse command line arguments related to `add_profile` command.
+
+_Command Arguments_:
+
+  * `--name NAME`: Name of the profile
+  * `--file FILE`: Profile filename
+  * `--default`: Set new profile as default/active.
+  * `-h`: Show command options.
+
+_Variables Used_:
+
+  * `DBM_PROFILE_DEFAULT`: Set new profile as default (value 1) or not (value 0).
+                           Default value is 0.
+  * `DBM_PROFILE_FILENAME`: Filename of the profile.
+  * `DBM_PROFILE_NAME`: Name of the profile.
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_check_add_prof_args
+    :end-before: dbm__dbm_check_add_prof_args_end
 ```
 
