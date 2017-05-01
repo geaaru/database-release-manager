@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title># Internal Functions #</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <p>#!/bin/bash
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+# Author(s): Geaaru, <a class="reference external" href="mailto:geaaru&#37;&#52;&#48;gmail&#46;com">geaaru<span>&#64;</span>gmail<span>&#46;</span>com</a>
+# $Id: 69df10e504cc73296caf992804d4613ca063a9a6 $
+# License: GPL 2.0
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p>name=&#8221;sql_handler&#8221;
+sql_handler_authors=&#8221;Geaaru&#8221;
+sql_handler_creation_date=&#8221;August 26, 2008&#8221;
+sql_handler_version=&#8221;0.1.0&#8221;</p>
+<p>#****f* sql_handler/sql_handler_version
+# FUNCTION
+#   Show version of sql_handler. module.
+# SOURCE
+sql_handler_version () {</p>
+<blockquote>
+<div>echo -en &#8220;Version: ${sql_handler_version}n&#8221;</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sql_handler/sql_handler_show_help
+# FUNCTION
+#   Show help message.
+# SOURCE
+sql_handler_show_help () {</p>
+<blockquote>
+<div>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [sql_handler]:n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;tlong_help               Show long help informationsn&#8221;
+echo -en &#8220;tquery                   Do a query to database.n&#8221;
+echo -en &#8220;===========================================================================n&#8221;</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sql_handler/sql_handler_long_help
+# FUNCTION
+#   Show long help message.
+# SOURCE
+sql_handler_long_help () {</p>
+<blockquote>
+<div>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [sql_handler]:n&#8221;
+echo -en &#8220;Author(s): ${sql_handler_authors}n&#8221;
+echo -en &#8220;Created: ${sql_handler_creation_date}n&#8221;
+echo -en &#8220;Version: ${sql_handler_version}nn&#8221;
+echo -en &#8220;Command                 Descriptionn&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;tlong_help               Show long help informationsn&#8221;
+echo -en &#8220;tshow_help               Show command list.n&#8221;
+echo -en &#8220;tversion                 Show module version.n&#8221;
+echo -en &#8220;tquery                   Do a query to database.n&#8221;
+echo -en &#8220;n&#8221;
+echo -en &#8220;Args                    Descriptionn&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;[-d DIR]                Directory where found server datan&#8221;
+echo -en &#8221;                        Default directory is $DIR.(Use absolute path)n&#8221;
+echo -en &#8220;[-u]                    user permission. Default is $USER.n&#8221;
+echo -en &#8220;[-g]                    group permission. Default is $GROUP.n&#8221;
+echo -en &#8220;[-n name]               name of the server tree. Possible valuesn&#8221;
+echo -en &#8221;                        could be still all|default|minimaln&#8221;
+echo -en &#8220;===========================================================================n&#8221;</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sql_handler/sql_handler_query
+# FUNCTION
+#   Execute a query through configured handler call.
+# SOURCE
+sql_handler_query () {</p>
+<blockquote>
+<div><p>local result=1
+local directmode=0
+_sql_handler_ans=&#8221;&#8220;</p>
+<p>[[ $DEBUG ]] &amp;&amp; echo -en &#8220;n(sql_handler_query args: $&#64;)n&#8221;</p>
+<p>_sql_handler_check_env</p>
+<dl class="docutils">
+<dt>if [ $# -ne 1 ] ; then</dt>
+<dd>shift 2
+directmode=1</dd>
+</dl>
+<p>fi
+if type -t ${SQLCA}_be_query &gt; /dev/null ; then</p>
+<blockquote>
+<div><p>${SQLCA}_be_query &#8220;$&#64;&#8221;
+result=$?
+if [ $result -ne 0 ] ; then</p>
+<blockquote>
+<div>return 1</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>_sql_handler_ans=$_sqlite_ans</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>echo -en &#8220;Invalid SQL Connector Adapter: $SQLCAn&#8221;;</dd>
+</dl>
+<p>exit 1
+fi</p>
+<p>[[ $directmode -eq 1 ]] &amp;&amp; echo -en &#8220;Answer:n$_sql_handler_ansn&#8221;
+return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<div class="section" id="internal-functions">
+<h1># Internal Functions                                                  #<a class="headerlink" href="#internal-functions" title="Permalink to this headline">¶</a></h1>
+<p>#****f* sql_handler/_sql_handler_check_env
+# FUNCTION
+#   Internal function of the sql_handler module that check if
+#   SQLCA variable (used to identifate SQL handler) is set.
+# SOURCE
+_sql_handler_check_env () {</p>
+<blockquote>
+<div><p>[[ $DEBUG ]] &amp;&amp; echo -en &#8220;(_sql_handler_check_env args: $&#64;)n&#8221;</p>
+<p>[[ $DEBUG ]] &amp;&amp; echo -en &#8220;Check if SQLCA variable is set...n&#8221;</p>
+<dl class="docutils">
+<dt>if [[ -z &#8220;$SQLCA&#8221; ]] ; then</dt>
+<dd>echo -en &#8220;Error: SQLCA variable isn&#8217;t set.n&#8221;
+exit 1</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p># vim: syn=sh filetype=sh ts=2 sw=2</p>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

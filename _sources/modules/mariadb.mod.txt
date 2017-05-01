@@ -1,0 +1,3514 @@
+#!/bin/bash
+#------------------------------------------------
+# Author(s): Geaaru, geaaru@gmail.com
+# $Id: 21b49534789996ba5a0833126f19c7be738bc184 $
+# License: GPL 2.0
+#------------------------------------------------
+
+name="mariadb"
+mariadb_authors="Geaaru"
+mariadb_creation_date="May 6, 2013"
+mariadb_version="0.1.0"
+mariadb_status="0"
+
+
+#****f* mariadb/mariadb_version
+# FUNCTION
+#  Show version of mariadb module.
+# SOURCE
+mariadb_version() {
+  echo -en "Version: ${mariadb_version}\n"
+  return 0
+}
+#***
+
+#****f* mariadb/mariadb_long_help
+# FUNCTION
+#   Show long help message.
+# SOURCE
+mariadb_long_help () {
+
+   echo -en "===========================================================================\n"
+   echo -en "Module [mariadb]:\n"
+   echo -en "Author(s): ${mariadb_authors}\n"
+   echo -en "Created: ${mariadb_creation_date}\n"
+   echo -en "Version: ${mariadb_version}\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "\tlong_help               Show long help informations\n"
+   echo -en "\tshow_help               Show command list.\n"
+   echo -en "\tversion                 Show module version.\n"
+   echo -en "\ttest_connection         Test connection versus database.\n"
+   echo -en "\tdownload                Download procedures/triggers/views/etc.\n"
+   echo -en "\tcompile                 Compile procedures/triggers/views/etc.\n"
+   echo -en "\tshow                    Show procedures/triggers/views/etc.\n"
+   echo -en "\tdrop                    Drop procedures/triggers/views/etc.\n"
+   echo -en "\tcreate                  Create foreign keys/index/etc..\n"
+   echo -en "\tshell                   Enter on command line shell of database.\n"
+   echo -en "\tinitenv                 Create default directories if not present.\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "===========================================================================\n"
+
+   return 0
+}
+#***
+
+#****f* mariadb/mariadb_show_help
+# FUNCTION
+#   Show help message.
+# SOURCE
+mariadb_show_help () {
+   echo -en "===========================================================================\n"
+   echo -en "Module [mariadb]:\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "\tlong_help               Show long help informations\n"
+   echo -en "\tshow_help               Show command list.\n"
+   echo -en "\tversion                 Show module version.\n"
+   echo -en "\ttest_connection         Test connection versus database.\n"
+   echo -en "\tdownload                Download procedures/triggers/views/etc.\n"
+   echo -en "\tcompile                 Compile procedures/triggers/views/etc.\n"
+   echo -en "\tshow                    Show procedures/triggers/views/etc.\n"
+   echo -en "\tdrop                    Drop procedures/triggers/views/etc.\n"
+   echo -en "\tcreate                  Create foreign keys/index/etc..\n"
+   echo -en "\tshell                   Enter on command line shell of database.\n"
+   echo -en "\tinitenv                 Create default directories if not present.\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "===========================================================================\n"
+
+   return 0
+}
+#***
+
+
+#****f* mariadb/mariadb_initenv
+# FUNCTION
+#   Create all directories used by mariadb extensions.
+# SOURCE
+mariadb_initenv () {
+
+  local result=1
+  local ndirs=0
+  local directories="
+     procedures
+     triggers
+     functions
+     views
+     foreign_keys
+     indexes
+     creation_scripts
+     update_scripts
+     schedulers
+     schemas
+  "
+
+  # Shift first two input param
+  shift 2
+
+  _mariadb_initenv_args "$@" || error_handled ""
+
+  for d in $directories ; do
+
+    # Check if foreign key directory
+    if [[ ! -d ${MARIADB_INIT_DIR}/$d ]] ; then
+      mkdir -p ${MARIADB_INIT_DIR}/$d || error_generate "Error on create directory $d."
+      let ndirs++
+    fi
+
+  done
+
+  out_handler_print "Directories created: ${ndirs}."
+
+  return 0
+}
+
+#****f* mariadb/mariadb_shell
+# FUNCTION
+#   Enter on command line shell of Mysql/MariaDB server
+# SEE ALSO
+#   _mariadb_connections_args for list of available arguments.
+# SOURCE
+mariadb_shell () {
+
+  local result=1
+
+  # Shift first two input param
+  shift 2
+
+  _mariadb_check_status
+
+  _mariadb_help_message="print_help"
+
+  _mariadb_connections_args "$@" || error_handled ""
+
+  commons_mariadb_check_vars || error_handled ""
+
+  mysql_set_auth_var "$MARIADB_DB" "$MARIADB_USER" "$MARIADB_PWD" "$MARIADB_HOST"
+
+  commons_mariadb_check_connection || error_handled "MySQL client was unable to connect to DB with supplied credentials."
+
+  commons_mariadb_shell || error_handled "Error on enter on command line shell."
+
+  return 0
+}
+#***
+
+
+#****f* mariadb/mariadb_test_connection
+# FUNCTION
+#   Test connection to Mysql/MariaDB server.
+# SEE ALSO
+#   _mariadb_connections_args for list of available arguments.
+# SOURCE
+mariadb_test_connection () {
+
+  local result=1
+
+  # Shift first two input param
+  shift 2
+
+  _mariadb_check_status
+
+  _mariadb_help_message="print_help"
+
+  _mariadb_connections_args "$@" || error_handled ""
+
+  commons_mariadb_check_vars || error_handled ""
+
+  mysql_set_auth_var "$MARIADB_DB" "$MARIADB_USER" "$MARIADB_PWD" "$MARIADB_HOST"
+
+  commons_mariadb_check_connection || error_handled "MySQL client was unable to connect to DB with supplied credentials."
+
+  out_handler_print "Connected to $MARIADB_DB with user $MARIADB_USER correctly."
+
+  out_handler_clean
+
+  return 0
+}
+#***
+
+#****f* mariadb/mariadb_show
+# FUNCTION
+#    Show data about configured Mysql/MariaDB database.
+# DESCRIPTION
+#    This command permit to see:
+#    * list of defined procedures
+#    * list of defined functions
+#    * list of defined triggers
+#    * list of defined views.
+# SEE ALSO
+#    _mariadb_connections_args
+#    _mariadb_show_args
+# SOURCE
+mariadb_show () {
+
+  local n_rec=0
+  local name=""
+  local table=""
+  local action=""
+  local event=""
+
+  # Shift first two input param
+  shift 2
+
+  _mariadb_check_status
+
+  _mariadb_help_message="print_help"
+
+  _mariadb_connections_args "$@"
+
+  _mariadb_show_args "$@" || error_handled ""
+
+  commons_mariadb_check_vars || error_handled ""
+
+  mysql_set_auth_var "$MARIADB_DB" "$MARIADB_USER" "$MARIADB_PWD" "$MARIADB_HOST"
+
+  commons_mariadb_check_connection || error_handled "MySQL client was unable to connect to DB with supplied credentials."
+
+  if [ $MARIADB_SHOW_ALL -eq 1 ] ; then
+
+    _mariadb_show_f_p "procedures"
+
+    out_handler_print "\n"
+
+    _mariadb_show_f_p "functions"
+
+    out_handler_print "\n"
+
+    _mariadb_show_triggers
+
+    out_handler_print "\n"
+
+    _mariadb_show_views
+
+    out_handler_print "\n"
+
+    _mariadb_show_tables
+
+    out_handler_print "\n"
+
+    _mariadb_show_foreign_keys
+
+    out_handler_print "\n"
+
+    _mariadb_show_indexes
+
+    out_handler_print "\n"
+
+  else
+
+    # Show procedures
+    if [ $MARIADB_SHOW_ALL_PROCEDURES -eq 1 ] ; then
+
+      _mariadb_show_f_p "procedures"
+
+      out_handler_print "\n"
+
+    fi
+
+    # Show routines
+    if [ $MARIADB_SHOW_ALL_FUNCTIONS -eq 1 ] ; then
+
+      _mariadb_show_f_p "functions"
+
+      out_handler_print "\n"
+
+    fi
+
+    # Show triggers
+    if [ $MARIADB_SHOW_ALL_TRIGGERS -eq 1 ] ; then
+
+      _mariadb_show_triggers
+
+      out_handler_print "\n"
+
+    fi
+
+    # Show views
+    if [ $MARIADB_SHOW_ALL_VIEWS -eq 1 ] ; then
+
+      _mariadb_show_views
+
+      out_handler_print "\n"
+
+    fi
+
+    # Show all tables
+    if [ $MARIADB_SHOW_ALL_TABLES -eq 1 ] ; then
+
+      _mariadb_show_tables
+
+      out_handler_print "\n"
+
+    fi
+
+    # Show foreign keys
+    if [ $MARIADB_SHOW_ALL_FKEYS -eq 1 ] ; then
+
+      _mariadb_show_foreign_keys
+
+      out_handler_print "\n"
+
+    fi
+
+    # Show indexes
+    if [ $MARIADB_SHOW_ALL_INDEXES -eq 1 ] ; then
+
+      _mariadb_show_indexes
+
+      out_handler_print "\n"
+
+    fi
+
+    # Show events/scheduler
+    if [ $MARIADB_SHOW_ALL_EVENTS -eq 1 ] ; then
+
+      _mariadb_show_events
+
+      out_handler_print "\n"
+
+    fi
+
+    # Show variables
+    if [ $MARIADB_SHOW_GLOBAL_VARS -eq 1 ] ; then
+
+      _mariadb_show_global_vars "${MARIADB_SHOW_VARFILTER}"
+
+      out_handler_print "\n"
+
+    fi
+
+  fi
+
+  if [ $MARIADB_SHOW_TABLES_DESCR -gt 0 ] ; then
+
+    for i in ${!MARIADB_SHOW_TABLES[@]}
+    do
+
+      _mariadb_show_table ${MARIADB_SHOW_TABLES[$i]}
+
+      out_handler_print "\n"
+
+    done
+
+  fi
+
+  if [ $MARIADB_SHOW_FKEYS_DESCR -gt 0 ] ; then
+
+    for i in ${!MARIADB_SHOW_FKEYS[@]}
+    do
+
+      _mariadb_show_fkey ${MARIADB_SHOW_FKEYS[$i]}
+
+      out_handler_print "\n"
+
+    done
+
+  fi
+
+
+  if [ $MARIADB_SHOW_EVENT_DESCR -gt 0 ] ; then
+
+    for i in ${!MARIADB_SHOW_EVENTS[@]}
+    do
+
+      _mariadb_show_event ${MARIADB_SHOW_EVENTS[$i]}
+
+      out_handler_print "\n"
+
+    done
+
+  fi
+
+  out_handler_clean
+
+  return 0
+}
+#***
+
+#****f* mariadb/mariadb_compile
+# FUNCTION
+#   Compile SQL Statements (triggers, functions, views, procedures, file, etc.) to configured
+#   database.
+# SEE ALSO
+#   _mariadb_connections_args
+#   _mariadb_compile_args
+# SOURCE
+mariadb_compile () {
+
+  # Shift first two input param
+  shift 2
+
+  _mariadb_check_status
+
+  _mariadb_help_message="print_help"
+
+  _mariadb_connections_args "$@"
+
+  _mariadb_compile_args "$@" || error_handled ""
+
+  commons_mariadb_check_vars || error_handled ""
+
+  mysql_set_auth_var "$MARIADB_DB" "$MARIADB_USER" "$MARIADB_PWD" "$MARIADB_HOST"
+
+  commons_mariadb_check_connection || error_handled "MySQL client was unable to connect to DB with supplied credentials."
+
+  _mariadb_compile || error_handled ""
+
+  out_handler_print "Compile operation successfull."
+
+  return 0
+}
+#***
+
+#****f* mariadb/mariadb_download
+# FUNCTION
+#   Download SQL Statements (triggers, functions, views, procedures, file, etc.) to configured
+#   database.
+# SEE ALSO
+#   _mariadb_connections_args
+#   _mariadb_download_args
+# SOURCE
+mariadb_download () {
+
+  # Shift first two input param
+  shift 2
+
+  _mariadb_check_status
+
+  _mariadb_help_message="print_help"
+
+  _mariadb_connections_args "$@"
+
+  _mariadb_download_args "$@" || error_handled ""
+
+  commons_mariadb_check_vars || error_handled ""
+
+  mysql_set_auth_var "$MARIADB_DB" "$MARIADB_USER" "$MARIADB_PWD" "$MARIADB_HOST"
+
+  commons_mariadb_check_connection || error_handled "MySQL client was unable to connect to DB with supplied credentials."
+
+  _mariadb_download || error_handled ""
+
+  out_handler_print "Download operation successfull."
+
+  return 0
+}
+#***
+
+#****f* mariadb/mariadb_drop
+# FUNCTION
+#   Drop triggers, functions, views, procedures, file, etc. from database.
+# SEE ALSO
+#   _mariadb_connections_args
+#   _mariadb_drop_args
+# SOURCE
+mariadb_drop () {
+
+  # Shift first two input param
+  shift 2
+
+  _mariadb_check_status
+
+  _mariadb_help_message="print_help"
+
+  _mariadb_connections_args "$@"
+
+  _mariadb_drop_args "$@" || error_handled ""
+
+  commons_mariadb_check_vars || error_handled ""
+
+  mysql_set_auth_var "$MARIADB_DB" "$MARIADB_USER" "$MARIADB_PWD" "$MARIADB_HOST"
+
+  commons_mariadb_check_connection || error_handled "MySQL client was unable to connect to DB with supplied credentials."
+
+  _mariadb_drop || error_handled ""
+
+  return 0
+}
+#***
+
+#****f* mariadb/mariadb_create
+# FUNCTION
+#   Create triggers, index file for compilation.
+# SEE ALSO
+#   _mariadb_connections_args
+#   _mariadb_create_args
+# SOURCE
+mariadb_create () {
+
+  # Shift first two input param
+  shift 2
+
+  _mariadb_check_status
+
+  _mariadb_help_message="print_help"
+
+  _mariadb_connections_args "$@"
+
+  _mariadb_create_args "$@" || error_handled ""
+
+  commons_mariadb_check_vars || error_handled ""
+
+  mysql_set_auth_var "$MARIADB_DB" "$MARIADB_USER" "$MARIADB_PWD" "$MARIADB_HOST"
+
+  commons_mariadb_check_connection || error_handled "MySQL client was unable to connect to DB with supplied credentials."
+
+  _mariadb_create || error_handled ""
+
+  return 0
+}
+#***
+
+##################################################################
+# Internal functions
+##################################################################
+
+#****f* mariadb/_mariadb_init
+# FUNCTION
+#   Internal function called on initialization of the mariadb module.
+# DESCRIPTION
+#   Mariadb module is usable when SQLCA variable contains mariadb string.
+#   So, if mariadb module is enabled then these check are done:
+#   * verify presence of mysql client program
+#   * check if MARIADB_USER variable is set. This variable define user to use
+#     on connection to database.
+#   * check if MARIADB_PWD variable is set. This variable define password to use
+#     on connection to database.
+#   * check if defined MARIADB_DB variable. This variable define name of the
+#     schema to use on connection.
+#   * check if defined MARIADB_DIR variable. This variable define path where
+#     save/retrieve files to compile.
+#   * if defined MARIADB_TMZ then default UTC value is overrided. This variable
+#     is used to set TMZ on active connection to database.
+# SOURCE
+_mariadb_init () {
+
+  if [[ ! -z "$SQLCA"  && "$SQLCA" =~ .*mariadb.* ]] ; then
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_init: Check requirements of the mariadb module.)\n"
+
+    commons_mariadb_check_client || error_handled ""
+
+    if [ -z $MARIADB_TMZ ] ; then
+      MARIADB_TMZ='UTC'
+    fi
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_init: All requirements are present. Continue my work.)\n"
+
+    mariadb_status="1"
+
+  else
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_init: Nothing to do.)\n"
+
+  fi
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_check_status
+# FUNCTION
+#   Check status of the mariadb module.
+# RETURN VALUE
+#   0 if module is enable.
+#   exit if not enabled.
+# SOURCE
+_mariadb_check_status () {
+
+  if [ x"$mariadb_status" = x"0" ] ; then
+    error_generate "mariadb is not enable. Enable it with SQLCA variable"
+  fi
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_connections_args
+# FUNCTION
+#   Parse command line and define environment variables.
+# DESCRIPTION
+#   Available commands line are:
+#   * -U [user]           Override username variable used on connection. If not present it is used
+#                         MARIADB_USER variable from configuration file.
+#   * -P [pwd]            Override password variable used on connection. If not present it is used
+#                         MARIADB_PWD variable from configuration file.
+#   * -D [dir path]       To define path where save/retrieve files to download/compile. This option
+#                         override MARIADB_DIR variable of configuration file.
+#   * -H                  Override database host. If not present it is used MARIADB_HOST variable
+#                         from configuration file.
+#   * --database [schema] Override schema name variable used on connection. If not present it is used
+#                         MARIADB_DB variable from configuration file.
+#   * --timezone [tmz]    Override Timezone variable used on connection initialization. If not present
+#                         it is used MARIADB_TMZ variable from cofnfiguration file.
+#   * --ignore-timezone   Avoid initialization of Timezone on connection. If not present it is used
+#                         MARIADB_IGNORE_TMZ variable from configuration file.
+#   * --conn-options [option]
+#                         Permit to configure extra connection parameters. This option could be used
+#                         more of one time.
+#   * -h                  Show help message
+# SOURCE
+_mariadb_connections_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_connections_args args: $@)\n"
+
+  local short_options="U:P:hH:D:t:"
+  local long_options="database: timezone: conn-options: ignore-timezone help"
+
+  set -- `getopt -u -q -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
+
+  [ $# -lt 1 ] && return 0 # is there at least one param (--)
+
+  local MARIADB_EXTRAS_ENABLE=0
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -U) MARIADB_USER="$2";shift;;
+      -P) MARIADB_PWD="$2";shift;;
+      -D) MARIADB_DIR="$2";shift;;
+      -H) MARIADB_HOST="$2";shift;;
+      --database)
+        MARIADB_DB="$2"
+        shift
+        ;;
+      --timezone)
+        MARIADB_TMZ="$2"
+        shift
+        ;;
+      --ignore-timezone)
+        MARIADB_IGNORE_TMZ=1
+        ;;
+      --conn-options)
+        if [ $MARIADB_EXTRAS_ENABLE -eq 0 ] ; then
+          MARIADB_EXTRAS_ENABLE=1
+          MARIADB_EXTRA_OPTIONS="$2"
+        else
+          MARIADB_EXTRA_OPTIONS="$MARIADB_EXTRA_OPTIONS $2"
+        fi
+        shift
+        ;;
+      --help|-h)
+        if [ -n "$_mariadb_help_message" ] ; then
+          _mariadb_connection_help
+        fi
+        return 1
+        ;;
+      *)
+        ;;
+
+    esac
+
+    shift
+
+  done
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_compile_args
+# FUNCTION
+#   Parse command line and define environment variables for compile command.
+# DESCRIPTION
+#   Available commands line are:
+#   * -h                  Show help message
+#   * --all-triggers      Compile all triggers files.
+#   * --id-script [id]    Compile a particular script with input id.
+#   * --file [file_path]  Compile a file.
+#   * --dumpfile [f]      Compile a file related with a mysql dump.
+#   * --all-functions     Compile all functions files.
+#   * --all-views         Compile all views
+#   * --all-foreign-keys  Compile all foreign keys if not present. (Use --force to drop and compile
+#                         again foreign keys).
+#   * --all-events        Compile all schedulers/events.
+#   * --all               Compile all triggers, functions, views, procedures, foreign keys.
+#   * --trigger [trigger] Compile input trigger
+#   * --function [f]      Compile function f.
+#   * --view [v]          Compile view v.
+#   * --procedure [p]     Compile procedure p.
+#   * --event [e]         Compile event e.
+#   * --fkey [fk]         Compile foreign key fk
+#   * --exclude [f]       Permit to exclude a file from compilation. This option
+#                         could be used more of one time.
+#   * --force             For foreign keys it means that fkey is dropped and add again
+#                         also if it is present.
+#   * --fk-table [t]      Table name of foreign key to compile. To use with --fkey.
+#                         If this param is missing dbrm try to identify table
+#                         name. If there are more or one fkey with same name
+#                         then elaboration is blocked.
+# SEE ALSO
+#   _mariadb_connections_args for a list of connection arguments
+# SOURCE
+_mariadb_compile_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_compile_args args: $@)\n"
+
+  local short_options="d:U:P:hH:D:t:"
+  local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
+  long_options="$long_options all-triggers id-script: file: all-functions all-procedures "
+  long_options="$long_options all-views all-foreign-keys all trigger: function: view: "
+  long_options="$long_options procedure: exclude: fkey: force fk-table: all-indexes"
+  long_options="$long_options dumpfile: all-events event:"
+
+  set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
+
+  MARIADB_COMPILE_ALL=1
+
+  if [ $# -lt 2 ] ; then # is there at least one param (--)
+    _mariadb_compile_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_compile_args: Found $# params)\n"
+
+  MARIADB_COMPILE_ALL=0
+  MARIADB_COMPILE_ALL_TRIGGERS=0
+  MARIADB_COMPILE_ALL_FUNCTIONS=0
+  MARIADB_COMPILE_ALL_PROCEDURES=0
+  MARIADB_COMPILE_ALL_VIEWS=0
+  MARIADB_COMPILE_ALL_FKEYS=0
+  MARIADB_COMPILE_ALL_INDEXES=0
+  MARIADB_COMPILE_ALL_EVENTS=0
+  MARIADB_COMPILE_PROCEDURE=""
+  MARIADB_COMPILE_TRIGGER=""
+  MARIADB_COMPILE_FUNCTION=""
+  MARIADB_COMPILE_VIEW=""
+  MARIADB_COMPILE_ID_SCRIPT=""
+  MARIADB_COMPILE_FILE=""
+  MARIADB_COMPILE_DUMPFILE=""
+  MARIADB_COMPILE_FKEY=""
+  MARIADB_COMPILE_FKTABLE=""
+  MARIADB_COMPILE_EVENT=""
+  MARIADB_COMPILE_FORCE=0
+  local MARIADB_COMPILE_EXC_RCVD=0
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -S|-H|-U|-P|-D|--database|--timezone|--conn-options)
+        shift
+        # do nothing
+        ;;
+      --ignore-timezone)
+        # do nothing
+        ;;
+
+      --all-procedures)
+        MARIADB_COMPILE_ALL_PROCEDURES=1
+        ;;
+      --all-triggers)
+        MARIADB_COMPILE_ALL_TRIGGERS=1
+        ;;
+      --all-functions)
+        MARIADB_COMPILE_ALL_FUNCTIONS=1
+        ;;
+      --all-views)
+        MARIADB_COMPILE_ALL_VIEWS=1
+        ;;
+      --all-foreign-keys)
+        MARIADB_COMPILE_ALL_FKEYS=1
+        ;;
+      --all-indexes)
+        MARIADB_COMPILE_ALL_INDEXES=1
+        ;;
+      --all-events)
+        MARIADB_COMPILE_ALL_EVENTS=1
+        ;;
+      --all)
+        MARIADB_COMPILE_ALL=1
+        ;;
+      --procedure)
+        MARIADB_COMPILE_PROCEDURE="$2"
+        shift
+        ;;
+      --trigger)
+        MARIADB_COMPILE_TRIGGER="$2"
+        shift
+        ;;
+      --function)
+        MARIADB_COMPILE_FUNCTION="$2"
+        shift
+        ;;
+      --view)
+        MARIADB_COMPILE_VIEW="$2"
+        shift
+        ;;
+      --id-script)
+        MARIADB_COMPILE_ID_SCRIPT="$2"
+        shift
+        ;;
+      --file)
+        MARIADB_COMPILE_FILE="$2"
+        shift
+        ;;
+      --dumpfile)
+        MARIADB_COMPILE_DUMPFILE="$2"
+        shift
+        ;;
+      --fkey)
+        MARIADB_COMPILE_FKEY="$2"
+        shift
+        ;;
+      --fk-table)
+        MARIADB_COMPILE_FKTABLE="$2"
+        shift
+        ;;
+      --event)
+        MARIADB_COMPILE_EVENT="$2"
+        shift
+        ;;
+      --exclude)
+        if [ $MARIADB_COMPILE_EXC_RCVD -eq 0 ] ; then
+          MARIADB_COMPILE_FILES_EXCLUDED="$2"
+          MARIADB_COMPILE_EXC_RCVD=1
+        else
+          MARIADB_COMPILE_FILES_EXCLUDED="$MARIADB_COMPILE_FILES_EXCLUDED $2"
+        fi
+        shift
+        ;;
+      --force)
+        MARIADB_COMPILE_FORCE=1
+        ;;
+      -h|--help)
+        _mariadb_compile_help
+        return 1
+        ;;
+      --)
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+
+    esac
+
+    shift
+  done
+
+  return 0
+
+}
+#***
+
+#****f* mariadb/_mariadb_download_args
+# FUNCTION
+#   Parse command line and define environment variables for download command.
+# DESCRIPTION
+#   Available commands line are:
+#   * -h                  Show help message
+#   * --all-triggers      Download all triggers files.
+#   * --id-script [id]    Download a particular script with input id.
+#   * --file [file_path]  Download a file
+#   * --all-functions     Download all functions files.
+#   * --all-views         Download all views.
+#   * --all-foreign-keys  Download all foreign keys.
+#   * --all               Download all triggers, functions, views, procedures.
+#   * --trigger [trigger] Download input trigger
+#   * --function [f]      Download function f.
+#   * --view [v]          Download view v.
+#   * --procedure [p]     Download procedure p.
+#   * --foreign-key [fk]  Download foreign key fk.
+#   * --index [i]         Downlaod index with name i. To use with --index-table.
+#   * --index-table [it]  Table name of index to download. To use with --index
+#   * --with-pk-indexes   Download also primary key indexes. To use with --all|--index|--all-indexes
+#   * --all-tables        Download all tables definition.
+#   * --file [f]          (optional) File where write tables definitions.
+#                         Default is creation_scripts/initial_ddl.sql
+#   * --table [name]      Download table description of table name.
+#   * --fk-table [t]      Table name of foreign key to download. To use with --foreign-key.
+#                         If this param is missing dbrm try to identify table
+#                         name. If there are more or one fkey with same name
+#                         then elaboration is blocked.
+# SEE ALSO
+#   _mariadb_connections_args for a list of connection arguments
+# SOURCE
+_mariadb_download_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_download_args args: $@)\n"
+
+  local short_options="d:U:P:hH:D:t:"
+  local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
+  long_options="$long_options all-triggers all-id-script: file: all-functions all-procedures all-views"
+  long_options="$long_options all trigger: function: view: procedure: all-foreign-keys foreign-key:"
+  long_options="$long_options all-indexes index: index-table: with-pk-indexes all-tables file: table:"
+  long_options="$long_options fk-table: all-events event:"
+
+  set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
+
+  MARIADB_DOWNLOAD_ALL=1
+
+  if [ $# -lt 2 ] ; then # is there at least one param (--)
+    _mariadb_download_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_download_args: Found $# params)\n"
+
+  MARIADB_DOWNLOAD_ALL=0
+  MARIADB_DOWNLOAD_ALL_PROCEDURES=0
+  MARIADB_DOWNLOAD_ALL_TRIGGERS=0
+  MARIADB_DOWNLOAD_ALL_FUNCTIONS=0
+  MARIADB_DOWNLOAD_ALL_VIEWS=0
+  MARIADB_DOWNLOAD_ALL_FKEYS=0
+  MARIADB_DOWNLOAD_ALL_INDEXES=0
+  MARIADB_DOWNLOAD_ALL_TABLES=0
+  MARIADB_DOWNLOAD_ALL_EVENTS=0
+  MARIADB_DOWNLOAD_PK_INDEXES=""
+  MARIADB_DOWNLOAD_PROCEDURE=""
+  MARIADB_DOWNLOAD_TRIGGER=""
+  MARIADB_DOWNLOAD_FUNCTION=""
+  MARIADB_DOWNLOAD_FKEY=""
+  MARIADB_DOWNLOAD_VIEW=""
+  MARIADB_DOWNLOAD_INDEX=""
+  MARIADB_DOWNLOAD_ITABLE=""
+  MARIADB_DOWNLOAD_FILE=""
+  MARIADB_DOWNLOAD_TABLE=""
+  MARIADB_DOWNLOAD_FKTABLE=""
+  MARIADB_DOWNLOAD_EVENT=""
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -S|-H|-U|-P|-D|--database|--timezone|--conn-options)
+        shift
+        # do nothing
+        ;;
+      --ignore-timezone)
+        # do nothing
+        ;;
+
+      --all-procedures)
+        MARIADB_DOWNLOAD_ALL_PROCEDURES=1
+        ;;
+      --all-triggers)
+        MARIADB_DOWNLOAD_ALL_TRIGGERS=1
+        ;;
+      --all-functions)
+        MARIADB_DOWNLOAD_ALL_FUNCTIONS=1
+        ;;
+      --all-views)
+        MARIADB_DOWNLOAD_ALL_VIEWS=1
+        ;;
+      --all-foreign-keys)
+        MARIADB_DOWNLOAD_ALL_FKEYS=1
+        ;;
+      --all-indexes)
+        MARIADB_DOWNLOAD_ALL_INDEXES=1
+        ;;
+      --all-events)
+        MARIADB_DOWNLOAD_ALL_EVENTS=1
+        ;;
+      --all)
+        MARIADB_DOWNLOAD_ALL=1
+        ;;
+      --procedure)
+        MARIADB_DOWNLOAD_PROCEDURE="$2"
+        shift
+        ;;
+      --trigger)
+        MARIADB_DOWNLOAD_TRIGGER="$2"
+        shift
+        ;;
+      --function)
+        MARIADB_DOWNLOAD_FUNCTION="$2"
+        shift
+        ;;
+      --view)
+        MARIADB_DOWNLOAD_VIEW="$2"
+        shift
+        ;;
+      --foreign-key)
+        MARIADB_DOWNLOAD_FKEY="$2"
+        shift
+        ;;
+      --index)
+        MARIADB_DOWNLOAD_INDEX="$2"
+        shift
+        ;;
+      --event)
+        MARIADB_DOWNLOAD_EVENT="$2"
+        shift
+        ;;
+      --index-table)
+        MARIADB_DOWNLOAD_ITABLE="$2"
+        shift
+        ;;
+      --with-pk-indexes)
+        MARIADB_DOWNLOAD_PK_INDEXES="all"
+        ;;
+      --all-tables)
+        MARIADB_DOWNLOAD_ALL_TABLES=1
+        ;;
+      --file)
+        MARIADB_DOWNLOAD_FILE="$2"
+        shift
+        ;;
+      --table)
+        MARIADB_DOWNLOAD_TABLE="$2"
+        shift
+        ;;
+      --fk-table)
+        MARIADB_DOWNLOAD_FKTABLE="$2"
+        shift
+        ;;
+
+      -h|--help)
+        _mariadb_download_help
+        return 1
+        ;;
+      --)
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+
+    esac
+
+    shift
+  done
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_download_help
+# FUNCTION
+#   Internal function for help message related with download command.
+# SOURCE
+_mariadb_download_help () {
+
+  echo -en "[--all-procedure]        Download all procedures.\n"
+  echo -en "[--all-triggers]         Download all triggers.\n"
+  echo -en "[--all-functions]        Download all functions.\n"
+  echo -en "[--all-foreign-keys]     Download all foreign keys.\n"
+  echo -en "[--all-indexes]          Download all indexes.\n"
+  echo -en "[--all-views]            Download all views.\n"
+  echo -en "[--all-events]           Download all events/schedulers.\n"
+  echo -en "[--all]                  Download all (no tables schemas).\n"
+  echo -en "[--procedure name]       Download a particular procedure.\n"
+  echo -en "[--trigger name]         Download a particular trigger.\n"
+  echo -en "[--function name]        Download a particular function.\n"
+  echo -en "[--view name]            Download a particular view.\n"
+  echo -en "[--foreign-key name]     Download a particular foreign key.\n"
+  echo -en "[--event name]        Download a particular event.\n"
+  echo -en "[--index name]           Download a particular index (Require --index-table).\n"
+  echo -en "                         Only one index a time.\n"
+  echo -en "[--index-table tname]    Name of table of index to download. (To use with --index).\n"
+  echo -en "[--with-pk-indexes]      Download also primary key indexes.\n"
+  echo -en "                         (To use with --all|--index|--all-indexes)\n"
+  echo -en "[--all-tables]           Download all tables definitions that aren't present on target\n"
+  echo -en "                         file. This option could be used with --file.\n"
+  echo -en "[--table name]           Download schema of a particular table\n"
+  echo -en "                         This option could be used with --file.\n"
+  echo -en "[--file file]            (optional) File where write tables definitions.\n"
+  echo -en "                         Default is creation_scripts/initial_ddl.sql\n"
+  echo -en "[--fk-table tname]       Table name of foreign key to download. To use with --foreign-key.\n"
+  echo -en "                         If this param is missing dbrm try to identify table\n"
+  echo -en "                         name. If there are more or one fkey with same name\n"
+  echo -en "                         then elaboration is blocked.\n"
+  echo -en "Note: For argument with value if it isn't passed value argument is ignored.\n"
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_show_args
+# FUNCTION
+#   Internal parse command line and define environment variables for show command.
+# DESCRIPTION
+#   Available commands line are:
+#   * -h|--help          Show help message
+#   * --triggers          Show all triggers.
+#   * --functions         Show all functions.
+#   * --procedures        Show all procedures.
+#   * --all               Show all triggers, functions, views, procedures.
+#   * --tables            Show all tables.
+#   * --foreign-keys      Show all foreign keys.
+#   * --views             Show all views.
+#   * --events            Show all events/schedulers.
+#   * --event [name]      Show detail of event [name].
+#   * --table [name]      Show detail of table [name].
+#   * --fkey [name]       Show detail of foreign key [name].
+#   * --global-vars       Show global variables of the Mysql instance.
+#   * --vars-filter       Apply filter to list of variables.
+# SEE ALSO
+#   _mariadb_connections_args for a list of connection arguments
+# SOURCE
+_mariadb_show_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_show_args args: $@)\n"
+
+  local short_options="d:U:P:hH:D:t:"
+  local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
+  long_options="$long_options triggers functions procedures views tables all foreign-keys indexes table: fkey:"
+  long_options="$long_options table-def events event: global-vars vars-filter:"
+
+  set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
+
+  if [ $# -lt 2 ] ; then # is there at least one param (--)
+    _mariadb_show_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_show_args: Found $# params)\n"
+
+  MARIADB_SHOW_ALL=0
+  MARIADB_SHOW_ALL_PROCEDURES=0
+  MARIADB_SHOW_ALL_TRIGGERS=0
+  MARIADB_SHOW_ALL_FUNCTIONS=0
+  MARIADB_SHOW_ALL_VIEWS=0
+  MARIADB_SHOW_ALL_TABLES=0
+  MARIADB_SHOW_ALL_FKEYS=0
+  MARIADB_SHOW_ALL_INDEXES=0
+  MARIADB_SHOW_ALL_EVENTS=0
+  MARIADB_SHOW_TABLES_DESCR=0
+  MARIADB_SHOW_FKEYS_DESCR=0
+  MARIADB_SHOW_TABLE_DEF=0
+  MARIADB_SHOW_EVENT_DESCR=0
+  MARIADB_SHOW_GLOBAL_VARS=0
+  MARIADB_SHOW_VARFILTER=""
+  MARIADB_SHOW_TABLES=""
+  MARIADB_SHOW_EVENTS=""
+  MARIADB_SHOW_FKEYS=""
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -S|-H|-U|-P|-D|--database|--timezone|--conn-options)
+        shift
+        # do nothing
+        ;;
+      --ignore-timezone)
+        # do nothing
+        ;;
+
+      --procedures)
+        MARIADB_SHOW_ALL_PROCEDURES=1
+        ;;
+      --triggers)
+        MARIADB_SHOW_ALL_TRIGGERS=1
+        ;;
+      --functions)
+        MARIADB_SHOW_ALL_FUNCTIONS=1
+        ;;
+      --views)
+        MARIADB_SHOW_ALL_VIEWS=1
+        ;;
+      --tables)
+        MARIADB_SHOW_ALL_TABLES=1
+        ;;
+      --foreign-keys)
+        MARIADB_SHOW_ALL_FKEYS=1
+        ;;
+      --indexes)
+        MARIADB_SHOW_ALL_INDEXES=1
+        ;;
+      --events)
+        MARIADB_SHOW_ALL_EVENTS=1
+        ;;
+      --all)
+        MARIADB_SHOW_ALL=1
+        ;;
+      --global-vars)
+        MARIADB_SHOW_GLOBAL_VARS=1
+        ;;
+      --table)
+        MARIADB_SHOW_TABLES[$MARIADB_SHOW_TABLES_DESCR]="$2"
+        let MARIADB_SHOW_TABLES_DESCR++
+        shift
+        ;;
+      --event)
+        MARIADB_SHOW_EVENTS[$MARIADB_SHOW_EVENT_DESCR]="$2"
+        let MARIADB_SHOW_EVENT_DESCR++
+        shift
+        ;;
+      --table-def)
+        MARIADB_SHOW_TABLE_DEF=1
+        ;;
+      --fkey)
+        MARIADB_SHOW_FKEYS[$MARIADB_SHOW_FKEYS_DESCR]="$2"
+        let MARIADB_SHOW_FKEYS_DESCR++
+        shift
+        ;;
+      --vars-filter)
+        MARIADB_SHOW_VARFILTER="$2"
+        shift
+        ;;
+      -h|--help)
+        _mariadb_show_help
+        return 1
+        ;;
+      --)
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+
+    esac
+
+    shift
+  done
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_drop_args
+# FUNCTION
+#   Parse command line and define environment variables for drop command.
+# DESCRIPTION
+#   Available commands line are:
+#   * -h                  Show help message
+#   * --fkey [fk]         Drop foreign key fk
+#   * --index [i]         Drop index i. (Require --index-table param)
+#   * --index-table [it]  Table of the index to drop. To use with --index.
+#   * --fk-table          Table of the foreign key to drop. If there are more of one foreign key
+#                         I use same table name.
+#   * --trigger [name]    Drop a particular trigger.
+#   * --all-fkeys         Drop all foreign key of the database.
+#   * --all-triggers      Drop all trigger of the database.
+#   * --all-events        Drop all events of the database.
+#   * --event [name]      Drop event [name] from database.
+# SEE ALSO
+#   _mariadb_connections_args for a list of connection arguments
+# SOURCE
+_mariadb_drop_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_drop_args args: $@)\n"
+
+  local short_options="d:U:P:hH:D:t:"
+  local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
+  long_options="$long_options fkey: index: index-table: fk-table: all-fkeys all-indexes"
+  long_options="$long_options trigger: all-triggers all-events event:"
+
+  set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
+
+  if [ $# -lt 2 ] ; then # is there at least one param (--)
+    _mariadb_drop_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_drop_args: Found $# params)\n"
+
+  MARIADB_DROP_FKEYS=""
+  MARIADB_DROP_FKTABLE=""
+  MARIADB_DROP_INDEX=""
+  MARIADB_DROP_TINDEX=""
+  MARIADB_DROP_FKEY_NAMES=0
+  MARIADB_DROP_ALLFKEYS=0
+  MARIADB_DROP_ALLIDX=0
+  MARIADB_DROP_ALLTRIGGERS=0
+  MARIADB_DROP_ALLEVENTS=0
+  MARIADB_DROP_TRIGGER_NAMES=0
+  MARIADB_DROP_TRIGGERS=""
+  MARIADB_DROP_EVENT_NAMES=0
+  MARIADB_DROP_EVENTS=""
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -S|-H|-U|-P|-D|--database|--timezone|--conn-options)
+        shift
+        # do nothing
+        ;;
+      --ignore-timezone)
+        # do nothing
+        ;;
+      --fkey)
+        MARIADB_DROP_FKEYS[$MARIADB_DROP_FKEY_NAMES]="$2"
+        let MARIADB_DROP_FKEY_NAMES++
+        shift
+        ;;
+      --fk-table)
+        MARIADB_DROP_FKTABLE="$2"
+        shift
+        ;;
+      --index)
+        MARIADB_DROP_INDEX="$2"
+        shift
+        ;;
+      --index-table)
+        MARIADB_DROP_TINDEX="$2"
+        shift
+        ;;
+      --all-fkeys)
+        MARIADB_DROP_ALLFKEYS=1
+        ;;
+      --all-indexes)
+        MARIADB_DROP_ALLIDX=1
+        ;;
+      --trigger)
+        MARIADB_DROP_TRIGGERS[$MARIADB_DROP_TRIGGER_NAMES]="$2"
+        let MARIADB_DROP_TRIGGER_NAMES++
+        shift
+        ;;
+      --all-triggers)
+        MARIADB_DROP_ALLTRIGGERS=1
+        ;;
+      --all-events)
+        MARIADB_DROP_ALLEVENTS=1
+        ;;
+      --event)
+        MARIADB_DROP_EVENTS[$MARIADB_DROP_EVENT_NAMES]="$2"
+        let MARIADB_DROP_EVENT_NAMES++
+        shift
+        ;;
+      -h|--help)
+        _mariadb_drop_help
+        return 1
+        ;;
+      --)
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+
+    esac
+
+    shift
+  done
+
+  if [[ $MARIADB_DROP_ALLFKEYS -eq 1 && $MARIADB_DROP_FKEY_NAMES -gt 0 ]] ; then
+    out_handler_print "Drop all foreign keys is been selected. I ignore all single options."
+  fi
+
+  if [[ $MARIADB_DROP_ALLIDX -eq 1 && -n $MARIADB_DROP_INDEX ]] ; then
+    out_handler_print "Drop all indexes is been selected. I ignore all single options."
+  fi
+
+  if [[ $MARIADB_DROP_ALLTRIGGERS -eq 1 && $MARIADB_DROP_TRIGGER_NAMES -gt 0 ]] ; then
+    out_handler_print "Drop all triggers is been selected. I ignore all single option."
+  fi
+
+  if [[ $MARIADB_DROP_ALLEVENTS -eq 1 && $MARIADB_DROP_EVENT_NAMES -gt 0 ]] ; then
+    out_handler_print "Drop all events is been selected. I ignore all single option."
+  fi
+
+  return 0
+
+}
+#***
+
+#****f* mariadb/_mariadb_create_args
+# FUNCTION
+#   Parse command line and define environment variables for create command.
+# DESCRIPTION
+#   Available commands line are:
+#   * -h                   Show help message
+#   * --fkey [fk_name]     Create a foreign key with name $fk_name.
+#   * --index [iname]      Create an index with name $iname.
+#   * --auto-naming        Use automatic naming convention of foreign key
+#   *                      and index.
+#   * --on-table [tname]   Table where create database entity.
+#   * --on-column [cname]  Column/Columns where create database entity.
+#   * --ref-table [rtname] Reference table related with database entity to create.
+#   * --ref-column [rcols] Reference columns related with database entity to create.
+#   * --itype [type]       To use with --index for define type of index.
+#   *                      Possible values are UNIQUE|SPATIAL|FULLTEXT.
+# SEE ALSO
+#   _mariadb_connections_args for a list of connection arguments
+# SOURCE
+_mariadb_create_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_create_args args: $@)\n"
+
+  local short_options="d:U:P:hH:D:t:"
+  local long_options="database: timezone: conn-options: ignore-timezone help" # connection long options
+  long_options="$long_options fkey: on-table: on-column: ref-table: ref-column: index: itype:"
+  long_options="$long_options auto-naming"
+  local ans=0
+  local s=""
+  local naming=""
+  local reg_com=""
+  local reg_tname=""
+  local reg_reftname=""
+
+  set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || error_handled "Invalid parameters"
+
+  if [ $# -lt 2 ] ; then # is there at least one param (--)
+    _mariadb_create_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_craete_args: Found $# params)\n"
+
+  MARIADB_CREATE_FKEY_ACTION=0
+  MARIADB_CREATE_INDEX_ACTION=0
+  MARIADB_CREATE_FKEY=""
+  MARIADB_CREATE_ON_TABLE=""
+  MARIADB_CREATE_ON_COLUMNS=""
+  MARIADB_CREATE_REF_TABLE=""
+  MARIADB_CREATE_REF_COLUMNS=""
+  MARIADB_CREATE_ITYPE=""
+  MARIADB_CREATE_INDEX=""
+  MARIADB_CREATE_AUTONAMING=0
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_create_args args: $@)\n"
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -S|-H|-U|-P|-D|--database|--timezone|--conn-options)
+        shift
+        # do nothing
+        ;;
+      --ignore-timezone)
+        # do nothing
+        ;;
+      --auto-naming)
+        MARIADB_CREATE_AUTONAMING=1
+        ;;
+      --fkey)
+        MARIADB_CREATE_FKEY="$2"
+        MARIADB_CREATE_FKEY_ACTION=1
+        shift
+        ;;
+      --on-table)
+        MARIADB_CREATE_ON_TABLE="$2"
+        shift
+        ;;
+      --on-column)
+        MARIADB_CREATE_ON_COLUMNS="$2"
+        shift
+        ;;
+      --ref-table)
+        MARIADB_CREATE_REF_TABLE="$2"
+        shift
+        ;;
+      --ref-column)
+        MARIADB_CREATE_REF_COLUMNS="$2"
+        shift
+        ;;
+      --index)
+        MARIADB_CREATE_INDEX="$2"
+        MARIADB_CREATE_INDEX_ACTION=1
+        shift
+        ;;
+      --itype)
+        MARIADB_CREATE_ITYPE="$2"
+        shift
+        ;;
+      -h|--help)
+        _mariadb_create_help
+        return 1
+        ;;
+      --)
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+
+    esac
+
+    shift
+  done
+
+  if [[ $MARIADB_CREATE_FKEY_ACTION -eq 1 &&
+    $MARIADB_CREATE_INDEX_ACTION -eq 1 ]] ; then
+
+    echo "It is possible only an action a time."
+    return 1
+
+  fi
+
+  if [ $MARIADB_CREATE_FKEY_ACTION -eq 1 ] ; then
+
+    if [[ -z "$MARIADB_CREATE_FKEY" && $MARIADB_CREATE_AUTONAMING -eq 0 ]] ; then
+
+      echo "Invalid foreign key name supply."
+      ans=1
+
+    else
+
+      if [[ -z "$MARIADB_CREATE_ON_TABLE" ||
+        -z "$MARIADB_CREATE_ON_COLUMNS" ||
+        -z "$MARIADB_CREATE_REF_TABLE" ||
+        -z "$MARIADB_CREATE_REF_COLUMNS" ]] ; then
+
+        echo "Missing mandatary parameters for foreign key."
+        ans=1
+
+      fi
+
+    fi
+
+    if [ $MARIADB_CREATE_AUTONAMING -eq 1 ] ; then
+
+      # Naming convention for index:
+      # REGEX_COMPOSITION=${REGEX_TABLE_NAME}-${REGEX_TABLE_REF}_
+      # ${TABLE_NAME}-fk_${REGEX_COMPOSITION}${MARIADB_CREATE_ON_COLUMNS}-${FKEY_NAME}
+      # For MARIADB_CREATE_ON_COLUMNS variable I replace ',' with '_'
+
+      awk_code='{ \
+        m=match($0, /[_|-].*/) ; \
+        if (m) \
+          print substr($0, 0, 1) substr($0, RSTART + 1, 1) ; \
+        else \
+          print substr($0, 0, 1) \
+      }'
+
+      reg_tname=`echo ${MARIADB_CREATE_ON_TABLE} | awk "${awk_code}"`
+      reg_reftname=`echo ${MARIADB_CREATE_REF_TABLE} | awk "${awk_code}"`
+      reg_com="${reg_tname}${reg_reftname}_"
+      s=${MARIADB_CREATE_ON_COLUMNS//,/_}
+
+      naming="fk_${reg_com}${s}"
+      if [[ ! -z "${MARIADB_CREATE_FKEY}" && "${MARIADB_CREATE_FKEY}" != "-" ]] ; then
+        naming="${naming}-${MARIADB_CREATE_FKEY}"
+      fi
+
+      MARIADB_CREATE_FKEY="${naming}"
+
+    fi
+
+  elif [ $MARIADB_CREATE_INDEX_ACTION -eq 1 ] ; then
+
+    if [[ -z "$MARIADB_CREATE_INDEX" && $MARIADB_CREATE_AUTONAMING -eq 0 ]] ; then
+      echo "Invalid index name."
+      ans=1
+    else
+
+      if [[ -z "$MARIADB_CREATE_ON_TABLE" ||
+        -z "$MARIADB_CREATE_ON_COLUMNS" ]] ; then
+
+        echo "Missing mandatary parameters for index."
+        ans=1
+
+      fi
+
+      if [[ -n "$MARIADB_CREATE_ITYPE" &&
+        "$MARIADB_CREATE_ITYPE" != "UNIQUE" &&
+        "$MARIADB_CREATE_ITYPE" != "SPATIAL" &&
+        "$MARIADB_CREATE_ITYPE" != "FULLTEXT" ]] ; then
+
+        echo "Invalid value of --itype field. Possible values are UNIQUE,SPATIAL or FULLTEXT"
+        ans=1
+
+      fi
+
+      if [ $MARIADB_CREATE_AUTONAMING -eq 1 ] ; then
+
+        # Naming convention for index:
+        # ${INDEX_COLUMNS}-${ITYPE}-${INDEX}
+        # For INDEX_COLUMNS variable I replace ',' with '_'
+        s=${MARIADB_CREATE_ON_COLUMNS//,/_}
+
+        naming="${s}"
+        if [ ! -z "$MARIADB_CREATE_ITYPE"  ] ; then
+          naming="${naming}-${MARIADB_CREATE_ITYPE}"
+        fi
+        if [[ ! -z "$MARIADB_CREATE_INDEX}" && "$MARIADB_CREATE_INDEX" != "-" ]] ; then
+          naming="${naming}-${MARIADB_CREATE_INDEX}"
+        fi
+
+        MARIADB_CREATE_INDEX="${naming}"
+
+      fi
+
+    fi
+
+  fi
+
+  return $ans
+}
+#***
+
+
+#****f* mariadb/_mariadb_show_help
+# FUNCTION
+#   Internal function that print help message of show command.
+# SOURCE
+_mariadb_show_help () {
+
+  echo -en "[--procedures]           Show list of procedures name present on database.\n"
+  echo -en "[--triggers]             Show list of trigger name present on database.\n"
+  echo -en "[--functions]            Show list of functions name present on database.\n"
+  echo -en "[--views]                Show list of view name present on database.\n"
+  echo -en "[--foreign-keys]         Show list of foreign keys name present on database.\n"
+  echo -en "[--tables]               Show list of tables present on database.\n"
+  echo -en "[--indexes]              Show list of indexes present on database.\n"
+  echo -en "[--all]                  Show list of all procedures, triggers, functions and views present on database.\n"
+  echo -en "[--events]               Show list of event/scheduler present on database.\n"
+  echo -en "[--table TABLE_NAME]     Show detail of a table. This option could be repeated.\n"
+  echo -en "[--fkey FKEY_NAME]       Show detail of a foreign key. This option could be repeated.\n"
+  echo -en "[--event EVENT_NAME]     Show detail of a event. This option could be repeated.\n"
+  echo -en "[--table-def]            Show table definition SQL (To use with --table).\n"
+  echo -en "[--global-vars]          Show global variables of the instance.\n"
+  echo -en "[--vars-filter FILTER]   Apply filter in LIKE as %FILTER% (To use with --global-vars).\n"
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_compile_help
+# FUNCTION
+#   Internal function that print help message of compile command.
+# SOURCE
+_mariadb_compile_help () {
+
+  echo -en "[--all-procedures]       Compile all procedures present under MARIADB_DIR subdirectories.\n"
+  echo -en "[--all-triggers]         Compile all triggers present under MARIADB_DIR subdirectories.\n"
+  echo -en "[--all-functions]        Compile all functions present under MARIADB_DIR subdirectories.\n"
+  echo -en "[--all-views]            Compile all views present on MARIADB_DIR subdirectories.\n"
+  echo -en "[--all-foreign-keys]     Compile all foreign keys present on MARIADB_DIR subdirectories\n"
+  echo -en "                         if not present on database. (Use --force to drop and compile again fkey).\n"
+  echo -en "[--all-indexes]          Compile all indexes present on MARIADB_DIR subdirectories\n"
+  echo -en "                         if not present on database. (Use --force to drop and compile again index).\n"
+  echo -en "[--all-events]           Compile all events present on MARIADB_DIR subdirectories.\n"
+  echo -en "[--all]                  Compile all procedures, triggers, functions, views, events/schedulers present\n"
+  echo -en "                         under MARIADB_DIR subdirectories.\n"
+  echo -en "[--procedure name]       Compile a particular procedure under MARIADB_DIR/procedures directory.\n"
+  echo -en "[--trigger name]         Compile a particular trigger under MARIADB_DIR/triggers directory.\n"
+  echo -en "[--function name]        Compile a particular function under MARIADB_DIR/functions directory.\n"
+  echo -en "[--view name]            Compile a particular view under MARIADB_DIR/views directory.\n"
+  echo -en "[--fkey name]            Compile a particular foreign key under MARIADB_DIR/foreign_keys directory.\n"
+  echo -en "[--exclude filename]     Exclude a particular file from compilation.\n"
+  echo -en "                         (This option can be repeat and override MARIADB_COMPILE_FILES_EXCLUDED\n"
+  echo -en "                          configuration variable).\n"
+  echo -en "[--id-script id]         Compile a particular script registered under MARIADB_DIR/<directory>/.\n"
+  echo -en "[--file file]            Compile a particular file. (Use ABS Path or relative path from current dir.)\n"
+  echo -en "                         For dump file use --dumpfile option.\n"
+  echo -en "[--dumpfile file]        Compile a dump file. (Use ABS Path or relative path from current dir.)\n"
+  echo -en "                         Currently, this option doesn't replace schema reference automatically.\n"
+  echo -en "[--force]                For foreign keys it means that fkey/index is dropped and add again also if\n"
+  echo -en "                         already present.\n"
+  echo -en "[--fk-table tname]       Table name of foreign key to compile. To use with --fkey.\n"
+  echo -en "                         If this param is missing dbrm try to identify table\n"
+  echo -en "                         name. If there are more or one fkey with same name\n"
+  echo -en "                         then elaboration is blocked.\n"
+  echo -en "[--event name]           Compile a particular event/scheduler under MARIADB_DIR/schedulers directory.\n"
+  echo -en "Note: For argument with value if it isn't passed value argument is ignored.\n"
+
+  return 0
+
+}
+#***
+
+#****f* mariadb/_mariadb_connection_help
+# FUNCTION
+#   Internal function that print help message of connection options.
+# SOURCE
+_mariadb_connection_help () {
+
+  echo -en "[-P mariadb_pwd]         Override MARIADB_PWD variable.\n"
+  echo -en "[-U mariadb_user]        Override MARIADB_USER with username of the connection.\n"
+  echo -en "[-H mariadb_host]        Override MARIADB_HOST with host of the database.\n"
+  echo -en "[-D mariadb_dir]         Override MARIADB_DIR directory where save/retrieve script/functions, etc.\n"
+  echo -en "[--database db]          Override MARIADB_DB variable for database name.\n"
+  echo -en "[--timezone tmz]         Override MARIADB_TMZ variable for set timezone on connection session.\n"
+  echo -en "[--conn-options opts]    Override MARIADB_EXTRA_OPTIONS variable for enable extra connection options.\n"
+  echo -en "[--ignore-timezone]      Set MARIADB_IGNORE_TMZ variable to 1 for disable initial timezone settings.\n"
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_drop_help
+# FUNCTION
+#   Internal function that print help message of drop command.
+# SOURCE
+_mariadb_drop_help () {
+
+  echo -en "[--fkey FKEY_NAME]       Drop foreign key [FKEY_NAME] from database.\n"
+  echo -en "                         This option could be repeated.\n"
+  echo -en "[--index INDEX_NAME]     Drop index [INDEX_NAME] from database. To use with --index-table.\n"
+  echo -en "                         This option could be use only one time.\n"
+  echo -en "[--index-table NAME]     Table name of index to drop from database.\n"
+  echo -en "                         To use with --index.\n"
+  echo -en "[--fk-table NAME]        Table name of the foreign key/keys to drop.\n"
+  echo -en "                         To use optional with --fkey.\n"
+  echo -en "[--all-fkeys]            Drop all foreign keys from current database.\n"
+  echo -en "[--all-indexes]          Drop all not primary indexes from current database.\n"
+  echo -en "[--all-triggers]         Drop all trigger of the database.\n"
+  echo -en "[--trigger NAME]         Drop trigger [NAME] from database.\n"
+  echo -en "[--all-events]           Drop all events from current database.\n"
+  echo -en "[--event NAME]           Drop event [NAME] from database.\n"
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_create_help
+# FUNCTION
+#   Internal function that print help message of create command.
+# SOURCE
+_mariadb_create_help () {
+
+  echo -en "[--fkey FKEY_NAME]       Create foreign key [FKEY_NAME] file, ready for compilation.\n"
+  echo -en "                         Others mandatary parameters: --on-table,--on-column,--ref-table\n"
+  echo -en "                         --ref-column.\n"
+  echo -en "[--index INAME]          Create index [INAME] file, ready for compilation.\n"
+  echo -en "                         Others mandatary parameters: --on-table,--on-column.\n"
+  echo -en "                         Others optional parameters: --itype.\n"
+  echo -en "[--auto-naming]          Use automatic naming convention of foreign key\n"
+  echo -en "                         and index used by dbrm.\n"
+  echo -en "[--on-table TNAME]       Choice table where create database entity.\n"
+  echo -en "[--on-column CNAME]      Choice column or columns (ex. col1,col2) related to db entity to.\n"
+  echo -en "                         create.\n"
+  echo -en "[--ref-table RTNAME]     Reference table related with db entity to create.\n"
+  echo -en "[--ref-column RCOLS]     Reference columns related with db entity to create.\n"
+  echo -en "[--itype TYPE]           To use with --index for define type of index.\n"
+  echo -en "                         Possible values are UNIQUE|SPATIAL|FULLTEXT.\n"
+  echo -en "\n"
+  echo -en "Example1: - Create a foreign key on table T1 on columns col1,col2 referenced by table T2\n"
+  echo -en "\$> dbrm mariadb create --fkey fk1 --on-table T1 --on-column \"col1,col2\"\n"
+  echo -en "                       --ref-table T2 --ref-column \"col1,col2\"\n"
+  echo -en "\n"
+  echo -en "Example2: - Create an index on table T1 to columns col1,col2\n"
+  echo -en "\$> dbrm mariadb create --index idx_test --on-table T1 --on-column \"col1,col2\"\n"
+  echo -en "\n"
+  echo -en "Example3: - Create an index on table T1 to columns col1,col2 with automatic naming\n"
+  echo -en "\$> dbrm mariadb create --index \"-\" --on-table T1 --on-column \"col1,col2\" --auto-naming\n"
+  echo -en "\n"
+  echo -en "Example4: - Create a foreign key on table T1 on columns col1,col2 referenced by table T2 with\n"
+  echo -en "            automatic naming.\n"
+  echo -en "\$> dbrm mariadb create --fkey \"-\" --on-table T1 --on-column \"col1,col2\"\n"
+  echo -en "                       --ref-table T2 --ref-column \"col1,col2\" --auto-naming\n"
+  echo -en "\n"
+  echo -en "NOTE: foreign key name is unique on database."
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_compile
+# FUNCTION
+#   Internal function that manage compilation process.
+# SOURCE
+_mariadb_compile () {
+
+  local f=""
+  local is_present=1
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_compile args: $@)\n"
+
+  # Compile script file if available
+  if [ ! -z "$MARIADB_COMPILE_ID_SCRIPT" ] ; then
+
+    _mariadb_compile_id_script || error_handled ""
+
+    echo -en "Compiled script $MARIADB_COMPILE_ID_SCRIPT with file $DBM_SCRIPT_FILENAME correctly.\n"
+
+  fi
+
+  # Compile single file if available
+  if [ ! -z "$MARIADB_COMPILE_FILE" ] ; then
+
+    commons_mariadb_compile_file "$MARIADB_COMPILE_FILE" "File $MARIADB_COMPILE_FILE" || \
+      error_handled "Error on compile file $MARIADB_COMPILE_FILE."
+
+  fi
+
+  # Compile single dump file if available
+  if [ ! -z "$MARIADB_COMPILE_DUMPFILE" ] ; then
+
+    commons_mariadb_source_file "$MARIADB_COMPILE_DUMPFILE" "File $MARIADB_COMPILE_DUMPFILE" || \
+      error_handled "Error on compile (with source) file $MARIADB_COMPILE_DUMPFILE."
+
+  fi
+
+  if [ $MARIADB_COMPILE_ALL -eq 1 ] ; then
+
+    commons_mariadb_compile_all_procedures "" || error_handled "Error on compile all procedures."
+    commons_mariadb_compile_all_triggers "" || error_handled "Error on compile all triggers."
+    commons_mariadb_compile_all_functions "" || error_handled "Error on compile all functions."
+    commons_mariadb_compile_all_views "" || error_handled "Error on compile all functions."
+    commons_mariadb_compile_all_fkeys "" $MARIADB_COMPILE_FORCE || \
+      error_handled "Error on compile all foreign keys."
+    commons_mariadb_compile_all_events "" || error_handled "Error on compile all events."
+
+  else
+
+    # Check for all-procedures or single procedure
+    if [ $MARIADB_COMPILE_ALL_PROCEDURES -eq 1 ] ; then
+
+      commons_mariadb_compile_all_procedures "" || error_handled "Error on compile all procedures."
+
+    else
+
+      if [ ! -z "$MARIADB_COMPILE_PROCEDURE" ] ; then
+
+        f="${MARIADB_COMPILE_PROCEDURE/.sql/}"
+        f=$(basename ${f})
+        commons_mariadb_compile_file "$MARIADB_DIR/procedures/$f.sql" "" || error_handled "Error on compile file $f.sql"
+
+      fi
+
+    fi
+
+    # Check for all-triggers or single trigger
+    if [ $MARIADB_COMPILE_ALL_TRIGGERS -eq 1 ] ; then
+
+      commons_mariadb_compile_all_triggers "" || error_handled "Error on compile all triggers."
+
+    else
+
+      if [ ! -z "$MARIADB_COMPILE_TRIGGER" ] ; then
+
+        f="${MARIADB_COMPILE_TRIGGER/.sql/}"
+        f=$(basename ${f})
+        commons_mariadb_compile_file "$MARIADB_DIR/triggers/$f.sql" "" || error_handled "Error on compile file $f.sql"
+
+      fi
+
+    fi
+
+    # Check for all-functions or single function
+
+    if [ $MARIADB_COMPILE_ALL_FUNCTIONS -eq 1 ] ; then
+
+      commons_mariadb_compile_all_functions "" || error_handled "Error on compile all functions."
+
+    else
+
+      if [ ! -z "$MARIADB_COMPILE_FUNCTION" ] ; then
+
+        f="${MARIADB_COMPILE_FUNCTION/.sql/}"
+        f=$(basename ${f})
+        commons_mariadb_compile_file "$MARIADB_DIR/functions/$f.sql" "" || error_handled "Error on compile file $f.sql"
+
+      fi
+
+    fi
+
+    # Check for all-views or single view
+
+    if [ $MARIADB_COMPILE_ALL_VIEWS -eq 1 ] ; then
+
+      commons_mariadb_compile_all_views "" || error_handled "Error on compile all views."
+
+    else
+
+      if [ ! -z "$MARIADB_COMPILE_VIEW" ] ; then
+
+        f="${MARIADB_COMPILE_VIEW/.sql/}"
+        f=$(basename ${f})
+        commons_mariadb_compile_file "$MARIADB_DIR/views/$f.sql" "" || error_handled "Error on compile file $f.sql"
+
+      fi
+
+    fi
+
+    # Check for all-foreign-keys or single foreign key
+
+    if [ $MARIADB_COMPILE_ALL_FKEYS -eq 1 ] ; then
+
+      commons_mariadb_compile_all_fkeys "" $MARIADB_COMPILE_FORCE || \
+        error_handled "Error on compile all foreign keys."
+
+    else
+
+      if [ ! -z "$MARIADB_COMPILE_FKEY" ] ; then
+
+        f="${MARIADB_COMPILE_FKEY/.sql/}"
+        f=$(basename ${f})
+
+        commons_mariadb_compile_fkey "${MARIADB_DIR}/foreign_keys/${f}.sql" "" \
+          "$MARIADB_COMPILE_FORCE" "$MARIADB_COMPILE_FKTABLE" || \
+          error_handled "Error on compile file ${f}.sql"
+
+      fi
+
+    fi
+
+    # Check for all-indexes
+
+    if [ $MARIADB_COMPILE_ALL_INDEXES -eq 1 ] ; then
+
+      commons_mariadb_compile_all_idxs "" $MARIADB_COMPILE_FORCE || \
+        error_handled "Error on compile all indexes."
+
+    fi
+
+    # Check for all-events
+
+    if [ $MARIADB_COMPILE_ALL_EVENTS -eq 1 ] ; then
+
+      commons_mariadb_compile_all_events "" || \
+        error_handled "Error on compile all events/schedulers."
+
+    else
+
+      if [ ! -z "$MARIADB_COMPILE_EVENT" ] ; then
+
+        f="${MARIADB_COMPILE_EVENT/.sql/}"
+        f=$(basename ${f})
+
+        commons_mariadb_compile_file "$MARIADB_DIR/schedulers/$f.sql" "" || error_handled "Error on compile file $f.sql"
+
+      fi
+
+    fi
+
+  fi # end if $MARIADB_COMPILE_ALL
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_compile_id_script
+# FUNCTION
+#   Internal function that manage compilation of a script file.
+# DESCRIPTION
+#   Try to compile a script. Script ID must be set on MARIADB_COMPILE_ID_SCRIPT.
+# SOURCE
+_mariadb_compile_id_script () {
+
+  local f=""
+  local id_script="$MARIADB_COMPILE_ID_SCRIPT"
+
+  _dbm_check_if_exist_id_script "$id_script" || error_handled ""
+
+  _dbm_retrieve_script_data "$id_script" "1" || error_handled ""
+
+  if [ x"$DBM_SCRIPT_ADAPTER" != x"mariadb" ] ; then
+    error_generate "Error: script $id_script isn't connect to mariadb adapter."
+  fi
+
+  f="$MARIADB_DIR/$DBM_SCRIPT_DIRECTORY/$DBM_SCRIPT_FILENAME"
+
+  commons_mariadb_compile_file "$f" "Compile file $DBM_SCRIPT_FILENAME for release $DBM_SCRIPT_REL_NAME v.$DBM_SCRIPT_REL_VERSION" || error_handled "Error on compile file $f."
+
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_download
+# FUNCTION
+#   Internal function that manage downloading process.
+# SOURCE
+_mariadb_download () {
+
+  local n=0
+
+  if [ $MARIADB_DOWNLOAD_ALL -eq 1 ] ; then
+
+    commons_mariadb_download_all_procedures || error_handled "Error on download all procedures."
+
+    commons_mariadb_download_all_triggers || error_handled "Error on download all triggers."
+
+    commons_mariadb_download_all_functions || error_handled "Error on download all functions."
+
+    commons_mariadb_download_all_views || error_handled "Error on download all views."
+
+    commons_mariadb_download_all_fkeys || error_handled "Error on download all foreign keys."
+
+    commons_mariadb_download_all_indexes "${MARIADB_DOWNLOAD_PK_INDEXES}" || \
+      error_handled "Error on download all indexes."
+
+    commons_mariadb_download_all_events || error_handled "Error on download all events."
+
+  else
+
+    # Check for all procedures
+
+    if [ $MARIADB_DOWNLOAD_ALL_PROCEDURES -eq 1 ] ; then
+
+      commons_mariadb_download_all_procedures || error_handled "Error on download all procedures."
+
+    else
+
+      if [ -n "$MARIADB_DOWNLOAD_PROCEDURE" ] ; then
+
+        commons_mariadb_download_procedure "$MARIADB_DOWNLOAD_PROCEDURE" || error_handled "Error on download procedures $MARIADB_DOWNLOAD_PROCEDURE."
+
+      fi
+
+    fi
+
+    # Check for all-triggers or single trigger
+
+    if [ $MARIADB_DOWNLOAD_ALL_TRIGGERS -eq 1 ] ; then
+
+      commons_mariadb_download_all_triggers || error_handled "Error on download all triggers."
+
+    else
+
+      if [ -n "$MARIADB_DOWNLOAD_TRIGGER" ] ; then
+
+        commons_mariadb_download_trigger "$MARIADB_DOWNLOAD_TRIGGER" || error_handled "Error on download trigger $MARIADB_DOWNLOAD_TRIGGER."
+
+      fi
+
+    fi
+
+    # Check for all-functions or single function
+
+    if [ $MARIADB_DOWNLOAD_ALL_FUNCTIONS -eq 1 ] ; then
+
+      commons_mariadb_download_all_functions || error_handled "Error on download all functions."
+
+    else
+
+      if [ -n "$MARIADB_DOWNLOAD_FUNCTION" ] ; then
+
+        commons_mariadb_download_function "$MARIADB_DOWNLOAD_FUNCTION" || error_handled "Error on download function $MARIADB_DOWNLOAD_FUNCTION."
+
+      fi
+
+    fi
+
+    # Check for all-views or single view
+
+    if [ $MARIADB_DOWNLOAD_ALL_VIEWS -eq 1 ] ; then
+
+      commons_mariadb_download_all_views || error_handled "Error on download all views."
+
+    else
+
+      if [ -n "$MARIADB_DOWNLOAD_VIEW" ] ; then
+
+        commons_mariadb_download_view "$MARIADB_DOWNLOAD_VIEW" || error_handled "Error on download view."
+
+      fi
+
+    fi
+
+    # Check for all-foreign-keys or single foreign key
+
+    if [ $MARIADB_DOWNLOAD_ALL_FKEYS -eq 1 ] ; then
+
+      commons_mariadb_download_all_fkeys || error_handled "Error on download all foreign keys."
+
+    else
+
+      if [ -n "$MARIADB_DOWNLOAD_FKEY" ] ; then
+
+        commons_mariadb_download_fkey "$MARIADB_DOWNLOAD_FKEY" "$MARIADB_DOWNLOAD_FKTABLE"  \
+          || error_handled "Error on download foreign key."
+      fi
+
+    fi
+
+    # Check for all-indexes or single index
+
+    if [ $MARIADB_DOWNLOAD_ALL_INDEXES -eq 1 ] ; then
+
+      commons_mariadb_download_all_indexes "${MARIADB_DOWNLOAD_PK_INDEXES}" || \
+        error_handled "Error on download all indexes."
+
+    else
+
+      if [[ -n "$MARIADB_DOWNLOAD_INDEX" && -n "$MARIADB_DOWNLOAD_ITABLE"  ]] ; then
+
+        echo -en "Downloading index $MARIADB_DOWNLOAD_INDEX of table ${MARIADB_DOWNLOAD_ITABLE}...\n"
+
+        commons_mariadb_download_index "$MARIADB_DOWNLOAD_INDEX" "$MARIADB_DOWNLOAD_ITABLE" || \
+          error_handled "Error on download index."
+      fi
+
+    fi
+  fi # end $MARIADB_DOWNLOAD_ALL
+
+  # Check for all-tables or single table
+  local f="${LOCAL_DIR}/creation_scripts/initial_ddl.sql"
+
+  if [ -n "$MARIADB_DOWNLOAD_FILE" ] ; then
+    f="${MARIADB_DOWNLOAD_FILE}"
+  fi
+
+  if [ $MARIADB_DOWNLOAD_ALL_TABLES -eq 1 ] ; then
+
+    commons_mariadb_download_all_tables "${f}"
+
+  else
+
+    if [[ -n "${MARIADB_DOWNLOAD_TABLE}" ]] ; then
+
+      commons_mariadb_download_all_tables "${f}" "${MARIADB_DOWNLOAD_TABLE}"
+
+    fi
+
+  fi
+
+  # Check for all-events or single event
+  if [ $MARIADB_DOWNLOAD_ALL_EVENTS -eq 1 ] ; then
+
+    commons_mariadb_download_all_events || error_handled "Error on download all events."
+
+  else
+
+    if [ -n "$MARIADB_DOWNLOAD_EVENT" ] ; then
+
+      commons_mariadb_download_event "$MARIADB_DOWNLOAD_EVENT" || \
+        error_handled "Error on download event $MARIADB_DOWNLOAD_EVENT."
+
+    fi
+
+  fi
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_drop
+# FUNCTION
+#   Internal function that manage drop process.
+# SOURCE
+_mariadb_drop () {
+
+  local fk=""
+  local f=""
+  local fkeys=""
+  local table=""
+  local cnt=0
+  local indexes=""
+  local triggers=""
+  local trigger=""
+  local events=""
+  local event=""
+  local idx=""
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_drop args: $@)\n"
+
+  # Drop single foreign key
+
+  if [ $MARIADB_DROP_ALLFKEYS -gt 0 ] ; then
+
+    # Retrieve foreign keys list
+    commons_mariadb_get_fkeys_list "" "KCU.CONSTRAINT_NAME, KCU.TABLE_NAME" || \
+      error_handled "Error on retrieve list of foreign keys."
+
+    fkeys=$_mariadb_ans
+
+    IFS=$'\n'
+    for row in $fkeys ; do
+
+      fk=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      table=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+
+      unset IFS
+
+      commons_mariadb_drop_fkey "${fk}" "" "${table}" || \
+        error_handled "Error on drop foreign key ${fk} from table ${table}."
+
+      out_handler_print "Foreign key ${fk} from table ${table} dropped.\n"
+
+      let cnt++
+
+      IFS=$'\n'
+
+    done
+    unset IFS
+
+    out_handler_print "Dropped ${cnt} foreign keys."
+
+  else
+
+    if [ $MARIADB_DROP_FKEY_NAMES -gt 0 ] ; then
+
+      for i in ${!MARIADB_DROP_FKEYS[@]}
+      do
+
+        f="${MARIADB_DROP_FKEYS[$i]/.sql/}"
+        f="$(basename "$f")"
+
+        commons_mariadb_drop_fkey "$f" "" "${MARIADB_DROP_FKTABLE}" || \
+          error_handled "Error on drop foreign key $f."
+
+        out_handler_print "Foreign key ${f} dropped."
+
+      done
+
+    fi
+
+  fi
+
+  if [ $MARIADB_DROP_ALLIDX -eq 1 ] ; then
+
+    # Retrieve indexes list
+    commons_mariadb_get_indexes_list "not_primary" "S.TABLE_NAME,S.INDEX_NAME" || \
+      error_handled "Error on retrieve list of indexes."
+
+    indexes=$_mariadb_ans
+
+    IFS=$'\n'
+    for row in $indexes ; do
+
+      table=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      idx=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+
+      unset IFS
+
+      commons_mariadb_drop_index "${idx}" "${table}" || \
+        error_handled "Error on drop index ${idx} from table ${table}."
+
+      out_handler_print "Index ${idx} from table ${table} dropped."
+
+      let cnt++
+
+      IFS=$'\n'
+
+    done
+    unset IFS
+
+    out_handler_print "Dropped ${cnt} indexes."
+
+  else
+    # Drop single index
+
+    if [[ -n "$MARIADB_DROP_INDEX" && -n "$MARIADB_DROP_TINDEX" ]] ; then 
+
+      commons_mariadb_drop_index "${MARIADB_DROP_INDEX}" "${MARIADB_DROP_TINDEX}" || \
+        error_handled "Error on drop index ${MARIADB_DROP_INDEX} from table ${MARIADB_DROP_TINDEX}."
+
+      out_handler_print "Index ${MARIADB_DROP_INDEX} from table ${MARIADB_DROP_TINDEX} dropped.\n"
+
+    fi
+
+  fi
+
+  if [ $MARIADB_DROP_ALLTRIGGERS -eq 1 ] ; then
+
+    # Retrieve triggers list
+    commons_mariadb_get_triggers_list || \
+      error_handled "Error on retrieve list of triggers."
+
+    triggers=$_mariadb_ans
+
+    IFS=$'\n'
+    for row in $triggers ; do
+
+      trigger=`echo $row | awk '{split($0,a," "); print a[1]}'`
+      table=`echo $row | awk '{split($0,a," "); print a[2]}'`
+
+      unset IFS
+
+      commons_mariadb_drop_trigger "${trigger}" "${table}" || \
+        error_handled "Error on drop trigger ${trigger} from table ${table}."
+
+      out_handler_print "Trigger ${trigger} from table ${table} dropped."
+
+      let cnt++
+
+      IFS=$'\n'
+
+    done
+    unset IFS
+
+    out_handler_print "Dropped ${cnt} triggers."
+
+  else
+
+    if [ $MARIADB_DROP_TRIGGER_NAMES -gt 0 ] ; then
+
+      for i in ${!MARIADB_DROP_TRIGGERS[@]}
+      do
+
+        f="${MARIADB_DROP_TRIGGERS[$i]/.sql/}"
+        f="$(basename "$f")"
+
+        commons_mariadb_drop_trigger "$f" || \
+          error_handled "Error on drop trigger $f."
+
+        out_handler_print "Trigger ${f} dropped."
+
+      done
+
+    fi
+
+  fi
+
+  if [ $MARIADB_DROP_ALLEVENTS -eq 1 ] ; then
+
+    # Retrieve event list
+    commons_mariadb_get_events_list || \
+      error_handled "Error on retrieve list of events."
+
+    events=$_mariadb_ans
+
+    IFS=$'\n'
+    for row in $events ; do
+
+      event=`echo $row | awk '{split($0,a," "); print a[1]}'`
+
+      unset IFS
+
+      commons_mariadb_drop_event "${event}" || \
+        error_handled "Error on drop event ${event}."
+
+      out_handler_print "Event ${event} dropped."
+
+      let cnt++
+
+      IFS=$'\n'
+
+    done
+    unset IFS
+
+    out_handler_print "Dropped ${cnt} events."
+
+  else
+
+    if [ $MARIADB_DROP_EVENT_NAMES -gt 0 ] ; then
+
+      for i in ${!MARIADB_DROP_EVENTS[@]}
+      do
+
+        f="${MARIADB_DROP_EVENTS[$i]/.sql/}"
+        f="$(basename "$f")"
+
+        commons_mariadb_drop_event "$f" || \
+          error_handled "Error on drop event $f."
+
+        out_handler_print "Event ${f} dropped."
+
+      done
+
+    fi
+
+  fi
+
+  out_handler_clean
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_show_triggers
+# FUNCTION
+#   Internal function that print to screen all availables triggers.
+# SOURCE
+_mariadb_show_triggers () {
+
+  local n_rec=0
+  local name=""
+  local table=""
+  local action=""
+  local event=""
+  local counter=1
+  local name_size=25
+  local table_size=28
+
+  commons_mariadb_count_triggers
+  n_rec=$?
+
+  if [ $n_rec -eq 0 ] ; then
+
+    out_handler_print "No triggers available."
+
+  else
+
+    commons_mariadb_get_triggers_list || error_handled "Error on get triggers name list."
+
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="TRIGGER_NAME"
+    out_headers[1]="TABLE"
+    out_headers[2]="ACTION"
+    out_headers[3]="EVENT"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;32m"
+    out_el_pre[2]="\e[1;31m"
+    out_el_pre[3]="\e[1;34m"
+
+    out_el_post[0]="\e[m"
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      name=`echo $row | awk '{split($0,a," "); print a[1]}'`
+      table=`echo $row | awk '{split($0,a," "); print a[2]}'`
+      action=`echo $row | awk '{split($0,a," "); print a[3]}'`
+      event=`echo $row | awk '{split($0,a," "); print a[4]}'`
+
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${name}\""
+      eval "row${counter}[1]=\"${table}\""
+      eval "row${counter}[2]=\"${action}\""
+      eval "row${counter}[3]=\"${event}\""
+
+      # Check if needed enlarge size of first column
+      if [ ${#name} -ge $name_size ] ; then
+        name_size=$((${#name}+1))
+      fi
+      if [ ${#table} -ge $table_size ] ; then
+        table_size=$((${#table}+1))
+      fi
+
+      let counter++
+
+    done
+    unset IFS
+
+    out_tabs[0]=$name_size
+    out_tabs[1]=$table_size
+    out_tabs[2]="15"
+    out_tabs[3]="23"
+
+    out_handler_print_arr
+
+  fi
+
+  out_handler_clean
+
+  return 0
+
+}
+#***
+
+#****f* mariadb/_mariadb_show_views
+# FUNCTION
+#   Internal function that print to screen all availables views.
+# SOURCE
+_mariadb_show_views () {
+
+  local n_rec=0
+  local name=""
+  local updatable=""
+  local counter=1
+  local name_size=20
+
+  commons_mariadb_count_views
+  n_rec=$?
+
+  if [ $n_rec -eq 0 ] ; then
+
+    out_handler_print "No views available."
+
+  else
+
+    commons_mariadb_get_views_list || error_handled "Error on get views name list."
+
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="VIEW_NAME"
+    out_headers[1]="IS_UPDATABLE"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;32m"
+
+    out_el_post[0]="\e[m"
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      name=`echo $row | awk '{split($0,a," "); print a[1]}'`
+      updatable=`echo $row | awk '{split($0,a," "); print a[2]}'`
+
+      # Check if needed enlarge size of first column
+      if [ ${#name} -ge $name_size ] ; then
+        name_size=$((${#name}+1))
+      fi
+
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${name}\""
+      eval "row${counter}[1]=\"${updatable}\""
+
+      let counter++
+
+    done
+    unset IFS
+
+    out_tabs[0]=$name_size
+    out_tabs[1]=20
+
+    out_handler_print_arr
+
+  fi
+
+  out_handler_clean
+
+  return 0
+}
+#***
+
+
+#****f* mariadb/_mariadb_show_table
+# FUNCTION
+#   Internal function that is a custom wrapper used to retrieve list tables.
+# SOURCE
+_mariadb_show_table () {
+
+  local counter=1
+  local tname="$1"
+  local is_present=1
+  local name=""
+  local default=""
+  local is_nullable=""
+  local ctype=""
+  local ckey=""
+  local cextra=""
+  local name_size=20
+  local default_size=20
+  local type_size=15
+
+  commons_mariadb_exist_table "$tname"
+  is_present=$?
+
+  if [ $is_present -eq 0 ] ; then
+
+    commons_mariadb_desc_table "$tname" || error_handled "Error on retrieve data about table $tname."
+
+    out_ttitle="TABLE: $tname"
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="COLUMN_NAME"
+    out_headers[1]="DEFAULT"
+    out_headers[2]="NULLABLE"
+    out_headers[3]="TYPE"
+    out_headers[4]="KEY"
+    out_headers[5]="EXTRA"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;32m"
+    out_el_pre[2]="\e[1;31m"
+    out_el_pre[3]="\e[1;34m"
+    out_el_pre[4]="\e[1;30m"
+    out_el_pre[5]="\e[1;35m"
+
+    out_el_post[0]="\e[m"
+
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      name=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      is_nullable=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+      ctype=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+      ckey=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+      cextra=`echo $row | awk '{split($0,a,"|"); print a[5]}' | xargs`
+      default=`echo $row | awk '{split($0,a,"|"); print a[6]}' | xargs`
+
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${name}\""
+      eval "row${counter}[1]=\"${default}\""
+      eval "row${counter}[2]=\"${is_nullable}\""
+      eval "row${counter}[3]=\"${ctype}\""
+      eval "row${counter}[4]=\"${ckey}\""
+      eval "row${counter}[5]=\"${cextra}\""
+
+      # Check if needed enlarge size of first column
+      if [ ${#name} -ge $name_size ] ; then
+        name_size=$((${#name}+1))
+      fi
+
+      if [ ${#default} -ge $default_size ] ; then
+        default_size=$((${#default}+1))
+      fi
+
+      if [ ${#ctype} -ge $type_size ] ; then
+        type_size=$((${#ctype}+2))
+      fi
+      let counter++
+
+    done
+    unset IFS
+
+    out_tabs[0]=$name_size
+    out_tabs[1]=$default_size
+    out_tabs[2]=10
+    out_tabs[3]=$type_size
+    out_tabs[4]=10
+    out_tabs[5]=23
+
+    out_handler_print_arr
+
+    out_handler_clean
+    out_handler_print ""
+
+    _mariadb_show_foreign_keys "$tname" "in" "TABLE FOREIGN KEYS"
+
+    out_handler_clean
+    out_handler_print ""
+
+    _mariadb_show_foreign_keys "$tname" "ref" "FOREIGN KEYS VS. TABLE $tname"
+
+    if [ $MARIADB_SHOW_TABLE_DEF -eq 1 ] ; then
+
+      out_handler_clean
+      out_handler_print ""
+
+      commons_mariadb_get_table_def "$tname"
+
+      out_handler_print "\n${TABLE_DEF}"
+
+    fi
+
+  else
+
+    out_handler_print "Table $tname not found."
+
+  fi
+
+  out_handler_clean
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_show_tables
+# FUNCTION
+#   Internal function that is a custom wrapper used to retrieve list tables.
+# SOURCE
+_mariadb_show_tables () {
+
+  local counter=1
+  local n_rec=0
+  local name=""
+  local engine=""
+  local table_rows=""
+  local data_length=""
+  local create_time=""
+  local update_time=""
+  local charset=""
+  local name_size=23
+
+  commons_mariadb_count_tables
+  n_rec=$?
+
+  if [ $n_rec -eq 0 ] ; then
+
+    out_handler_print "No tables available."
+
+  else
+
+    commons_mariadb_get_tables_list "1" || error_handled "Error on get tables name list."
+
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="TABLE_NAME"
+    out_headers[1]="ENGINE"
+    out_headers[2]="TABLE_ROWS"
+    out_headers[3]="DATA_LENGTH"
+    out_headers[4]="CHARSET"
+    out_headers[5]="CREATE_TIME"
+    out_headers[6]="UPDATE_TIME"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;32m"
+    out_el_pre[2]="\e[1;31m"
+    out_el_pre[3]="\e[1;34m"
+    out_el_pre[4]="\e[1;30m"
+    out_el_pre[5]="\e[1;35m"
+    out_el_pre[6]="\e[1;36m"
+
+    out_el_post[0]="\e[m"
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      name=`echo $row | awk '{split($0,a," "); print a[1]}'`
+      engine=`echo $row | awk '{split($0,a," "); print a[2]}'`
+      table_rows=`echo $row | awk '{split($0,a," "); print a[3]}'`
+      data_length=`echo $row | awk '{split($0,a," "); print a[4]}'`
+      charset=`echo $row | awk '{split($0,a," "); print a[5]}'`
+      create_time=`echo $row | awk '{split($0,a," "); print a[6]" "a[7]}'`
+      update_time=`echo $row | awk '{split($0,a," "); print a[8]" "a[9]}'`
+
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${name}\""
+      eval "row${counter}[1]=\"${engine}\""
+      eval "row${counter}[2]=\"${table_rows}\""
+      eval "row${counter}[3]=\"${data_length}\""
+      eval "row${counter}[4]=\"${charset}\""
+      eval "row${counter}[5]=\"${create_time}\""
+      eval "row${counter}[6]=\"${update_time}\""
+
+      # Check if needed enlarge size of first column
+      if [ ${#name} -ge $name_size ] ; then
+        name_size=$((${#name}+1))
+      fi
+      let counter++
+
+    done
+    unset IFS
+
+    out_tabs[0]=$name_size
+    out_tabs[1]=11
+    out_tabs[2]=15
+    out_tabs[3]=15
+    out_tabs[4]=13
+    out_tabs[5]=23
+    out_tabs[6]=23
+
+    out_handler_print_arr
+
+  fi
+
+  out_handler_clean
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_show_foreign_keys
+# FUNCTION
+#   Internal function that print to screen all availables foreign keys.
+# SOURCE
+_mariadb_show_foreign_keys () {
+
+  local n_rec=0
+  local name=""
+  local table=""
+  local cname=""
+  local rtable=""
+  local rcname=""
+  local counter=1
+  local name_size=25
+  local table_size=28
+  local rtable_size=25
+  local rname_size=17
+  local cname_size=20
+  local for_table="$1"
+  local mode="$2"
+  local table_title="$3"
+
+  commons_mariadb_count_fkeys "$for_table" "$mode"
+  n_rec=$?
+
+  if [ $n_rec -eq 0 ] ; then
+
+    out_handler_print "No foreign keys available."
+
+  else
+
+    commons_mariadb_get_fkeys_list "1" "" "" "$for_table" "$mode" || \
+      error_handled "Error on get foreign keys name list."
+
+    if [[ -n "$table_title" ]] ; then
+      out_ttitle="$table_title"
+    fi
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="FOREIGN_KEY_NAME"
+    out_headers[1]="COLUMN_NAME"
+    out_headers[2]="TABLE_NAME"
+    out_headers[3]="REF_COLUMN_NAME"
+    out_headers[4]="REF_TABLE_NAME"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;31m"
+    out_el_pre[2]="\e[1;32m"
+    out_el_pre[3]="\e[1;34m"
+    out_el_pre[4]="\e[1;30m"
+
+    out_el_post[0]="\e[m"
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      name=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      table=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+      cname=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+      rtable=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+      rcname=`echo $row | awk '{split($0,a,"|"); print a[5]}'`
+
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${name}\""
+      eval "row${counter}[1]=\"${cname}\""
+      eval "row${counter}[2]=\"${table}\""
+      eval "row${counter}[3]=\"${rcname}\""
+      eval "row${counter}[4]=\"${rtable}\""
+
+      # Check if needed enlarge size of first column
+      if [ ${#name} -ge $name_size ] ; then
+        name_size=$((${#name}+1))
+      fi
+      if [ ${#table} -ge $table_size ] ; then
+        table_size=$((${#table}+1))
+      fi
+      if [ ${#cname} -ge $cname_size ] ; then
+        cname_size=$((${#cname}+1))
+      fi
+      if [ ${#rtable} -ge $rtable_size ] ; then
+        rtable_size=$((${#rtable}+1))
+      fi
+      if [ ${#rcname} -ge $rname_size ] ; then
+        rname_size=$((${#rcname}+1))
+      fi
+
+      let counter++
+
+    done
+    unset IFS
+
+    out_tabs[0]=$name_size
+    out_tabs[1]=$cname_size
+    out_tabs[2]=$table_size
+    out_tabs[3]=$rname_size
+    out_tabs[4]=$rtable_size
+
+    out_handler_print_arr
+
+  fi
+
+  out_handler_clean
+
+  return 0
+
+}
+#***
+
+#****f* mariadb/_mariadb_show_fkey
+# FUNCTION
+#   Internal function that is a custom wrapper used to show detail of a foreign key
+# INPUTS
+#   fkey_name   name of the foreign key to display.
+# SOURCE
+_mariadb_show_fkey () {
+
+  local counter=1
+  local fkey_name="$1"
+  local is_present=1
+  local name=""
+  local table=""
+  local cname=""
+  local rtable=""
+  local rcname=""
+  local ur=""
+  local dr=""
+
+  commons_mariadb_check_if_exist_fkey "$fkey_name"
+  is_present=$?
+
+  if [ $is_present -eq 0 ] ; then
+
+    commons_mariadb_get_fkeys_list "1" "" "$fkey_name" || \
+      error_handled "Error on retrieve data about foreign key $fkey_name"
+
+    out_ttitle="FOREIGN KEY:      $fkey_name"
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="htabs"
+    out_vertical=1
+
+    out_headers[0]="COLUMN_NAME"
+    out_headers[1]="TABLE_NAME"
+    out_headers[2]="REF_COLUMN_NAME"
+    out_headers[3]="REF_TABLE_NAME"
+    out_headers[4]="UPDATE_RULE"
+    out_headers[5]="DELETE_RULE"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;31m"
+    out_el_pre[2]="\e[1;32m"
+    out_el_pre[3]="\e[1;34m"
+    out_el_pre[4]="\e[1;30m"
+    out_el_pre[5]="\e[1;35m"
+
+    out_el_post[0]="\e[m"
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      table=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+      cname=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+      rtable=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+      rcname=`echo $row | awk '{split($0,a,"|"); print a[5]}'`
+      ur=`echo $row | awk '{split($0,a,"|"); print a[6]}'`
+      dr=`echo $row | awk '{split($0,a,"|"); print a[7]}'`
+
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${cname}\""
+      eval "row${counter}[1]=\"${table}\""
+      eval "row${counter}[2]=\"${rcname}\""
+      eval "row${counter}[3]=\"${rtable}\""
+      eval "row${counter}[4]=\"${ur}\""
+      eval "row${counter}[5]=\"${dr}\""
+
+      let counter++
+
+    done
+    unset IFS
+
+    out_htabs[0]=15
+
+    out_handler_print_arr
+
+  else
+
+    out_handler_print "Foreign key $fkey_name not found."
+
+  fi
+
+  out_handler_clean
+
+  return 0
+}
+#***
+
+
+#****f* mariadb/_mariadb_show_f_p
+# FUNCTION
+#   Internal function that is a custom wrapper used to retrieve list of an entity
+#   passed in input.
+# SOURCE
+_mariadb_show_f_p () {
+
+  local n_rec=0
+  local target="$1"
+  local target_column=""
+  local counter=1
+  local name=""
+  local definer=""
+  local creation_date=""
+  local last_update=""
+  local target_size=23
+  local definer_size=20
+
+  commons_mariadb_count_${target}
+  n_rec=$?
+
+  if [ $n_rec -eq 0 ] ; then
+
+    out_handler_print "No ${target} available."
+
+  else
+
+    commons_mariadb_get_${target}_list "1" || error_handled "Error on get $target name list."
+
+    if [ x$target == x"functions" ] ; then
+      target_column="FUNCTION"
+    else
+      if [ x$target == x"procedures" ] ; then
+        target_column="PROCEDURE"
+      else
+        target_column="$target"
+      fi
+    fi
+
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]=$target_column
+    out_headers[1]="DEFINER"
+    out_headers[2]="CREATED"
+    out_headers[3]="LAST_UPDATE"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;32m"
+    out_el_pre[2]="\e[1;31m"
+    out_el_pre[3]="\e[1;34m"
+
+    out_el_post[0]="\e[m"
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      name=`echo $row | awk '{split($0,a," "); print a[1]}'`
+      definer=`echo $row | awk '{split($0,a," "); print a[2]}'`
+      creation_date=`echo $row | awk '{split($0,a," "); print a[3]" "a[4]}'`
+      last_update=`echo $row | awk '{split($0,a," "); print a[5]" "a[6]}'`
+
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${name}\""
+      eval "row${counter}[1]=\"${definer}\""
+      eval "row${counter}[2]=\"${creation_date}\""
+      eval "row${counter}[3]=\"${last_update}\""
+
+      # Check if needed enlarge size of first column
+      if [ ${#name} -ge $target_size ] ; then
+        target_size=$((${#name}+1))
+      fi
+
+      # Check if needed enlarge size of first column
+      if [ ${#definer} -ge $definer_size ] ; then
+        definer_size=$((${#definer}+2))
+      fi
+      let counter++
+
+    done
+    unset IFS
+
+    out_tabs[0]=$target_size
+    out_tabs[1]=$definer_size
+    out_tabs[2]=23
+    out_tabs[3]=23
+
+    out_handler_print_arr
+
+  fi
+
+  out_handler_clean
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_show_indexes
+# FUNCTION
+#   Internal function that print to screen all availables indexes (not foreign keys).
+# SOURCE
+_mariadb_show_indexes () {
+
+  local n_rec=0
+  local table=""
+  local unique=""
+  local iname=""
+  local keys_cols=""
+  local index_type=""
+  local counter=1
+  local table_size=28
+  local keys_size=28
+  local index_size=25
+
+  commons_mariadb_count_indexes
+  n_rec=$?
+
+  if [ $n_rec -eq 0 ] ; then
+
+    out_handler_print "No indexes available."
+
+  else
+
+    commons_mariadb_get_indexes_list "all" || error_handled "Error on get indexes name list."
+
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+    out_ttitle="INDEXES"
+
+    out_headers[0]="TABLE_NAME"
+    out_headers[1]="UNIQUE"
+    out_headers[2]="INDEX_NAME"
+    out_headers[3]="KEYS_COLUMNS"
+    out_headers[4]="INDEX_TYPE"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;31m"
+    out_el_pre[2]="\e[1;32m"
+    out_el_pre[3]="\e[1;34m"
+    out_el_pre[4]="\e[1;30m"
+
+    out_el_post[0]="\e[m"
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      table=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      unique=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+      iname=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+      keys_cols=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+      index_type=`echo $row | awk '{split($0,a,"|"); print a[5]}'`
+
+      # Convert iname
+      if [ -n "${unique}" ] ; then
+        if [ "${unique}" == "1" ] ; then
+          unique="0"
+        else
+          unique="1"
+        fi
+      else
+        unique="-"
+      fi
+
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${table}\""
+      eval "row${counter}[1]=\"${unique}\""
+      eval "row${counter}[2]=\"${iname}\""
+      eval "row${counter}[3]=\"${keys_cols}\""
+      eval "row${counter}[4]=\"${index_type}\""
+
+      # Check if needed enlarge size of first column
+      if [ ${#table} -ge $table_size ] ; then
+        table_size=$((${#table}+1))
+      fi
+      if [ ${#keys_cols} -ge $keys_size ] ; then
+        keys_size=$((${#keys_cols}+1))
+      fi
+      if [ ${#iname} -ge $index_size ] ; then
+        index_size=$((${#iname}+1))
+      fi
+
+      let counter++
+
+    done
+    unset IFS
+
+    out_tabs[0]=$table_size
+    out_tabs[1]=12
+    out_tabs[2]=$index_size
+    out_tabs[3]=$keys_size
+    out_tabs[4]=20
+
+    out_handler_print_arr
+
+  fi
+
+  out_handler_clean
+
+  return 0
+
+}
+#***
+
+#****f* mariadb/_mariadb_create
+# FUNCTION
+#   Internal function that manage create process.
+# SOURCE
+_mariadb_create () {
+
+  local fk=""
+  local f=""
+  local ans=0
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_drop args: $@)\n"
+
+  # Create single foreign key
+
+  if [ $MARIADB_CREATE_FKEY_ACTION -eq 1 ] ; then
+
+    commons_mariadb_create_fkey_file "$MARIADB_CREATE_FKEY" \
+      "$MARIADB_CREATE_ON_TABLE" "$MARIADB_CREATE_ON_COLUMNS" \
+      "$MARIADB_CREATE_REF_TABLE" "$MARIADB_CREATE_REF_COLUMNS"
+
+    out_handler_print \
+      "File for foreign key $MARIADB_CREATE_FKEY is been created. You can compile it."
+
+  elif [ $MARIADB_CREATE_INDEX_ACTION -eq 1 ] ; then
+
+    commons_mariadb_create_index_file "$MARIADB_CREATE_INDEX" \
+      "$MARIADB_CREATE_ON_TABLE" "$MARIADB_CREATE_ON_COLUMNS" \
+      "$MARIADB_CREATE_ITYPE"
+
+    out_handler_print \
+      "File for index $MARIADB_CREATE_INDEX is been created. You can compile it."
+
+  fi
+
+  return $ans
+}
+#***
+
+
+#****f* mariadb/_mariadb_initenv_args
+# FUNCTION
+#   Internal function for parse command line arguments related to
+#   initenv command.
+# DESCRIPTION
+#   * --to-current-dir     Initialize current directory.
+#   * --to-dir target      Initialize target directory.
+#   * --help|-h            Show help message.
+# SOURCE
+_mariadb_initenv_args () {
+
+  local short_options="h"
+  local long_options="to-dir: help to-current-dir"
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_initenv_args [$#]: $@)\n"
+
+  if [ $# -eq 0 ] ; then
+    _mariadb_initenv_help
+    return 1
+  fi
+
+  #set `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || \
+  #  error_handled "Invalid parameters"
+  $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || \
+    error_handled "Invalid parameters"
+
+  MARIADB_INIT_CURRDIR=0
+  MARIADB_INIT_DIR=""
+  MARIADB_INIT_TARGETDIR=0
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_initenv_args [$#]: $@)\n"
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      --to-current-dir)
+        MARIADB_INIT_CURRDIR=1
+        ;;
+      --to-dir)
+        MARIADB_INIT_TARGETDIR=1
+        MARIADB_INIT_DIR="$2"
+        shift
+        ;;
+      --enable-profiles)
+        MARIADB_INIT_PROFILES=1
+        ;;
+      -h|--help)
+        _mariadb_initenv_help
+        return 1
+        ;;
+      --)
+        error_generate "Invalid parameter."
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+    esac
+    shift
+
+  done
+
+  if [[ $MARIADB_INIT_CURRDIR -eq 1 && $MARIADB_INIT_TARGETDIR -eq 1 ]] ; then
+    out_handler_print "Use only --to-dir or --to-current-dir option."
+    return 1
+  fi
+
+  if [[ $MARIADB_INIT_TARGETDIR -eq 1 ]] ; then
+    if [ ! -d $MARIADB_INIT_DIR ] ; then
+      out_handler_print "Invalid directory $DBM_INIT_DIR."
+      return 1
+    fi
+  else
+
+    # Set MARIADB_INIT_DIR to .
+    MARIADB_INIT_DIR=.
+  fi
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_initenv_help
+# FUNCTION
+#   Help of the mariadb initenv command.
+# SOURCE
+_mariadb_initenv_help () {
+
+  echo -en "[--to-current-dir]      Initialize current directory [.].\n"
+  echo -en "[--to-dir target]       Initialize target directory.\n"
+  echo -en "[--help|-h]             Show help message.\n"
+  echo -en "\n"
+
+  return 0
+}
+#***
+
+#****f* mariadb/_mariadb_show_events
+# FUNCTION
+#   Internal function that print to screen all available events/schedulers.
+# SOURCE
+_mariadb_show_events () {
+
+  local n_events=0
+
+  local ename=""
+  local def=""
+  local tzone=""
+  local etype=""
+  local estatus=""
+  local ecreated=""
+  local elast_executed=""
+  local counter=1
+  local ename_size=20
+  local def_size=20
+
+  commons_mariadb_count_events
+  n_events=$?
+
+  if [ $n_events -eq 0 ] ; then
+
+    out_handler_print "No events/schedulers available."
+
+  else
+
+    commons_mariadb_get_events_list "view" || error_handled "Error on get events name list."
+
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+    out_ttitle="EVENTS"
+
+    out_headers[0]="EVENT_NAME"
+    out_headers[1]="DEFINER"
+    out_headers[2]="TIME_ZONE"
+    out_headers[3]="EVENT_TYPE"
+    out_headers[4]="STATUS"
+    out_headers[5]="CREATED"
+    out_headers[6]="LAST_EXECUTED"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;31m"
+    out_el_pre[2]="\e[1;32m"
+    out_el_pre[3]="\e[1;34m"
+    out_el_pre[4]="\e[1;35m"
+    out_el_pre[5]="\e[1;36m"
+    out_el_pre[6]="\e[1;37m"
+
+    out_el_post[0]="\e[m"
+
+    IFS=$'\n'
+    for row in $_mariadb_ans ; do
+
+      ename=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      def=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+      tzone=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+      etype=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+      estatus=`echo $row | awk '{split($0,a,"|"); print a[5]}'`
+      ecreated=`echo $row | awk '{split($0,a,"|"); print a[6]}'`
+      elast_executed=`echo $row | awk '{split($0,a,"|"); print a[7]}'`
+
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${ename}\""
+      eval "row${counter}[1]=\"${def}\""
+      eval "row${counter}[2]=\"${tzone}\""
+      eval "row${counter}[3]=\"${etype}\""
+      eval "row${counter}[4]=\"${estatus}\""
+      eval "row${counter}[5]=\"${ecreated}\""
+      eval "row${counter}[6]=\"${elast_executed}\""
+
+      # Check if needed enlarge size of first column
+      if [ ${#ename} -ge $ename_size ] ; then
+        ename_size=$((${#ename_size}+1))
+      fi
+      if [ ${#def} -ge $def_size ] ; then
+        def_size=$((${#def}+1))
+      fi
+
+      let counter++
+
+    done
+    unset IFS
+
+    out_tabs[0]=$ename_size
+    out_tabs[1]=$def_size
+    out_tabs[2]=14
+    out_tabs[3]=12
+    out_tabs[4]=13
+    out_tabs[5]=24
+    out_tabs[6]=24
+
+    out_handler_print_arr
+
+  fi
+
+  out_handler_clean
+
+  return 0
+
+}
+#***
+
+
+#****f* mariadb/_mariadb_show_event
+# FUNCTION
+#   Internal function that print all data about a event/scheduler.
+# SOURCE
+_mariadb_show_event () {
+
+  local n_events=0
+  local ename="$1"
+  local is_present=1
+  local def=""
+  local tzone=""
+  local etype=""
+  local estatus=""
+  local ecreated=""
+  local elast_executed=""
+  local counter=1
+  local ename_size=20
+  local def_size=20
+  local row=""
+
+  commons_mariadb_exist_event "${ename}"
+  is_present=$?
+
+  if [ $is_present -eq 0 ] ; then
+
+    commons_mariadb_get_events_list "all" "${ename}" || \
+      error_handled "Error on get data of event ${ename}."
+
+    row="$_mariadb_ans"
+
+    out_vertical=1
+    out_prepost_mode="any"
+    out_htabs_mode="htabs"
+    out_ttitle="EVENT: ${ename}"
+    out_hsep=1
+
+    out_headers[0]="DEFINER"
+    out_headers[1]="TIME_ZONE"
+    out_headers[2]="EVENT_TYPE"
+    out_headers[3]="EXECUTE_AT"
+    out_headers[4]="INTERVAL_FIELD"
+    out_headers[5]="INTERVAL_VALUE"
+    out_headers[6]="STARTS"
+    out_headers[7]="ENDS"
+    out_headers[8]="STATUS"
+    out_headers[9]="ON_COMPLETION"
+    out_headers[10]="CREATED"
+    out_headers[11]="LAST_ALTERED"
+    out_headers[12]="LAST_EXECUTED"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;31m"
+    out_el_pre[2]="\e[1;32m"
+    out_el_pre[3]="\e[1;34m"
+    out_el_pre[4]="\e[1;35m"
+    out_el_pre[5]="\e[1;36m"
+    out_el_pre[6]="\e[1;37m"
+    out_el_pre[7]="\e[1;33m"
+    out_el_pre[8]="\e[1;31m"
+    out_el_pre[9]="\e[1;32m"
+    out_el_pre[10]="\e[1;34m"
+    out_el_pre[11]="\e[1;35m"
+    out_el_pre[12]="\e[1;36m"
+
+    out_el_post[0]="\e[m"
+
+    declare -a columns
+
+    columns[0]=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+    columns[1]=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+    columns[2]=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+    columns[3]=`echo $row | awk '{split($0,a,"|"); print a[5]}'`
+    columns[4]=`echo $row | awk '{split($0,a,"|"); print a[7]}'`
+    columns[5]=`echo $row | awk '{split($0,a,"|"); print a[6]}'`
+    columns[6]=`echo $row | awk '{split($0,a,"|"); print a[8]}'`
+    columns[7]=`echo $row | awk '{split($0,a,"|"); print a[9]}'`
+    columns[8]=`echo $row | awk '{split($0,a,"|"); print a[10]}'`
+    columns[9]=`echo $row | awk '{split($0,a,"|"); print a[11]}'`
+    columns[10]=`echo $row | awk '{split($0,a,"|"); print a[12]}'`
+    columns[11]=`echo $row | awk '{split($0,a,"|"); print a[13]}'`
+    columns[12]=`echo $row | awk '{split($0,a,"|"); print a[14]}'`
+
+    out_rows[0]="columns"
+
+    out_tabs[0]=40
+    out_htabs[0]=40
+
+    out_handler_print_arr
+
+  fi
+
+  out_handler_clean
+
+  return 0
+
+}
+#***
+
+
+#****f* mariadb/_mariadb_show_global_vars
+# FUNCTION
+#   Internal function that print all global variable of the instance.
+# SOURCE
+_mariadb_show_global_vars () {
+
+  local filter="$1"
+  local vname=""
+  local vvalue=""
+  local counter=1
+  local name_size=20
+
+  commons_mariadb_show_gvars "${filter}" ||
+    error_handled "Error on retrieve global variables."
+
+  out_hsep=1
+  out_prepost_mode="any"
+  out_htabs_mode="tabs"
+  out_ttitle="GLOBAL VARIABLES"
+
+  out_headers[0]="VARIABLE_NAME"
+  out_headers[1]="VARIABLE_VALUE"
+
+  out_el_pre[0]="\e[1;33m"
+  out_el_pre[1]="\e[1;37m"
+
+  out_el_post[0]="\e[m"
+
+  IFS=$'\n'
+  for row in $_mariadb_ans ; do
+
+    vname=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+    vvalue=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+
+    out_rows[$counter]="row"${counter}
+
+    eval "row${counter}[0]=\"${vname}\""
+    eval "row${counter}[1]=\"${vvalue}\""
+
+    if [ ${#vname} -ge $name_size ] ; then
+      name_size=$((${#vname}+1))
+    fi
+
+    let counter++
+
+  done
+  unset IFS
+
+  out_tabs[0]=$name_size
+
+  out_handler_print_arr
+
+  out_handler_clean
+
+  return 0
+
+}
+#***
+
+# vim: syn=sh filetype=sh ts=2 sw=2

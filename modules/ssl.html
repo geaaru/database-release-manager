@@ -1,0 +1,1561 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title># Internal functions</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <p>#!/bin/bash
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+# Author(s): Geaaru, <a class="reference external" href="mailto:geaaru&#37;&#52;&#48;gmail&#46;com">geaaru<span>&#64;</span>gmail<span>&#46;</span>com</a>
+# $Id: 295240483fb00cadde90e18a748e67941f02432d $
+# License: GPL 2.0
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p>name=&#8221;ssl&#8221;
+ssl_authors=&#8221;Geaaru&#8221;
+ssl_creation_date=&#8221;Mar 29, 2015&#8221;
+ssl_version=&#8221;0.1.0&#8221;</p>
+<p>#****f* ssl/ssl_version
+# FUNCTION
+#   Show version of ssl module
+# SOURCE
+ssl_version () {</p>
+<blockquote>
+<div><p>echo -en &#8220;Version: ${ssl_version}n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/ssl_long_help
+# FUNCTION
+#  Show long help message.
+# SOURCE
+ssl_long_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [ssl]:n&#8221;
+echo -en &#8220;Author(s): ${ssl_authors}n&#8221;
+echo -en &#8220;Created: ${ssl_creation_date}n&#8221;
+echo -en &#8220;Version: ${ssl_version}n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;tlong_help               Show long help informationsn&#8221;
+echo -en &#8220;tshow_help               Show command list.n&#8221;
+echo -en &#8220;tversion                 Show module version.n&#8221;
+echo -en &#8220;tcreate                  Add a new entry to tunnel master data insiden&#8221;
+echo -en &#8220;t                        dbrm database.n&#8221;
+echo -en &#8220;tenable                  Active an existing tunnel.n&#8221;
+echo -en &#8220;tdisable                 Disable an active tunnel.n&#8221;
+echo -en &#8220;tlist                    Show list of tunnels.n&#8221;
+echo -en &#8220;tinit                    Initialize SSL extension.n&#8221;
+echo -en &#8220;tdelete                  Delete an entry from tunnel list.n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;===========================================================================n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/ssl_show_help
+# FUNCTION
+#  Show help message
+# SOURCE
+ssl_show_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [ssl]:n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;tlong_help               Show long help informationsn&#8221;
+echo -en &#8220;tshow_help               Show command list.n&#8221;
+echo -en &#8220;tversion                 Show module version.n&#8221;
+echo -en &#8220;tcreate                  Add a new entry to tunnel master data insiden&#8221;
+echo -en &#8220;t                        dbrm database.n&#8221;
+echo -en &#8220;tenable                  Active an existing tunnel.n&#8221;
+echo -en &#8220;tdisable                 Disable an active tunnel.n&#8221;
+echo -en &#8220;tlist                    Show list of tunnels.n&#8221;
+echo -en &#8220;tinit                    Initialize SSL extension.n&#8221;
+echo -en &#8220;tdeinit                  Remove SSL extension table.n&#8221;
+echo -en &#8220;tdelete                  Delete an entry from tunnel list.n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;===========================================================================n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/ssl_create
+# FUNCTION
+#  Create command function.
+# SOURCE
+ssl_create () {</p>
+<blockquote>
+<div><p># Shift first two input param
+shift 2</p>
+<p>_ssl_check_ext || error_handled &#8220;&#8221;</p>
+<p>_ssl_create_args &#8220;$&#64;&#8221; || return 1</p>
+<p>_ssl_add_tunnel || error_handled &#8220;&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/ssl_init
+# FUNCTION
+#  Initialize current DBRM database
+#  with SSL extension table.
+# SOURCE
+ssl_init () {</p>
+<blockquote>
+<div><p>_ssl_check_ext &#8220;0&#8221;</p>
+<dl class="docutils">
+<dt>if [ $? -eq 1 ] ; then</dt>
+<dd><dl class="first last docutils">
+<dt>_sqlite_compile -c &#8220;$DRM_DB&#8221; -f ${MODULES_DIR}/extensions-scripts/ssl_sqlite_schema.sql || </dt>
+<dd>error_generate &#8220;Error on initialize ssl extension.&#8221;</dd>
+</dl>
+</dd>
+<dt>else</dt>
+<dd>out_handler_print &#8220;Ssl extensions already installed. Nothing to do.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/ssl_deinit
+# FUNCTION
+#  Remove SSL extension from DBRM database.
+# SOURCE
+ssl_deinit () {</p>
+<blockquote>
+<div><p>local query=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>_ssl_check_ext &#8220;0&#8221; || </dt>
+<dd>error_handled &#8220;SSL Extension is not installed. Nothing to do.&#8221;</dd>
+<dt>query=&#8221;</dt>
+<dd>DROP TABLE SslTunnels</dd>
+</dl>
+<p>&#8220;</p>
+<dl class="docutils">
+<dt>confirmation_question </dt>
+<dd>&#8220;Are you sure to remove SSL Extension? All yours data will be lost. [yes/no]: &#8220;</dd>
+</dl>
+<p>if [ $? -eq 0 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>_sqlite_query -c &#8220;$DRM_DB&#8221; -q &#8220;$query&#8221; || error_handled </dt>
+<dd>&#8220;Error on remove SSL Extension table.&#8221;</dd>
+</dl>
+</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/ssl_delete
+# FUNCTION
+#  Delete a tunnel.
+# SOURCE
+ssl_delete () {</p>
+<blockquote>
+<div><p># Shift first two input param
+shift 2</p>
+<p>_ssl_check_ext || error_handled &#8220;&#8221;</p>
+<p>_ssl_delete_args &#8220;$&#64;&#8221; || return 1</p>
+<p>_ssl_delete || error_handled &#8220;&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/ssl_list
+# FUNCTION
+#  Show list of tunnels.
+# SOURCE
+ssl_list () {</p>
+<blockquote>
+<div><p>local id_tunnel=&#8221;&#8221;
+local name=&#8221;&#8221;
+local remote_host=&#8221;&#8221;
+local remote_port=&#8221;&#8221;
+local tunnel_host=&#8221;&#8221;
+local tunnel_hport=&#8221;&#8221;
+local tunnel_user=&#8221;&#8221;
+local reverse=&#8221;&#8221;
+local local_port=&#8221;&#8221;
+local local_host=&#8221;&#8221;
+local pid=&#8221;&#8221;
+local n_tunnels=0
+local counter=1
+local name_size=10
+local rhost_size=15
+local thost_size=15
+local tuser_size=10</p>
+<p># Shift first two input param
+shift 2</p>
+<p>_ssl_check_ext || error_handled &#8220;&#8221;</p>
+<p>_ssl_count_tunnels
+n_tunnels=$?</p>
+<dl class="docutils">
+<dt>if [ $n_tunnels -eq 0 ] ; then</dt>
+<dd>out_handler_print &#8220;No tunnels available.&#8221;</dd>
+</dl>
+<p>else</p>
+<blockquote>
+<div><p># Retrieve data about active tunnels.
+_ssl_read_tuns_file &#8220;$DBRM_SSL_ACTIVE_TUN_FILE&#8221;</p>
+<p>_ssl_get_list || error_handled &#8220;&#8221;</p>
+<p>out_ttitle=&#8221;SSL Tunnels&#8221;
+out_hsep=1
+out_prepost_mode=&#8221;any&#8221;
+out_htabs_mode=&#8221;tabs&#8221;</p>
+<p>out_headers[0]=&#8221;ID&#8221;
+out_headers[1]=&#8221;NAME&#8221;
+out_headers[2]=&#8221;REMOTE HOST&#8221;
+out_headers[3]=&#8221;R PORT&#8221;
+out_headers[4]=&#8221;TUNNEL HOST&#8221;
+out_headers[5]=&#8221;T HPORT&#8221;
+out_headers[6]=&#8221;T USER&#8221;
+out_headers[7]=&#8221;REVERSE&#8221;
+out_headers[8]=&#8221;LOCAL PORT&#8221;
+out_headers[9]=&#8221;LOCAL HOST&#8221;
+out_headers[10]=&#8221;PID&#8221;</p>
+<p>out_el_pre[0]=&#8221;e[1;33m&#8221;
+out_el_pre[1]=&#8221;e[1;32m&#8221;
+out_el_pre[2]=&#8221;e[1;31m&#8221;
+out_el_pre[3]=&#8221;e[1;34m&#8221;
+out_el_pre[4]=&#8221;e[1;30m&#8221;
+out_el_pre[5]=&#8221;e[1;35m&#8221;
+out_el_pre[6]=&#8221;e[1;29m&#8221;
+out_el_pre[7]=&#8221;e[1;36m&#8221;
+out_el_pre[8]=&#8221;e[1;37m&#8221;
+out_el_pre[9]=&#8221;e[1;31m&#8221;
+out_el_pre[10]=&#8221;e[1;33m&#8221;</p>
+<p>out_el_post[0]=&#8221;e[m&#8221;</p>
+<p>IFS=$&#8217;n&#8217;
+for row in $_sqlite_ans ; do</p>
+<blockquote>
+<div><p>id_tunnel=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[1]}&#8217;`
+name=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[2]}&#8217;`
+remote_host=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[3]}&#8217;`
+remote_port=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[4]}&#8217;`
+tunnel_host=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[5]}&#8217;`
+tunnel_hport=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[6]}&#8217;`
+tunnel_user=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[7]}&#8217;`
+reverse=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[8]}&#8217;`
+local_port=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[9]}&#8217;`
+local_host=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[10]}&#8217;`
+pid=&#8221;-&#8220;</p>
+<p>out_rows[$counter]=&#8221;row&#8221;${counter}</p>
+<p># Check if tunnel is active
+if [ -n &#8220;${ssl_active_id_tuns[${id_tunnel}]}&#8221; ] ; then</p>
+<blockquote>
+<div><p>if [[ -n &#8220;${ssl_active_ports[${id_tunnel}]}&#8221; &amp;&amp; &#8220;${ssl_active_ports[${id_tunnel}]}&#8221; != &#8220;${local_port}&#8221; ]] ; then</p>
+<blockquote>
+<div>local_port=&#8221;${local_port} (${ssl_active_ports[${id_tunnel}]})*&#8221;</div></blockquote>
+<p>fi</p>
+<p>if [ -n &#8220;${ssl_active_pids[${id_tunnel}]}&#8221; ] ; then</p>
+<blockquote>
+<div><p>pid=&#8221;${ssl_active_pids[${id_tunnel}]}&#8221;</p>
+<p># Check if process is already running</p>
+<p>_ssl_check_ssl_pid &#8220;$pid&#8221;</p>
+<p>if [ $? -ne 1 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;Id tunnel ${id_tunnel} is not alive. I reset database.n&#8221;</dd>
+<dt>_ssl_del_tun2file &#8220;$DBRM_SSL_ACTIVE_TUN_FILE&#8221; &#8220;${id_tunnel}&#8221; || </dt>
+<dd>error_generate &#8220;Error on remove tunnel ${id_tunnel} from file ${DBRM_SSL_ACTIVE_TUN_FILE}.&#8221;</dd>
+</dl>
+<p>pid=&#8221;-&#8220;</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>id_tunnel=&#8221;${id_tunnel}*&#8221;</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p>eval &#8220;row${counter}[0]=&#8221;${id_tunnel}&#8221;&#8221;
+eval &#8220;row${counter}[1]=&#8221;${name}&#8221;&#8221;
+eval &#8220;row${counter}[2]=&#8221;${remote_host}&#8221;&#8221;
+eval &#8220;row${counter}[3]=&#8221;${remote_port}&#8221;&#8221;
+eval &#8220;row${counter}[4]=&#8221;${tunnel_host}&#8221;&#8221;
+eval &#8220;row${counter}[5]=&#8221;${tunnel_hport}&#8221;&#8221;
+eval &#8220;row${counter}[6]=&#8221;${tunnel_user}&#8221;&#8221;
+if [ $reverse -eq 1 ] ; then</p>
+<blockquote>
+<div>eval &#8220;row${counter}[7]=&#8221;Y&#8221;&#8220;</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>eval &#8220;row${counter}[7]=&#8221;N&#8221;&#8220;</dd>
+</dl>
+<p>fi
+eval &#8220;row${counter}[8]=&#8221;${local_port}&#8221;&#8221;
+eval &#8220;row${counter}[9]=&#8221;${local_host}&#8221;&#8221;
+eval &#8220;row${counter}[10]=&#8221;${pid}&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ ${#name} -ge $name_size ] ; then</dt>
+<dd>name_size=$((${#name}+1))</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ ${#remote_host} -ge $rhost_size ] ; then</dt>
+<dd>rhost_size=$((${#remote_host}+1))</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ ${#tunnel_host} -ge $thost_size ] ; then</dt>
+<dd>thost_size=$((${#tunnel_host}+1))</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ ${#tunnel_user} -ge $tuser_size ] ; then</dt>
+<dd>tuser_size=$((${#tunnel_user}+1))</dd>
+</dl>
+<p>fi</p>
+<p>let counter++</p>
+</div></blockquote>
+<p>done
+unset IFS</p>
+<p>out_tabs[0]=6
+out_tabs[1]=$name_size
+out_tabs[2]=$rhost_size
+out_tabs[3]=8
+out_tabs[4]=$thost_size
+out_tabs[5]=8
+out_tabs[6]=$tuser_size
+out_tabs[7]=8
+out_tabs[8]=12
+out_tabs[9]=11
+out_tabs[10]=7</p>
+<p>out_handler_print_arr</p>
+</div></blockquote>
+<p>fi</p>
+<p>out_handler_clean</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/ssl_enable
+# FUNCTION
+#   Activate a tunnel
+# RETURN VALUES
+#   1 on error
+#   0 on success
+# SOURCE
+ssl_enable () {</p>
+<blockquote>
+<div><p>local id_tunnel=&#8221;&#8221;
+local id_tunnel=&#8221;&#8221;
+local name=&#8221;&#8221;
+local remote_host=&#8221;&#8221;
+local remote_port=&#8221;&#8221;
+local tunnel_host=&#8221;&#8221;
+local tunnel_hport=&#8221;&#8221;
+local tunnel_user=&#8221;&#8221;
+local reverse=&#8221;&#8221;
+local local_port=&#8221;&#8221;
+local local_host=&#8221;&#8221;
+local port_busy=1
+local max_increment_test=10
+local last_port=&#8221;&#8221;
+local first_port=&#8221;&#8221;
+local ssl_url=&#8221;&#8220;</p>
+<p># Shift first two input param
+shift 2</p>
+<p>_ssl_check_ext || error_handled &#8220;&#8221;</p>
+<p>_ssl_enable_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<dl class="docutils">
+<dt>_ssl_exists_tun &#8220;$DBRM_SSL_ID_TUNNEL&#8221; &#8220;$DBRM_SSL_TUN_NAME&#8221; || </dt>
+<dd>error_generate &#8220;Tunnel ${DBRM_SSL_ID_TUNNEL}${DBRM_SSL_TUN_NAME} not found.&#8221;</dd>
+</dl>
+<p># Retrieva data about tunnel.
+_ssl_get_list &#8220;$DBRM_SSL_ID_TUNNEL&#8221; &#8220;$DBRM_SSL_TUN_NAME&#8221;</p>
+<p>id_tunnel=`echo $_sqlite_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[1]}&#8217;`
+name=`echo $_sqlite_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[2]}&#8217;`
+remote_host=`echo $_sqlite_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[3]}&#8217;`
+remote_port=`echo $_sqlite_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[4]}&#8217;`
+tunnel_host=`echo $_sqlite_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[5]}&#8217;`
+tunnel_hport=`echo $_sqlite_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[6]}&#8217;`
+tunnel_user=`echo $_sqlite_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[7]}&#8217;`
+reverse=`echo $_sqlite_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[8]}&#8217;`
+local_port=`echo $_sqlite_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[9]}&#8217;`
+local_host=`echo $_sqlite_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[10]}&#8217;`</p>
+<p># Check if tunnel is already active
+_ssl_read_tuns_file &#8220;$DBRM_SSL_ACTIVE_TUN_FILE&#8221;</p>
+<dl class="docutils">
+<dt>[ -n &#8220;${ssl_active_id_tuns[${id_tunnel}]}&#8221; ] &amp;&amp; </dt>
+<dd>error_generate &#8220;Tunnel ${id_tunnel} is already active.nIf doesn&#8217;t work try to disable and enable again tunnel.&#8221;</dd>
+</dl>
+<p># Check if local port is already busy (only for normal tunnel)
+if [ $reverse -eq 0 ] ; then</p>
+<blockquote>
+<div><p>_ssl_check_port &#8220;${local_port}&#8221;
+port_busy=$?</p>
+<dl class="docutils">
+<dt>if [[ $port_busy -eq 1 &amp;&amp; $DBRM_SSL_TUN_AUTOINCREMENT -eq 0 ]] ; then</dt>
+<dd><dl class="first last docutils">
+<dt>error_generate </dt>
+<dd>&#8220;I can&#8217;t enable tunnel ${id_tunnel}: local port ${local_port} is busy.nEnable &#8211;auto-increment option for use automatically a different port.&#8221;</dd>
+</dl>
+</dd>
+</dl>
+<p>fi</p>
+<p>if [ $port_busy -eq 1 ] ; then</p>
+<blockquote>
+<div><p>first_port=$local_port
+last_port=$((local_port+max_increment_test))
+while [[ $port_busy -eq 1 &amp;&amp; $max_increment_test -gt 0 ]] ; do</p>
+<blockquote>
+<div><p>let local_port++
+let max_increment_test&#8211;</p>
+<p>_ssl_check_port &#8220;${local_port}&#8221;
+port_busy=$?</p>
+</div></blockquote>
+<p>done</p>
+<dl class="docutils">
+<dt>[ $port_busy -eq 1 ] &amp;&amp; error_generate </dt>
+<dd>&#8220;I can&#8217;t enable tunnel ${id_tunnel}: Ports ${first_port}-${last_port} are busy.nTry to use a different port.&#8221;</dd>
+</dl>
+<p>out_handler_print &#8220;For tunnel ${id_tunnel} I use local port ${local_port}. Port ${first_port} is busy.&#8221;</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p># Create ssl_url
+if [ $reverse -eq 1 ] ; then</p>
+<blockquote>
+<div><p># POST: Reverse Tunnel</p>
+<p>ssl_url=&#8221;${remote_host}:${remote_port}:${local_host}:${local_port} -p ${tunnel_hport}&#8221;
+if [ -n &#8220;${tunnel_user}&#8221; ] ; then</p>
+<blockquote>
+<div>ssl_url=&#8221;${ssl_url} -l ${tunnel_user}&#8221;</div></blockquote>
+<p>fi
+ssl_url=&#8221;${ssl_url} ${tunnel_host}&#8221;</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd><p class="first"># POST: Normal tunnel</p>
+<p>ssl_url=&#8221;${local_port}:${remote_host}:${remote_port} -p ${tunnel_hport}&#8221;
+if [ -n &#8220;${tunnel_user}&#8221; ] ; then</p>
+<blockquote>
+<div>ssl_url=&#8221;${ssl_url} -l ${tunnel_user}&#8221;</div></blockquote>
+<p class="last">fi
+ssl_url=&#8221;${ssl_url} ${tunnel_host}&#8221;</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;(ssl_enable): Use ssl_url = &#8216;${ssl_url}&#8217;n&#8221;</dd>
+<dt>_ssl_start_tun &#8220;${id_tunnel}&#8221; &#8220;${ssl_url}&#8221; &#8220;${reverse}&#8221; ||</dt>
+<dd>error_generate &#8220;Error on start tunnel ${id_tunnel}.&#8221;</dd>
+<dt>_ssl_add_tun2file &#8220;$DBRM_SSL_ACTIVE_TUN_FILE&#8221; &#8220;${id_tunnel}&#8221; &#8220;${local_port}&#8221; &#8220;${ssh_pid}&#8221; || </dt>
+<dd>error_generate &#8220;Error on save active tunnel to file $DBRM_SSL_ACTIVE_TUN_FILE.&#8221;</dd>
+</dl>
+<p>out_handler_print &#8220;Tunnel ${id_tunnel} is now active with pid $ssh_pid.&#8221;</p>
+<p>unset ssh_pid</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/ssl_disable
+# FUNCTION
+#   Stop an active tunnel.
+# RETURN VALUES
+#   1 on error
+#   0 on success
+# SOURCE
+ssl_disable () {</p>
+<blockquote>
+<div><p>local pid=&#8221;&#8221;
+local id_tunnel=&#8221;&#8221;
+local name=&#8221;&#8220;</p>
+<p># Shift first two input param
+shift 2</p>
+<p>_ssl_check_ext || error_handled &#8220;&#8221;</p>
+<p>_ssl_disable_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<dl class="docutils">
+<dt>_ssl_exists_tun &#8220;$DBRM_SSL_ID_TUNNEL&#8221; &#8220;$DBRM_SSL_TUN_NAME&#8221; || </dt>
+<dd>error_generate &#8220;Tunnel ${DBRM_SSL_ID_TUNNEL}${DBRM_SSL_TUN_NAME} not found.&#8221;</dd>
+</dl>
+<p># Retrieva data about tunnel.
+_ssl_get_list &#8220;$DBRM_SSL_ID_TUNNEL&#8221; &#8220;$DBRM_SSL_TUN_NAME&#8221;</p>
+<p>id_tunnel=`echo $_sqlite_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[1]}&#8217;`
+name=`echo $_sqlite_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[2]}&#8217;`</p>
+<p># Check if tunnel is already active
+_ssl_read_tuns_file &#8220;$DBRM_SSL_ACTIVE_TUN_FILE&#8221;</p>
+<dl class="docutils">
+<dt>[ -z &#8220;${ssl_active_id_tuns[${id_tunnel}]}&#8221; ] &amp;&amp; </dt>
+<dd>error_generate &#8220;Tunnel ${id_tunnel} is not active.&#8221;</dd>
+</dl>
+<p>pid=${ssl_active_pids[${id_tunnel}]}</p>
+<p>_ssl_check_ssl_pid &#8220;$pid&#8221;</p>
+<p>if [ $? -eq 1 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;(ssl_disable): Send TERM signal to process $pid.n&#8221;</dd>
+</dl>
+<p>kill -s TERM $pid
+[ $? -eq 1 ] &amp;&amp; error_generate </p>
+<blockquote>
+<div>&#8220;Error on kill tunnel ${DBRM_SSL_ID_TUNNEL}${DBRM_SSL_TUN_NAME} with pid ${pid}.&#8221;</div></blockquote>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>out_handler_print &#8220;SSH process $pid is not available. I clean session file.&#8221;</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>_ssl_del_tun2file &#8220;$DBRM_SSL_ACTIVE_TUN_FILE&#8221; &#8220;${id_tunnel}&#8221; || </dt>
+<dd>error_generate &#8220;Error on remove tunnel ${id_tunnel} from file ${DBRM_SSL_ACTIVE_TUN_FILE}.&#8221;</dd>
+</dl>
+<p>out_handler_print &#8220;Tunnel ${id_tunnel} is now disable.&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<div class="section" id="internal-functions">
+<h1># Internal functions<a class="headerlink" href="#internal-functions" title="Permalink to this headline">¶</a></h1>
+<p>#****f* ssl/_ssl_init
+# FUNCTION
+#  Internal function called on initialization of the ssl module.
+# SOURCE
+_ssl_init () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ -z &#8220;$DBRM_SSL_ACTIVE_TUN_FILE&#8221; ] ; then</dt>
+<dd># Set default value for DBRM_SSL_ACTIVE_TUN_FILE
+DBRM_SSL_ACTIVE_TUN_FILE=$HOME/.local/share/dbrm/dbrm_ssl_tuns</dd>
+</dl>
+<p>fi</p>
+<p>local dir=$(dirname $DBRM_SSL_ACTIVE_TUN_FILE)</p>
+<dl class="docutils">
+<dt>if [ ! -d &#8220;${dir}&#8221; ] ; then</dt>
+<dd><dl class="first last docutils">
+<dt>mkdir -p ${dir} || error_generate </dt>
+<dd>&#8220;(_ssl_init): Error on create directory ${dir} for SSL active tunnels file.&#8221;</dd>
+</dl>
+</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_check_ext
+# FUNCTION
+#   Check presence of ssl extensions table.
+# RETURN VALUES
+#  1  if extension is not present.
+#  0  if extension is present
+# SOURCE
+_ssl_check_ext () {</p>
+<blockquote>
+<div><p>local result=1
+local ssl_gen_err=${1:-1}
+local exists_tb=0</p>
+<p># Check if exists table SslTunnels
+_sqlite_exists_table -c &#8220;$DRM_DB&#8221; -t &#8220;SslTunnels&#8221;
+exists_tb=$?</p>
+<p>if [ $exists_tb -eq 0 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [[ $ssl_gen_err -eq 1 || $ssl_gen_err == &#8220;1&#8221; ]] ; then</dt>
+<dd><dl class="first last docutils">
+<dt>error_generate </dt>
+<dd>&#8220;Ssl extensions is not installed on current DBRM db.nExecute ssl init command and try again.&#8221;</dd>
+</dl>
+</dd>
+</dl>
+<p>fi</p>
+<p>return 1</p>
+</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_create_args
+# FUNCTION
+#   Parse command line arguments of create method.
+# SOURCE
+_ssl_create_args () {</p>
+<blockquote>
+<div><p>[[ $DEBUG ]] &amp;&amp; echo -en &#8220;(_ssl_create_args args: $&#64;)n&#8221;</p>
+<p>local short_options=&#8221;h&#8221;
+local long_options=&#8221;on-local-port: remote-host: remote-port: tunnel-hport: tunnel-host:&#8221;
+long_options=&#8221;$long_options tunnel-user: name: help reverse on-local-host:&#8221;</p>
+<dl class="docutils">
+<dt>$(set &#8211; $(getopt -u -q -a -o &#8220;$short_options&#8221; -l &#8220;$long_options&#8221; &#8211; &#8220;$&#64;&#8221;)) || </dt>
+<dd>error_handled &#8220;Invalid parameters&#8221;</dd>
+<dt>if [ $# -lt 2 ] ; then</dt>
+<dd>_ssl_create_help
+return 1</dd>
+</dl>
+<p>fi</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_ssl_create_args: Found $# params)n&#8221;</p>
+<p>DBRM_SSL_LPORT=&#8221;&#8221;
+DBRM_SSL_REMOTE_HOST=&#8221;&#8221;
+DBRM_SSL_REMOTE_PORT=&#8221;&#8221;
+DBRM_SSL_TUN_HOST=&#8221;&#8221;
+DBRM_SSL_TUN_PORT=&#8221;&#8221;
+DBRM_SSL_TUN_USER=&#8221;&#8221;
+DBRM_SSL_TUN_NAME=&#8221;&#8221;
+DBRM_SSL_TUN_REVERSE=0
+DBRM_SSL_REVERSE=&#8221;&#8221;
+DBRM_SSL_LHOST=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>while [ $# -gt 0 ] ; do</dt>
+<dd><p class="first">case &#8220;$1&#8221; in</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>-h|&#8211;help)</dt>
+<dd>_ssl_create_help
+return 1
+;;</dd>
+<dt>&#8211;on-local-port)</dt>
+<dd>DBRM_SSL_LPORT=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;remote-host)</dt>
+<dd>DBRM_SSL_REMOTE_HOST=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;remote-port)</dt>
+<dd>DBRM_SSL_REMOTE_PORT=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;tunnel-host)</dt>
+<dd>DBRM_SSL_TUN_HOST=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;tunnel-hport)</dt>
+<dd>DBRM_SSL_TUN_PORT=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;tunnel-user)</dt>
+<dd>DBRM_SSL_TUN_USER=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;name)</dt>
+<dd>DBRM_SSL_TUN_NAME=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;on-local-host)</dt>
+<dd>DBRM_SSL_LHOST=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;reverse)</dt>
+<dd>DBRM_SSL_TUN_REVERSE=1
+;;</dd>
+<dt><a href="#id1"><span class="problematic" id="id2">*</span></a>)</dt>
+<dd>error_generate &#8220;Invalid parameter $1.&#8221;
+;;</dd>
+</dl>
+</div></blockquote>
+<p class="last">esac
+shift</p>
+</dd>
+</dl>
+<p>done</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$DBRM_SSL_TUN_NAME&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Missing &#8211;name option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$DBRM_SSL_REMOTE_HOST&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Missing &#8211;remote-host option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$DBRM_SSL_TUN_HOST&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Missing &#8211;tunnel-host option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ $DBRM_SSL_TUN_REVERSE -eq 1 &amp;&amp; -z &#8220;$DBRM_SSL_LHOST&#8221; ]] ; then</dt>
+<dd>error_generate &#8220;Missing &#8211;on-local-host option when &#8211;reverse is enable.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_create_help
+# FUNCTION
+#   Print help message of create method.
+# SOURCE
+_ssl_create_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;[&#8211;on-local-port port]  Local port where binding tcp flow versus remote hostn&#8221;
+echo -en &#8221;                        through ssl tunnel.n&#8221;
+echo -en &#8220;[&#8211;on-local-host host]  Host (local or an host reachable without tunnel)n&#8221;
+echo -en &#8221;                        that will be available in remote host with reverse tunnel.n&#8221;
+echo -en &#8220;[&#8211;remote-host host]    Host to reach through ssl tunnel.n&#8221;
+echo -en &#8220;[&#8211;remote-port port]    Port of remote host to reach through ssl tunnel or forn&#8221;
+echo -en &#8221;                        reverse tunnel, port in binding to remote host for reachn&#8221;
+echo -en &#8221;                        local host.n&#8221;
+echo -en &#8220;[&#8211;tunnel-host host]    Host to use for reach remote host.n&#8221;
+echo -en &#8220;[&#8211;tunnel-hport port]   Port of host used for tunnel. Default is 22.n&#8221;
+echo -en &#8220;[&#8211;tunnel-user user]    User to use on tunnel creation. Default is current user.n&#8221;
+echo -en &#8220;[&#8211;name name]           Name of the tunnel.n&#8221;
+echo -en &#8220;[&#8211;reverse]             Reverse tunnel.n&#8221;
+echo -en &#8220;n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_inst_tunnel
+# FUNCTION
+#   Insert tunnel information to SslTunnels table.
+#   Save on _ssl_id_tunnel variable id of the tunnel.
+# DESCRIPTION
+#   An example of reverse tunnel:
+#     ssh -R 127.0.0.1:9999:127.0.0.1:80 -p 12722 -l geaaru 127.0.0.1
+#   Where:
+#     - remote_host  = 127.0.0.1
+#     - remote_port  = 9999
+#     - tunnel_host  = 127.0.0.1
+#     - tunnel_hport = 12722
+#     - tunnel_user  = geaaru
+#     - local_port   = 80
+#     - local_host   = 127.0.0.1
+#     - reverse      = 1
+#   An example of tunnel:
+#     ssh -L 12345:remotesite.com:80 utente&#64;serversshremoto.com
+#   Where:
+#     - remote_host  = remotesite.com
+#     - remote_port  = 80
+#     - tunnel_host  = serversshremote.com
+#     - tunnel_hport = 22
+#     - tunnel_user  = utente
+#     - local_port   = 12345
+#     - local_host   = NULL
+#     - reverse      = 0
+# RETURN VALUE
+#   1 on error
+#   0 on success.
+# SOURCE
+_ssl_add_tunnel () {</p>
+<blockquote>
+<div><p>local query=&#8221;&#8221;
+local remote_port=&#8221;22&#8221;
+local tunnel_port=&#8221;22&#8221;
+local local_port=&#8221;22&#8221;
+local local_host=&#8221;NULL&#8221;
+local tunnel_user=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ $DBRM_SSL_TUN_REVERSE -eq 1 ] ; then</dt>
+<dd>local_host=&#8221;&#8217;$DBRM_SSL_LHOST&#8217;&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$DBRM_SSL_REMOTE_PORT&#8221; ] ; then</dt>
+<dd>remote_port=&#8221;${DBRM_SSL_REMOTE_PORT}&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$DBRM_SSL_TUN_PORT&#8221; ] ; then</dt>
+<dd>tunnel_port=&#8221;$DBRM_SSL_TUN_PORT&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$DBRM_SSL_TUN_USER&#8221; ] ; then</dt>
+<dd>tunnel_user=&#8221;$DBRM_SSL_TUN_USER&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$DBRM_SSL_LPORT&#8221; ] ; then</dt>
+<dd>local_port=&#8221;$DBRM_SSL_LPORT&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>query=&#8221;</dt>
+<dd><p class="first">INSERT INTO SslTunnels
+(name, remote_host, remote_port,</p>
+<blockquote>
+<div>tunnel_host, tunnel_hport, tunnel_user,
+reverse_flag, local_port, local_host)</div></blockquote>
+<dl class="last docutils">
+<dt>VALUES (</dt>
+<dd>&#8216;${DBRM_SSL_TUN_NAME}&#8217;,
+&#8216;${DBRM_SSL_REMOTE_HOST}&#8217;,
+${remote_port},
+&#8216;${DBRM_SSL_TUN_HOST}&#8217;,
+&#8216;${tunnel_port}&#8217;,
+&#8216;${tunnel_user}&#8217;,
+${DBRM_SSL_TUN_REVERSE},
+${local_port},
+${local_host})</dd>
+</dl>
+</dd>
+</dl>
+<p>&#8220;</p>
+<dl class="docutils">
+<dt>_sqlite_query -c &#8220;$DRM_DB&#8221; -q &#8220;$query&#8221; || error_handled </dt>
+<dd>&#8220;(_ssl_add_tunnel): Error on insert tunnel $DBRM_SSL_TUN_NAME.&#8221;</dd>
+</dl>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_delete
+# FUNCTION
+#   Handle create method.
+# SOURCE
+_ssl_delete () {</p>
+<blockquote>
+<div><p>local result=1
+local query=&#8221;&#8221;
+local msg=&#8221;&#8220;</p>
+<p># TODO: Check if session is active</p>
+<dl class="docutils">
+<dt>_ssl_exists_tun &#8220;${DBRM_SSL_ID_TUNNEL}&#8221; &#8220;${DBRM_SSL_TUN_NAME}&#8221; || </dt>
+<dd>error_generate &#8220;Tunnel ${DBRM_SSL_ID_TUNNEL}${DBRM_SSL_TUN_NAME} doesn&#8217;t exist.&#8221;</dd>
+<dt>if [ -n &#8220;${DBRM_SSL_ID_TUNNEL}&#8221; ] ; then</dt>
+<dd>where=&#8221;WHERE id_tunnel = ${DBRM_SSL_ID_TUNNEL}&#8221;
+msg=&#8221;with Id ${DBRM_SSL_ID_TUNNEL}&#8221;</dd>
+<dt>else</dt>
+<dd>where=&#8221;WHERE name = &#8216;${DBRM_SSL_TUN_NAME}&#8217;&#8221;
+msg=&#8221;with name ${DBRM_SSL_TUN_NAME}&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>confirmation_question &#8220;Are you sure to remove tunnel ${msg}? [yes/no]: &#8221;
+if [ $? -eq 0 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>query=&#8221;</dt>
+<dd>DELETE FROM SslTunnels
+${where}</dd>
+</dl>
+<p>&#8220;</p>
+<dl class="docutils">
+<dt>_sqlite_query -c &#8220;$DRM_DB&#8221; -q &#8220;$query&#8221; || error_handled </dt>
+<dd>&#8220;(_ssl_delete): Error on delete tunnel ${msg}.&#8221;</dd>
+</dl>
+</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_delete_args
+# FUNCTION
+#   Parse command line arguments of delete method.
+# SOURCE
+_ssl_delete_args () {</p>
+<blockquote>
+<div><p>[[ $DEBUG ]] &amp;&amp; echo -en &#8220;(_ssl_delete_args args: $&#64;)n&#8221;</p>
+<p>local short_options=&#8221;h&#8221;
+local long_options=&#8221;id-tunnel: help&#8221;</p>
+<dl class="docutils">
+<dt>$(set &#8211; $(getopt -u -q -a -o &#8220;$short_options&#8221; -l &#8220;$long_options&#8221; &#8211; &#8220;$&#64;&#8221;)) || </dt>
+<dd>error_handled &#8220;Invalid parameters&#8221;</dd>
+<dt>if [ $# -lt 2 ] ; then</dt>
+<dd>_ssl_delete_help
+return 1</dd>
+</dl>
+<p>fi</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_ssl_delete_args: Found $# params)n&#8221;</p>
+<p>DBRM_SSL_ID_TUNNEL=&#8221;&#8221;
+DBRM_SSL_TUN_NAME=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>while [ $# -gt 0 ] ; do</dt>
+<dd><p class="first">case &#8220;$1&#8221; in</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>-h|&#8211;help)</dt>
+<dd>_ssl_delete_help
+return 1
+;;</dd>
+<dt>&#8211;id-tunnel)</dt>
+<dd>DBRM_SSL_ID_TUNNEL=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;name)</dt>
+<dd>DBRM_SSL_TUN_NAME=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt><a href="#id3"><span class="problematic" id="id4">*</span></a>)</dt>
+<dd>error_generate &#8220;Invalid parameter $1.&#8221;
+;;</dd>
+</dl>
+</div></blockquote>
+<p class="last">esac
+shift</p>
+</dd>
+</dl>
+<p>done</p>
+<dl class="docutils">
+<dt>if [[ -z &#8220;$DBRM_SSL_TUN_NAME&#8221; &amp;&amp; -z &#8220;$DBRM_SSL_ID_TUNNEL&#8221; ]] ; then</dt>
+<dd>error_generate &#8220;Missing &#8211;name or &#8211;id-tunnel option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ -n &#8220;$DBRM_SSL_TUN_NAME&#8221; &amp;&amp; -n &#8220;$DBRM_SSL_ID_TUNNEL&#8221; ]] ; then</dt>
+<dd>error_generate &#8220;Use only &#8211;name or &#8211;id-tunnel option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_delete_help
+# FUNCTION
+#   Print help message of delete method.
+# SOURCE
+_ssl_delete_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;[&#8211;name name]           Name of the tunnel to delete.n&#8221;
+echo -en &#8220;[&#8211;id-tunnel id]        Id of the tunnel to delete.n&#8221;
+echo -en &#8220;n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_get_list
+# FUNCTION
+#   Return list of active tunnel or if id_tunnel/name is passed
+#   information about a single tunnel.
+#   Data are saved on $_sqlite_ans variable.
+# INPUT
+#   id_tunnel  (optional) Id of the tunnel.
+#   name       (optional) Name of the tunnel.
+# RETURN
+#   1  on error
+#   0  on success
+# SOURCE
+_ssl_get_list () {</p>
+<blockquote>
+<div><p>local id_tunnel=&#8221;$1&#8221;
+local name=&#8221;$2&#8221;
+local where=&#8221;&#8221;
+local query=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$id_tunnel&#8221; ] ; then</dt>
+<dd>where=&#8221;WHERE id_tunnel = $id_tunnel&#8221;</dd>
+<dt>else</dt>
+<dd><dl class="first docutils">
+<dt>if [ -n &#8220;$name&#8221; ] ; then</dt>
+<dd>where=&#8221;WHERE name = &#8216;$name&#8217;&#8221;</dd>
+</dl>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>query=&#8221;</dt>
+<dd>SELECT *
+FROM SslTunnels
+${where}</dd>
+</dl>
+<p>&#8220;</p>
+<dl class="docutils">
+<dt>_sqlite_query -c &#8220;$DRM_DB&#8221; -q &#8220;$query&#8221; || error_handled </dt>
+<dd>&#8220;(_ssl_get_list): Error on retrieve data about tunnels.&#8221;</dd>
+</dl>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_exists_tun
+# FUNCTION
+#  Check if tunnel exists by id_tunnel or name.
+# INPUT
+#   id_tunnel  (optional) Id of the tunnel.
+#   name       (optional) Name of the tunnel.
+# RETURN VALUE
+#   1 if not exists
+#   0 if exists
+# SOURCE
+_ssl_exists_tun () {</p>
+<blockquote>
+<div><p>local id_tunnel=&#8221;$1&#8221;
+local name=&#8221;$2&#8221;
+local query=&#8221;&#8221;
+local ans=1</p>
+<dl class="docutils">
+<dt>[[ -z &#8220;$id_tunnel&#8221; &amp;&amp; -z &#8220;$name&#8221; ]] &amp;&amp; error_generate </dt>
+<dd>&#8220;(_ssl_exists_tun): Missing both id_tunnel or name argument.&#8221;</dd>
+<dt>if [ -n &#8220;$id_tunnel&#8221; ] ; then</dt>
+<dd>where=&#8221;WHERE id_tunnel = $id_tunnel&#8221;</dd>
+<dt>else</dt>
+<dd><dl class="first docutils">
+<dt>if [ -n &#8220;$name&#8221; ] ; then</dt>
+<dd>where=&#8221;WHERE name = &#8216;$name&#8217;&#8221;</dd>
+</dl>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>query=&#8221;</dt>
+<dd>SELECT COUNT(1)
+FROM SslTunnels
+${where}</dd>
+</dl>
+<p>&#8220;</p>
+<dl class="docutils">
+<dt>_sqlite_query -c &#8220;$DRM_DB&#8221; -q &#8220;$query&#8221; || error_handled </dt>
+<dd>&#8220;(_ssl_get_list): Error on check if exists tunnel ${id_tunnel}${name}.&#8221;</dd>
+<dt>if [ x&#8221;$_sqlite_ans&#8221; == x&#8221;1&#8221; ] ; then</dt>
+<dd>ans=0</dd>
+</dl>
+<p>fi</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_count_tunnels
+# FUNCTION
+#   Return number of tunnels.
+# RETURN
+#   N  number of tunnels.
+# SOURCE
+_ssl_count_tunnels () {</p>
+<blockquote>
+<div><p>local query=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>query=&#8221;</dt>
+<dd>SELECT COUNT(1)
+FROM SslTunnels</dd>
+</dl>
+<p>&#8220;</p>
+<dl class="docutils">
+<dt>_sqlite_query -c &#8220;$DRM_DB&#8221; -q &#8220;$query&#8221; || error_handled </dt>
+<dd>&#8220;(_ssl_count_tunnels): Error on count tunnels.&#8221;</dd>
+<dt>if [ -z &#8220;$_sqlite_ans&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Error on count tunnels.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return $_sqlite_ans</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_enable_args
+# FUNCTION
+#   Parse command line arguments of enable method.
+# SOURCE
+_ssl_enable_args () {</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_ssl_enable_args args: $&#64;)n&#8221;</p>
+<p>local short_options=&#8221;h&#8221;
+local long_options=&#8221;id-tunnel: name: auto-increment help no-def-opts use-sshpass&#8221;</p>
+<dl class="docutils">
+<dt>$(set &#8211; $(getopt -u -q -a -o &#8220;$short_options&#8221; -l &#8220;$long_options&#8221; &#8211; &#8220;$&#64;&#8221;)) || </dt>
+<dd>error_handled &#8220;Invalid parameters&#8221;</dd>
+<dt>if [ $# -lt 2 ] ; then</dt>
+<dd>_ssl_enable_help
+return 1</dd>
+</dl>
+<p>fi</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_ssl_enable_args: Found $# params)n&#8221;</p>
+<p>DBRM_SSL_ID_TUNNEL=&#8221;&#8221;
+DBRM_SSL_TUN_NAME=&#8221;&#8221;
+DBRM_SSL_TUN_AUTOINCREMENT=0
+DBRM_SSL_TUN_DEF_OPTS=1
+DBRM_SSL_USE_SSHPASS=0</p>
+<dl class="docutils">
+<dt>while [ $# -gt 0 ] ; do</dt>
+<dd><p class="first">case &#8220;$1&#8221; in</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>-h|&#8211;help)</dt>
+<dd>_ssl_enable_help
+return 1
+;;</dd>
+<dt>&#8211;id-tunnel)</dt>
+<dd>DBRM_SSL_ID_TUNNEL=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;name)</dt>
+<dd>DBRM_SSL_TUN_NAME=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;auto-increment)</dt>
+<dd>DBRM_SSL_TUN_AUTOINCREMENT=1
+;;</dd>
+<dt>&#8211;no-def-opts)</dt>
+<dd>DBRM_SSL_TUN_DEF_OPTS=0
+;;</dd>
+<dt>&#8211;use-sshpass)</dt>
+<dd>DBRM_SSL_USE_SSHPASS=1
+;;</dd>
+<dt><a href="#id5"><span class="problematic" id="id6">*</span></a>)</dt>
+<dd>error_generate &#8220;Invalid parameter $1.&#8221;
+;;</dd>
+</dl>
+</div></blockquote>
+<p class="last">esac
+shift</p>
+</dd>
+</dl>
+<p>done</p>
+<dl class="docutils">
+<dt>if [[ -z &#8220;$DBRM_SSL_TUN_NAME&#8221; &amp;&amp; -z &#8220;$DBRM_SSL_ID_TUNNEL&#8221; ]] ; then</dt>
+<dd>error_generate &#8220;Missing &#8211;name or &#8211;id-tunnel option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ -n &#8220;$DBRM_SSL_TUN_NAME&#8221; &amp;&amp; -n &#8220;$DBRM_SSL_ID_TUNNEL&#8221; ]] ; then</dt>
+<dd>error_generate &#8220;Use only &#8211;name or &#8211;id-tunnel option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ $DBRM_SSL_USE_SSHPASS -eq 1 &amp;&amp; -z &#8220;${SSHPASS}&#8221; ]] ; then</dt>
+<dd>error_generate &#8220;Set SSHPASS environment variable with &#8211;use-sshpass.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ $DBRM_SSL_USE_SSHPASS -eq 1 ] ; then</dt>
+<dd>commons_exists_prog &#8220;sshpass&#8221; &#8220;-V&#8221;
+error_handled &#8220;sshpash program not found.nCheck your PATH or remove &#8211;use-sshpass option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_disable_args
+# FUNCTION
+#   Parse command line arguments of disable method.
+# SOURCE
+_ssl_disable_args () {</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_ssl_disable_args args: $&#64;)n&#8221;</p>
+<p>local short_options=&#8221;h&#8221;
+local long_options=&#8221;id-tunnel: name: help&#8221;</p>
+<dl class="docutils">
+<dt>$(set &#8211; $(getopt -u -q -a -o &#8220;$short_options&#8221; -l &#8220;$long_options&#8221; &#8211; &#8220;$&#64;&#8221;)) || </dt>
+<dd>error_handled &#8220;Invalid parameters&#8221;</dd>
+<dt>if [ $# -lt 2 ] ; then</dt>
+<dd>_ssl_disable_help
+return 1</dd>
+</dl>
+<p>fi</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_ssl_disable_args: Found $# params)n&#8221;</p>
+<p>DBRM_SSL_ID_TUNNEL=&#8221;&#8221;
+DBRM_SSL_TUN_NAME=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>while [ $# -gt 0 ] ; do</dt>
+<dd><p class="first">case &#8220;$1&#8221; in</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>-h|&#8211;help)</dt>
+<dd>_ssl_disable_help
+return 1
+;;</dd>
+<dt>&#8211;id-tunnel)</dt>
+<dd>DBRM_SSL_ID_TUNNEL=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;name)</dt>
+<dd>DBRM_SSL_TUN_NAME=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt><a href="#id7"><span class="problematic" id="id8">*</span></a>)</dt>
+<dd>error_generate &#8220;Invalid parameter $1.&#8221;
+;;</dd>
+</dl>
+</div></blockquote>
+<p class="last">esac
+shift</p>
+</dd>
+</dl>
+<p>done</p>
+<dl class="docutils">
+<dt>if [[ -z &#8220;$DBRM_SSL_TUN_NAME&#8221; &amp;&amp; -z &#8220;$DBRM_SSL_ID_TUNNEL&#8221; ]] ; then</dt>
+<dd>error_generate &#8220;Missing &#8211;name or &#8211;id-tunnel option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ -n &#8220;$DBRM_SSL_TUN_NAME&#8221; &amp;&amp; -n &#8220;$DBRM_SSL_ID_TUNNEL&#8221; ]] ; then</dt>
+<dd>error_generate &#8220;Use only &#8211;name or &#8211;id-tunnel option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_disable_help
+# FUNCTION
+#   Print help message of disable method.
+# SOURCE
+_ssl_disable_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;[&#8211;name name]           Name of the tunnel to activate.n&#8221;
+echo -en &#8221;                        Use this or &#8211;id-tunnel.n&#8221;
+echo -en &#8220;[&#8211;id-tunnel id]        Id of the tunnel to activate.n&#8221;
+echo -en &#8221;                        Use this or &#8211;name.n&#8221;
+echo -en &#8220;n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_enable_help
+# FUNCTION
+#   Print help message of enable method.
+# SOURCE
+_ssl_enable_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;[&#8211;name name]           Name of the tunnel to activate.n&#8221;
+echo -en &#8221;                        Use this or &#8211;id-tunnel.n&#8221;
+echo -en &#8220;[&#8211;id-tunnel id]        Id of the tunnel to activate.n&#8221;
+echo -en &#8221;                        Use this or &#8211;name.n&#8221;
+echo -en &#8220;[&#8211;auto-increment]      If local port is busy, automaticallyn&#8221;
+echo -en &#8221;                        increment port until a free port is found.n&#8221;
+echo -en &#8221;                        This param is optional.n&#8221;
+echo -en &#8220;[&#8211;no-def-opts]         Disable default options used on tunnel.n&#8221;
+echo -en &#8221;                        This param is optional.n&#8221;
+echo -en &#8220;[&#8211;use-sshpass]         Use sshpass for send password to ssh session.n&#8221;
+echo -en &#8221;                        For security considerations a best way is to usen&#8221;
+echo -en &#8221;                        ssh key authentication.n&#8221;
+echo -en &#8221;                        On use sshpass set SSHPASS env variable withn&#8221;
+echo -en &#8221;                        password string.n&#8221;
+echo -en &#8220;n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_add_tun2file
+# FUNCTION
+#   Add id_tunnel, port, pid to file for trace ssl tunnels.
+#   On file I use pipe (|) as separator.
+# RETURN VALUES
+#   1 on error
+#   0 on success
+# SOURCE
+_ssl_add_tun2file () {</p>
+<blockquote>
+<div><p>local file=&#8221;$1&#8221;
+local id_tun=&#8221;$2&#8221;
+local port=&#8221;$3&#8221;
+local pid=&#8221;$4&#8221;</p>
+<p>[ -z &#8220;$file&#8221; ]   &amp;&amp; return 1
+[ -z &#8220;$id_tun&#8221; ] &amp;&amp; return 1
+[ -z &#8220;$port&#8221; ]   &amp;&amp; return 1
+[ -z &#8220;$pid&#8221; ]    &amp;&amp; return 1</p>
+<p>local out=&#8221;${id_tun}|${port}|${pid}&#8221;</p>
+<p>echo &#8220;$out&#8221; &gt;&gt; $file</p>
+<p>return $?</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_add_tun2file
+# FUNCTION
+#   Remove id_tunnel, port, pid to file for trace ssl tunnels.
+# RETURN VALUES
+#   1 on error
+#   0 on success
+# SOURCE
+_ssl_del_tun2file () {</p>
+<blockquote>
+<div><p>local file=&#8221;$1&#8221;
+local id_tun=&#8221;$2&#8221;</p>
+<p>[ -z &#8220;$file&#8221; ]   &amp;&amp; return 1
+[ -z &#8220;$id_tun&#8221; ] &amp;&amp; return 1</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;sed -i -n &#8220;&#8217;/^${id_tun}|.*/!p&#8217;&#8221; $filen&#8221;</dd>
+<dt>sed -i -n &#8220;/^${id_tun}|.*/!p&#8221; $file || </dt>
+<dd>error_generate &#8220;Error on remove SSL tunnel ${id_tunnel} from temporary file.&#8221;</dd>
+</dl>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_start_tun
+# FUNCTION
+#   Start SSL Tunnel
+# RETURN VALUES
+#   1 on error
+#   0 on success
+# SOURCE
+_ssl_start_tun () {</p>
+<blockquote>
+<div><p>local id_tunnel=&#8221;$1&#8221;
+local ssl_url=&#8221;$2&#8221;
+local reverse_flag=&#8221;${3:-0}&#8221;
+local opts=&#8221;&#8221;
+local ans=0</p>
+<p>[ -z &#8220;$id_tunnel&#8221; ] &amp;&amp; error_generate &#8220;(_ssl_start_tun): Invalid id_tunnel.&#8221;
+[ -z &#8220;$ssl_url&#8221; ] &amp;&amp; error_generate &#8220;(_ssl_start_tun): Invalid ssl_url.&#8221;
+[ -z &#8220;$reverse_flag&#8221; ] &amp;&amp; error_generate &#8220;(_ssl_start_tun): Invalid reverse flag.&#8221;</p>
+<dl class="docutils">
+<dt>local def_opts=&#8221; </dt>
+<dd>-N
+-o ServerAliveInterval=30 -o ServerAliveCountMax=4 -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=no -o CheckHostIP=no </dd>
+</dl>
+<p>&#8220;</p>
+<dl class="docutils">
+<dt>if [ $DBRM_SSL_USE_SSHPASS -eq 0 ] ; then</dt>
+<dd>def_opts=&#8221;$def_opts -T &#8220;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ $DBRM_SSL_TUN_DEF_OPTS -eq 0 ] ; then</dt>
+<dd>def_opts=&#8221;&#8220;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ &#8220;$reverse_flag&#8221; -eq 1 ] ; then</dt>
+<dd>opts=&#8221;-R&#8221;</dd>
+<dt>else</dt>
+<dd>opts=&#8221;-L&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;(_ssl_start_tun): Tun. ${id_tunnel} cmd: ssh ${def_opts} ${opts} ${ssl_url}n&#8221;</dd>
+</dl>
+<p># TODO: check if use nohup or other solutions.
+if [ $DBRM_SSL_USE_SSHPASS -eq 1 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;(_ssl_start_tun_sshpas): Tun. ${id_tunnel} cmd: sshpass -e  ssh ${def_opts} ${opts} ${ssl_url}n&#8221;</dd>
+</dl>
+<p>sshpass -e ssh ${def_opts} ${opts} ${ssl_url} &gt; /dev/null 2&gt;&amp;1 &amp;</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>ssh ${def_opts} ${opts} ${ssl_url} &gt; /dev/null 2&gt;&amp;1 &amp;</dd>
+</dl>
+<p>fi
+ssh_pid=$!</p>
+<dl class="docutils">
+<dt>if [ x&#8221;$?&#8221; != x&#8221;0&#8221; ] ; then</dt>
+<dd>ans=1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;(_ssl_start_tun): Start tunnel ${id_tunnel} (ans = $ans) with pid ${ssh_pid}.n&#8221;</dd>
+</dl>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_clear_active_arr
+# FUNCTION
+#  Clear and unset ssl_active_id_tuns, ssl_active_ports, ssl_active_pids arrays variables.
+# SOURCE
+_ssl_clear_active_arr () {</p>
+<blockquote>
+<div><p>local i=0</p>
+<dl class="docutils">
+<dt>if [ &#8220;${#ssl_active_id_tuns[&#64;]}&#8221; -gt 0 ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>for i in ${!ssl_active_id_tuns[&#64;]} ; do</dt>
+<dd>unset ${ssl_active_id_tuns[$i]}</dd>
+</dl>
+<p class="last">done</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ &#8220;${#ssl_active_ports[&#64;]}&#8221; -gt 0 ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>for i in ${!ssl_active_ports[&#64;]} ; do</dt>
+<dd>unset ${ssl_active_ports[$i]}</dd>
+</dl>
+<p class="last">done</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ &#8220;${#ssl_active_pids[&#64;]}&#8221; -gt 0 ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>for i in ${!ssl_active_pids[&#64;]} ; do</dt>
+<dd>unset ${ssl_active_pids[$i]}</dd>
+</dl>
+<p class="last">done</p>
+</dd>
+</dl>
+<p>fi</p>
+<p>unset ssl_active_pids
+unset ssl_active_ports
+unset ssl_active_id_tuns</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_dump_active_arr
+# FUNCTION
+#  Debug function for print current active tunnel arrays data.
+# SOURCE
+_ssl_dump_active_arr () {</p>
+<blockquote>
+<div><p>local caller=$1
+local i=0
+local port=&#8221;&#8221;
+local pid=&#8221;&#8220;</p>
+<p>if [ &#8220;${#ssl_active_id_tuns[&#64;]}&#8221; -gt 0 ] ; then</p>
+<blockquote>
+<div><p>for i in ${!ssl_active_id_tuns[&#64;]} ; do</p>
+<blockquote>
+<div><p>port=&#8221;&#8221;
+pid=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;${ssl_active_ports[$i]}&#8221; ] ; then</dt>
+<dd>port=${ssl_active_ports[$i]}</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;${ssl_active_pids[$i]}&#8221; ] ; then</dt>
+<dd>pid=${ssl_active_pids[$i]}</dd>
+</dl>
+<p>fi</p>
+<p>echo -en &#8220;$caller Tunnel $i: port = &#8216;$port&#8217;, pid = &#8216;$pid&#8217;n&#8221;</p>
+</div></blockquote>
+<p>done</p>
+</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_read_tuns_file
+# FUNCTION
+#  Read ssl active tunnels file and load data to ssl_active_id_tuns,ssl_active_ports,
+#  ssl_active_pids arrays.
+# RETURN VALUE
+#  0 on success
+#  1 on error
+# SOURCE
+_ssl_read_tuns_file () {</p>
+<blockquote>
+<div><p>local file=$1
+local line=&#8221;&#8221;
+local i=1
+local id_tunnel=&#8221;&#8221;
+local port=&#8221;&#8221;
+local pid=&#8221;&#8220;</p>
+<p>if [[ -n &#8220;${file}&#8221; &amp;&amp; -f &#8220;${file}&#8221; ]] ; then</p>
+<blockquote>
+<div><p>while read line ; do</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;(_ssl_read_tuns_file): Line $i =&gt; $line.n&#8221;</dd>
+</dl>
+<p>id_tunnel=`echo $line | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[1]}&#8217;`
+port=`echo $line | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[2]}&#8217;`
+pid=`echo $line | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[3]}&#8217;`</p>
+<p>ssl_active_id_tuns[$id_tunnel]=$id_tunnel
+ssl_active_ports[$id_tunnel]=$port
+ssl_active_pids[$id_tunnel]=$pid</p>
+<p>let i++</p>
+</div></blockquote>
+<p>done &lt; &lt;(cat $file)</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>_ssl_dump_active_arr &#8220;(_ssl_read_tuns_file): &#8220;</dd>
+</dl>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;(_ssl_read_tuns_file): Active tunnel file $file doesn&#8217;t exists.n&#8221;</dd>
+</dl>
+</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_check_port
+# FUNCTION
+#  Check if local port (in input) is already in binding.
+# RETURN VALUE
+#  0 port is free
+#  1 port is busy
+# SOURCE
+_ssl_check_port () {</p>
+<blockquote>
+<div><p>local port=&#8221;$1&#8221;
+local ans=0</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;(_ssl_check_port): netstat -aln | awk &#8220;$6 == &#8220;LISTEN&#8221; &amp;&amp; $4 ~ &#8220;[.:]${port}$&#8221;&#8221; | wc -ln&#8221;</dd>
+</dl>
+<p>ans=$(netstat -aln | awk &#8220;$6 == &#8220;LISTEN&#8221; &amp;&amp; $4 ~ &#8220;[.:]${port}$&#8221;&#8221; | wc -l)</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;(_ssl_check_port): port $port is busy: $ans.n&#8221;</dd>
+</dl>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* ssl/_ssl_check_ssl_pid
+# FUNCTION
+#  Check if ssh tunnel process is already active.
+# RETURN VALUE
+#  1 if process is active
+#  0 if process is not active
+# SOURCE
+_ssl_check_ssl_pid () {</p>
+<blockquote>
+<div><p>local pid=&#8221;$1&#8221;
+local ans=&#8221;&#8220;</p>
+<p>ans=$(ps aux  | grep  $pid | grep &#8220;[s]sh&#8221; | wc -l)</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p># vim: syn=sh filetype=sh ts=2 sw=2</p>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

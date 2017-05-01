@@ -1,0 +1,241 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt;</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <p>#!/bin/bash
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+# Author(s): Geaaru, <a class="reference external" href="mailto:geaaru&#37;&#52;&#48;gmail&#46;com">geaaru<span>&#64;</span>gmail<span>&#46;</span>com</a>
+# $Id: 8487b73770db701a348a8580abd35a9c2822b5de $
+# License: GPL 2.0
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p># commons_assertNot
+assertNot () {</p>
+<blockquote>
+<div><p>local result=$1
+local inv_res=$2</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ $result -eq $inv_res ] ; then</dt>
+<dd>echo -en &#8220;$3n&#8221;
+exit 1</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+</div></blockquote>
+<p>}
+# commons_assertNot_end</p>
+<p># commons_error_handled
+error_handled () {</p>
+<blockquote>
+<div><p>local result=$?
+if [ $result -ne 0 ] ; then</p>
+<blockquote>
+<div>echo -en &#8220;$1n&#8221;
+exit 1</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>}
+# commons_error_handled_end</p>
+<p># commons_error_generate
+error_generate () {</p>
+<blockquote>
+<div><p>local exit_call=${2:-1}</p>
+<p>echo -en &#8220;$1n&#8221;</p>
+<dl class="docutils">
+<dt>if [[ $exit_call -eq 1 || $exit_call == &#8220;1&#8221; ]] ; then</dt>
+<dd>exit 1</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>}
+# commons_error_generate_end</p>
+<p># commons_check_var
+check_var () {</p>
+<blockquote>
+<div><p>local var=$1</p>
+<p>eval v=$$var</p>
+<dl class="docutils">
+<dt>if [ -z $v ] ; then</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_check_var_end</p>
+<p># commons_escape_var
+escape_var () {</p>
+<blockquote>
+<div><p>local name=&#8221;$1&#8221;</p>
+<p>eval v=$$name</p>
+<p>v=&#8221;$(echo &#8220;$v&#8221; | sed -e &#8216;s///\//g&#8217; -e &#8216;s:\:\\:g&#8217; -e &#8216;s/&amp;/\&amp;/g&#8217; -e &#8216;s:<a href="#id1"><span class="problematic" id="id2">`</span></a>:\`:g&#8217; )&#8221;</p>
+<p>eval &#8220;$name=$v&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_escape_var_end</p>
+<p># commons_escape2oct_var
+escape2oct_var () {</p>
+<blockquote>
+<div><p>local name=&#8221;$1&#8221;</p>
+<p>eval v=$$name</p>
+<p># TODO: Handle replace through input params selection
+v=&#8221;$(echo &#8220;$v&#8221; | sed -e &#8216;s:/:\057:g&#8217; -e &#8216;s:<cite>:\0140:g&#8217; )&#8221;
+#v=&#8221;$(echo &#8220;$v&#8221; | sed -e &#8216;s:\n:\012:g&#8217; -e &#8216;s:/:\057:g&#8217; -e &#8216;s:\:\0134:g&#8217; -e &#8216;s:</cite>:\0140:g&#8217; )&#8221;
+#v=&#8221;$(echo &#8220;$v&#8221; | sed -e &#8216;s:\n:\012:g&#8217; -e &#8216;s:/:\057:g&#8217; -e &#8216;s:\:\0134:g&#8217; -e &#8216;s:<a href="#id3"><span class="problematic" id="id4">`</span></a>:\0140:g&#8217; )&#8221;</p>
+<p>eval &#8220;$name=$v&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_escape2oct_var_end</p>
+<p># commons_confirmation_question
+confirmation_question () {</p>
+<blockquote>
+<div><p>echo -en &#8220;$1&#8221;
+read ans</p>
+<p>[[ $DEBUG ]] &amp;&amp; echo -en &#8220;Answer: $ansn&#8221;
+if [ -z $ans ]; then</p>
+<blockquote>
+<div>return 2</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ x&#8221;$ans&#8221; == &#8220;xyes&#8221; || x&#8221;$ans&#8221; == &#8220;xY&#8221; || x&#8221;$ans&#8221; == &#8220;xy&#8221; || x&#8221;$ans&#8221; == &#8220;xYes&#8221; ]] ; then</dt>
+<dd>return 0</dd>
+</dl>
+<p>fi</p>
+<p>return 1</p>
+</div></blockquote>
+<p>}
+# commons_confirmation_question_end</p>
+<p># commons_push_spaces
+push_spaces () {</p>
+<blockquote>
+<div><p>local n_spaces=$1</p>
+<dl class="docutils">
+<dt>if [ $n_spaces -gt 0 ] ; then</dt>
+<dd><p class="first">for ((i=0; i&lt;$n_spaces; i++))
+do</p>
+<blockquote>
+<div>echo -en &#8221; &#8220;</div></blockquote>
+<p class="last">done</p>
+</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_push_spaces_end</p>
+<p># commons_get_spaces_str
+get_space_str () {</p>
+<blockquote>
+<div><p>local var_name=&#8221;$1&#8221;
+local max_chars=&#8221;$2&#8221;
+local str=&#8221;$3&#8221;
+local pre_spaces=&#8221;$4&#8221;</p>
+<p>[[ -z &#8220;$max_chars&#8221; || -z &#8220;$var_name&#8221; ]] &amp;&amp; return 1</p>
+<p>local n_spaces=&#8221;$((${max_chars} - ${#str}))&#8221;</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;${pre_spaces}&#8221; ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>for ((i=0; i&lt;${pre_spaces}; i++)) ; do</dt>
+<dd>str=&#8221; ${str}&#8221;</dd>
+</dl>
+<p class="last">done</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ $n_spaces -gt 0 ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>for ((i=0; i&lt;$n_spaces; i++)) ; do</dt>
+<dd>str=&#8221;${str} &#8220;</dd>
+</dl>
+<p class="last">done</p>
+</dd>
+</dl>
+<p>fi</p>
+<p>eval &#8220;$var_name=$str&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_get_spaces_str_end</p>
+<p># commons_commons_exists_prog
+commons_exists_prog () {</p>
+<blockquote>
+<div><p>local prog=&#8221;$1&#8221;
+local opts=&#8221;$2&#8221;
+local check_opts=&#8221;-v&#8221;
+local ans=0</p>
+<p>[ -z &#8220;${prog}&#8221; ] &amp;&amp; return 1</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;${opts}&#8221; ] ; then</dt>
+<dd>check_opts=&#8221;${opts}&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>${prog} ${check_opts} &gt; /dev/null 2&gt;&amp;1
+if [ $? -ne 0 ] ; then</p>
+<blockquote>
+<div>ans=1</div></blockquote>
+<p>fi</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_commons_exists_prog_end</p>
+<p># vim: syn=sh filetype=sh</p>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

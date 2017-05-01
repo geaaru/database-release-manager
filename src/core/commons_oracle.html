@@ -1,0 +1,901 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt;</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <p>#!/bin/bash
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+# Author(s): Geaaru, <a class="reference external" href="mailto:geaaru&#37;&#52;&#48;gmail&#46;com">geaaru<span>&#64;</span>gmail<span>&#46;</span>com</a>
+# $Id: 2ef437a8b070164ae05892141b190e915ee6e8d0 $
+# License: GPL 2.0
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p># commons_oracle_commons_oracle_check_tnsnames
+commons_oracle_check_tnsnames () {</p>
+<blockquote>
+<div><p>local packagedir=$1</p>
+<dl class="docutils">
+<dt>if [ -f &#8220;$packagedir/etc/tnsnames.ora&#8221; ] ; then</dt>
+<dd>export TNS_ADMIN=&#8221;$packagedir/etc/&#8221;</dd>
+<dt>else</dt>
+<dd><dl class="first docutils">
+<dt>if [ -z &#8220;$TNS_ADMIN&#8221; ] ; then</dt>
+<dd>return 1</dd>
+<dt>else</dt>
+<dd><dl class="first docutils">
+<dt>if [ ! -e &#8220;$TNS_ADMIN/tnsnames.ora&#8221; ] ; then</dt>
+<dd>echo &#8220;Missing tnsnames.ora file.&#8221;
+return 1</dd>
+</dl>
+<p>fi</p>
+<p class="last"># Export TNS_ADMIN if is not global (probably it isn&#8217;t needed)
+export TNS_ADMIN</p>
+</dd>
+</dl>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_check_tnsnames_end</p>
+<p># commons_oracle_commons_oracle_check_sqlplus
+commons_oracle_check_sqlplus () {</p>
+<blockquote>
+<div><p>if [ -z &#8220;$sqlplus&#8221; ] ; then</p>
+<blockquote>
+<div><p># POST: sqlplus variable not set
+tmp=`which sqlplus 2&gt; /dev/null`
+var=$?</p>
+<p>if [ $var -eq 0 ] ; then</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;Use sqlplus: $tmpn&#8221;</p>
+<p>SQLPLUS=$tmp</p>
+<p>unset tmp</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>error_generate &#8220;sqlplus program not found&#8221;</p>
+<p>return 1</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p># POST: sqlplus variable set</p>
+<p># Check if file is correct
+if [ -f &#8220;$sqlplus&#8221; ] ; then</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;Use sqlplus: $sqlplusn&#8221;</p>
+<p>SQLPLUS=$sqlplus</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>error_generate &#8220;$sqlplus program invalid&#8221;</p>
+<p>return 1</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p>export SQLPLUS</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_check_sqlplus_end</p>
+<p># commons_oracle_commons_oracle_check_vars
+commons_oracle_check_vars () {</p>
+<blockquote>
+<div><p>local commons_msg=&#8217;variable on configuration file, through arguments or on current profile.&#8217;</p>
+<p>check_var &#8220;ORACLE_USER&#8221; || error_handled &#8220;You must define ORACLE_USER $commons_msg&#8221;
+check_var &#8220;ORACLE_PWD&#8221;  || error_handled &#8220;You must define ORACLE_PWD $commons_msg&#8221;
+check_var &#8220;ORACLE_SID&#8221;  || error_handled &#8220;You must define ORACLE_SID $commons_msg&#8221;
+check_var &#8220;ORACLE_DIR&#8221;  || error_handled &#8220;You must define ORACLE_DIR $commons_msg&#8221;</p>
+<p>commons_oracle_check_tnsnames $LOCAL_DIR || error_handled &#8220;Invalid TNS_ADMIN variable&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_check_vars_end</p>
+<p># commons_oracle_commons_oracle_check_connection
+commons_oracle_check_connection () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ -z &#8220;$SQLPLUS&#8221; ] ; then</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$sqlplus_auth&#8221; ] ; then</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+<p>$SQLPLUS -S -l $sqlplus_auth &gt;/dev/null 2&gt;&amp;1 &lt;&lt; EOF</p>
+</div></blockquote>
+<p>exit
+EOF</p>
+<blockquote>
+<div><p>errorCode=$?
+if [ ${errorCode} -ne 0 ] ; then</p>
+<blockquote>
+<div>return 1</div></blockquote>
+<p>fi</p>
+<p>unset errorCode</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo &#8220;SQLPlus was connected successfully&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_check_connection_end</p>
+<p># commons_oracle_commons_oracle_shell
+commons_oracle_shell () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ -z &#8220;$SQLPLUS&#8221; ] ; then</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$sqlplus_auth&#8221; ] ; then</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+<p>$SQLPLUS -L $sqlplus_auth</p>
+<p>return $?</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_shell_end</p>
+<p># commons_oracle_commons_oracle_download_all_packages
+commons_oracle_download_all_packages() {</p>
+<blockquote>
+<div><p>local packagesdir=${ORACLE_DIR}/packages
+local export_packages_sql=${packagesdir}/export_packages.sql</p>
+<p>_logfile_write &#8220;Start download of all packages.&#8221; || return 1</p>
+<p>commons_oracle_download_create_export_packages</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_packages_sql}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;$SQLPLUS_OUTPUT&#8221; || return 1</p>
+<p>_logfile_write &#8220;End download of all packages.&#8221; || return 1</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_all_packages_end</p>
+<p># commons_oracle_commons_oracle_download_create_export_packages
+commons_oracle_download_create_export_packages() {</p>
+<blockquote>
+<div><p>local packagesdir=${ORACLE_DIR}/packages
+local export_packages_sql=${packagesdir}/export_packages.sql
+local export_packages_file=${packagesdir}/export_packages_gen.sql</p>
+<p>local expire_time_sec=&#8221;7200&#8221;
+local ans=0</p>
+<p>if [[ ! -e ${export_packages_file} || ! -e ${export_packages_sql} || &#8220;$(( $(date +&#8221;%s&#8221;) - $(stat -c &#8220;%Y&#8221; $export_packages_file) ))&#8221; -gt ${expire_time_sec} ]] ; then</p>
+<blockquote>
+<div><p>_logfile_write &#8220;Start creation of the ${export_packages_sql} file.&#8221; || return 1</p>
+<p># Create export_packages.sql file
+_logfile_write &#8220;sed -e &#8216;s:PACKAGES_DIR:&#8217;${packagesdir}/&#8217;:g&#8217; </p>
+<blockquote>
+<div>&#8220;$_oracle_scripts/export_packages_gen.sql.in&#8221; &gt; &#8220;${export_packages_file}&#8221;&#8220;</div></blockquote>
+<p>sed -e &#8216;s:PACKAGES_DIR:&#8217;${packagesdir}&#8217;/:g&#8217; &#8220;$_oracle_scripts/export_packages_gen.sql.in&#8221; &gt; &#8220;${export_packages_file}&#8221;</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_packages_file}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;End creation of the ${export_packages_sql} file.&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>_logfile_write &#8220;${export_packages_file} is updated.&#8221; || return 1</div></blockquote>
+<p>fi</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_create_export_packages_end</p>
+<p># commons_oracle_commons_oracle_download_create_export_package
+commons_oracle_download_create_export_package() {</p>
+<blockquote>
+<div><p>local packagename=${1/.sql/}</p>
+<p>local packagesdir=${ORACLE_DIR}/packages
+local export_package_sql=${packagesdir}/export_package_${packagename}.sql
+local export_package_file=${packagesdir}/export_packages_gen_${packagename}.sql</p>
+<p>local expire_time_sec=&#8221;7200&#8221;
+local ans=0</p>
+<p>if [[ ! -e ${export_package_file} || ! -e ${export_package_sql} || &#8220;$(( $(date +&#8221;%s&#8221;) - $(stat -c &#8220;%Y&#8221; $export_package_file) ))&#8221; -gt ${expire_time_sec} ]] ; then</p>
+<blockquote>
+<div><p>_logfile_write &#8220;Start creation of the ${export_package_sql} file.&#8221; || return 1</p>
+<p># Create export_package_${packagename}.sql file
+_logfile_write &#8220;sed -e &#8216;s:PACKAGES_DIR:&#8217;${packagesdir}/&#8217;:g&#8217; </p>
+<blockquote>
+<div>&#8220;$_oracle_scripts/export_package_gen.sql.in&#8221; &gt; &#8220;${export_package_file}&#8221;&#8220;</div></blockquote>
+<p>sed -e &#8216;s:PACKAGES_DIR:&#8217;${packagesdir}&#8217;/:g&#8217; &#8220;$_oracle_scripts/export_package_gen.sql.in&#8221; &gt; &#8220;${export_package_file}&#8221;</p>
+<p># Replace PACKAGE_NAME string
+_logfile_write &#8220;sed -i -e &#8216;s:PACKAGE_NAME:&#8217;${packagename}&#8217;:g&#8217; &#8220;${export_package_file}&#8221;&#8221;
+sed -i -e &#8216;s:PACKAGE_NAME:&#8217;${packagename}&#8217;:g&#8217; &#8220;${export_package_file}&#8221;</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_package_file}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;End creation of the ${export_package_sql} file.&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>_logfile_write &#8220;${export_package_file} is updated.&#8221; || return 1</div></blockquote>
+<p>fi</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_create_export_package_end</p>
+<p># commons_oracle_commons_oracle_download_package
+commons_oracle_download_package() {</p>
+<blockquote>
+<div><p>local packagename=${1/.sql/}
+local packagesdir=${ORACLE_DIR}/packages
+local export_package_sql=${packagesdir}/export_package_${packagename}.sql</p>
+<p>_logfile_write &#8220;Start download of the package ${packagename}.&#8221; || return 1</p>
+<p>commons_oracle_download_create_export_package $packagename</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_package_sql}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;$SQLPLUS_OUTPUT&#8221; || return 1</p>
+<p>_logfile_write &#8220;End download of the package ${packagename}.&#8221; || return 1</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_package_end</p>
+<p># commons_oracle_commons_oracle_download_all_functions
+commons_oracle_download_all_functions() {</p>
+<blockquote>
+<div><p>local functionsdir=${ORACLE_DIR}/functions
+local export_functions_sql=${functionsdir}/export_function.sql</p>
+<p>_logfile_write &#8220;Start download of all functions.&#8221; || return 1</p>
+<p>commons_oracle_download_create_export_functions</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_functions_sql}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;$SQLPLUS_OUTPUT&#8221; || return 1</p>
+<p>_logfile_write &#8220;End download of all functions.&#8221; || return 1</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_all_functions_end</p>
+<p># commons_oracle_commons_oracle_download_create_export_functions
+commons_oracle_download_create_export_functions() {</p>
+<blockquote>
+<div><p>local functionsdir=${ORACLE_DIR}/functions
+local export_functions_sql=${functionsdir}/export_function.sql
+local export_functions_file=${functionsdir}/export_function_gen.sql</p>
+<p>local expire_time_sec=&#8221;7200&#8221;
+local ans=0</p>
+<p>if [[ ! -e ${export_functions_file} || ! -e ${export_functions_sql} || &#8220;$(( $(date +&#8221;%s&#8221;) - $(stat -c &#8220;%Y&#8221; $export_functions_file) ))&#8221; -gt ${expire_time_sec} ]] ; then</p>
+<blockquote>
+<div><p>_logfile_write &#8220;Start creation of the ${export_functions_sql} file.&#8221; || return 1</p>
+<p># Create export_function.sql file
+_logfile_write &#8220;sed -e &#8216;s:FUNCTIONS_DIR:&#8217;${functionsdir}/&#8217;:g&#8217; </p>
+<blockquote>
+<div>&#8220;$_oracle_scripts/export_functions_gen.sql.in&#8221; &gt; &#8220;${export_functions_file}&#8221;&#8220;</div></blockquote>
+<p>sed -e &#8216;s:FUNCTIONS_DIR:&#8217;${functionsdir}&#8217;/:g&#8217; &#8220;$_oracle_scripts/export_functions_gen.sql.in&#8221; &gt; &#8220;${export_functions_file}&#8221;</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_functions_file}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;End creation of the ${export_functions_sql} file.&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>_logfile_write &#8220;${export_functions_file} is updated.&#8221; || return 1</div></blockquote>
+<p>fi</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_create_export_functions_end</p>
+<p># commons_oracle_commons_oracle_download_function
+commons_oracle_download_function() {</p>
+<blockquote>
+<div><p>local functionname=${1/.sql/}
+local functionsdir=${ORACLE_DIR}/functions
+local export_function_sql=${functionsdir}/export_function_${functionname}.sql</p>
+<p>_logfile_write &#8220;Start download of the function ${functionname}.&#8221; || return 1</p>
+<p>commons_oracle_download_create_export_function $functionname</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_function_sql}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;$SQLPLUS_OUTPUT&#8221; || return 1</p>
+<p>_logfile_write &#8220;End download of the function ${functionname}.&#8221; || return 1</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_function_end</p>
+<p># commons_oracle_commons_oracle_download_create_export_function
+commons_oracle_download_create_export_function() {</p>
+<blockquote>
+<div><p>local functionname=${1/.sql/}</p>
+<p>local functionsdir=${ORACLE_DIR}/functions
+local export_function_sql=${functionsdir}/export_function_${functionname}.sql
+local export_function_file=${functionsdir}/export_functions_gen_${functionname}.sql</p>
+<p>local expire_time_sec=&#8221;7200&#8221;
+local ans=0</p>
+<p>if [[ ! -e ${export_function_file} || ! -e ${export_function_sql} || &#8220;$(( $(date +&#8221;%s&#8221;) - $(stat -c &#8220;%Y&#8221; $export_function_file) ))&#8221; -gt ${expire_time_sec} ]] ; then</p>
+<blockquote>
+<div><p>_logfile_write &#8220;Start creation of the ${export_function_sql} file.&#8221; || return 1</p>
+<p># Create export_function_${functionname}.sql file
+_logfile_write &#8220;sed -e &#8216;s:FUNCTIONS_DIR:&#8217;${functionsdir}/&#8217;:g&#8217; </p>
+<blockquote>
+<div>&#8220;$_oracle_scripts/export_function_gen.sql.in&#8221; &gt; &#8220;${export_function_file}&#8221;&#8220;</div></blockquote>
+<p>sed -e &#8216;s:FUNCTIONS_DIR:&#8217;${functionsdir}&#8217;/:g&#8217; &#8220;$_oracle_scripts/export_function_gen.sql.in&#8221; &gt; &#8220;${export_function_file}&#8221;</p>
+<p># Replace FUNCTION_NAME string
+_logfile_write &#8220;sed -i -e &#8216;s:FUNCTION_NAME:&#8217;${functionname}&#8217;:g&#8217; &#8220;${export_function_file}&#8221;&#8221;
+sed -i -e &#8216;s:FUNCTION_NAME:&#8217;${functionname}&#8217;:g&#8217; &#8220;${export_function_file}&#8221;</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_function_file}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;End creation of the ${export_function_sql} file.&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>_logfile_write &#8220;${export_function_file} is updated.&#8221; || return 1</div></blockquote>
+<p>fi</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_create_export_function_end</p>
+<p># commons_oracle_commons_oracle_download_all_views
+commons_oracle_download_all_views() {</p>
+<blockquote>
+<div><p>local viewsdir=${ORACLE_DIR}/views
+local export_views_sql=${viewsdir}/export_view.sql</p>
+<p>_logfile_write &#8220;Start download of all views.&#8221; || return 1</p>
+<p>commons_oracle_download_create_export_views</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_views_sql}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;$SQLPLUS_OUTPUT&#8221; || return 1</p>
+<p>_logfile_write &#8220;End download of all views.&#8221; || return 1</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_all_views_end</p>
+<p># commons_oracle_commons_oracle_download_create_export_views
+commons_oracle_download_create_export_views() {</p>
+<blockquote>
+<div><p>local viewsdir=${ORACLE_DIR}/views
+local export_views_sql=${viewsdir}/export_view.sql
+local export_views_file=${viewsdir}/export_view_gen.sql</p>
+<p>local expire_time_sec=&#8221;7200&#8221;
+local ans=0</p>
+<p>if [[ ! -e ${export_views_file} || ! -e ${export_views_sql} || &#8220;$(( $(date +&#8221;%s&#8221;) - $(stat -c &#8220;%Y&#8221; $export_views_file) ))&#8221; -gt ${expire_time_sec} ]] ; then</p>
+<blockquote>
+<div><p>_logfile_write &#8220;Start creation of the ${export_views_sql} file.&#8221; || return 1</p>
+<p># Create export_view.sql file
+_logfile_write &#8220;sed -e &#8216;s:VIEWS_DIR:&#8217;${viewsdir}/&#8217;:g&#8217; </p>
+<blockquote>
+<div>&#8220;$_oracle_scripts/export_views_gen.sql.in&#8221; &gt; &#8220;${export_views_file}&#8221;&#8220;</div></blockquote>
+<p>sed -e &#8216;s:VIEWS_DIR:&#8217;${viewsdir}&#8217;/:g&#8217; &#8220;$_oracle_scripts/export_views_gen.sql.in&#8221; &gt; &#8220;${export_views_file}&#8221;</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_views_file}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;End creation of the ${export_views_sql} file.&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>_logfile_write &#8220;${export_views_file} is updated.&#8221; || return 1</div></blockquote>
+<p>fi</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_create_export_views_end</p>
+<p># commons_oracle_commons_oracle_download_view
+commons_oracle_download_view() {</p>
+<blockquote>
+<div><p>local viewname=${1/.sql/}
+local viewsdir=${ORACLE_DIR}/views
+local export_view_sql=${viewsdir}/export_view_${viewname}.sql</p>
+<p>_logfile_write &#8220;Start download of the view ${viewname}.&#8221; || return 1</p>
+<p>commons_oracle_download_create_export_view $viewname</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_view_sql}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;$SQLPLUS_OUTPUT&#8221; || return 1</p>
+<p>_logfile_write &#8220;End download of the view ${viewname}.&#8221; || return 1</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_view_end</p>
+<p># commons_oracle_commons_oracle_download_create_export_view
+commons_oracle_download_create_export_view() {</p>
+<blockquote>
+<div><p>local viewname=${1/.sql/}</p>
+<p>local viewsdir=${ORACLE_DIR}/views
+local export_view_sql=${viewsdir}/export_view_${viewname}.sql
+local export_view_file=${viewsdir}/export_views_gen_${viewname}.sql</p>
+<p>local expire_time_sec=&#8221;7200&#8221;
+local ans=0</p>
+<p>if [[ ! -e ${export_view_file} || ! -e ${export_view_sql} || &#8220;$(( $(date +&#8221;%s&#8221;) - $(stat -c &#8220;%Y&#8221; $export_view_file) ))&#8221; -gt ${expire_time_sec} ]] ; then</p>
+<blockquote>
+<div><p>_logfile_write &#8220;Start creation of the ${export_view_sql} file.&#8221; || return 1</p>
+<p># Create export_view_${viewname}.sql file
+_logfile_write &#8220;sed -e &#8216;s:VIEWS_DIR:&#8217;${viewsdir}/&#8217;:g&#8217; </p>
+<blockquote>
+<div>&#8220;$_oracle_scripts/export_view_gen.sql.in&#8221; &gt; &#8220;${export_view_file}&#8221;&#8220;</div></blockquote>
+<p>sed -e &#8216;s:VIEWS_DIR:&#8217;${viewsdir}&#8217;/:g&#8217; &#8220;$_oracle_scripts/export_view_gen.sql.in&#8221; &gt; &#8220;${export_view_file}&#8221;</p>
+<p># Replace VIEW_NAME string
+_logfile_write &#8220;sed -i -e &#8216;s:VIEW_NAME:&#8217;${viewname}&#8217;:g&#8217; &#8220;${export_view_file}&#8221;&#8221;
+sed -i -e &#8216;s:VIEW_NAME:&#8217;${viewname}&#8217;:g&#8217; &#8220;${export_view_file}&#8221;</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_view_file}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;End creation of the ${export_view_sql} file.&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>_logfile_write &#8220;${export_view_file} is updated.&#8221; || return 1</div></blockquote>
+<p>fi</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_create_export_view_end</p>
+<p># commons_oracle_commons_oracle_download_all_jobs
+commons_oracle_download_all_jobs() {</p>
+<blockquote>
+<div><p>local jobsdir=${ORACLE_DIR}/jobs
+local export_jobs_sql=${jobsdir}/export_job.sql</p>
+<p>_logfile_write &#8220;Start download of all jobs.&#8221; || return 1</p>
+<p>commons_oracle_download_create_export_jobs</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_jobs_sql}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;$SQLPLUS_OUTPUT&#8221; || return 1</p>
+<p>_logfile_write &#8220;End download of all jobs.&#8221; || return 1</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_all_jobs_end</p>
+<p># commons_oracle_commons_oracle_download_create_export_jobs
+commons_oracle_download_create_export_jobs() {</p>
+<blockquote>
+<div><p>local jobsdir=${ORACLE_DIR}/jobs
+local export_jobs_sql=${jobsdir}/export_job.sql
+local export_jobs_file=${jobsdir}/export_job_gen.sql</p>
+<p>local expire_time_sec=&#8221;7200&#8221;
+local ans=0</p>
+<p>if [[ ! -e ${export_jobs_file} || ! -e ${export_jobs_sql} || &#8220;$(( $(date +&#8221;%s&#8221;) - $(stat -c &#8220;%Y&#8221; $export_jobs_file) ))&#8221; -gt ${expire_time_sec} ]] ; then</p>
+<blockquote>
+<div><p>_logfile_write &#8220;Start creation of the ${export_jobs_sql} file.&#8221; || return 1</p>
+<p># Create export_job.sql file
+_logfile_write &#8220;sed -e &#8216;s:JOBS_DIR:&#8217;${jobsdir}/&#8217;:g&#8217; </p>
+<blockquote>
+<div>&#8220;$_oracle_scripts/export_jobs_gen.sql.in&#8221; &gt; &#8220;${export_jobs_file}&#8221;&#8220;</div></blockquote>
+<p>sed -e &#8216;s:JOBS_DIR:&#8217;${jobsdir}&#8217;/:g&#8217; &#8220;$_oracle_scripts/export_jobs_gen.sql.in&#8221; &gt; &#8220;${export_jobs_file}&#8221;</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_jobs_file}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;End creation of the ${export_jobs_sql} file.&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>_logfile_write &#8220;${export_jobs_file} is updated.&#8221; || return 1</div></blockquote>
+<p>fi</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_create_export_jobs_end</p>
+<p># commons_oracle_commons_oracle_download_job
+commons_oracle_download_job() {</p>
+<blockquote>
+<div><p>local jobname=${1/.sql/}
+local jobsdir=${ORACLE_DIR}/jobs
+local export_job_sql=${jobsdir}/export_job_${jobname}.sql</p>
+<p>_logfile_write &#8220;Start download of the job ${jobname}.&#8221; || return 1</p>
+<p>commons_oracle_download_create_export_job $jobname</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_job_sql}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;$SQLPLUS_OUTPUT&#8221; || return 1</p>
+<p>_logfile_write &#8220;End download of the job ${jobname}.&#8221; || return 1</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_job_end</p>
+<p># commons_oracle_commons_oracle_download_create_export_job
+commons_oracle_download_create_export_job() {</p>
+<blockquote>
+<div><p>local jobname=${1/.sql/}</p>
+<p>local jobsdir=${ORACLE_DIR}/jobs
+local export_job_sql=${jobsdir}/export_job_${jobname}.sql
+local export_job_file=${jobsdir}/export_jobs_gen_${jobname}.sql</p>
+<p>local expire_time_sec=&#8221;7200&#8221;
+local ans=0</p>
+<p>if [[ ! -e ${export_job_file} || ! -e ${export_job_sql} || &#8220;$(( $(date +&#8221;%s&#8221;) - $(stat -c &#8220;%Y&#8221; $export_job_file) ))&#8221; -gt ${expire_time_sec} ]] ; then</p>
+<blockquote>
+<div><p>_logfile_write &#8220;Start creation of the ${export_job_sql} file.&#8221; || return 1</p>
+<p># Create export_job_${jobname}.sql file
+_logfile_write &#8220;sed -e &#8216;s:JOBS_DIR:&#8217;${jobsdir}/&#8217;:g&#8217; </p>
+<blockquote>
+<div>&#8220;$_oracle_scripts/export_job_gen.sql.in&#8221; &gt; &#8220;${export_job_file}&#8221;&#8220;</div></blockquote>
+<p>sed -e &#8216;s:JOBS_DIR:&#8217;${jobsdir}&#8217;/:g&#8217; &#8220;$_oracle_scripts/export_job_gen.sql.in&#8221; &gt; &#8220;${export_job_file}&#8221;</p>
+<p># Replace JOB_NAME string
+_logfile_write &#8220;sed -i -e &#8216;s:JOB_NAME:&#8217;${jobname}&#8217;:g&#8217; &#8220;${export_job_file}&#8221;&#8221;
+sed -i -e &#8216;s:JOB_NAME:&#8217;${jobname}&#8217;:g&#8217; &#8220;${export_job_file}&#8221;</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_job_file}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;End creation of the ${export_job_sql} file.&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>_logfile_write &#8220;${export_job_file} is updated.&#8221; || return 1</div></blockquote>
+<p>fi</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_create_export_job_end</p>
+<p># commons_oracle_commons_oracle_download_all_schedules
+commons_oracle_download_all_schedules() {</p>
+<blockquote>
+<div><p>local schedulesdir=${ORACLE_DIR}/schedules
+local export_schedules_sql=${schedulesdir}/export_schedule.sql</p>
+<p>_logfile_write &#8220;Start download of all schedules.&#8221; || return 1</p>
+<p>commons_oracle_download_create_export_schedules</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_schedules_sql}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;$SQLPLUS_OUTPUT&#8221; || return 1</p>
+<p>_logfile_write &#8220;End download of all schedules.&#8221; || return 1</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_all_schedules_end</p>
+<p># commons_oracle_commons_oracle_download_create_export_schedules
+commons_oracle_download_create_export_schedules() {</p>
+<blockquote>
+<div><p>local schedulesdir=${ORACLE_DIR}/schedules
+local export_schedules_sql=${schedulesdir}/export_schedule.sql
+local export_schedules_file=${schedulesdir}/export_schedule_gen.sql</p>
+<p>local expire_time_sec=&#8221;7200&#8221;
+local ans=0</p>
+<p>if [[ ! -e ${export_schedules_file} || ! -e ${export_schedules_sql} || &#8220;$(( $(date +&#8221;%s&#8221;) - $(stat -c &#8220;%Y&#8221; $export_schedules_file) ))&#8221; -gt ${expire_time_sec} ]] ; then</p>
+<blockquote>
+<div><p>_logfile_write &#8220;Start creation of the ${export_schedules_sql} file.&#8221; || return 1</p>
+<p># Create export_schedule.sql file
+_logfile_write &#8220;sed -e &#8216;s:SCHEDULES_DIR:&#8217;${schedulesdir}/&#8217;:g&#8217; </p>
+<blockquote>
+<div>&#8220;$_oracle_scripts/export_schedules_gen.sql.in&#8221; &gt; &#8220;${export_schedules_file}&#8221;&#8220;</div></blockquote>
+<p>sed -e &#8216;s:SCHEDULES_DIR:&#8217;${schedulesdir}&#8217;/:g&#8217; &#8220;$_oracle_scripts/export_schedules_gen.sql.in&#8221; &gt; &#8220;${export_schedules_file}&#8221;</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_schedules_file}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;End creation of the ${export_schedules_sql} file.&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>_logfile_write &#8220;${export_schedules_file} is updated.&#8221; || return 1</div></blockquote>
+<p>fi</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_create_export_schedules_end</p>
+<p># commons_oracle_commons_oracle_download_schedule
+commons_oracle_download_schedule() {</p>
+<blockquote>
+<div><p>local schedulename=${1/.sql/}
+local schedulesdir=${ORACLE_DIR}/schedules
+local export_schedule_sql=${schedulesdir}/export_schedule_${schedulename}.sql</p>
+<p>_logfile_write &#8220;Start download of the schedule ${schedulename}.&#8221; || return 1</p>
+<p>commons_oracle_download_create_export_schedule $schedulename</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_schedule_sql}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;$SQLPLUS_OUTPUT&#8221; || return 1</p>
+<p>_logfile_write &#8220;End download of the schedule ${schedulename}.&#8221; || return 1</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_schedule_end</p>
+<p># commons_oracle_commons_oracle_download_create_export_schedule
+commons_oracle_download_create_export_schedule() {</p>
+<blockquote>
+<div><p>local schedulename=${1/.sql/}</p>
+<p>local schedulesdir=${ORACLE_DIR}/schedules
+local export_schedule_sql=${schedulesdir}/export_schedule_${schedulename}.sql
+local export_schedule_file=${schedulesdir}/export_schedules_gen_${schedulename}.sql</p>
+<p>local expire_time_sec=&#8221;7200&#8221;
+local ans=0</p>
+<p>if [[ ! -e ${export_schedule_file} || ! -e ${export_schedule_sql} || &#8220;$(( $(date +&#8221;%s&#8221;) - $(stat -c &#8220;%Y&#8221; $export_schedule_file) ))&#8221; -gt ${expire_time_sec} ]] ; then</p>
+<blockquote>
+<div><p>_logfile_write &#8220;Start creation of the ${export_schedule_sql} file.&#8221; || return 1</p>
+<p># Create export_schedule_${schedulename}.sql file
+_logfile_write &#8220;sed -e &#8216;s:SCHEDULES_DIR:&#8217;${schedulesdir}/&#8217;:g&#8217; </p>
+<blockquote>
+<div>&#8220;$_oracle_scripts/export_schedule_gen.sql.in&#8221; &gt; &#8220;${export_schedule_file}&#8221;&#8220;</div></blockquote>
+<p>sed -e &#8216;s:SCHEDULES_DIR:&#8217;${schedulesdir}&#8217;/:g&#8217; &#8220;$_oracle_scripts/export_schedule_gen.sql.in&#8221; &gt; &#8220;${export_schedule_file}&#8221;</p>
+<p># Replace SCHEDULE_NAME string
+_logfile_write &#8220;sed -i -e &#8216;s:SCHEDULE_NAME:&#8217;${schedulename}&#8217;:g&#8217; &#8220;${export_schedule_file}&#8221;&#8221;
+sed -i -e &#8216;s:SCHEDULE_NAME:&#8217;${schedulename}&#8217;:g&#8217; &#8220;${export_schedule_file}&#8221;</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_schedule_file}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;End creation of the ${export_schedule_sql} file.&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>_logfile_write &#8220;${export_schedule_file} is updated.&#8221; || return 1</div></blockquote>
+<p>fi</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_create_export_schedule_end</p>
+<p># commons_oracle_commons_oracle_download_all_triggers
+commons_oracle_download_all_triggers() {</p>
+<blockquote>
+<div><p>local triggersdir=${ORACLE_DIR}/triggers
+local export_triggers_sql=${triggersdir}/export_trigger.sql</p>
+<p>_logfile_write &#8220;Start download of all triggers.&#8221; || return 1</p>
+<p>commons_oracle_download_create_export_triggers</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_triggers_sql}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;$SQLPLUS_OUTPUT&#8221; || return 1</p>
+<p>_logfile_write &#8220;End download of all triggers.&#8221; || return 1</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_all_triggers_end</p>
+<p># commons_oracle_commons_oracle_download_create_export_triggers
+commons_oracle_download_create_export_triggers() {</p>
+<blockquote>
+<div><p>local triggersdir=${ORACLE_DIR}/triggers
+local export_triggers_sql=${triggersdir}/export_trigger.sql
+local export_triggers_file=${triggersdir}/export_trigger_gen.sql</p>
+<p>local expire_time_sec=&#8221;7200&#8221;
+local ans=0</p>
+<p>if [[ ! -e ${export_triggers_file} || ! -e ${export_triggers_sql} || &#8220;$(( $(date +&#8221;%s&#8221;) - $(stat -c &#8220;%Y&#8221; $export_triggers_file) ))&#8221; -gt ${expire_time_sec} ]] ; then</p>
+<blockquote>
+<div><p>_logfile_write &#8220;Start creation of the ${export_triggers_sql} file.&#8221; || return 1</p>
+<p># Create export_trigger.sql file
+_logfile_write &#8220;sed -e &#8216;s:TRIGGERS_DIR:&#8217;${triggersdir}/&#8217;:g&#8217; </p>
+<blockquote>
+<div>&#8220;$_oracle_scripts/export_triggers_gen.sql.in&#8221; &gt; &#8220;${export_triggers_file}&#8221;&#8220;</div></blockquote>
+<p>sed -e &#8216;s:TRIGGERS_DIR:&#8217;${triggersdir}&#8217;/:g&#8217; &#8220;$_oracle_scripts/export_triggers_gen.sql.in&#8221; &gt; &#8220;${export_triggers_file}&#8221;</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_triggers_file}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;End creation of the ${export_triggers_sql} file.&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>_logfile_write &#8220;${export_triggers_file} is updated.&#8221; || return 1</div></blockquote>
+<p>fi</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_create_export_triggers_end</p>
+<p># commons_oracle_commons_oracle_download_trigger
+commons_oracle_download_trigger() {</p>
+<blockquote>
+<div><p>local triggername=${1/.sql/}
+local triggersdir=${ORACLE_DIR}/triggers
+local export_trigger_sql=${triggersdir}/export_trigger_${triggername}.sql</p>
+<p>_logfile_write &#8220;Start download of the trigger ${triggername}.&#8221; || return 1</p>
+<p>commons_oracle_download_create_export_trigger $triggername</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_trigger_sql}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;$SQLPLUS_OUTPUT&#8221; || return 1</p>
+<p>_logfile_write &#8220;End download of the trigger ${triggername}.&#8221; || return 1</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_trigger_end</p>
+<p># commons_oracle_commons_oracle_download_create_export_trigger
+commons_oracle_download_create_export_trigger() {</p>
+<blockquote>
+<div><p>local triggername=${1/.sql/}</p>
+<p>local triggersdir=${ORACLE_DIR}/triggers
+local export_trigger_sql=${triggersdir}/export_trigger_${triggername}.sql
+local export_trigger_file=${triggersdir}/export_triggers_gen_${triggername}.sql</p>
+<p>local expire_time_sec=&#8221;7200&#8221;
+local ans=0</p>
+<p>if [[ ! -e ${export_trigger_file} || ! -e ${export_trigger_sql} || &#8220;$(( $(date +&#8221;%s&#8221;) - $(stat -c &#8220;%Y&#8221; $export_trigger_file) ))&#8221; -gt ${expire_time_sec} ]] ; then</p>
+<blockquote>
+<div><p>_logfile_write &#8220;Start creation of the ${export_trigger_sql} file.&#8221; || return 1</p>
+<p># Create export_trigger_${triggername}.sql file
+_logfile_write &#8220;sed -e &#8216;s:TRIGGERS_DIR:&#8217;${triggersdir}/&#8217;:g&#8217; </p>
+<blockquote>
+<div>&#8220;$_oracle_scripts/export_trigger_gen.sql.in&#8221; &gt; &#8220;${export_trigger_file}&#8221;&#8220;</div></blockquote>
+<p>sed -e &#8216;s:TRIGGERS_DIR:&#8217;${triggersdir}&#8217;/:g&#8217; &#8220;$_oracle_scripts/export_trigger_gen.sql.in&#8221; &gt; &#8220;${export_trigger_file}&#8221;</p>
+<p># Replace TRIGGER_NAME string
+_logfile_write &#8220;sed -i -e &#8216;s:TRIGGER_NAME:&#8217;${triggername}&#8217;:g&#8217; &#8220;${export_trigger_file}&#8221;&#8221;
+sed -i -e &#8216;s:TRIGGER_NAME:&#8217;${triggername}&#8217;:g&#8217; &#8220;${export_trigger_file}&#8221;</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;${export_trigger_file}&#8221;
+ans=$?</p>
+<p>_logfile_write &#8220;End creation of the ${export_trigger_sql} file.&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>_logfile_write &#8220;${export_trigger_file} is updated.&#8221; || return 1</div></blockquote>
+<p>fi</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_download_create_export_trigger_end</p>
+<p># commons_oracle_commons_oracle_compile_file
+commons_oracle_compile_file() {</p>
+<blockquote>
+<div><p>local f=$1
+local msg=$2
+local f_base=$(basename &#8220;$f&#8221;)</p>
+<dl class="docutils">
+<dt>if [ ! -e $f ] ; then</dt>
+<dd>_logfile_write &#8220;(oracle) File $f not found.&#8221; || return 1
+return 1</dd>
+</dl>
+<p>fi</p>
+<p>_logfile_write &#8220;(oracle) Start compilation (file $f_base): $msg&#8221; || return 1</p>
+<p>echo &#8220;(oracle) Start compilation (file $f_base): $msg&#8221;</p>
+<p>SQLPLUS_OUTPUT=&#8221;&#8220;</p>
+<p>sqlplus_file &#8220;SQLPLUS_OUTPUT&#8221; &#8220;$f&#8221;
+local ans=$?</p>
+<p>_logfile_write &#8220;$SQLPLUS_OUTPUT&#8221; || return 1</p>
+<p>_logfile_write &#8220;(oracle) End compilation (file $f_base, result =&gt; $ans): $msg&#8221; || return 1</p>
+<p>echo -en &#8220;(oracle) End compilation (file $f_base, result =&gt; $ans): $msgn&#8221;</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_compile_file_end</p>
+<p># commons_oracle_commons_oracle_compile_all_packages
+commons_oracle_compile_all_packages () {</p>
+<blockquote>
+<div><p>local msg=&#8221;$1&#8221;
+local directory=&#8221;$ORACLE_DIR/packages&#8221;</p>
+<p>commons_oracle_compile_all_from_dir &#8220;$directory&#8221; &#8220;of all packages&#8221; &#8220;$msg&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_compile_all_packages_end</p>
+<p># commons_oracle_commons_oracle_compile_all_triggers
+commons_oracle_compile_all_triggers () {</p>
+<blockquote>
+<div><p>local msg=&#8221;$1&#8221;
+local directory=&#8221;$ORACLE_DIR/triggers&#8221;</p>
+<p>commons_oracle_compile_all_from_dir &#8220;$directory&#8221; &#8220;of all triggers&#8221; &#8220;$msg&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_compile_all_triggers_end</p>
+<p># commons_oracle_commons_oracle_compile_all_functions
+commons_oracle_compile_all_functions () {</p>
+<blockquote>
+<div><p>local msg=&#8221;$1&#8221;
+local directory=&#8221;$ORACLE_DIR/functions&#8221;</p>
+<p>commons_oracle_compile_all_from_dir &#8220;$directory&#8221; &#8220;of all functions&#8221; &#8220;$msg&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_compile_all_functions_end</p>
+<p># commons_oracle_commons_oracle_compile_all_views
+commons_oracle_compile_all_views () {</p>
+<blockquote>
+<div><p>local msg=&#8221;$1&#8221;
+local directory=&#8221;$ORACLE_DIR/views&#8221;</p>
+<p>commons_oracle_compile_all_from_dir &#8220;$directory&#8221; &#8220;of all views&#8221; &#8220;$msg&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_compile_all_views_end</p>
+<p># commons_oracle_commons_oracle_compile_all_jobs
+commons_oracle_compile_all_jobs () {</p>
+<blockquote>
+<div><p>local msg=&#8221;$1&#8221;
+local directory=&#8221;$ORACLE_DIR/jobs&#8221;</p>
+<p>commons_oracle_compile_all_from_dir &#8220;$directory&#8221; &#8220;of all jobs&#8221; &#8220;$msg&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_compile_all_jobs_end</p>
+<p># commons_oracle_commons_oracle_compile_all_schedules
+commons_oracle_compile_all_schedules () {</p>
+<blockquote>
+<div><p>local msg=&#8221;$1&#8221;
+local directory=&#8221;$ORACLE_DIR/schedules&#8221;</p>
+<p>commons_oracle_compile_all_from_dir &#8220;$directory&#8221; &#8220;of all schedules&#8221; &#8220;$msg&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_compile_all_schedules_end</p>
+<p># commons_oracle_commons_oracle_compile_all_from_dir
+commons_oracle_compile_all_from_dir () {</p>
+<blockquote>
+<div><p>local directory=&#8221;$1&#8221;
+local msg_head=&#8221;$2&#8221;
+local msg=&#8221;$3&#8221;
+local f=&#8221;&#8221;
+local fb=&#8221;&#8221;
+local ex_f=&#8221;&#8221;
+local exc=0</p>
+<p>_logfile_write &#8220;(oracle) Start compilation $msg_head: $msg&#8221; || return 1</p>
+<p>for i in $directory/<a href="#id1"><span class="problematic" id="id2">*</span></a>.sql ; do</p>
+<blockquote>
+<div><p>exc=0</p>
+<p>fb=`basename $i`
+f=&#8221;${fb/.sql/}&#8221;</p>
+<p># Check if file is excluded
+if [ ! -z &#8220;$ORACLE_COMPILE_FILES_EXCLUDED&#8221; ] ; then</p>
+<blockquote>
+<div><p>for e in $ORACLE_COMPILE_FILES_EXCLUDED ; do</p>
+<blockquote>
+<div><p>ex_f=`basename $e`
+ex_f=&#8221;${ex_f/.sql/}&#8221;</p>
+<dl class="docutils">
+<dt>if [ &#8220;$ex_f&#8221; == &#8220;$f&#8221; ] ; then</dt>
+<dd><p class="first">exc=1</p>
+<p>_logfile_write &#8220;(oracle) Exclude file $fb for user request.&#8221;</p>
+<p class="last">break</p>
+</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>done # end for exclueded</p>
+</div></blockquote>
+<p>fi</p>
+<p># If file is excluded go to the next
+[ $exc -eq 1 ] &amp;&amp; continue</p>
+<p>commons_oracle_compile_file &#8220;$i&#8221; &#8220;$msg&#8221;
+# POST: on error go to next file</p>
+</div></blockquote>
+<p>done # end for</p>
+<p>_logfile_write &#8220;(oracle) End compilation $msg_head: $msg&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_oracle_commons_oracle_compile_all_from_dir_end</p>
+<p># vim: syn=sh filetype=sh</p>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

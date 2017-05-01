@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title># Internal functions</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <p>#!/bin/bash
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+# Author(s): Geaaru, <a class="reference external" href="mailto:geaaru&#37;&#52;&#48;gmail&#46;com">geaaru<span>&#64;</span>gmail<span>&#46;</span>com</a>
+# $Id: 0ca91cab1e6e137aaddb783460252a799341c6a3 $
+# License: GPL 2.0
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p>name=&#8221;logfile&#8221;
+logfile_authors=&#8221;Geaaru&#8221;
+logfile_creation_date=&#8221;May 6, 2013&#8221;
+logfile_version=&#8221;0.1.0&#8221;
+logfile_status=&#8221;0&#8221;</p>
+<p># logfile_logfile_version
+logfile_version () {</p>
+<blockquote>
+<div>echo -en &#8220;Version: ${logfile_version}n&#8221;
+return 0</div></blockquote>
+<p>}
+# logfile_logfile_version_end</p>
+<p># logfile_logfile_long_help
+logfile_long_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [logfile]:n&#8221;
+echo -en &#8220;Author(s): ${logfile_authors}n&#8221;
+echo -en &#8220;Created: ${logfile_creation_date}n&#8221;
+echo -en &#8220;Version: ${logfile_version}n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;tlong_help               Show long help informationsn&#8221;
+echo -en &#8220;tshow_help               Show command list.n&#8221;
+echo -en &#8220;tversion                 Show module version.n&#8221;
+echo -en &#8220;tinfo                    Show logfile module status.n&#8221;
+echo -en &#8220;treset                   Remove logfile.n&#8221;
+echo -en &#8220;twrite [msg]             Write a message to log file.n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;===========================================================================n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# logfile_logfile_long_help_end</p>
+<p># logfile_logfile_show_help
+logfile_show_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [logfile]:n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;tlong_help               Show long help informationsn&#8221;
+echo -en &#8220;tshow_help               Show command list.n&#8221;
+echo -en &#8220;tversion                 Show module version.n&#8221;
+echo -en &#8220;tinfo                    Show logfile module status.n&#8221;
+echo -en &#8220;treset                   Remove logfile.n&#8221;
+echo -en &#8220;twrite [msg]             Write a message to log file.n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;===========================================================================n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# logfile_logfile_show_help_end</p>
+<p># logfile_logfile_info
+logfile_info () {</p>
+<blockquote>
+<div>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [logfile]:n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;Logfile = $LOGFILEn&#8221;
+echo -en &#8220;Status  = $logfile_statusn&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;===========================================================================n&#8221;</div></blockquote>
+<p>}
+# logfile_logfile_info_end</p>
+<p># logfile_logfile_write
+logfile_write () {</p>
+<blockquote>
+<div><p>local result=0</p>
+<p># Shift first two input param
+shift 2</p>
+<p>local msg=$1</p>
+<p>_logfile_write &#8220;$msg&#8221; || $result=1</p>
+<p>return $result</p>
+</div></blockquote>
+<p>}
+# logfile_logfile_write_end</p>
+<p># logfile_logfile_reset
+logfile_reset () {</p>
+<blockquote>
+<div><p>local res=0</p>
+<p>if [ x$logfile_status == x&#8221;1&#8221; ] ; then</p>
+<blockquote>
+<div><p>confirmation_question &#8220;Are you sure to remove file $LOGFILE ? [y/N]&#8221;
+res=$?</p>
+<dl class="docutils">
+<dt>if [ $res -eq 0 ] ; then</dt>
+<dd>rm $LOGFILE || error_handled &#8220;Error on remove file $LOGFILE&#8221;
+echo -en &#8220;File $LOGFILE removed correctly.n&#8221;</dd>
+<dt>else</dt>
+<dd>res=1</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>echo -en &#8220;Logging is not enable. I do nothing.n&#8221;
+res=1</div></blockquote>
+<p>fi</p>
+<p>return $res</p>
+</div></blockquote>
+<p>}
+# logfile_logfile_reset_end</p>
+<div class="section" id="internal-functions">
+<h1># Internal functions<a class="headerlink" href="#internal-functions" title="Permalink to this headline">¶</a></h1>
+<p># logfile__logfile_write
+_logfile_write () {</p>
+<blockquote>
+<div><p>local msg=$1</p>
+<p>local d=`date +%Y%m%d-%H:%M:%S`</p>
+<dl class="docutils">
+<dt>if [ x$logfile_status != x&#8221;1&#8221; ] ; then</dt>
+<dd># Logging not enable
+return 0</dd>
+</dl>
+<p>fi</p>
+<p>echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221; &gt;&gt; $LOGFILE || return 1
+echo -en &#8220;$d - $msgn&#8221; &gt;&gt; $LOGFILE || return 1
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221; &gt;&gt; $LOGFILE || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# logfile__logfile_write_end</p>
+<p># logfile__logfile_init
+_logfile_init () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ -z &#8220;$LOGFILE&#8221; ] ; then</dt>
+<dd>logfile_status=&#8221;0&#8221;</dd>
+</dl>
+<p>else</p>
+<blockquote>
+<div><p># Check if file is writable
+touch $LOGFILE || error_handled &#8220;Error on access to $LOGFILE&#8221;</p>
+<p>logfile_status=&#8221;1&#8221;</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>}
+# logfile__logfile_init_end</p>
+<p># vim: syn=sh filetype=sh ts=2 sw=2</p>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

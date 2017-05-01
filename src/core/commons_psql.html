@@ -1,0 +1,268 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt;</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <p>#!/bin/bash
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+# Author(s): Geaaru, <a class="reference external" href="mailto:geaaru&#37;&#52;&#48;gmail&#46;com">geaaru<span>&#64;</span>gmail<span>&#46;</span>com</a>
+# $Id: 28b822c9b33fea510a029a149b406da94e1289be $
+# License: GPL 2.0
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p># commons_psql_commons_psql_check_client
+commons_psql_check_client () {</p>
+<blockquote>
+<div><p>if [ -z &#8220;$psql&#8221; ] ; then</p>
+<blockquote>
+<div><p># POST: psql variable not set
+tmp=`which psql 2&gt; /dev/null`
+var=$?</p>
+<p>if [ $var -eq 0 ] ; then</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;Use psql: $tmpn&#8221;</p>
+<p>POSTGRESQL_CLIENT=$tmp</p>
+<p>unset tmp</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>error_generate &#8220;psql program not found&#8221;</p>
+<p>return 1</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p># POST: psql variable already set</p>
+<p># Check if file is correct
+if [ -f &#8220;$psql&#8221; ] ; then</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;Use psql: $psqln&#8221;</p>
+<p>POSTGRESQL_CLIENT=$psq</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>error_generate &#8220;$psql program invalid.&#8221;</p>
+<p>return 1</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p>export POSTGRESQL_CLIENT</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_psql_commons_psql_check_client_end</p>
+<p># commons_psql_commons_psql_check_client_dump
+commons_psql_check_client_dump () {</p>
+<blockquote>
+<div><p>if [ -z &#8220;$pg_dump&#8221; ] ; then</p>
+<blockquote>
+<div><p># POST: pg_dump variable not set
+tmp=`which pg_dump 2&gt; /dev/null`
+var=$?</p>
+<p>if [ $var -eq 0 ] ; then</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;Use pg_dump: $tmpn&#8221;</p>
+<p>POSTGRESQL_CLIENT_DUMP=$tmp</p>
+<p>unset tmp</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>error_generate &#8220;pg_dump program not found&#8221;</p>
+<p>return 1</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p># POST: pg_dump variable already set</p>
+<p># Check if file is correct
+if [ -f &#8220;$pg_dump&#8221; ] ; then</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;Use pg_dump: $pg_dumpn&#8221;</p>
+<p>POSTGRESQL_CLIENT_DUMP=$pg_dump</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>error_generate &#8220;$pg_dump program invalid.&#8221;</p>
+<p>return 1</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p>export POSTGRESQL_CLIENT_DUMP</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_psql_commons_psql_check_client_dump_end</p>
+<p># commons_psql_commons_psql_check_vars
+commons_psql_check_vars () {</p>
+<blockquote>
+<div><p>local commons_msg=&#8217;variable on configuration file, through arguments or on current profile.&#8217;</p>
+<p>check_var &#8220;POSTGRESQL_USER&#8221; || error_handled &#8220;You must define POSTGRESQL_USER $commons_msg&#8221;
+check_var &#8220;POSTGRESQL_PWD&#8221;  || error_handled &#8220;You must define POSTGRESQL_PWD $commons_msg&#8221;
+check_var &#8220;POSTGRESQL_DB&#8221;   || error_handled &#8220;You must define POSTGRESQL_DB $commons_msg&#8221;
+check_var &#8220;POSTGRESQL_DIR&#8221;  || error_handled &#8220;You must define POSTGRESQL_DIR $commons_msg&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_psql_commons_psql_check_vars_end</p>
+<p># commons_psql_commons_psql_check_connection
+commons_psql_check_connection () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ -z &#8220;$POSTGRESQL_CLIENT&#8221; ] ; then</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$psql_auth&#8221; ] ; then</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(commons_psql_check_connection) Try connection with $POSTGRESQL_EXTRA_OPTIONS $psql_auth.n&#8221;</dd>
+</dl>
+<p>$POSTGRESQL_CLIENT $POSTGRESQL_EXTRA_OPTIONS $psql_auth 2&gt;&amp;1 &lt;&lt; EOF</p>
+</div></blockquote>
+<p>\q
+EOF</p>
+<blockquote>
+<div><p>errorCode=$?
+if [ ${errorCode} -ne 0 ] ; then</p>
+<blockquote>
+<div>return 1</div></blockquote>
+<p>fi</p>
+<p>unset errorCode</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo &#8220;psql was connected successfully&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_psql_commons_psql_check_connection_end</p>
+<p># commons_psql_commons_psql_shell
+commons_psql_shell () {</p>
+<blockquote>
+<div><p>local opts=&#8221;&#8221;
+local errorCode=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$POSTGRESQL_CLIENT&#8221; ] ; then</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$psql_auth&#8221; ] ; then</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+<p># Disable Pagination
+opts=&#8221;-P pager=off&#8221;</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(commons_psql_shell) Try connection with $opts $POSTGRESQL_EXTRA_OPTIONS $psql_auth.n&#8221;</dd>
+</dl>
+<p>$POSTGRESQL_CLIENT $opts $POSTGRESQL_EXTRA_OPTIONS $psql_auth</p>
+<p>errorCode=$?
+if [ ${errorCode} -ne 0 ] ; then</p>
+<blockquote>
+<div>return 1</div></blockquote>
+<p>fi</p>
+<p>unset errorCode</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_psql_commons_psql_shell_end</p>
+<p># commons_psql_commons_psql_dump
+commons_psql_dump () {</p>
+<blockquote>
+<div><p>local opts=&#8221;&#8221;
+local targetfile=&#8221;$1&#8221;
+local onlySchema=&#8221;${2:-1}&#8221;
+local errorCode=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$POSTGRESQL_CLIENT_DUMP&#8221; ] ; then</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$psql_auth&#8221; ] ; then</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ -n &#8220;$POSTGRESQL_SCHEMA&#8221; &amp;&amp; ${onlySchema} -eq 1 ]] ; then</dt>
+<dd>opts=&#8221;-n ${POSTGRESQL_SCHEMA}&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(commons_psql_dump) Try connection with $opts $POSTGRESQL_EXTRA_OPTIONS $psql_auth.n&#8221;</dd>
+</dl>
+<p>$POSTGRESQL_CLIENT_DUMP $opts $POSTGRESQL_EXTRA_OPTIONS $psql_auth &gt; ${targetfile}</p>
+<p>errorCode=$?
+if [ ${errorCode} -ne 0 ] ; then</p>
+<blockquote>
+<div>return 1</div></blockquote>
+<p>fi</p>
+<p>unset errorCode</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_psql_commons_psql_dump_end</p>
+<p># vim: syn=sh filetype=sh</p>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

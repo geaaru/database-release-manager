@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Logfile Module &#8212; Database Release Manager</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/dbrm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/superhero/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Commons API" href="common.html" />
+    <link rel="prev" title="DBM Module" href="dbm.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          Database Release Manager</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="dbm.html">Dbm Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Logfile Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common.html">Commons API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mysql.html">Mysql API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sqlplus.html">Sqlplus API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="psql.html">Psql API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commons_mariadb.html">Commons Mariadb API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commons_oracle.html">Commons Oracle API</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Logfile Module</a><ul>
+<li><a class="reference internal" href="#variables">Variables</a></li>
+<li><a class="reference internal" href="#commands">Commands</a><ul>
+<li><a class="reference internal" href="#logfile-version">logfile version</a></li>
+<li><a class="reference internal" href="#logfile-info">logfile info</a></li>
+<li><a class="reference internal" href="#logfile-reset">logfile reset</a></li>
+<li><a class="reference internal" href="#logfile-write">logfile write</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api">API</a><ul>
+<li><a class="reference internal" href="#logfile-init">_logfile_init</a></li>
+<li><a class="reference internal" href="#logfile-write">_logfile_write</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="dbm.html" title="Previous Chapter: DBM Module"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; DBM Module</span>
+    </a>
+  </li>
+  <li>
+    <a href="common.html" title="Next Chapter: Commons API"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Commons API &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row" >
+    <div class="col-md-12 content">
+      
+  <div class="section" id="logfile-module">
+<span id="logfile-module"></span><h1>Logfile Module<a class="headerlink" href="#logfile-module" title="Permalink to this headline">¶</a></h1>
+<p>Target of this module is supply logging features to user and to dbrm itself.</p>
+<div class="section" id="variables">
+<span id="variables"></span><h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="33%" />
+<col width="67%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Variable</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">LOGFILE</span></code></td>
+<td>Contains path of logfile to use. If this variable is not set call to write command do nothing.</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="commands">
+<span id="commands"></span><h2>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="logfile-version">
+<span id="logfile-version"></span><h3>logfile version<a class="headerlink" href="#logfile-version" title="Permalink to this headline">¶</a></h3>
+<p>Show version of logfile module.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm logfile version 
+  Version: 0.1.0
+</pre></div>
+</div>
+</div>
+<div class="section" id="logfile-info">
+<span id="logfile-info"></span><h3>logfile info<a class="headerlink" href="#logfile-info" title="Permalink to this headline">¶</a></h3>
+<p>With info command is possible retrieve status of the <code class="docutils literal"><span class="pre">logfile</span></code> module and what is current logfile use for store logging string.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm logfile <span class="nv">info</span>
+  <span class="o">===========================================================================</span>
+  Module <span class="o">[</span>logfile<span class="o">]</span>:
+  ---------------------------------------------------------------------------
+  <span class="nv">Logfile</span> <span class="o">=</span> ./dbm.log
+  <span class="nv">Status</span>  <span class="o">=</span> 1
+  ---------------------------------------------------------------------------
+  <span class="o">===========================================================================</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="logfile-reset">
+<span id="logfile-reset"></span><h3>logfile reset<a class="headerlink" href="#logfile-reset" title="Permalink to this headline">¶</a></h3>
+<p>Remove current logfile.</p>
+<p><em>Exit Values</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">1</span></code>: On error or if logfile module is not enabled.</li>
+<li><code class="docutils literal"><span class="pre">0</span></code>: On success</li>
+</ul>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm logfile reset
+  Are you sure to remove file ./dbm.log ? <span class="o">[</span>y/N<span class="o">]</span>y
+  File ./dbm.log removed correctly.
+</pre></div>
+</div>
+</div>
+<div class="section" id="logfile-write">
+<span id="logfile-write"></span><h3>logfile write<a class="headerlink" href="#logfile-write" title="Permalink to this headline">¶</a></h3>
+<p>This command permit from a shell logging message to configured logfile. Every message contains a date and a line as seperator.</p>
+<p><em>Exit Values</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">1</span></code>: On error</li>
+<li><code class="docutils literal"><span class="pre">0</span></code>: On success</li>
+</ul>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm logfile write <span class="s2">&quot;INFO - Test logging&quot;</span>
+  <span class="nv">$#</span> cat ./dbm.log
+  ------------------------------------------------------
+  20170422-18:58:34 - INFO - Test logging
+  ------------------------------------------------------
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="api">
+<span id="api"></span><h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="logfile-init">
+<span id="logfile-init"></span><h3>_logfile_init<a class="headerlink" href="#logfile-init" title="Permalink to this headline">¶</a></h3>
+<p>Method called when module logfile is initialized.
+Check if it is defined LOGFILE variable and check if file is writable.
+If LOGFILE variable is not set then logfile module is automatically disabled.</p>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock144'))">(Show/Hide)</a><br /><div id="hiddencodeblock144" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_logfile_init <span class="o">()</span> <span class="o">{</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$LOGFILE</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">logfile_status</span><span class="o">=</span><span class="s2">&quot;0&quot;</span>
+  <span class="k">else</span>
+
+    <span class="c1"># Check if file is writable</span>
+    touch <span class="nv">$LOGFILE</span> <span class="o">||</span> error_handled <span class="s2">&quot;Error on access to </span><span class="nv">$LOGFILE</span><span class="s2">&quot;</span>
+
+    <span class="nv">logfile_status</span><span class="o">=</span><span class="s2">&quot;1&quot;</span>
+
+  <span class="k">fi</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="logfile-write">
+<span id="id1"></span><h3>_logfile_write<a class="headerlink" href="#logfile-write" title="Permalink to this headline">¶</a></h3>
+<p>Internal function that write input message to logfile.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>:  message to write on logfile</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">1</span></code>: On error</li>
+<li><code class="docutils literal"><span class="pre">0</span></code>: On success</li>
+</ul>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>   <span class="c1"># Write message to logfile</span>
+   _logfile_write <span class="s2">&quot;My message to write on LOGFILE!!!&quot;</span>
+</pre></div>
+</div>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock145'))">(Show/Hide)</a><br /><div id="hiddencodeblock145" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_logfile_write <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="nv">$1</span>
+
+  <span class="nb">local</span> <span class="nv">d</span><span class="o">=</span><span class="sb">`</span>date +%Y%m%d-%H:%M:%S<span class="sb">`</span>
+
+  <span class="k">if</span> <span class="o">[</span> x<span class="nv">$logfile_status</span> !<span class="o">=</span> x<span class="s2">&quot;1&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="c1"># Logging not enable</span>
+    <span class="k">return</span> 0
+  <span class="k">fi</span>
+
+  <span class="nb">echo</span> -en <span class="s2">&quot;------------------------------------------------------\n&quot;</span> &gt;&gt; <span class="nv">$LOGFILE</span> <span class="o">||</span> <span class="k">return</span> 1
+  <span class="nb">echo</span> -en <span class="s2">&quot;</span><span class="nv">$d</span><span class="s2"> - </span><span class="nv">$msg</span><span class="s2">\n&quot;</span> &gt;&gt; <span class="nv">$LOGFILE</span> <span class="o">||</span> <span class="k">return</span> 1
+  <span class="nb">echo</span> -en <span class="s2">&quot;------------------------------------------------------\n&quot;</span> &gt;&gt; <span class="nv">$LOGFILE</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> 0
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+      dbrm
+        &copy; Copyright 2017, Geaaru.<br/>
+      Last updated on May 01, 2017.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

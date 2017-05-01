@@ -1,0 +1,1081 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title># Internal functions</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <p>#!/bin/bash
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+# Author(s): Geaaru, <a class="reference external" href="mailto:geaaru&#37;&#52;&#48;gmail&#46;com">geaaru<span>&#64;</span>gmail<span>&#46;</span>com</a>
+# $Id: a88a9c2cf018282eea2b08070eefe97bacd5f591 $
+# License: GPL 2.0
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p>name=&#8221;oracle&#8221;
+oracle_authors=&#8221;Geaaru&#8221;
+oracle_creation_date=&#8221;May 6, 2013&#8221;
+oracle_version=&#8221;0.1.0&#8221;
+oracle_status=&#8221;0&#8221;</p>
+<p># Directory with custom oracle generation scripts
+_oracle_scripts=${prefix}/share/dbrm/oracle/</p>
+<p>#****f* oracle/oracle_version
+# FUNCTION
+#  Show version of oracle module.
+# SOURCE
+oracle_version() {</p>
+<blockquote>
+<div>echo -en &#8220;Version: ${oracle_version}n&#8221;
+return 0</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/oracle_long_help
+# FUNCTION
+#   Show long help message.
+# SOURCE
+oracle_long_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [oracle]:n&#8221;
+echo -en &#8220;Author(s): ${oracle_authors}n&#8221;
+echo -en &#8220;Created: ${oracle_creation_date}n&#8221;
+echo -en &#8220;Version: ${oracle_version}n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;tlong_help               Show long help informationsn&#8221;
+echo -en &#8220;tshow_help               Show command list.n&#8221;
+echo -en &#8220;tversion                 Show module version.n&#8221;
+echo -en &#8220;ttest_connection         Test connection versus database.n&#8221;
+echo -en &#8220;tdownload                Download packages/triggers/views/etc.n&#8221;
+echo -en &#8220;tcompile                 Compile packages/triggers/views/etc.n&#8221;
+echo -en &#8220;tshell                   Enter on sqlplus shell of current configuration.n&#8221;
+echo -en &#8220;tquery                   Execute directly a query on current database.n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;===========================================================================n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/oracle_show_help
+# FUNCTION
+#   Show help message.
+# SOURCE
+oracle_show_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [oracle]:n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;tlong_help               Show long help informationsn&#8221;
+echo -en &#8220;tshow_help               Show command list.n&#8221;
+echo -en &#8220;tversion                 Show module version.n&#8221;
+echo -en &#8220;ttest_connection         Test connection versus database.n&#8221;
+echo -en &#8220;tdownload                Download packages/triggers/views/etc.n&#8221;
+echo -en &#8220;tcompile                 Compile packages/triggers/views/etc.n&#8221;
+echo -en &#8220;tshell                   Enter on sqlplus shell of current configuration.n&#8221;
+echo -en &#8220;tquery                   Execute directly a query on current database.n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;===========================================================================n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/oracle_test_connection
+# FUNCTION
+#   Test connection to oracle server and schema.
+# SEE ALSO
+#   _oracle_connections_args
+# SOURCE
+oracle_test_connection () {</p>
+<blockquote>
+<div><p>local result=1</p>
+<p># Shift first two input param
+shift 2</p>
+<p>_oracle_check_status</p>
+<p>_oracle_help_message=&#8221;print_help&#8221;</p>
+<p>_oracle_connections_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<p>commons_oracle_check_vars</p>
+<p>sqlplus_set_sqlplus_auth_var &#8220;$ORACLE_SID&#8221; &#8220;$ORACLE_USER&#8221; &#8220;$ORACLE_PWD&#8221;</p>
+<p>commons_oracle_check_connection || error_handled &#8220;SQLPlus was unable to connect the DB with the supplied credentials&#8221;</p>
+<p>echo -en &#8220;Connected to $ORACLE_SID with user $ORACLE_USER correctly.n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/oracle_compile
+# FUNCTION
+#   Compile command that permit compilation of triggers, views, function, procedure, packages, etc.
+# SEE ALSO
+#   _oracle_connections_args
+#   _oracle_compile_args
+# SOURCE
+oracle_compile () {</p>
+<blockquote>
+<div><p>local result=1</p>
+<p># Shift first two input param
+shift 2</p>
+<p>_oracle_check_status</p>
+<p>_oracle_help_message=&#8221;do_help&#8221;</p>
+<p>_oracle_connections_args &#8220;$&#64;&#8221;</p>
+<p>_oracle_compile_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<p>commons_oracle_check_vars</p>
+<p>sqlplus_set_sqlplus_auth_var &#8220;$ORACLE_SID&#8221; &#8220;$ORACLE_USER&#8221; &#8220;$ORACLE_PWD&#8221;</p>
+<p>commons_oracle_check_connection || error_handled &#8220;SQLPlus was unable to connect the DB with the supplied credentials&#8221;</p>
+<p>_oracle_compile || error_handled &#8220;&#8221;</p>
+<p>echo -en &#8220;Compile operation successfull.n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/oracle_download
+# FUNCTION
+#   Download command that permit download of triggers, views, function, procedure, packages, etc.
+# SEE ALSO
+#   _oracle_connections_args
+#   _oracle_download_args
+# SOURCE
+oracle_download () {</p>
+<blockquote>
+<div><p>local result=1</p>
+<p># Shift first two input param
+shift 2</p>
+<p>_oracle_check_status</p>
+<p>_oracle_help_message=&#8221;do_help&#8221;</p>
+<p>_oracle_connections_args &#8220;$&#64;&#8221;</p>
+<p>_oracle_download_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<p>commons_oracle_check_vars</p>
+<p>sqlplus_set_sqlplus_auth_var &#8220;$ORACLE_SID&#8221; &#8220;$ORACLE_USER&#8221; &#8220;$ORACLE_PWD&#8221;</p>
+<p>commons_oracle_check_connection || error_handled &#8220;SQLPlus was unable to connect the DB with the supplied credentials&#8221;</p>
+<p>_oracle_download || error_handled &#8220;&#8221;</p>
+<p>echo -en &#8220;Download operation successfull.n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/oracle_shell
+# FUNCTION
+#   Shell command that permit to enter of sqlplus shell with current active credentials.
+# SEE ALSO
+#   _oracle_connections_args
+oracle_shell () {</p>
+<blockquote>
+<div><p># Shift first two input param
+shift 2</p>
+<p>_oracle_check_status</p>
+<p>_oracle_help_message=&#8221;do_help&#8221;</p>
+<p>_oracle_connections_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<p>commons_oracle_check_vars</p>
+<p>sqlplus_set_sqlplus_auth_var &#8220;$ORACLE_SID&#8221; &#8220;$ORACLE_USER&#8221; &#8220;$ORACLE_PWD&#8221;</p>
+<p>commons_oracle_check_connection || error_handled &#8220;SQLPlus was unable to connect the DB with the supplied credentials&#8221;</p>
+<p>commons_oracle_shell || error_handled &#8220;Exit value $?.&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/oracle_query
+# FUNCTION
+#   Execute directly a query to database.
+# SEE ALSO
+#   _oracle_connections_args
+oracle_query () {</p>
+<blockquote>
+<div><p># Shift first two input params
+shift 2</p>
+<p>_oracle_check_status</p>
+<p>_oracle_help_message=&#8221;do_help&#8221;</p>
+<p>_oracle_connections_args &#8220;$&#64;&#8221;</p>
+<p>_oracle_query_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<p>commons_oracle_check_vars</p>
+<p>sqlplus_set_sqlplus_auth_var &#8220;$ORACLE_SID&#8221; &#8220;$ORACLE_USER&#8221; &#8220;$ORACLE_PWD&#8221;</p>
+<p>commons_oracle_check_connection || error_handled &#8220;SQLPlus was unable to connect the DB with the supplied credentials&#8221;</p>
+<p>_oracle_query || error_handled &#8220;&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<div class="section" id="internal-functions">
+<h1># Internal functions<a class="headerlink" href="#internal-functions" title="Permalink to this headline">¶</a></h1>
+<p>#****f* oracle/_oracle_init
+# FUNCTION
+#   Internal function called on initialization of the oracle module.
+# DESCRIPTION
+#   Oracle module is usable when SQLCA variable contains oracle string.
+#   So, if oracle module is enabled then these check are done:
+#   * verify presence of sqlplus client program
+#   * check if ORACLE_USER variable is set. This variable define user to use
+#     on connection to database.
+#   * check if ORACLE_PWD variable is set. This variable define password to use
+#     on connection to database.
+#   * check if defined ORACLE_SID variable. This variable define name of the
+#     schema to use on connection.
+#   * check if defined ORACLE_DIR variable. This variable define path where
+#     save/retrieve files to compile.
+#   * check if TNS_ADMIN variable is present and is correct.
+# SOURCE
+_oracle_init () {</p>
+<blockquote>
+<div><p>if [[ ! -z &#8220;$SQLCA&#8221;  &amp;&amp; &#8220;$SQLCA&#8221; =~ .*oracle.* ]] ; then</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_oracle_init: Check requirements of the oracle module.)n&#8221;</p>
+<p>commons_oracle_check_sqlplus || error_handled &#8220;&#8221;</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_oracle_init: All requirements are present. Continue my work.)n&#8221;</p>
+<p>oracle_status=&#8221;1&#8221;</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_oracle_init: Nothing to do.)n&#8221;</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/_oracle_check_status
+# FUNCTION
+#   Internal function that check if oracle module is enable.
+#   Generate an exit with an error message if module is disable.
+# SOURCE
+_oracle_check_status () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ x&#8221;$oracle_status&#8221; = x&#8221;0&#8221; ] ; then</dt>
+<dd>error_generate &#8220;oracle is not enable. Enable it with SQLCA variable&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/_oracle_connections_args
+# FUNCTION
+#   Internal function that parse command line arguments relative to
+#   connection options.
+# DESCRIPTION
+#   * -S [SID]        Override SID variable used on connection. If not present
+#                     it is used ORACLE_SID variable from configuration file.
+#   * -P [pwd]        Override password variable used on connection. If not
+#                     present it is used ORACLE_PWD variable from configuration
+#                     file.
+#   * -U [user]       Override username variable used on connection. If not
+#                     present it is used ORACLE_USER variable from configuration file.
+#   * -D [dir path]   To define path where save/retrieve files to download/compile.
+#                     This option override ORACLE_DIR variable from configuration
+#                     file.
+#   * -t [tnsname]    Override TNS_ADMIN variable used on connection. If not
+#                     present it is used TNS_ADMIN variable from configuration file.
+#   * -h              Show help message relative to connection arguments.
+# SOURCE
+_oracle_connections_args () {</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_oracle_connections_args args: $&#64;)n&#8221;</p>
+<p>local short_options=&#8221;S:U:P:hD:t:&#8221;
+local long_options=&#8221;help&#8221;</p>
+<p>$(set &#8211; $(getopt -u -q -o &#8220;$short_options&#8221; &#8211; &#8220;$&#64;&#8221;)) || error_handled &#8220;Invalid parameters&#8221;</p>
+<p>[ $# -lt 1 ] &amp;&amp; return 0 # is there at least one param (&#8211;)</p>
+<dl class="docutils">
+<dt>while [ $# -gt 0 ] ; do</dt>
+<dd><p class="first">case &#8220;$1&#8221; in</p>
+<blockquote>
+<div><p>-S) ORACLE_SID=&#8221;$2&#8221;;shift;;
+-P) ORACLE_PWD=&#8221;$2&#8221;;shift;;
+-U) ORACLE_USER=&#8221;$2&#8221;;shift;;
+-D) ORACLE_DIR=&#8221;$2&#8221;;shift;;
+-t) TNS_ADMIN=&#8221;$2&#8221;;shift;;
+-h|&#8211;help)</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ -n &#8220;$_oracle_help_message&#8221; ] ; then</dt>
+<dd>echo -en &#8220;[-S oracle_sid]         Override Oracle SID (or set ORACLE_SID on configuration file).n&#8221;
+echo -en &#8220;[-P oracle_pwd]         Override Oracle Password (or set ORACLE_PWD on configuration file).n&#8221;
+echo -en &#8220;[-U oracle_user]        Override Oracle schema/user (or set ORACLE_USER on configuration file).n&#8221;
+echo -en &#8220;[-t tnsadmin_path]      Override TNS_ADMIN variable with path of the file tnsnames.ora.n&#8221;
+echo -en &#8220;[-D oracle_dir]         Directory where save/retrieve packages/views/functions, etc..n&#8221;
+echo -en &#8221;                        (or set ORACLE_DIR on configuration file). n&#8221;</dd>
+</dl>
+<p>fi
+return 1
+;;</p>
+</div></blockquote>
+<dl class="docutils">
+<dt><a href="#id1"><span class="problematic" id="id2">*</span></a>)</dt>
+<dd>;;</dd>
+</dl>
+</div></blockquote>
+<p>esac</p>
+<p class="last">shift</p>
+</dd>
+</dl>
+<p>done</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/_oracle_download_args
+# FUNCTION
+#   Internal function for parse command line argument relative to download command.
+# DESCRIPTION
+#   * &#8211;all-packages      Download all packages.
+#   * &#8211;all-triggers      Download all triggers.
+#   * &#8211;all-views         Download all views.
+#   * &#8211;all-functions     Download all functions.
+#   * &#8211;all-jobs          Download all jobs.
+#   * &#8211;all-schedules     Download all schedules.
+#   * &#8211;all               Download all packages, triggers, view, packages, functions.
+#   * &#8211;package [p]       Download package p.
+#   * &#8211;trigger [t]       Download trigger t.
+#   * &#8211;function [f]      Download function f.
+#   * &#8211;view [v]          Download view v.
+#   * &#8211;job [j]           Download job j.
+#   * &#8211;schedule [s]      Download schedule s.
+# SEE ALSO
+#   _oracle_connections_args
+# SOURCE
+_oracle_download_args () {</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_oracle_download_args args: $&#64;)n&#8221;</p>
+<p>local short_options=&#8221;S:U:P:hD:t:&#8221;
+local long_options=&#8221;all-packages all-triggers all-functions all-views all-jobs all-schedules all package: trigger: function: view: job: schedule:&#8221;
+long_options=&#8221;$long_options help&#8221;</p>
+<p>$(set &#8211; $(getopt -u -q -a -o &#8220;$short_options&#8221; -l &#8220;$long_options&#8221; &#8211; &#8220;$&#64;&#8221;)) || error_handled &#8220;Invalid parameters&#8221;</p>
+<p>ORACLE_DOWNLOAD_ALL=1</p>
+<dl class="docutils">
+<dt>if [ $# -lt 1 ] ; then # is there at least one param (&#8211;)</dt>
+<dd>_oracle_download_help
+return 1</dd>
+</dl>
+<p>fi</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_oracle_download_args: Found $# params)n&#8221;</p>
+<p>ORACLE_DOWNLOAD_ALL=0
+ORACLE_DOWNLOAD_ALL_PACKAGES=0
+ORACLE_DOWNLOAD_ALL_TRIGGERS=0
+ORACLE_DOWNLOAD_ALL_FUNCTIONS=0
+ORACLE_DOWNLOAD_ALL_VIEWS=0
+ORACLE_DOWNLOAD_ALL_JOBS=0
+ORACLE_DOWNLOAD_ALL_SCHEDULES=0
+ORACLE_DOWNLOAD_PACKAGE=&#8221;&#8221;
+ORACLE_DOWNLOAD_TRIGGER=&#8221;&#8221;
+ORACLE_DOWNLOAD_FUNCTION=&#8221;&#8221;
+ORACLE_DOWNLOAD_VIEW=&#8221;&#8221;
+ORACLE_DOWNLOAD_JOB=&#8221;&#8221;
+ORACLE_DOWNLOAD_SCHEDULE=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>while [ $# -gt 0 ] ; do</dt>
+<dd><p class="first">case &#8220;$1&#8221; in</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>-S|-U|-P|-D)</dt>
+<dd>shift
+# do nothing
+;;</dd>
+<dt>&#8211;all-packages)</dt>
+<dd>ORACLE_DOWNLOAD_ALL_PACKAGES=1
+;;</dd>
+<dt>&#8211;all-triggers)</dt>
+<dd>ORACLE_DOWNLOAD_ALL_TRIGGERS=1
+;;</dd>
+<dt>&#8211;all-functions)</dt>
+<dd>ORACLE_DOWNLOAD_ALL_FUNCTIONS=1
+;;</dd>
+<dt>&#8211;all-views)</dt>
+<dd>ORACLE_DOWNLOAD_ALL_VIEWS=1
+;;</dd>
+<dt>&#8211;all-jobs)</dt>
+<dd>ORACLE_DOWNLOAD_ALL_JOBS=1
+;;</dd>
+<dt>&#8211;all-schedules)</dt>
+<dd>ORACLE_DOWNLOAD_ALL_SCHEDULES=1
+;;</dd>
+<dt>&#8211;all)</dt>
+<dd>ORACLE_DOWNLOAD_ALL=1
+;;</dd>
+<dt>&#8211;package)</dt>
+<dd>ORACLE_DOWNLOAD_PACKAGE=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;trigger)</dt>
+<dd>ORACLE_DOWNLOAD_TRIGGER=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;function)</dt>
+<dd>ORACLE_DOWNLOAD_FUNCTION=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;view)</dt>
+<dd>ORACLE_DOWNLOAD_VIEW=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;job)</dt>
+<dd>ORACLE_DOWNLOAD_JOB=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;schedule)</dt>
+<dd>ORACLE_DOWNLOAD_SCHEDULE=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>-h|&#8211;help)</dt>
+<dd>_oracle_download_help
+return 1
+;;</dd>
+<dt>&#8211;)</dt>
+<dd>;;</dd>
+<dt><a href="#id3"><span class="problematic" id="id4">*</span></a>)</dt>
+<dd>error_generate &#8220;Invalid parameter $1.&#8221;
+;;</dd>
+</dl>
+</div></blockquote>
+<p>esac</p>
+<p class="last">shift</p>
+</dd>
+</dl>
+<p>done</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/_oracle_download_help
+# FUNCTION
+#   Print help message of download command.
+# SOURCE
+_oracle_download_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;[&#8211;all-packages]        Download all packages.n&#8221;
+echo -en &#8220;[&#8211;all-triggers]        Download all triggers.n&#8221;
+echo -en &#8220;[&#8211;all-functions]       Download all functions.n&#8221;
+echo -en &#8220;[&#8211;all-views]           Download all views.n&#8221;
+echo -en &#8220;[&#8211;all-jobs]            Download all jobs.n&#8221;
+echo -en &#8220;[&#8211;all-schedules]       Download all schedules.n&#8221;
+echo -en &#8220;[&#8211;all]                 Download all.n&#8221;
+echo -en &#8220;[&#8211;package name]        Download a particular package.n&#8221;
+echo -en &#8220;[&#8211;trigger name]        Download a particular trigger.n&#8221;
+echo -en &#8220;[&#8211;function name]       Download a particular function.n&#8221;
+echo -en &#8220;[&#8211;view name]           Download a particular view.n&#8221;
+echo -en &#8220;[&#8211;job name]            Download a particular job.n&#8221;
+echo -en &#8220;[&#8211;schedule name]       Download a particular schedule.n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/_oracle_compile_args
+# FUNCTION
+#   Internal function for parse command line argument relative to compile command.
+# DESCRIPTION
+#   * &#8211;all-packages      Compile all packages.
+#   * &#8211;all-triggers      Compile all triggers.
+#   * &#8211;id-script [id]    Compile script with id.
+#   * &#8211;file [f]          Compile file f.
+#   * &#8211;all-functions     Compile all functions.
+#   * &#8211;all-views         Compile all views.
+#   * &#8211;all               Compile all packages, triggers, view, functions.
+#   * &#8211;package [p]       Compile package p.
+#   * &#8211;trigger [t]       Compile trigger t.
+#   * &#8211;function [f]      Compile function f.
+#   * &#8211;view [v]          Compile view v.
+#   * -h                  Show help message.
+# SEE ALSO
+#   _oracle_connections_args
+# SOURCE
+_oracle_compile_args () {</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_oracle_compile_args args: $&#64;)n&#8221;</p>
+<p>local short_options=&#8221;S:U:P:hD:t:&#8221;
+local long_options=&#8221;all-packages all-triggers id-script: file: all-functions all-views all package: trigger: function: view:&#8221;</p>
+<p>$(set &#8211; $(getopt -u -q -a -o &#8220;$short_options&#8221; -l &#8220;$long_options&#8221; &#8211; &#8220;$&#64;&#8221;)) || error_handled &#8220;Invalid parameters&#8221;</p>
+<p>ORACLE_COMPILE_ALL=1</p>
+<dl class="docutils">
+<dt>if [ $# -lt 1 ] ; then # is there at least one param (&#8211;)</dt>
+<dd>_oracle_compile_help
+return 1</dd>
+</dl>
+<p>fi</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_oracle_compile_args: Found $# params)n&#8221;</p>
+<p>ORACLE_COMPILE_ALL=0
+ORACLE_COMPILE_ALL_PACKAGES=0
+ORACLE_COMPILE_ALL_TRIGGERS=0
+ORACLE_COMPILE_ALL_FUNCTIONS=0
+ORACLE_COMPILE_ALL_VIEWS=0
+ORACLE_COMPILE_ALL_JOBS=0
+ORACLE_COMPILE_ALL_SCHEDULES=0
+ORACLE_COMPILE_PACKAGE=&#8221;&#8221;
+ORACLE_COMPILE_TRIGGER=&#8221;&#8221;
+ORACLE_COMPILE_FUNCTION=&#8221;&#8221;
+ORACLE_COMPILE_VIEW=&#8221;&#8221;
+ORACLE_COMPILE_JOB=&#8221;&#8221;
+ORACLE_COMPILE_SCHEDULE=&#8221;&#8221;
+ORACLE_COMPILE_ID_SCRIPT=&#8221;&#8221;
+ORACLE_COMPILE_FILE=&#8221;&#8221;
+local ORACLE_COMPILE_EXC_RCVD=0</p>
+<dl class="docutils">
+<dt>while [ $# -gt 0 ] ; do</dt>
+<dd><p class="first">case &#8220;$1&#8221; in</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>-S|-U|-P|-D)</dt>
+<dd>shift
+# do nothing
+;;</dd>
+<dt>&#8211;all-packages)</dt>
+<dd>ORACLE_COMPILE_ALL_PACKAGES=1
+;;</dd>
+<dt>&#8211;all-triggers)</dt>
+<dd>ORACLE_COMPILE_ALL_TRIGGERS=1
+;;</dd>
+<dt>&#8211;all-functions)</dt>
+<dd>ORACLE_COMPILE_ALL_FUNCTIONS=1
+;;</dd>
+<dt>&#8211;all-views)</dt>
+<dd>ORACLE_COMPILE_ALL_VIEWS=1
+;;</dd>
+<dt>&#8211;all-jobs)</dt>
+<dd>ORACLE_COMPILE_ALL_JOBS=1
+;;</dd>
+<dt>&#8211;all-schedules)</dt>
+<dd>ORACLE_COMPILE_ALL_SCHEDULES=1
+;;</dd>
+<dt>&#8211;all)</dt>
+<dd>ORACLE_COMPILE_ALL=1
+;;</dd>
+<dt>&#8211;package)</dt>
+<dd>ORACLE_COMPILE_PACKAGE=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;trigger)</dt>
+<dd>ORACLE_COMPILE_TRIGGER=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;function)</dt>
+<dd>ORACLE_COMPILE_FUNCTION=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;view)</dt>
+<dd>ORACLE_COMPILE_VIEW=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;job)</dt>
+<dd>ORACLE_COMPILE_JOB=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;schedule)</dt>
+<dd>ORACLE_COMPILE_SCHEDULE=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;id-script)</dt>
+<dd>ORACLE_COMPILE_ID_SCRIPT=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;file)</dt>
+<dd>ORACLE_COMPILE_FILE=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;exclude)</dt>
+<dd><dl class="first docutils">
+<dt>if [ $ORACLE_COMPILE_EXC_RCVD -eq 0 ] ; then</dt>
+<dd>ORACLE_COMPILE_FILES_EXCLUDED=&#8221;$2&#8221;
+ORACLE_COMPILE_EXC_RCVD=1</dd>
+<dt>else</dt>
+<dd>ORACLE_COMPILE_FILES_EXCLUDED=&#8221;$ORACLE_COMPILE_FILES_EXCLUDED $2&#8221;</dd>
+</dl>
+<p class="last">fi
+shift
+;;</p>
+</dd>
+<dt>-h)</dt>
+<dd>_oracle_compile_help
+return 1
+;;</dd>
+<dt>&#8211;)</dt>
+<dd>;;</dd>
+<dt><a href="#id5"><span class="problematic" id="id6">*</span></a>)</dt>
+<dd>error_generate &#8220;Invalid parameter $1.&#8221;
+;;</dd>
+</dl>
+</div></blockquote>
+<p>esac</p>
+<p class="last">shift</p>
+</dd>
+</dl>
+<p>done</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/_oracle_compile_help
+# FUNCTION
+#   Internal function that print help message relative to compile command.
+# SOURCE
+_oracle_compile_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;[&#8211;all-packages]        Compile all packages present under ORACLE_DIR subdirectories.n&#8221;
+echo -en &#8220;[&#8211;all-triggers]        Compile all triggers present under ORACLE_DIR subdirectories.n&#8221;
+echo -en &#8220;[&#8211;all-functions]       Compile all functions present under ORACLE_DIR subdirectories.n&#8221;
+echo -en &#8220;[&#8211;all-views]           Compile all views present on ORACLE_DIR subdirectories.n&#8221;
+echo -en &#8220;[&#8211;all-jobs]            Compile all jobs present on ORACLE_DIR subdirectories.n&#8221;
+echo -en &#8220;[&#8211;all-schedules]       Compile all schedules present on ORACLE_DIR subdirectories.n&#8221;
+echo -en &#8220;[&#8211;all]                 Compile all packages, triggers, functions, views, jobs and schedules present undern&#8221;
+echo -en &#8221;                        ORACLE_DIR subdirectories.n&#8221;
+echo -en &#8220;[&#8211;package name]        Compile a particular package under ORACLE_DIR/packages directory.n&#8221;
+echo -en &#8220;[&#8211;trigger name]        Compile a particular trigger under ORACLE_DIR/triggers directory.n&#8221;
+echo -en &#8220;[&#8211;function name]       Compile a particular function under ORACLE_DIR/functions directory.n&#8221;
+echo -en &#8220;[&#8211;view name]           Compile a particular view under ORACLE_DIR/views directory.n&#8221;
+echo -en &#8220;[&#8211;job name]            Compile a particular job under ORACLE_DIR/views directory.n&#8221;
+echo -en &#8220;[&#8211;schedule name]       Compile a particular schedule under ORACLE_DIR/views directory.n&#8221;
+echo -en &#8220;[&#8211;exclude filename]    Exclude a particular file from compilation.n&#8221;
+echo -en &#8221;                        (This option can be repeat and override ORACLE_COMPILE_FILES_EXCLUDEDn&#8221;
+echo -en &#8221;                         configuration variable).n&#8221;
+echo -en &#8220;[&#8211;id-script id]        Compile a particular script registered under ORACLE_DIR/&lt;directory&gt;/.n&#8221;
+echo -en &#8220;[&#8211;file file]           Compile a particular file. (Use ABS Path or relative path from current dir.)n&#8221;
+echo -en &#8220;Note: For argument with value if it isn&#8217;t passed value argument is ignored.n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/_oracle_compile
+# FUNCTION
+#   Internal function that manage compilation of SQL statement.
+# SEE_ALSO
+#   _oracle_compile_id_script
+#   commons_oracle_compile_file
+#   commons_oracle_compile_all_packages
+#   commons_oracle_compile_all_triggers
+#   commons_oracle_compile_all_views
+#   commons_oracle_compile_all_functions
+# SOURCE
+_oracle_compile () {</p>
+<blockquote>
+<div><p>local f=&#8221;&#8220;</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_oracle_compile args: $&#64;)n&#8221;</p>
+<p># Compile script file if available
+if [ ! -z &#8220;$ORACLE_COMPILE_ID_SCRIPT&#8221; ] ; then</p>
+<blockquote>
+<div><p>_oracle_compile_id_script || error_handled &#8220;&#8221;</p>
+<p>echo -en &#8220;Compiled script $ORACLE_COMPILE_ID_SCRIPT with file $DBM_SCRIPT_FILENAME correctly.n&#8221;</p>
+</div></blockquote>
+<p>fi</p>
+<p># Compile single file if available
+if [ ! -z &#8220;$ORACLE_COMPILE_FILE&#8221; ] ; then</p>
+<blockquote>
+<div>commons_oracle_compile_file &#8220;$ORACLE_COMPILE_FILE&#8221; &#8220;Compile file $DBM_SCRIPT_FILENAME.&#8221; || error_handled &#8220;Error on compile file $ORACLE_COMPILE_FILE.&#8221;</div></blockquote>
+<p>fi</p>
+<p>if [ $ORACLE_COMPILE_ALL -eq 1 ] ; then</p>
+<blockquote>
+<div><p>commons_oracle_compile_all_packages &#8220;&#8221; || error_handled &#8220;Error on compile all packages.&#8221;</p>
+<p>commons_oracle_compile_all_triggers &#8220;&#8221; || error_handled &#8220;Error on compile all triggers.&#8221;</p>
+<p>commons_oracle_compile_all_functions &#8220;&#8221; || error_handled &#8220;Error on compile all functions.&#8221;</p>
+<p>commons_oracle_compile_all_views &#8220;&#8221; || error_handled &#8220;Error on compile all functions.&#8221;</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p># Check for all-packages or single package</p>
+<p>if [ $ORACLE_COMPILE_ALL_PACKAGES -eq 1 ] ; then</p>
+<blockquote>
+<div>commons_oracle_compile_all_packages &#8220;&#8221; || error_handled &#8220;Error on compile all packages.&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>if [ ! -z &#8220;$ORACLE_COMPILE_PACKAGE&#8221; ] ; then</p>
+<blockquote>
+<div>f=&#8221;${ORACLE_COMPILE_PACKAGE/.sql/}&#8221;
+f=$(basename $f)
+commons_oracle_compile_file &#8220;$ORACLE_DIR/packages/$f.sql&#8221; &#8220;&#8221; || error_handled &#8220;Error on compile file $f.sql&#8221;</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p># Check for all-triggers or single trigger</p>
+<p>if [ $ORACLE_COMPILE_ALL_TRIGGERS -eq 1 ] ; then</p>
+<blockquote>
+<div>commons_oracle_compile_all_triggers &#8220;&#8221; || error_handled &#8220;Error on compile all triggers.&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>if [ ! -z &#8220;$ORACLE_COMPILE_TRIGGER&#8221; ] ; then</p>
+<blockquote>
+<div>f=&#8221;${ORACLE_COMPILE_TRIGGER/.sql/}&#8221;
+f=$(basename $f)
+commons_oracle_compile_file &#8220;$ORACLE_DIR/triggers/$f.sql&#8221; &#8220;&#8221; || error_handled &#8220;Error on compile file $f.sql&#8221;</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p># Check for all-functions or single function</p>
+<p>if [ $ORACLE_COMPILE_ALL_FUNCTIONS -eq 1 ] ; then</p>
+<blockquote>
+<div>commons_oracle_compile_all_functions &#8220;&#8221; || error_handled &#8220;Error on compile all functions.&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>if [ ! -z &#8220;$ORACLE_COMPILE_FUNCTION&#8221; ] ; then</p>
+<blockquote>
+<div>f=&#8221;${ORACLE_COMPILE_FUNCTION/.sql/}&#8221;
+f=$(basename $f)
+commons_oracle_compile_file &#8220;$ORACLE_DIR/functions/$f.sql&#8221; &#8220;&#8221; || error_handled &#8220;Error on compile file $f.sql&#8221;</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p># Check for all-views of single view</p>
+<p>if [ $ORACLE_COMPILE_ALL_VIEWS -eq 1 ] ; then</p>
+<blockquote>
+<div>commons_oracle_compile_all_views &#8220;&#8221; || error_handled &#8220;Error on compile all views.&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>if [ ! -z &#8220;$ORACLE_COMPILE_VIEW&#8221; ] ; then</p>
+<blockquote>
+<div>f=&#8221;${ORACLE_COMPILE_VIEW/.sql/}&#8221;
+f=$(basename $f)
+commons_oracle_compile_file &#8220;$ORACLE_DIR/views/$f.sql&#8221; &#8220;&#8221; || error_handled &#8220;Error on compile file $f.sql&#8221;</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p># Check for all-jobs of single job</p>
+<p>if [ $ORACLE_COMPILE_ALL_JOBS -eq 1 ] ; then</p>
+<blockquote>
+<div>commons_oracle_compile_all_jobs &#8220;&#8221; || error_handled &#8220;Error on compile all jobs.&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>if [ ! -z &#8220;$ORACLE_COMPILE_JOBS&#8221; ] ; then</p>
+<blockquote>
+<div>f=&#8221;${ORACLE_COMPILE_JOBS/.sql/}&#8221;
+f=$(basename $f)
+commons_oracle_compile_file &#8220;$ORACLE_DIR/jobs/$f.sql&#8221; &#8220;&#8221; || error_handled &#8220;Error on compile file $f.sql&#8221;</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p># Check for all-schedules of single schedule</p>
+<p>if [ $ORACLE_COMPILE_ALL_SCHEDULES -eq 1 ] ; then</p>
+<blockquote>
+<div>commons_oracle_compile_all_schedules &#8220;&#8221; || error_handled &#8220;Error on compile all schedules.&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>if [ ! -z &#8220;$ORACLE_COMPILE_SCHEDULES&#8221; ] ; then</p>
+<blockquote>
+<div>f=&#8221;${ORACLE_COMPILE_SCHEDULES/.sql/}&#8221;
+f=$(basename $f)
+commons_oracle_compile_file &#8220;$ORACLE_DIR/schedules/$f.sql&#8221; &#8220;&#8221; || error_handled &#8220;Error on compile file $f.sql&#8221;</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi # end else ORACLE_COMPILE_ALL</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/_oracle_download
+# FUNCTION
+#   Internal function relative to downloading process.
+# SEE ALSO
+#   commons_oracle_download_all_packages
+#   commons_oracle_download_all_triggers
+#   commons_oracle_download_all_functions
+#   commons_oracle_download_all_views
+#   commons_oracle_download_package
+#   commons_oracle_download_trigger
+#   commons_oracle_download_function
+#   commons_oracle_download_view
+# SOURCE
+_oracle_download () {</p>
+<blockquote>
+<div><p>if [ $ORACLE_DOWNLOAD_ALL -eq 1 ] ; then</p>
+<blockquote>
+<div><p>commons_oracle_download_all_packages || error_handled &#8220;Error on download all packages.&#8221;</p>
+<p>commons_oracle_download_all_triggers || error_handled &#8220;Error on download all triggers.&#8221;</p>
+<p>commons_oracle_download_all_functions || error_handled &#8220;Error on download all functions.&#8221;</p>
+<p>commons_oracle_download_all_views || error_handled &#8220;Error on download all functions.&#8221;</p>
+<p>commons_oracle_download_all_jobs || error_handled &#8220;Error on download all jobs.&#8221;</p>
+<p>commons_oracle_download_all_schedules || error_handled &#8220;Error on download all schedules.&#8221;</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p># Check for all-packages or single package</p>
+<p>if [ $ORACLE_DOWNLOAD_ALL_PACKAGES -eq 1 ] ; then</p>
+<blockquote>
+<div>commons_oracle_download_all_packages || error_handled &#8220;Error on download all packages.&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>if [ ! -z &#8220;$ORACLE_DOWNLOAD_PACKAGE&#8221; ] ; then</p>
+<blockquote>
+<div>commons_oracle_download_package &#8220;$ORACLE_DOWNLOAD_PACKAGE&#8221; || error_handled &#8220;Error on download package $ORACLE_DOWNLOAD_PACKAGE.&#8221;</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p># Check for all-triggers or single trigger</p>
+<p>if [ $ORACLE_DOWNLOAD_ALL_TRIGGERS -eq 1 ] ; then</p>
+<blockquote>
+<div>commons_oracle_download_all_triggers || error_handled &#8220;Error on download all triggers.&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>if [ ! -z &#8220;$ORACLE_DOWNLOAD_TRIGGER&#8221; ] ; then</p>
+<blockquote>
+<div>commons_oracle_download_trigger &#8220;$ORACLE_DOWNLOAD_TRIGGER&#8221; || error_handled &#8220;Error on download trigger $ORACLE_DOWNLOAD_TRIGGER.&#8221;</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p># Check for all-functions or single function</p>
+<p>if [ $ORACLE_DOWNLOAD_ALL_FUNCTIONS -eq 1 ] ; then</p>
+<blockquote>
+<div>commons_oracle_download_all_functions || error_handled &#8220;Error on download all functions.&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>if [ ! -z &#8220;$ORACLE_DOWNLOAD_FUNCTION&#8221; ] ; then</p>
+<blockquote>
+<div>commons_oracle_download_function &#8220;$ORACLE_DOWNLOAD_FUNCTION&#8221; || error_handled &#8220;Error on download function $ORACLE_DOWNLOAD_FUNCTION.&#8221;</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p># Check for all-views of single view</p>
+<p>if [ $ORACLE_DOWNLOAD_ALL_VIEWS -eq 1 ] ; then</p>
+<blockquote>
+<div>commons_oracle_download_all_views || error_handled &#8220;Error on download all views.&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>if [ ! -z &#8220;$ORACLE_DOWNLOAD_VIEW&#8221; ] ; then</p>
+<blockquote>
+<div>commons_oracle_download_view &#8220;$ORACLE_DOWNLOAD_VIEW&#8221; || error_handled &#8220;Error on download view $ORACLE_DOWNLOAD_VIEW.&#8221;</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p># Check for all-jobs of single job</p>
+<p>if [ $ORACLE_DOWNLOAD_ALL_JOBS -eq 1 ] ; then</p>
+<blockquote>
+<div>commons_oracle_download_all_jobs || error_handled &#8220;Error on download all jobs.&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>if [ ! -z &#8220;$ORACLE_DOWNLOAD_JOB&#8221; ] ; then</p>
+<blockquote>
+<div>commons_oracle_download_job &#8220;$ORACLE_DOWNLOAD_JOB&#8221; || error_handled &#8220;Error on download job $ORACLE_DOWNLOAD_JOB .&#8221;</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p># Check for all-schedules of single schedule</p>
+<p>if [ $ORACLE_DOWNLOAD_ALL_SCHEDULES -eq 1 ] ; then</p>
+<blockquote>
+<div>commons_oracle_download_all_schedules || error_handled &#8220;Error on download all jobs.&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>if [ ! -z &#8220;$ORACLE_DOWNLOAD_SCHEDULE&#8221; ] ; then</p>
+<blockquote>
+<div>commons_oracle_download_schedule &#8220;$ORACLE_DOWNLOAD_SCHEDULE&#8221; || error_handled &#8220;Error on download schedule $ORACLE_DOWNLOAD_SCHEDULE .&#8221;</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi # end else ORACLE_DOWNLOAD_ALL</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/_oracle_compile_id_script
+# FUNCTION
+#   Internal function for compile a script by id.
+# SEE ALSO
+#   _dbm_retrieve_script_data
+#   _dbm_check_if_exist_id_script
+#   commons_oracle_compile_file
+# SOURCE
+_oracle_compile_id_script () {</p>
+<blockquote>
+<div><p>local f=&#8221;&#8221;
+local id_script=&#8221;$ORACLE_COMPILE_ID_SCRIPT&#8221;</p>
+<p>_dbm_check_if_exist_id_script &#8220;$id_script&#8221; || error_handled &#8220;&#8221;</p>
+<p>_dbm_retrieve_script_data &#8220;$id_script&#8221; &#8220;1&#8221; || error_handled &#8220;&#8221;</p>
+<dl class="docutils">
+<dt>if [ x&#8221;$DBM_SCRIPT_ADAPTER&#8221; != x&#8221;oracle&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Error: script $id_script isn&#8217;t connect to oracle adapter.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>f=&#8221;$ORACLE_DIR/$DBM_SCRIPT_DIRECTORY/$DBM_SCRIPT_FILENAME&#8221;</p>
+<p>commons_oracle_compile_file &#8220;$f&#8221; &#8220;Compile file $DBM_SCRIPT_FILENAME for release $DBM_SCRIPT_REL_NAME v.$DBM_SCRIPT_REL_VERSION&#8221; || error_handled &#8220;Error on compile file $f.&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/_oracle_query_help
+# FUNCTION
+#   Print help message of query command.
+# SOURCE
+_oracle_query_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;[&#8211;stdin-query]         Set this option for query send from standard input.n&#8221;
+echo -en &#8220;[&#8211;logging]             Enable logging of the query to log filen&#8221;
+echo -en &#8220;[&#8211;query QUERY]         Query to execute.n&#8221;
+echo -en &#8220;[&#8211;output-opts OPTS]    Customize sqlplus output options.n&#8221;
+echo -en &#8221;                        Default are: set echo off heading off feedback off wrap offn&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/_oracle_query_args
+# FUNCTION
+#   Internal function for parse command line argument relative to download command.
+# DESCRIPTION
+#   * &#8211;stdin-query       Query send through standard input.
+#   * &#8211;query             Query to execute
+#   * &#8211;logging           Enable logging to file.
+#   * &#8211;output-opts OPTS  Customize sqlplus output format.
+# SEE ALSO
+#   _oracle_connections_args
+# SOURCE
+_oracle_query_args () {</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_oracle_query_args args: $&#64;)n&#8221;</p>
+<p>local short_options=&#8221;S:U:P:hD:t:&#8221;
+local long_options=&#8221;stdin-query query: logging output-opts:&#8221;
+long_options=&#8221;$long_options help&#8221;</p>
+<p>$(set &#8211; $(getopt -u -q -a -o &#8220;$short_options&#8221; -l &#8220;$long_options&#8221; &#8211; &#8220;$&#64;&#8221;)) || error_handled &#8220;Invalid parameters&#8221;</p>
+<dl class="docutils">
+<dt>if [ $# -lt 1 ] ; then # is there at least one param (&#8211;)</dt>
+<dd>_oracle_query_help
+return 1</dd>
+</dl>
+<p>fi</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_oracle_query_args: Found $# params)n&#8221;</p>
+<p>ORACLE_QUERY_STDIN=0
+ORACLE_QUERY_CMDLINE=0
+ORACLE_QUERY_LOGGING=0
+ORACLE_QUERY_STR=&#8221;&#8221;
+ORACLE_QUERY_SQLPLUS_OPTS=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>while [ $# -gt 0 ] ; do</dt>
+<dd><p class="first">case &#8220;$1&#8221; in</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>-S|-U|-P|-D|-t)</dt>
+<dd>shift
+# do nothing
+;;</dd>
+<dt>&#8211;stdin-query)</dt>
+<dd>ORACLE_QUERY_STDIN=1
+;;</dd>
+<dt>&#8211;logging)</dt>
+<dd>ORACLE_QUERY_LOGGING=1
+;;</dd>
+<dt>&#8211;query)</dt>
+<dd>ORACLE_QUERY_CMDLINE=1
+ORACLE_QUERY_STR=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;output-opts)</dt>
+<dd>ORACLE_QUERY_SQLPLUS_OPTS=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>-h|&#8211;help)</dt>
+<dd>_oracle_query_help
+return 1
+;;</dd>
+<dt>&#8211;)</dt>
+<dd>;;</dd>
+<dt><a href="#id7"><span class="problematic" id="id8">*</span></a>)</dt>
+<dd>error_generate &#8220;Invalid parameter $1.&#8221;
+;;</dd>
+</dl>
+</div></blockquote>
+<p>esac</p>
+<p class="last">shift</p>
+</dd>
+</dl>
+<p>done</p>
+<dl class="docutils">
+<dt>if [[ $ORACLE_QUERY_STDIN -eq 1 &amp;&amp; $ORACLE_QUERY_CMDLINE -gt 1 ]] ; then</dt>
+<dd>out_handler_print &#8220;Both &#8211;query and &#8211;stdin-query options set. Only one possible.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ $ORACLE_QUERY_STDIN -eq 0 &amp;&amp; $ORACLE_QUERY_CMDLINE -eq 0 ]] ; then</dt>
+<dd>out_handler_print &#8220;Mandatory parameter &#8211;query or &#8211;stdin-query options missing.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ $ORACLE_QUERY_CMDLINE -eq 1 &amp;&amp; -z &#8220;$ORACLE_QUERY_STR&#8221; ]] ; then</dt>
+<dd>out_handler_print &#8220;Invalid query string.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* oracle/_oracle_init
+# FUNCTION
+#   Internal function called on initialization of the oracle module.
+# DESCRIPTION
+# SOURCE
+_oracle_query () {</p>
+<blockquote>
+<div><p>local res=0
+local sqlopts=&#8221;set echo off heading off feedback off wrap off&#8221;</p>
+<p>ORACLE_ANS=&#8221;&#8220;</p>
+<p>if [[ $ORACLE_QUERY_STDIN -eq 1 ]] ; then</p>
+<blockquote>
+<div><p>ORACLE_QUERY_STR=$(&lt;/dev/stdin)</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(_oracle_query: From stdin read:n${ORACLE_QUERY_STR})n&#8221;</dd>
+</dl>
+</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $ORACLE_QUERY_LOGGING -eq 1 ]] &amp;&amp; </dt>
+<dd>_logfile_write &#8220;(oracle) Executing query:n${ORACLE_QUERY_STR}&#8221;</dd>
+<dt>if [[ -n &#8220;${ORACLE_QUERY_SQLPLUS_OPTS}&#8221; ]] ; then</dt>
+<dd>sqlopts=&#8221;${ORACLE_QUERY_SQLPLUS_OPTS}&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>sqlplus_cmd_4var &#8220;ORACLE_ANS&#8221; &#8220;${ORACLE_QUERY_STR}&#8221; &#8220;&#8221; &#8220;&#8221; &#8220;${sqlopts}&#8221;
+res=$?</p>
+<dl class="docutils">
+<dt>if [[ $ORACLE_QUERY_LOGGING -eq 1 ]] ; then</dt>
+<dd>_logfile_write &#8220;n${ORACLE_ANS}&#8221; || return 1
+_logfile_write &#8220;(oracle) End query (${ORACLE_QUERY_STR}): result =&gt; $res.&#8221; || return 1</dd>
+<dt>else</dt>
+<dd>out_handler_print &#8220;${ORACLE_ANS}&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return $res</p>
+</div></blockquote>
+<p>}
+#***
+# vim: syn=sh filetype=sh ts=2 sw=2</p>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

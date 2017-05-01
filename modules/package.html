@@ -1,0 +1,602 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title># Internal functions</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <p>#!/bin/bash
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+# Author(s): Geaaru, <a class="reference external" href="mailto:geaaru&#37;&#52;&#48;gmail&#46;com">geaaru<span>&#64;</span>gmail<span>&#46;</span>com</a>
+# $Id: 0843310dcf1165352f1c543f0a810814c61ae7be $
+# License: GPL 2.0
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p>name=&#8221;package&#8221;
+package_authors=&#8221;Geaaru&#8221;
+package_creation_date=&#8221;Feb 1, 2015&#8221;
+package_version=&#8221;0.1.0&#8221;</p>
+<p>#****f* package/package_version
+# FUNCTION
+#   Show version of package module.
+# SOURCE
+package_version() {</p>
+<blockquote>
+<div><p>echo -en &#8220;Version: ${package_version}n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* package/package_long_help
+# FUNCTION
+#  Show long help message.
+# SOURCE
+package_long_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [package]:n&#8221;
+echo -en &#8220;Author(s): ${package_authors}n&#8221;
+echo -en &#8220;Created: ${package_creation_date}n&#8221;
+echo -en &#8220;Version: ${package_version}n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;tlong_help               Show long help informationsn&#8221;
+echo -en &#8220;tshow_help               Show command list.n&#8221;
+echo -en &#8220;tversion                 Show module version.n&#8221;
+echo -en &#8220;tcreate                  Create a self installer tarball of currentn&#8221;
+echo -en &#8220;t                        project.n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;===========================================================================n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* package/package_show_help
+# FUNCTION
+#  Show help message
+# SOURCE
+package_show_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [package]:n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;tlong_help               Show long help informationsn&#8221;
+echo -en &#8220;tshow_help               Show command list.n&#8221;
+echo -en &#8220;tversion                 Show module version.n&#8221;
+echo -en &#8220;tcreate                  Create a self installer tarball of currentn&#8221;
+echo -en &#8220;t                        project.n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;===========================================================================n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* package/package_create
+# FUNCTION
+#  Create a tarball file of a self installer of current dbrm project, ready for
+#  production/test installation.
+# SOURCE
+package_create () {</p>
+<blockquote>
+<div><p>local result=1</p>
+<p># Shift first two input param
+shift 2</p>
+<p>_package_create_args &#8220;$&#64;&#8221; || return $result</p>
+<p>_package_init_tmpdir</p>
+<p>_package_copy_project_files</p>
+<p>_package_copy_dbrm_files</p>
+<p>_package_copy_extra_data</p>
+<p>_package_handle_profile_params</p>
+<p>_package_tar_files</p>
+<p>echo -en &#8220;Package $DBRM_PACKAGE_TO is ready.n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}</p>
+<div class="section" id="internal-functions">
+<h1># Internal functions<a class="headerlink" href="#internal-functions" title="Permalink to this headline">¶</a></h1>
+<p>_package_init_tmpdir () {</p>
+<blockquote>
+<div><p>local dbrmfiles_dir=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -d $DBRM_PACKAGE_TMPDIR ] ; then</dt>
+<dd>rm -rf $DBRM_PACKAGE_TMPDIR || error_handled &#8220;Error on delete temporary directory for package module.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p># Check if dirname is present
+if [ -n &#8220;$DBRM_PACKAGE_DIRNAME&#8221; ] ; then</p>
+<blockquote>
+<div>DBRM_PACKAGE_TMPDIR=${DBRM_PACKAGE_TMPDIR}/${DBRM_PACKAGE_DIRNAME}</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd># POST: use current directory name
+local dirname=$(basename <cite>pwd</cite>)
+DBRM_PACKAGE_DIRNAME=${dirname}
+DBRM_PACKAGE_TMPDIR=${DBRM_PACKAGE_TMPDIR}/${dirname}</dd>
+</dl>
+<p>fi</p>
+<p>mkdir -p $DBRM_PACKAGE_TMPDIR || error_handled &#8220;Error on create temporary directory $DBRM_PACKAGE_TMPDIR&#8221;</p>
+<p>dbrmfiles_dir=&#8221;${DBRM_PACKAGE_TMPDIR}/dbrm-files&#8221;</p>
+<p># Create dbrm core files directory
+local dbm_dirs=&#8221;$dbrmfiles_dir</p>
+<blockquote>
+<div>${dbrmfiles_dir}/modules
+${dbrmfiles_dir}/share/core
+${dbrmfiles_dir}/share/core/dbm
+${dbrmfiles_dir}/bin</div></blockquote>
+<p>&#8220;</p>
+<dl class="docutils">
+<dt>for i in $dbm_dirs ; do</dt>
+<dd>mkdir -p $i || error_handled &#8220;Error on create directory $i.&#8221;</dd>
+</dl>
+<p>done</p>
+<dl class="docutils">
+<dt>if [[ $DBRM_PACKAGE_EXTRA_FILES -gt 0 || $DBRM_PACKAGE_EXTRA_DIRS -gt 0 ]] ; then</dt>
+<dd>mkdir -p ${DBRM_PACKAGE_TMPDIR}/extra</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}</p>
+<p>_package_tar_files () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(_package_tar_files: Begin creation of file $DBRM_PACKAGE_TO file...n&#8221;</dd>
+</dl>
+<p># Check extensions
+local extension=&#8221;${DBRM_PACKAGE_TO##*.}&#8221;
+local tar_options=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [[ $extension == &#8220;gz&#8221; || $extension == &#8220;tgz&#8221; ]] ; then</dt>
+<dd>tar_options=&#8221;z&#8221;</dd>
+<dt>else</dt>
+<dd><dl class="first docutils">
+<dt>if [[ $extension == &#8220;zip&#8221; ]] ; then</dt>
+<dd>error_handled &#8220;Zip format not supported!.&#8221;</dd>
+</dl>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>tar -C $DBRM_PACKAGE_TMPDIR/.. -c${tar_options}f $DBRM_PACKAGE_TO ./${DBRM_PACKAGE_DIRNAME} || </dt>
+<dd>error_handled &#8220;Error on tar content of $DBRM_PACKAGE_TMPDIR directory.&#8221;</dd>
+<dt>rm -rf $DBRM_PACKAGE_TMPDIR ||</dt>
+<dd>error_handled &#8220;Error on remove staging directory $DBRM_PACKAGE_TMPDIR.&#8221;</dd>
+</dl>
+<p>return 0</p>
+</div></blockquote>
+<p>}</p>
+<p>_package_handle_profile_params () {</p>
+<blockquote>
+<div><p>local pj_dir=&#8221;$DBRM_PACKAGE_TMPDIR/project&#8221;
+local profiles_dir=&#8221;${pj_dir}/dbrm-profiles/&#8221;
+local query=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(_package_handle_profile_params: Begin handling of profile parameters... n&#8221;</dd>
+</dl>
+<p>if [[ $DRM_PROFILE -eq 1 ]] ; then</p>
+<blockquote>
+<div><p># For now just copy all profiles under project/dbrm-profiles/profiles directory.
+mkdir -p ${profiles_dir} || error_handled &#8220;Error on create directory ${profiles_dir}.&#8221;</p>
+<dl class="docutils">
+<dt>query=&#8221;</dt>
+<dd><dl class="first docutils">
+<dt>SELECT profile_name,</dt>
+<dd>conf_file</dd>
+</dl>
+<p class="last">FROM Profiles
+ORDER BY id_profile&#8221;</p>
+</dd>
+</dl>
+<p>_sqlite_query -c &#8220;$DRM_DB&#8221; -q &#8220;$query&#8221; || error_handled &#8220;Unexpected error!&#8221;</p>
+<p>IFS=$&#8217;n&#8217;
+for row in $_sqlite_ans ; do</p>
+<blockquote>
+<div><p>name=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[1]}&#8217;`
+file=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[2]}&#8217;`</p>
+<dl class="docutils">
+<dt>if [[ -e ${DRM_PROFILES_PATH}/${file} ]] ; then</dt>
+<dd><dl class="first last docutils">
+<dt>cp ${DRM_PROFILES_PATH}/${file} ${profiles_dir} || </dt>
+<dd>error_handled &#8220;Error on copy file of profile $name.&#8221;</dd>
+</dl>
+</dd>
+<dt>else</dt>
+<dd>echo -en &#8220;WARN: file of profile ${name} not found. I ignore it.&#8221;</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>done
+unset IFS</p>
+</div></blockquote>
+<p># else  DBM Profile is not enabled. Nothing to do. Parameter are already
+#       under current dbrm.conf file.</p>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}</p>
+<p>_package_copy_project_files () {</p>
+<blockquote>
+<div><p>local pj_dir=&#8221;$DBRM_PACKAGE_TMPDIR/project&#8221;</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(_package_copy_project_files: Begin copy of project files...n&#8221;</dd>
+</dl>
+<p>mkdir -p ${pj_dir} || error_handled &#8220;Error on create ${pj_dir} directory.&#8221;</p>
+<p># TODO: handle projects with multiple database
+if [[ ! -z &#8220;$SQLCA&#8221;  &amp;&amp; &#8220;$SQLCA&#8221; =~ .*mariadb.* ]] ; then</p>
+<blockquote>
+<div>_package_copy_pj_mariadb_files</div></blockquote>
+<p>fi</p>
+<p>if [[ ! -z &#8220;$SQLCA&#8221;  &amp;&amp; &#8220;$SQLCA&#8221; =~ .*oracle.* ]] ; then</p>
+<blockquote>
+<div>_package_copy_pj_oracle_files</div></blockquote>
+<p>fi</p>
+<p># Copy current dbrm.conf file project/dbrm.conf
+cp ${LOCAL_CONFIG_FILE} ${pj_dir}/ || error_handled &#8220;Error on copy LOCAL_CONFIG_FILE.&#8221;</p>
+<p># Replace LOCAL_DIR of dbrm.conf file to ./project/
+sed -i -e &#8216;s/LOCAL_DIR=.*/LOCAL_DIR=./project/g&#8217; ${pj_dir}/dbrm.conf || </p>
+<blockquote>
+<div>error_handled &#8220;Error on fix LOCAL_DIR on ${pj_dir}/dbrm.conf file.&#8221;</div></blockquote>
+<p># Override environment DRM_PROFILES_PATH with default tree
+sed -i -e &#8216;s:DRM_PROFILES_PATH=.*:DRM_PROFILES_PATH=$LOCAL_DIR/dbrm-profiles/:g&#8217; ${pj_dir}/dbrm.conf || </p>
+<blockquote>
+<div>error_handled &#8220;Error on fix DRM_PROFILES_PATH on ${pj_dir}/dbrm.conf file.&#8221;</div></blockquote>
+<p># Copy current dbrm.db file under ./project
+cp ${DRM_DB} ${pj_dir} || error_handled &#8220;Error on copy dbrm.db file to ${pj_dir}.&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}</p>
+<p>_package_copy_pj_mariadb_files () {</p>
+<blockquote>
+<div><p>local pj_dir=&#8221;$DBRM_PACKAGE_TMPDIR/project&#8221;
+local files=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>local adapter_dirs=&#8221;</dt>
+<dd>creation_scripts
+foreign_keys
+functions
+procedures
+indexes
+triggers
+update_scripts
+views
+schedulers</dd>
+</dl>
+<p>&#8220;</p>
+<p>for dir in ${adapter_dirs} ; do</p>
+<blockquote>
+<div><p># Check if exists creation_scripts directory
+if [[ -d ${LOCAL_DIR}/${dir} ]] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>mkdir ${pj_dir}/${dir} || </dt>
+<dd>error_handled &#8220;Error on create temporary directory ${pj_dir}/${dir}&#8221;</dd>
+</dl>
+<p>files=$(ls ${LOCAL_DIR}/${dir}/<a href="#id1"><span class="problematic" id="id2">*</span></a>.sql 2&gt;/dev/null)
+if [[ -n &#8220;${files}&#8221; ]] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>for f in ${files} ; do</dt>
+<dd>cp $f ${pj_dir}/${dir} || error_handled &#8220;Error on copy file $f from ${dir} directory.&#8221;</dd>
+</dl>
+<p>done</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>done</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}</p>
+<p>_package_copy_pj_oracle_files () {</p>
+<blockquote>
+<div>error_handled &#8220;NOT IMPLEMENTED!&#8221;</div></blockquote>
+<p>}</p>
+<p>_package_copy_extra_data () {</p>
+<blockquote>
+<div><p>local i=&#8221;&#8220;</p>
+<p>if [[ $DBRM_PACKAGE_EXTRA_FILES -gt 0 ]] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(_package_copy_extra_data): Begin copy of extra files...n&#8221;</dd>
+</dl>
+<p>for i in ${!DBRM_PACKAGE_EXTRA_FILE[&#64;]}
+do</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(_package_copy_extra_data): Copy file ${DBRM_PACKAGE_EXTRA_FILE[$i]} to extra directory.n&#8221;</dd>
+</dl>
+<p>cp -f ${DBRM_PACKAGE_EXTRA_FILE[$i]} ${DBRM_PACKAGE_TMPDIR}/extra/</p>
+</div></blockquote>
+<p>done</p>
+</div></blockquote>
+<p>fi</p>
+<p>if [[ ${DBRM_PACKAGE_EXTRA_DIRS} -gt 0 ]] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(_package_copy_extra_data): Begin copy of extra directories...n&#8221;</dd>
+</dl>
+<p>for i in ${!DBRM_PACKAGE_EXTRA_DIR[&#64;]}
+do</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(_package_copy_extra_data): Copy directory ${DBRM_PACKAGE_EXTRA_FILE[$i]} to extra directory.n&#8221;</dd>
+</dl>
+<p>cp -rf ${DBRM_PACKAGE_EXTRA_DIR[$i]} ${DBRM_PACKAGE_TMPDIR}/extra/</p>
+</div></blockquote>
+<p>done</p>
+</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}</p>
+<p>_package_copy_dbrm_files () {</p>
+<blockquote>
+<div><p>local dbrmfiles_dir=&#8221;$DBRM_PACKAGE_TMPDIR/dbrm-files&#8221;
+local dbrm_bin=&#8221;$0&#8221;
+local dbm_files=&#8221;</p>
+<blockquote>
+<div>dbm_args.inc
+dbm_tools.inc</div></blockquote>
+<p>&#8221;
+local append_conf=&#8221;&#8221;
+local core_files=&#8221;</p>
+<blockquote>
+<div>commons.sh</div></blockquote>
+<p>&#8220;</p>
+<p># Copy modules files
+for mod in $MODULES_DIR/<a href="#id3"><span class="problematic" id="id4">*</span></a>.mod ; do</p>
+<blockquote>
+<div><p>local m=`basename $mod`</p>
+<dl class="docutils">
+<dt>if [ $mod != &#8220;$MODULES_DIR/package.mod&#8221; ] ; then # Avoid copy of package.mod</dt>
+<dd>cp $mod $dbrmfiles_dir/modules/ || error_handled &#8220;Error on copy module $mod file.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>if [ $mod == ${MODULES_DIR}&#8221;/dbm.mod&#8221; ] ; then</p>
+<blockquote>
+<div><p># Disable auto creation of an empty dbrm sqlite database.
+sed -i -e &#8216;s/dbm_schema=.*/#dbm_schema=/g&#8217; ${dbrmfiles_dir}/modules/$m || </p>
+<blockquote>
+<div>error_handled &#8220;Error on unset dbm_schema variable.&#8221;</div></blockquote>
+<dl class="docutils">
+<dt>sed -i -e &#8216;s/[[ $DEBUG ]] &amp;&amp; echo &#8220;(dbm_post_init: Create sqlite internal db file: $DRM_DB)&#8221;//g&#8217; </dt>
+<dd>${dbrmfiles_dir}/modules/$m || error_handled &#8220;Error on remove debug entry about creation of a new dbrm sqlite database.&#8221;</dd>
+<dt>sed -i -e </dt>
+<dd>&#8216;s/_sqlite_create -c &#8220;$DRM_DB&#8221; -s &#8220;$dbm_schema&#8221; || error_handled &#8220;Error on create $DRM_DB file.&#8221;/error_handled &#8220;Missing dbrm database file.&#8221;/g&#8217; ${dbrmfiles_dir}/modules/$m || error_handled &#8220;Error on remove row about creation of a new dbrm sqlite database.&#8221;</dd>
+</dl>
+</div></blockquote>
+<p>elif [ $mod == ${MODULES_DIR}&#8221;/oracle.mod&#8221; ] ; then</p>
+<blockquote>
+<div><p># Replace _oracle_scripts
+sed -i -e &#8216;s/_oracle_scripts=.*/_oracle_scripts=${prefix}/share/oracle//g&#8217; </p>
+<blockquote>
+<div>${dbrmfiles_dir}/modules/$m || error_handled &#8220;Error on update oracle module.&#8221;</div></blockquote>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>done</p>
+<p># Copy core files
+cp -rf $DBRM_CORE_FILES_DIR/dbm $dbrmfiles_dir/share/core/ || error_handled &#8220;Error on copy core files.&#8221;</p>
+<p>if [[ ! -z &#8220;$SQLCA&#8221;  &amp;&amp; &#8220;$SQLCA&#8221; =~ .*oracle.* ]] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>core_files=&#8221;${core_files}</dt>
+<dd>sqlplus.sh
+commons_oracle.sh</dd>
+</dl>
+<p>&#8221;
+cp -rf $DBRM_CORE_FILES_DIR/../oracle ${dbrmfiles_dir}/share/ || error_handled &#8220;Error on copy oracle files.&#8221;</p>
+</div></blockquote>
+<p>fi</p>
+<p>if [[ ! -z &#8220;$SQLCA&#8221;  &amp;&amp; &#8220;$SQLCA&#8221; =~ .*mariadb.* ]] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>core_files=&#8221;${core_files}</dt>
+<dd>mysql.sh
+commons_mariadb.sh</dd>
+</dl>
+<p>&#8220;</p>
+</div></blockquote>
+<p>fi</p>
+<p>for f in $core_files ; do</p>
+<blockquote>
+<div>cp $DBRM_CORE_FILES_DIR/$f ${dbrmfiles_dir}/share/core/ || error_handled &#8220;Error on copy core file $f.&#8221;</div></blockquote>
+<p>done</p>
+<p># Copy dbm module files
+for f in $dbm_files ; do</p>
+<blockquote>
+<div>cp $DBRM_CORE_FILES_DIR/dbm/$f ${dbrmfiles_dir}/share/core/dbm/ || error_handled &#8220;Error on copy dbm file $f.&#8221;</div></blockquote>
+<p>done</p>
+<p># Copy dbrm main file
+cp $dbrm_bin ${dbrmfiles_dir}/bin || error_handled &#8220;Error on copy dbrm file.&#8221;</p>
+<p># Create a link on DBRM_PACKAGE_TMPDIR directory to dbrm main file.
+cd $DBRM_PACKAGE_TMPDIR
+ln -s dbrm-files/bin/dbrm . || error_handled &#8220;Error on create link to dbrm file.&#8221;
+cd - &gt;/dev/null 2&gt;&amp;1</p>
+<p># Fix path variables
+sed -i -e &#8216;s/prefix=.*/prefix=./g&#8217; ${dbrmfiles_dir}/bin/dbrm || </p>
+<blockquote>
+<div>error_handled &#8220;Error on fix prefix on dbrm file.&#8221;</div></blockquote>
+<p># Set project dbrm.conf path inside dbrm main file.
+sed -i -e &#8216;s/CONFIG_FILE=.*/CONFIG_FILE=./project/dbrm.conf/g&#8217; ${dbrmfiles_dir}/bin/dbrm || </p>
+<blockquote>
+<div>error_handled &#8220;Error on edit CONFIG_FILE parameter on dbrm.conf file.&#8221;</div></blockquote>
+<p># Replace DBRM_CORE_FILES_DIR variable
+sed -i -e &#8216;s/DBRM_CORE_FILES_DIR=.*/DBRM_CORE_FILES_DIR=${prefix}/dbrm-files/share/core/g&#8217; </p>
+<blockquote>
+<div>${dbrmfiles_dir}/bin/dbrm || error_handled &#8220;Error on edit DBRM_CORE_FILES_DIR variable.&#8221;</div></blockquote>
+<p># Append parameter to dbrm.conf
+append_conf=&#8221;</p>
+</div></blockquote>
+<p># &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;
+# Parameters added by dbrm package module.
+MODULES_DIR=&#8221;${prefix}/dbrm-files/modules&#8221;
+# &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;
+&#8220;</p>
+<blockquote>
+<div><p>echo -en &#8220;${append_conf}&#8221; &gt;&gt; ${DBRM_PACKAGE_TMPDIR}/project/dbrm.conf</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}</p>
+<p>_package_init () {</p>
+<blockquote>
+<div><p># Check if defined DBRM_PACKAGE_TMPDIR variable or set a default path
+if [ -z &#8220;$DBRM_PACKAGE_TMPDIR&#8221; ] ; then</p>
+<blockquote>
+<div>DBRM_PACKAGE_TMPDIR=&#8221;.dbrm_package&#8221;</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}</p>
+<p>_package_create_args () {</p>
+<blockquote>
+<div><p>[[ $DEBUG ]] &amp;&amp; echo -en &#8220;(_package_create_args args: $&#64;)n&#8221;</p>
+<p>local short_options=&#8221;h&#8221;
+local long_options=&#8221;dirname: to: exclude: include-file: include-dir: help&#8221;</p>
+<dl class="docutils">
+<dt>$(set &#8211; $(getopt -u -q -a -o &#8220;$short_options&#8221; -l &#8220;$long_options&#8221; &#8211; &#8220;$&#64;&#8221;)) || </dt>
+<dd>error_handled &#8220;Invalid parameters&#8221;</dd>
+<dt>if [ $# -lt 2 ] ; then</dt>
+<dd>_package_create_help
+return 1</dd>
+</dl>
+<p>fi</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_package_create_args: Found $# params)n&#8221;</p>
+<p>DBRM_PACKAGE_TO=&#8221;&#8221;
+DBRM_PACKAGE_EXCLUDED_FILES=0
+DBRM_PACKAGE_EXCLUDED=&#8221;&#8221;
+DBRM_PACKAGE_DIRNAME=&#8221;&#8221;
+DBRM_PACKAGE_EXTRA_DIRS=0
+DBRM_PACKAGE_EXTRA_DIR=&#8221;&#8221;
+DBRM_PACKAGE_EXTRA_FILES=0
+DBRM_PACKAGE_EXTRA_FILE=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>while [ $# -gt 0 ] ; do</dt>
+<dd><p class="first">case &#8220;$1&#8221; in</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>-h|&#8211;help)</dt>
+<dd>_package_create_help
+return 1
+;;</dd>
+<dt>&#8211;to)</dt>
+<dd>DBRM_PACKAGE_TO=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;exclude)</dt>
+<dd>DBRM_PACKAGE_EXCLUDED[$DBRM_PACKAGE_EXCLUDED_FILES]=&#8221;$2&#8221;
+let DBRM_PACKAGE_EXCLUDED_FILES++
+shift
+;;</dd>
+<dt>&#8211;dirname)</dt>
+<dd>DBRM_PACKAGE_DIRNAME=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;include-dir)</dt>
+<dd>DBRM_PACKAGE_EXTRA_DIR[$DBRM_PACKAGE_EXTRA_DIRS]=&#8221;$2&#8221;
+let DBRM_PACKAGE_EXTRA_DIRS++
+shift
+;;</dd>
+<dt>&#8211;include-file)</dt>
+<dd>DBRM_PACKAGE_EXTRA_FILE[$DBRM_PACKAGE_EXTRA_FILES]=&#8221;$2&#8221;
+let DBRM_PACKAGE_EXTRA_FILES++
+shift
+;;</dd>
+<dt><a href="#id5"><span class="problematic" id="id6">*</span></a>)</dt>
+<dd>error_generate &#8220;Invalid parameter $1.&#8221;
+;;</dd>
+</dl>
+</div></blockquote>
+<p class="last">esac
+shift</p>
+</dd>
+</dl>
+<p>done</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$DBRM_PACKAGE_TO&#8221; ] ; then</dt>
+<dd>echo &#8220;Missing target file path&#8221;
+return 1</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}</p>
+<p>_package_create_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;[&#8211;exclude file]        Exclude file on tarball file.n&#8221;
+echo -en &#8220;[&#8211;to f.tar.gz]         Path of target tarball filename.n&#8221;
+echo -en &#8220;[&#8211;dirname dir]         Supply name of the directory to use as n&#8221;
+echo -en &#8221;                        main directory inside target tarball tree.n&#8221;
+echo -en &#8221;                        This option is optional. Default is currentn&#8221;
+echo -en &#8221;                        directory name.n&#8221;
+echo -en &#8220;[&#8211;include-dir d]       Include extra directory on tarball.n&#8221;
+echo -en &#8221;                        This option could be repeated.n&#8221;
+echo -en &#8220;[&#8211;include-file f]      Include extra file on tarball.n&#8221;
+echo -en &#8221;                        This option could be repeated.n&#8221;
+echo -en &#8220;n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}</p>
+<p># vim: syn=sh filetype=sh ts=2 sw=2</p>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

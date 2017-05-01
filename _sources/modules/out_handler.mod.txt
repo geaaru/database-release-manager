@@ -1,0 +1,118 @@
+#!/bin/bash
+#------------------------------------------------
+# Author(s): Geaaru, geaaru@gmail.com
+# $Id: c190e8200d65da360842e4af64f019ecc9d77a26 $
+# License: GPL 2.0
+#------------------------------------------------
+
+name="out_handler"
+out_handler_authors="Geaaru"
+out_handler_creation_date="May 2, 2014"
+out_handler_version="0.1.0"
+out_handler_plugin=""
+
+#****f* out_handler/out_handler_version
+# FUNCTION
+#   Show version of out_handler module.
+# SOURCE
+out_handler_version () {
+  echo -en "Version: ${out_handler_version}\n"
+  return 0
+}
+#***
+
+
+#****f* out_handler/out_handler_print
+# FUNCTION
+#
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
+out_handler_print () {
+
+  local msg="$1"
+  local ans=0
+  local i=""
+
+  for i in "$out_handler_plugin" ; do
+
+    if type -t ${i}_print > /dev/null ; then
+      ${i}_print "$msg"
+    fi
+
+  done
+
+  return $ans
+}
+#***
+
+#****f* out_handler/out_handler_print_arr
+# FUNCTION
+#  Call print_arr function for any active out_handler plugins.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
+out_handler_print_arr () {
+
+  local ans=0
+
+  for i in "$out_handler_plugin" ; do
+
+    if type -t ${i}_print_arr > /dev/null ; then
+      ${i}_print_arr
+    fi
+
+  done
+
+  return $ans
+}
+#***
+
+#****f* out_handler/out_handler_clean
+# FUNCTION
+#   Unset all array used to call any active out_handler plugins.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
+out_handler_clean () {
+
+  local ans=0
+
+
+  for i in "$out_handler_plugin" ; do
+
+    if type -t ${i}_clean > /dev/null ; then
+      ${i}_clean
+    fi
+
+  done
+
+  return $ans
+
+}
+#***
+
+##################################################################
+# Internal functions
+##################################################################
+
+#****f* out_handler/_out_handler_init
+# FUNCTION
+#   Internal function called on initialization of out_handler module.
+# DESCRIPTION
+#   Check if it defined OUT_HANDLER_PLUGIN variable that define plugin
+#   to use for print message.
+# SOURCE
+_out_handler_init () {
+
+  if [ -z "$OUT_HANDLER_PLUGIN" ] ; then
+    out_handler_plugin="out_stdout"
+  fi
+
+}
+#***
+
+# vim: syn=sh filetype=sh ts=2 sw=2

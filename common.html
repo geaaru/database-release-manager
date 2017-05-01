@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Commons API &#8212; Database Release Manager</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/dbrm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/superhero/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mysql API" href="mysql.html" />
+    <link rel="prev" title="Logfile Module" href="logfile.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          Database Release Manager</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="dbm.html">Dbm Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logfile.html">Logfile Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Commons API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mysql.html">Mysql API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sqlplus.html">Sqlplus API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="psql.html">Psql API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commons_mariadb.html">Commons Mariadb API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commons_oracle.html">Commons Oracle API</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Commons API</a><ul>
+<li><a class="reference internal" href="#api">API</a><ul>
+<li><a class="reference internal" href="#assertnot">assertNot</a></li>
+<li><a class="reference internal" href="#error-handled">error_handled</a></li>
+<li><a class="reference internal" href="#error-generate">error_generate</a></li>
+<li><a class="reference internal" href="#check-var">check_var</a></li>
+<li><a class="reference internal" href="#escape-var">escape_var</a></li>
+<li><a class="reference internal" href="#escape2oct-var">escape2oct_var</a></li>
+<li><a class="reference internal" href="#confirmation-question">confirmation_question</a></li>
+<li><a class="reference internal" href="#push-spaces">push_spaces</a></li>
+<li><a class="reference internal" href="#get-space-str">get_space_str</a></li>
+<li><a class="reference internal" href="#commons-exists-prog">commons_exists_prog</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="logfile.html" title="Previous Chapter: Logfile Module"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Logfile Module</span>
+    </a>
+  </li>
+  <li>
+    <a href="mysql.html" title="Next Chapter: Mysql API"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Mysql API &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row" >
+    <div class="col-md-12 content">
+      
+  <div class="section" id="commons-api">
+<span id="commons-api"></span><h1>Commons API<a class="headerlink" href="#commons-api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="api">
+<span id="api"></span><h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="assertnot">
+<span id="assertnot"></span><h3>assertNot<a class="headerlink" href="#assertnot" title="Permalink to this headline">¶</a></h3>
+<p>Check if last command result (passed in input). If result is equal to res_value
+param print message to stdout and exit with value 1.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: result value of the command</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: check if result value is equal to this value. (numeric value)</li>
+<li><code class="docutils literal"><span class="pre">$3</span></code>: message to print if result is not equal to zero</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock1'))">(Show/Hide)</a><br /><div id="hiddencodeblock1" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>assertNot <span class="o">()</span> <span class="o">{</span>
+  <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span><span class="nv">$1</span>
+  <span class="nb">local</span> <span class="nv">inv_res</span><span class="o">=</span><span class="nv">$2</span>
+   <span class="k">if</span> <span class="o">[</span> <span class="nv">$result</span> -eq <span class="nv">$inv_res</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+      <span class="nb">echo</span> -en <span class="s2">&quot;</span><span class="nv">$3</span><span class="s2">\n&quot;</span>
+      <span class="nb">exit</span> 1
+   <span class="k">fi</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="error-handled">
+<span id="error-handled"></span><h3>error_handled<a class="headerlink" href="#error-handled" title="Permalink to this headline">¶</a></h3>
+<p>Check if last command result. If result is not equal to 0 then
+print a message to stdout and exit with value 1.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: message to print if result is not equal to zero.</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock2'))">(Show/Hide)</a><br /><div id="hiddencodeblock2" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>error_handled <span class="o">()</span> <span class="o">{</span>
+   <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span><span class="nv">$?</span>
+   <span class="k">if</span> <span class="o">[</span> <span class="nv">$result</span> -ne <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+      <span class="nb">echo</span> -en <span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">\n&quot;</span>
+      <span class="nb">exit</span> 1
+   <span class="k">fi</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="error-generate">
+<span id="error-generate"></span><h3>error_generate<a class="headerlink" href="#error-generate" title="Permalink to this headline">¶</a></h3>
+<p>Print input message and exit with value 1 if second parameter is not equal to 0.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: message to print on stdout.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: optional field to avoid call to exit program if value is equal to 0.</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock3'))">(Show/Hide)</a><br /><div id="hiddencodeblock3" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>error_handled <span class="o">()</span> <span class="o">{</span>
+   <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span><span class="nv">$?</span>
+   <span class="k">if</span> <span class="o">[</span> <span class="nv">$result</span> -ne <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+      <span class="nb">echo</span> -en <span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">\n&quot;</span>
+      <span class="nb">exit</span> 1
+   <span class="k">fi</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="check-var">
+<span id="check-var"></span><h3>check_var<a class="headerlink" href="#check-var" title="Permalink to this headline">¶</a></h3>
+<p>Check if variable with name in input contains a string or not.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: name of the variable to check.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">1</span></code>: length of the variable is zero</li>
+<li><code class="docutils literal"><span class="pre">0</span></code>: length of the variable is not zero</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock4'))">(Show/Hide)</a><br /><div id="hiddencodeblock4" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>check_var <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">var</span><span class="o">=</span><span class="nv">$1</span>
+
+  <span class="nb">eval</span> <span class="nv">v</span><span class="o">=</span><span class="se">\$</span><span class="nv">$var</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="nv">$v</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="escape-var">
+<span id="escape-var"></span><h3>escape_var<a class="headerlink" href="#escape-var" title="Permalink to this headline">¶</a></h3>
+<p>Escape content of the variable with input name.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: name of the variable to check.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: always</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock5'))">(Show/Hide)</a><br /><div id="hiddencodeblock5" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>escape_var <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+
+  <span class="nb">eval</span> <span class="nv">v</span><span class="o">=</span><span class="se">\$</span><span class="nv">$name</span>
+
+  <span class="nv">v</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$v</span><span class="s2">&quot;</span> <span class="p">|</span> sed -e <span class="s1">&#39;s/\//\\\//g&#39;</span> -e <span class="s1">&#39;s:\\:\\\\:g&#39;</span> -e <span class="s1">&#39;s/\&amp;/\\\&amp;/g&#39;</span> -e <span class="s1">&#39;s:`:\\\`:g&#39;</span> <span class="k">)</span><span class="s2">&quot;</span>
+
+  <span class="nb">eval</span> <span class="s2">&quot;</span><span class="nv">$name</span><span class="s2">=\$v&quot;</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="escape2oct-var">
+<span id="escape2oct-var"></span><h3>escape2oct_var<a class="headerlink" href="#escape2oct-var" title="Permalink to this headline">¶</a></h3>
+<p>Escape content of the variable with input name like escape_var with octets ascii code.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: name of the variable to check.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: always</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock6'))">(Show/Hide)</a><br /><div id="hiddencodeblock6" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>escape_var <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+
+  <span class="nb">eval</span> <span class="nv">v</span><span class="o">=</span><span class="se">\$</span><span class="nv">$name</span>
+
+  <span class="nv">v</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$v</span><span class="s2">&quot;</span> <span class="p">|</span> sed -e <span class="s1">&#39;s/\//\\\//g&#39;</span> -e <span class="s1">&#39;s:\\:\\\\:g&#39;</span> -e <span class="s1">&#39;s/\&amp;/\\\&amp;/g&#39;</span> -e <span class="s1">&#39;s:`:\\\`:g&#39;</span> <span class="k">)</span><span class="s2">&quot;</span>
+
+  <span class="nb">eval</span> <span class="s2">&quot;</span><span class="nv">$name</span><span class="s2">=\$v&quot;</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="confirmation-question">
+<span id="confirmation-question"></span><h3>confirmation_question<a class="headerlink" href="#confirmation-question" title="Permalink to this headline">¶</a></h3>
+<p>Use to generate an input question and manage response.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: message with question for user.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: if user answer is yes.</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: if if user answer is no.</li>
+<li><code class="docutils literal"><span class="pre">2</span></code>: if user answer empty.</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock7'))">(Show/Hide)</a><br /><div id="hiddencodeblock7" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>escape2oct_var <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+
+  <span class="nb">eval</span> <span class="nv">v</span><span class="o">=</span><span class="se">\$</span><span class="nv">$name</span>
+
+  <span class="c1"># TODO: Handle replace through input params selection</span>
+  <span class="nv">v</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span><span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$v</span><span class="s2">&quot;</span> <span class="p">|</span> sed -e <span class="s1">&#39;s:\/:\\057:g&#39;</span> -e <span class="s1">&#39;s:`:\\0140:g&#39;</span> <span class="k">)</span><span class="s2">&quot;</span>
+  <span class="c1">#v=&quot;$(echo &quot;$v&quot; | sed -e &#39;s:\\n:\\012:g&#39; -e &#39;s:\/:\\057:g&#39; -e &#39;s:\\:\\0134:g&#39; -e &#39;s:`:\\0140:g&#39; )&quot;</span>
+  <span class="c1">#v=&quot;$(echo &quot;$v&quot; | sed -e &#39;s:\\n:\\012:g&#39; -e &#39;s:\/:\\057:g&#39; -e &#39;s:\\:\\0134:g&#39; -e &#39;s:`:\\0140:g&#39; )&quot;</span>
+
+  <span class="nb">eval</span> <span class="s2">&quot;</span><span class="nv">$name</span><span class="s2">=\$v&quot;</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="push-spaces">
+<span id="push-spaces"></span><h3>push_spaces<a class="headerlink" href="#push-spaces" title="Permalink to this headline">¶</a></h3>
+<p>Push spaces to stdout.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: Number of spaces to write.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: always</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock8'))">(Show/Hide)</a><br /><div id="hiddencodeblock8" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>push_spaces <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">n_spaces</span><span class="o">=</span><span class="nv">$1</span>
+
+  <span class="k">if</span> <span class="o">[</span> <span class="nv">$n_spaces</span> -gt <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="k">for</span> <span class="o">((</span><span class="nv">i</span><span class="o">=</span>0<span class="p">;</span> i&lt;<span class="nv">$n_spaces</span><span class="p">;</span> i++<span class="o">))</span>
+    <span class="k">do</span>
+      <span class="nb">echo</span> -en <span class="s2">&quot; &quot;</span>
+    <span class="k">done</span>
+  <span class="k">fi</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="get-space-str">
+<span id="get-space-str"></span><h3>get_space_str<a class="headerlink" href="#get-space-str" title="Permalink to this headline">¶</a></h3>
+<p>Create a string with input &#8220;str&#8221; param at begin and N spaces
+where N is equal to max_chars - ${#str}</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (var_name) Name of variable where save string with spaces.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (max_chars) Number of max chars of the string with spaces.</li>
+<li><code class="docutils literal"><span class="pre">$3</span></code>: (str) String to insert at begin of save string.</li>
+<li><code class="docutils literal"><span class="pre">$4</span></code>: (pre_spaces) Number of spaces to add before str. (Optional. default 0).</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock9'))">(Show/Hide)</a><br /><div id="hiddencodeblock9" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>get_space_str <span class="o">()</span> <span class="o">{</span>
+  <span class="nb">local</span> <span class="nv">var_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">max_chars</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">str</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$3</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">pre_spaces</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$4</span><span class="s2">&quot;</span>
+
+  <span class="o">[[</span> -z <span class="s2">&quot;</span><span class="nv">$max_chars</span><span class="s2">&quot;</span> <span class="o">||</span> -z <span class="s2">&quot;</span><span class="nv">$var_name</span><span class="s2">&quot;</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="k">return</span> 1
+
+  <span class="nb">local</span> <span class="nv">n_spaces</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$((</span><span class="si">${</span><span class="nv">max_chars</span><span class="si">}</span> <span class="o">-</span> <span class="si">${#</span><span class="nv">str</span><span class="si">}</span><span class="k">))</span><span class="s2">&quot;</span>
+
+  <span class="k">if</span> <span class="o">[</span> -n <span class="s2">&quot;</span><span class="si">${</span><span class="nv">pre_spaces</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="k">for</span> <span class="o">((</span><span class="nv">i</span><span class="o">=</span>0<span class="p">;</span> i&lt;<span class="si">${</span><span class="nv">pre_spaces</span><span class="si">}</span><span class="p">;</span> i++<span class="o">))</span> <span class="p">;</span> <span class="k">do</span>
+      <span class="nv">str</span><span class="o">=</span><span class="s2">&quot; </span><span class="si">${</span><span class="nv">str</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">done</span>
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> <span class="nv">$n_spaces</span> -gt <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="k">for</span> <span class="o">((</span><span class="nv">i</span><span class="o">=</span>0<span class="p">;</span> i&lt;<span class="nv">$n_spaces</span><span class="p">;</span> i++<span class="o">))</span> <span class="p">;</span> <span class="k">do</span>
+      <span class="nv">str</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">str</span><span class="si">}</span><span class="s2"> &quot;</span>
+    <span class="k">done</span>
+  <span class="k">fi</span>
+
+  <span class="nb">eval</span> <span class="s2">&quot;</span><span class="nv">$var_name</span><span class="s2">=\$str&quot;</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-exists-prog">
+<span id="commons-exists-prog"></span><h3>commons_exists_prog<a class="headerlink" href="#commons-exists-prog" title="Permalink to this headline">¶</a></h3>
+<p>Check if a program is available on current PATH.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (program) Name of the program.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (options) Override default (-v) option on check presence. Optional.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: if program exists</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: if program doesn&#8217;t exists or invalid input params.</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock10'))">(Show/Hide)</a><br /><div id="hiddencodeblock10" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_exists_prog <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">prog</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">check_opts</span><span class="o">=</span><span class="s2">&quot;-v&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="o">[</span> -z <span class="s2">&quot;</span><span class="si">${</span><span class="nv">prog</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="k">return</span> 1
+
+  <span class="k">if</span> <span class="o">[</span> -n <span class="s2">&quot;</span><span class="si">${</span><span class="nv">opts</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">check_opts</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">opts</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">fi</span>
+
+  <span class="si">${</span><span class="nv">prog</span><span class="si">}</span> <span class="si">${</span><span class="nv">check_opts</span><span class="si">}</span> &gt; /dev/null 2&gt;<span class="p">&amp;</span>1
+  <span class="k">if</span> <span class="o">[</span> <span class="nv">$?</span> -ne <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">ans</span><span class="o">=</span>1
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+      dbrm
+        &copy; Copyright 2017, Geaaru.<br/>
+      Last updated on May 01, 2017.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

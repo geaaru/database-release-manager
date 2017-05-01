@@ -1,0 +1,9 @@
+
+code.docutils.literal {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #1cd446;
+  background-color: #1c1c1d;
+  border-radius: 4px;
+  font-weight: bold;
+}

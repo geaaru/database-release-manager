@@ -1,0 +1,2978 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>;</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <p>#!/bin/bash
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+# Author(s): Geaaru, <a class="reference external" href="mailto:geaaru&#37;&#52;&#48;gmail&#46;com">geaaru<span>&#64;</span>gmail<span>&#46;</span>com</a>
+# $Id: 31f1d4db081f7785395f8bb6f9fc4c58d20723d4 $
+# License: GPL 2.0
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p># commons_mariadb_commons_mariadb_check_client
+commons_mariadb_check_client () {</p>
+<blockquote>
+<div><p>if [ -z &#8220;$mysql&#8221; ] ; then</p>
+<blockquote>
+<div><p># POST: mysql variable not set
+tmp=`which mysql 2&gt; /dev/null`
+var=$?</p>
+<p>if [ $var -eq 0 ] ; then</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;Use mysql: $tmpn&#8221;</p>
+<p>MARIADB_CLIENT=$tmp</p>
+<p>unset tmp</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>error_generate &#8220;mysql program not found&#8221;</p>
+<p>return 1</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p># POST: mysql variable set</p>
+<p># Check if file is correct
+if [ -f &#8220;$mysql&#8221; ] ; then</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;Use mysql: $mysqln&#8221;</p>
+<p>MARIADB_CLIENT=$mysql</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>error_generate &#8220;$mysql program invalid.&#8221;</p>
+<p>return 1</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p>export MARIADB_CLIENT</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_check_client_end</p>
+<p># commons_mariadb_commons_mariadb_check_vars
+commons_mariadb_check_vars () {</p>
+<blockquote>
+<div><p>local commons_msg=&#8217;variable on configuration file, through arguments or on current profile.&#8217;</p>
+<p>check_var &#8220;MARIADB_USER&#8221; || error_handled &#8220;You must define MARIADB_USER $commons_msg&#8221;
+check_var &#8220;MARIADB_PWD&#8221;  || error_handled &#8220;You must define MARIADB_PWD $commons_msg&#8221;
+check_var &#8220;MARIADB_DB&#8221;   || error_handled &#8220;You must define MARIADB_DB $commons_msg&#8221;
+check_var &#8220;MARIADB_DIR&#8221;  || error_handled &#8220;You must define MARIADB_DIR $commons_msg&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_check_vars_end</p>
+<p># commons_mariadb_commons_mariadb_check_connection
+commons_mariadb_check_connection () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ -z &#8220;$MARIADB_CLIENT&#8221; ] ; then</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$mysql_auth&#8221; ] ; then</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(commons_mariadb_check_connection) Try connection with -A $MARIADB_EXTRA_OPTIONS $mysql_auth.n&#8221;</dd>
+</dl>
+<p>$MARIADB_CLIENT -A $MARIADB_EXTRA_OPTIONS $mysql_auth 2&gt;&amp;1 &lt;&lt; EOF</p>
+</div></blockquote>
+<p>exit
+EOF</p>
+<blockquote>
+<div><p>errorCode=$?
+if [ ${errorCode} -ne 0 ] ; then</p>
+<blockquote>
+<div>return 1</div></blockquote>
+<p>fi</p>
+<p>unset errorCode</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo &#8220;mysql was connected successfully&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_check_connection_end</p>
+<p># commons_mariadb_commons_mariadb_shell
+commons_mariadb_shell () {</p>
+<blockquote>
+<div><p>local opts=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MARIADB_CLIENT&#8221; ] ; then</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$mysql_auth&#8221; ] ; then</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ -n &#8220;$MARIADB_ENABLE_COMMENTS&#8221; &amp;&amp; x&#8221;$MARIADB_ENABLE_COMMENTS&#8221; == x&#8221;1&#8221; ]] ; then</dt>
+<dd>opts=&#8221;$opts -c&#8221;</dd>
+</dl>
+<p>fi</p>
+<p># TODO: Enable -A options through a variable option.
+[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(commons_mariadb_shell) Try connection with $opts $MARIADB_EXTRA_OPTIONS $mysql_auth.n&#8221;</p>
+<p>$MARIADB_CLIENT $opts $MARIADB_EXTRA_OPTIONS $mysql_auth</p>
+<p>errorCode=$?
+if [ ${errorCode} -ne 0 ] ; then</p>
+<blockquote>
+<div>return 1</div></blockquote>
+<p>fi</p>
+<p>unset errorCode</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_shell_end</p>
+<p># commons_mariadb_commons_mariadb_compile_file
+commons_mariadb_compile_file () {</p>
+<blockquote>
+<div><p>local f=$1
+local msg=$2
+local f_base=$(basename &#8220;$f&#8221;)</p>
+<dl class="docutils">
+<dt>if [ ! -e $f ] ; then</dt>
+<dd>_logfile_write &#8220;(mariadb) File $f not found.&#8221; || return 1
+return 1</dd>
+</dl>
+<p>fi</p>
+<p>_logfile_write &#8220;(mariadb) Start compilation (file $f_base): $msg&#8221; || return 1</p>
+<p>echo &#8220;(mariadb) Start compilation (file $f_base): $msg&#8221;</p>
+<p>MYSQL_OUTPUT=&#8221;&#8220;</p>
+<p>mysql_file &#8220;MYSQL_OUTPUT&#8221; &#8220;$f&#8221;
+local ans=$?</p>
+<p>_logfile_write &#8220;n$MYSQL_OUTPUT&#8221; || return 1</p>
+<p>_logfile_write &#8220;(mariadb) End compilation (file $f_base, result =&gt; $ans): $msg&#8221; || return 1</p>
+<p>echo -en &#8220;(mariadb) End compilation (file $f_base, result =&gt; $ans): $msgn&#8221;</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_compile_file_end</p>
+<p># commons_mariadb_commons_mariadb_source_file
+commons_mariadb_source_file () {</p>
+<blockquote>
+<div><p>local f=$1
+local msg=$2
+local f_base=$(basename &#8220;$f&#8221;)</p>
+<dl class="docutils">
+<dt>if [ ! -e $f ] ; then</dt>
+<dd>_logfile_write &#8220;(mariadb) File $f not found.&#8221; || return 1
+return 1</dd>
+</dl>
+<p>fi</p>
+<p>_logfile_write &#8220;(mariadb) Start compilation/source (file $f_base): $msg&#8221; || return 1</p>
+<p>echo &#8220;(mariadb) Start compilation/source (file $f_base): $msg&#8221;</p>
+<p>MYSQL_OUTPUT=&#8221;&#8220;</p>
+<p>mysql_source_file &#8220;MYSQL_OUTPUT&#8221; &#8220;$f&#8221;
+local ans=$?</p>
+<p>_logfile_write &#8220;n$MYSQL_OUTPUT&#8221; || return 1</p>
+<p>_logfile_write &#8220;(mariadb) End compilation/source (file $f_base, result =&gt; $ans): $msg&#8221; || return 1</p>
+<p>echo -en &#8220;(mariadb) End compilation/source (file $f_base, result =&gt; $ans): $msgn&#8221;</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_source_file_end</p>
+<p># commons_mariadb_commons_mariadb_compile_fkey
+commons_mariadb_compile_fkey () {</p>
+<blockquote>
+<div><p>local f=$1
+local msg=$2
+local force=&#8221;$3&#8221;
+local fk_table=&#8221;$4&#8221;
+local f_base=$(basename &#8220;$f&#8221;)
+local fk_dir=$(dirname &#8220;$f&#8221;)
+local fk_str=&#8221;${f_base/.sql/}&#8221;
+local fk=&#8221;&#8221;
+local fk_is_present=1
+local fktname=&#8221;&#8220;</p>
+<p># Try to check if is present table name from filename
+fktname=$(echo $fk_str | awk &#8216;match($0, /[<a href="#id5"><span class="problematic" id="id6">a-zA-Z_</span></a>]+/) { print substr($0, RSTART, RLENGTH) }&#8217;)
+fk=$(echo $fk_str | awk &#8216;match($0, /[-]/) { print substr($0, RSTART + 1) }&#8217;)</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;(commons_mariadb_compile_fkey: f = ${f}, force = ${force}, fk_table&#8221;&#8221; = ${fk_table}, fktname = ${fktname}, fk = ${fk}, fk_str = ${fk_str}.n&#8221;</dd>
+</dl>
+<p>if [ -z &#8220;${fk_table}&#8221; ] ; then</p>
+<blockquote>
+<div>[ -n &#8220;${fktname}&#8221; ] &amp;&amp; fk_table=&#8221;${fktname}&#8221;</div></blockquote>
+<dl class="docutils">
+<dt>elif [[ -n &#8220;${fk_table}&#8221; &amp;&amp; -n &#8220;${fk}&#8221; ]] ; then</dt>
+<dd><p class="first"># POST: fk_str contains both fk key name and fk key table.
+#       I check if fk_table in input is equal to fktname (string catch from fr_str)
+if [ &#8220;${fk_table}&#8221; != &#8220;${fktname}&#8221; ] ; then</p>
+<blockquote>
+<div><p>_logfile_write &#8220;(mariadb) Foreign key ${fk_str} is not related with table ${fk_table}.&#8221; || return 1</p>
+<p>error_generate &#8220;Foreign key ${fk_str} is not related with table ${fk_table}.&#8221;</p>
+</div></blockquote>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>fi</p>
+<p>[ -z &#8220;${fk}&#8221; ] &amp;&amp; fk=&#8221;${fk_str}&#8221;</p>
+<p># Check if foreign key already present
+commons_mariadb_check_if_exist_fkey &#8220;${fk}&#8221; &#8220;${fk_table}&#8221;
+fk_is_present=$?</p>
+<p># If fktname is empty and fk_table is not available and foreign key is present
+# I try to retrieve table name
+if [[ -z &#8220;${fk_table}&#8221; &amp;&amp; $fk_is_present -eq 0 ]] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>commons_mariadb_get_fkeys_list &#8220;&#8221; &#8220;KCU.CONSTRAINT_NAME, KCU.TABLE_NAME&#8221; &#8220;${fk}&#8221; || </dt>
+<dd>error_handled &#8220;Error on get data of foreign key $fk.&#8221;</dd>
+</dl>
+<p>fk_table=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[2]}&#8217;`</p>
+</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;( commons_mariadb_compile_fkey: (${fk_str}) I use fkey ${fk} for table ${fk_table} (${fktname}) (force = ${force}))n&#8221;</dd>
+</dl>
+<p>[ ! -e &#8220;${f}&#8221; ] &amp;&amp; f=${fk_dir}/${fk_table}-${fk}.sql</p>
+<dl class="docutils">
+<dt>if [ ! -e &#8220;${f}&#8221; ] ; then</dt>
+<dd>_logfile_write &#8220;(mariadb) File $f not found.&#8221; || return 1
+[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(mariadb) File $f not found.n&#8221;
+return 1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;( commons_mariadb_compile_fkey: Try to compile foreign key ${fk} for table ${fk_table} (${force})...)n&#8221;</dd>
+<dt>if [[ $fk_is_present -eq 0 &amp;&amp; x&#8221;${force}&#8221; == x&#8221;1&#8221; ]] ; then</dt>
+<dd><p class="first"># POST: foreign is is present and force is equal to 1.</p>
+<p>commons_mariadb_drop_fkey &#8220;${fk}&#8221; &#8220;&#8221; &#8220;${fk_table}&#8221; || return 1</p>
+<p class="last">commons_mariadb_compile_file &#8220;$f&#8221; &#8220;$msg&#8221; || return 1</p>
+</dd>
+</dl>
+<p>elif [ $fk_is_present -eq 0 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;( commons_mariadb_compile_fkey: foreign key ${fk} for table ${fk_table} is already present. Nothing to do.)n&#8221;</dd>
+</dl>
+<p>_logfile_write &#8220;(mariadb) Foreign key ${fk} is already present. Nothing to do.&#8221; || return 1</p>
+</div></blockquote>
+<p>elif [ $fk_is_present -eq 2 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;( commons_mariadb_compile_fkey: foreign key ${fk} exists for different tables.nSet table param.)n&#8221;</dd>
+</dl>
+<p>_logfile_write &#8220;(mariadb) Foreign key ${fk} exists for different tables. Set table param for compilation.&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div># POST: foreign key not present. I compile it.
+commons_mariadb_compile_file &#8220;$f&#8221; &#8220;$msg&#8221; || return 1</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_compile_fkey_end</p>
+<p># commons_mariadb_commons_mariadb_compile_idx
+commons_mariadb_compile_idx () {</p>
+<blockquote>
+<div><p>local f=$1
+local msg=$2
+local force=&#8221;$3&#8221;
+local idx_table=&#8221;$4&#8221;
+local f_base=$(basename &#8220;$f&#8221;)
+local idx_dir=$(dirname &#8220;$f&#8221;)
+local idx_str=&#8221;${f_base/.sql/}&#8221;
+local idx=&#8221;&#8221;
+local idx_is_present=1
+local idxtname=&#8221;&#8220;</p>
+<p># Try to check if is present table name from filename
+# TODO: show how handle table with &#8220;-&#8221; on name.
+idxtname=$(echo $idx_str | awk &#8216;match($0, /[<a href="#id7"><span class="problematic" id="id8">a-zA-Z_</span></a>]+/) { print substr($0, RSTART, RLENGTH) }&#8217;)
+idx=$(echo $idx_str | awk &#8216;match($0, /[-]/) { print substr($0, RSTART + 1) }&#8217;)</p>
+<p>if [ -z &#8220;${idx_table}&#8221; ] ; then</p>
+<blockquote>
+<div>[ -n &#8220;${idxtname}&#8221; ] &amp;&amp; idx_table=&#8221;${idxtname}&#8221;</div></blockquote>
+<dl class="docutils">
+<dt>elif [[ -n &#8220;${idx_table}&#8221; &amp;&amp; -n &#8220;${idx}&#8221; ]] ; then</dt>
+<dd><p class="first"># POST: idx_str contains both index name and index table.
+#       I check if idx_table in input is equal to idxtname (string catch from idx_str)
+if [ &#8220;${idx_table}&#8221; != &#8220;${idxtname}&#8221; ] ; then</p>
+<blockquote>
+<div><p>_logfile_write &#8220;(mariadb) Index ${idx_str} is not related with table ${idx_table}.&#8221; || return 1</p>
+<p>error_generate &#8220;Index ${idx_str} is not related with table ${idx_table}.&#8221;</p>
+</div></blockquote>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>fi</p>
+<p>[ -z &#8220;${idx}&#8221; ] &amp;&amp; idx=&#8221;${idx_str}&#8221;</p>
+<p># Check if foreign key already present
+commons_mariadb_check_if_exist_index &#8220;${idx}&#8221; &#8220;${idx_table}&#8221;
+idx_is_present=$?</p>
+<p># If idxtname is empty and idx_table is not available and index is present
+# I try to retrieve table name
+if [[ -z &#8220;${idx_table}&#8221; &amp;&amp; $idx_is_present -eq 0 ]] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>commons_mariadb_get_indexes_list &#8220;not_primary&#8221; &#8220;S.INDEX_NAME, S.TABLE_NAME&#8221; &#8220;${idx}&#8221; || </dt>
+<dd>error_handled &#8220;Error on get data of index $idx.&#8221;</dd>
+</dl>
+<p>idx_table=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[2]}&#8217;`</p>
+</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;( commons_mariadb_compile_idx: (${idx_str}) I use index ${idx} for table ${idx_table} (${idxtname}) (force = ${force}))n&#8221;</dd>
+</dl>
+<p>[ ! -e &#8220;${f}&#8221; ] &amp;&amp; f=${idx_dir}/${idx_table}-${idx}.sql</p>
+<dl class="docutils">
+<dt>if [ ! -e &#8220;${f}&#8221; ] ; then</dt>
+<dd>_logfile_write &#8220;(commons_mariadb_compile_idx) File $f not found.&#8221; || return 1
+[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(mariadb) File $f not found.n&#8221;
+return 1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;( commons_mariadb_compile_idx: Try to compile index ${idx} for table ${idx_table} (${force})...)n&#8221;</dd>
+<dt>if [[ $idx_is_present -eq 0 &amp;&amp; x&#8221;${force}&#8221; == x&#8221;1&#8221; ]] ; then</dt>
+<dd><p class="first"># POST: index is present and force is equal to 1.</p>
+<p>commons_mariadb_drop_index &#8220;${idx}&#8221; &#8220;${idx_table}&#8221; || return 1</p>
+<p class="last">commons_mariadb_compile_file &#8220;$f&#8221; &#8220;$msg&#8221; || return 1</p>
+</dd>
+</dl>
+<p>elif [ $idx_is_present -eq 0 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;( commons_mariadb_compile_idx: index ${idx} for table ${idx_table} is already present. Nothing to do.)n&#8221;</dd>
+</dl>
+<p>_logfile_write &#8220;(mariadb) Index ${idx} is already present. Nothing to do.&#8221; || return 1</p>
+</div></blockquote>
+<p>elif [ $idx_is_present -eq 2 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;( commons_mariadb_compile_idx: index ${idx} exists for different tables.nSet table param.)n&#8221;</dd>
+</dl>
+<p>_logfile_write &#8220;(mariadb) Index ${idx} exists for different tables. Set table param for compilation.&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div># POST: index not present. I compile it.
+commons_mariadb_compile_file &#8220;$f&#8221; &#8220;$msg&#8221; || return 1</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_compile_idx_end</p>
+<p># commons_mariadb_commons_mariadb_compile_all_procedures
+commons_mariadb_compile_all_procedures () {</p>
+<blockquote>
+<div><p>local msg=&#8221;$1&#8221;
+local directory=&#8221;$MARIADB_DIR/procedures&#8221;</p>
+<p>commons_mariadb_compile_all_from_dir &#8220;$directory&#8221; &#8220;of all procedures&#8221; &#8220;$msg&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_compile_all_procedures_end</p>
+<p># commons_mariadb_commons_mariadb_compile_all_triggers
+commons_mariadb_compile_all_triggers () {</p>
+<blockquote>
+<div><p>local msg=&#8221;$1&#8221;
+local directory=&#8221;$MARIADB_DIR/triggers&#8221;</p>
+<p>commons_mariadb_compile_all_from_dir &#8220;$directory&#8221; &#8220;of all triggers&#8221; &#8220;$msg&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_compile_all_triggers_end</p>
+<p># commons_mariadb_commons_mariadb_compile_all_functions
+commons_mariadb_compile_all_functions () {</p>
+<blockquote>
+<div><p>local msg=&#8221;$1&#8221;
+local directory=&#8221;$MARIADB_DIR/functions&#8221;</p>
+<p>commons_mariadb_compile_all_from_dir &#8220;$directory&#8221; &#8220;of all functions&#8221; &#8220;$msg&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_compile_all_functions_end</p>
+<p># commons_mariadb_commons_mariadb_compile_all_views
+commons_mariadb_compile_all_views () {</p>
+<blockquote>
+<div><p>local msg=&#8221;$1&#8221;
+local directory=&#8221;$MARIADB_DIR/views&#8221;</p>
+<p>commons_mariadb_compile_all_from_dir &#8220;$directory&#8221; &#8220;of all views&#8221; &#8220;$msg&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_compile_all_views_end</p>
+<p># commons_mariadb_commons_mariadb_compile_all_fkeys
+commons_mariadb_compile_all_fkeys () {</p>
+<blockquote>
+<div><p>local msg=&#8221;$1&#8221;
+local force=&#8221;$2&#8221;
+local directory=&#8221;$MARIADB_DIR/foreign_keys&#8221;</p>
+<dl class="docutils">
+<dt>commons_mariadb_compile_all_from_dir &#8220;$directory&#8221; &#8220;of all foreign keys&#8221; &#8220;$msg&#8221; &#8220;fkey&#8221; &#8220;${force}&#8221; || </dt>
+<dd>return 1</dd>
+</dl>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_compile_all_fkeys_end</p>
+<p># commons_mariadb_commons_mariadb_compile_all_idxs
+commons_mariadb_compile_all_idxs () {</p>
+<blockquote>
+<div><p>local msg=&#8221;$1&#8221;
+local force=&#8221;$2&#8221;
+local directory=&#8221;$MARIADB_DIR/indexes&#8221;</p>
+<dl class="docutils">
+<dt>commons_mariadb_compile_all_from_dir &#8220;$directory&#8221; &#8220;of all indexes&#8221; &#8220;$msg&#8221; &#8220;idx&#8221; &#8220;${force}&#8221; || </dt>
+<dd>return 1</dd>
+</dl>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_compile_all_idxs_end</p>
+<p># commons_mariadb_commons_mariadb_compile_all_events
+commons_mariadb_compile_all_events () {</p>
+<blockquote>
+<div><p>local msg=&#8221;$1&#8221;
+local directory=&#8221;$MARIADB_DIR/schedulers&#8221;</p>
+<p>commons_mariadb_compile_all_from_dir &#8220;$directory&#8221; &#8220;of all events&#8221; &#8220;$msg&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_compile_all_events_end</p>
+<p># commons_mariadb_commons_mariadb_compile_all_from_dir
+commons_mariadb_compile_all_from_dir () {</p>
+<blockquote>
+<div><p>local directory=&#8221;$1&#8221;
+local msg_head=&#8221;$2&#8221;
+local msg=&#8221;$3&#8221;
+local dtype=&#8221;$4&#8221;
+local closure=&#8221;$5&#8221;
+local f=&#8221;&#8221;
+local fb=&#8221;&#8221;
+local ex_f=&#8221;&#8221;
+local fk_is_present=1
+local exc=0</p>
+<p>_logfile_write &#8220;(mariadb) Start compilation $msg_head: $msg&#8221; || return 1</p>
+<p>for i in $directory/<a href="#id1"><span class="problematic" id="id2">*</span></a>.sql ; do</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ ! -f &#8220;${i}&#8221; ]  ; then</dt>
+<dd>continue</dd>
+</dl>
+<p>fi</p>
+<p>fk_is_present=1
+exc=0</p>
+<p>fb=`basename $i`
+f=&#8221;${fb/.sql/}&#8221;</p>
+<p># Check if file is excluded
+if [ ! -z &#8220;$MARIADB_COMPILE_FILES_EXCLUDED&#8221; ] ; then</p>
+<blockquote>
+<div><p>for e in $MARIADB_COMPILE_FILES_EXCLUDED ; do</p>
+<blockquote>
+<div><p>ex_f=`basename $e`
+ex_f=&#8221;${ex_f/.sql/}&#8221;</p>
+<dl class="docutils">
+<dt>if [ &#8220;$ex_f&#8221; == &#8220;$f&#8221; ] ; then</dt>
+<dd><p class="first">exc=1</p>
+<p>_logfile_write &#8220;(mariadb) Exclude file $fb for user request.&#8221;</p>
+<p class="last">break</p>
+</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>done # end for exclueded</p>
+</div></blockquote>
+<p>fi</p>
+<p># If file is excluded go to the next
+[ $exc -eq 1 ] &amp;&amp; continue</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en </dt>
+<dd>&#8220;(commons_mariadb_compile_all_from_dir: compile file [$i].n&#8221;</dd>
+</dl>
+<p>if [[ -n &#8220;$dtype&#8221; &amp;&amp; x&#8221;$dtype&#8221; == x&#8221;fkey&#8221; ]] ; then</p>
+<blockquote>
+<div>commons_mariadb_compile_fkey &#8220;$i&#8221; &#8220;$msg&#8221; &#8220;${closure}&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><p>if [[ -n &#8220;$dtype&#8221; &amp;&amp; x&#8221;$dtype&#8221; == x&#8221;idx&#8221; ]] ; then</p>
+<blockquote>
+<div>commons_mariadb_compile_idx &#8220;$i&#8221; &#8220;$msg&#8221; &#8220;${closure}&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>commons_mariadb_compile_file &#8220;$i&#8221; &#8220;$msg&#8221;</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p># POST: on error go to next file</p>
+</div></blockquote>
+<p>done # end for</p>
+<p>_logfile_write &#8220;(mariadb) End compilation $msg_head: $msg&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_compile_all_from_dir_end</p>
+<p># commons_mariadb_commons_mariadb_count_fkeys
+commons_mariadb_count_fkeys () {</p>
+<blockquote>
+<div><p>local tname=$1
+local mode=$2
+local andwhere=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [[ -n &#8220;$tname&#8221; &amp;&amp; -z &#8220;$mode&#8221; || -n &#8220;$tname&#8221; &amp;&amp; &#8220;$mode&#8221; == &#8220;in&#8221; ]] ; then</dt>
+<dd>andwhere=&#8221;AND TS.TABLE_NAME = &#8216;$tname&#8217;&#8221;</dd>
+<dt>else</dt>
+<dd><dl class="first docutils">
+<dt>if [[ -n &#8220;$tname&#8221; &amp;&amp; &#8220;$mode&#8221; == &#8220;ref&#8221; ]] ; then</dt>
+<dd>andwhere=&#8221;AND KCU.REFERENCED_TABLE_NAME = &#8216;$tname&#8217;&#8221;</dd>
+</dl>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd><p class="first">SELECT COUNT(1) AS CNT
+FROM (</p>
+<blockquote>
+<div>SELECT
+KCU.CONSTRAINT_NAME,
+KCU.TABLE_NAME,
+GROUP_CONCAT(KCU.COLUMN_NAME ORDER BY KCU.ORDINAL_POSITION) AS COLUMN_NAME,
+KCU.REFERENCED_TABLE_NAME,
+GROUP_CONCAT(KCU.REFERENCED_COLUMN_NAME ORDER BY KCU.ORDINAL_POSITION) AS REFERENCED_COLUMN_NAME,
+RC.UPDATE_RULE,
+RC.DELETE_RULE</div></blockquote>
+<dl class="docutils">
+<dt>FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TS,</dt>
+<dd>INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU,
+INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS RC</dd>
+</dl>
+<p class="last">WHERE TS.TABLE_SCHEMA = TS.CONSTRAINT_SCHEMA
+AND TS.CONSTRAINT_SCHEMA = KCU.TABLE_SCHEMA
+AND KCU.TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND RC.CONSTRAINT_SCHEMA = KCU.TABLE_SCHEMA
+AND TS.CONSTRAINT_TYPE = &#8216;FOREIGN KEY&#8217;
+AND TS.CONSTRAINT_NAME = KCU.CONSTRAINT_NAME
+AND RC.CONSTRAINT_NAME = TS.CONSTRAINT_NAME
+AND RC.UNIQUE_CONSTRAINT_SCHEMA = KCU.TABLE_SCHEMA
+AND KCU.REFERENCED_TABLE_NAME IS NOT NULL
+$andwhere
+GROUP BY KCU.CONSTRAINT_NAME
+ORDER BY TS.TABLE_NAME, TS.CONSTRAINT_NAME
+) TMP;&#8221;</p>
+</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; &#8220;&#8221; &#8220;1&#8221; || error_handled &#8220;&#8221;</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Error on count foreign keys.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return $MYSQL_OUTPUT</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_count_fkeys_end</p>
+<p># commons_mariadb_commons_mariadb_count_procedures
+commons_mariadb_count_procedures () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd>SELECT COUNT(1) AS CNT
+FROM INFORMATION_SCHEMA.ROUTINES
+WHERE ROUTINE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND ROUTINE_TYPE = &#8216;PROCEDURE&#8217;;&#8221;</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; &#8220;&#8221; &#8220;1&#8221; || error_handled &#8220;&#8221;</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Error on count procedures.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return $MYSQL_OUTPUT</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_count_procedures_end</p>
+<p># commons_mariadb_commons_mariadb_count_functions
+commons_mariadb_count_functions () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd>SELECT COUNT(1) AS CNT
+FROM INFORMATION_SCHEMA.ROUTINES
+WHERE ROUTINE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND ROUTINE_TYPE = &#8216;FUNCTION&#8217;;&#8221;</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; || error_handled &#8220;&#8221;</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Error on count functions.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return $MYSQL_OUTPUT</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_count_functions_end</p>
+<p># commons_mariadb_commons_mariadb_count_triggers
+commons_mariadb_count_triggers () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd>SELECT COUNT(1) AS CNT
+FROM INFORMATION_SCHEMA.TRIGGERS
+WHERE TRIGGER_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND ACTION_TIMING IN (&#8216;BEFORE&#8217;, &#8216;AFTER&#8217;)
+AND EVENT_MANIPULATION IN (&#8216;INSERT&#8217;, &#8216;UPDATE&#8217;, &#8216;DELETE&#8217;)
+AND ACTION_STATEMENT IS NOT NULL;&#8221;</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; || error_handled &#8220;&#8221;</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Error on count triggers.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return $MYSQL_OUTPUT</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_count_triggers_end</p>
+<p># commons_mariadb_commons_mariadb_count_views
+commons_mariadb_count_views () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd>SELECT COUNT(1) AS CNT
+FROM INFORMATION_SCHEMA.VIEWS
+WHERE TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;;&#8221;</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; &#8220;&#8221; &#8220;1&#8221; || error_handled &#8220;&#8221;</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Error on count views.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return $MYSQL_OUTPUT</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_count_views_end</p>
+<p># commons_mariadb_commons_mariadb_count_events
+commons_mariadb_count_events () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd>SELECT COUNT(1) AS CNT
+FROM INFORMATION_SCHEMA.EVENTS
+WHERE EVENT_SCHEMA = &#8216;$MARIADB_DB&#8217;;&#8221;</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; &#8220;&#8221; &#8220;1&#8221; || error_handled &#8220;&#8221;</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Error on count events.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return $MYSQL_OUTPUT</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_count_events_end</p>
+<p># commons_mariadb_commons_mariadb_count_indexes
+commons_mariadb_count_indexes () {</p>
+<blockquote>
+<div><p>local tname=$1
+local idx_types=&#8221;$2&#8221;
+local andwhere=&#8221;&#8221;
+local andWhere_type=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$tname&#8221; ] ; then</dt>
+<dd>andwhere=&#8221;AND TABLE_NAME = &#8216;$tname&#8217;&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$idx_types&#8221; ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>if [ x&#8221;$idx_types&#8221; == x&#8221;primary&#8221; ] ; then</dt>
+<dd>andWhere_type=&#8221;AND INDEX_NAME = &#8216;PRIMARY&#8217;&#8221;</dd>
+<dt>else</dt>
+<dd><dl class="first docutils">
+<dt>if [ x&#8221;$idx_types&#8221; == x&#8221;not_primary&#8221; ] ; then</dt>
+<dd>andWhere_type=&#8221;AND INDEX_NAME &lt;&gt; &#8216;PRIMARY&#8217;&#8221;</dd>
+</dl>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd><p class="first">SELECT COUNT(1) AS CNT
+FROM (</p>
+<blockquote>
+<div><p>SELECT *
+FROM (</p>
+<blockquote>
+<div>SELECT TABLE_NAME, INDEX_NAME
+FROM  INFORMATION_SCHEMA.STATISTICS S
+WHERE S.TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+${andWhere_type}
+${andwhere}
+GROUP BY S.TABLE_NAME, S.INDEX_NAME
+ORDER BY S.TABLE_NAME, S.INDEX_NAME</div></blockquote>
+<p>) IDX
+WHERE IDX.INDEX_NAME NOT IN (</p>
+<blockquote>
+<div>SELECT TC.CONSTRAINT_NAME AS INDEX_NAME
+FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
+WHERE TC.TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND TC.CONSTRAINT_SCHEMA = TC.TABLE_SCHEMA
+AND TC.CONSTRAINT_TYPE = &#8216;FOREIGN KEY&#8217;</div></blockquote>
+<p>)</p>
+</div></blockquote>
+<p class="last">) TMP</p>
+</dd>
+</dl>
+<p>&#8220;</p>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; &#8220;&#8221; &#8220;1&#8221; || error_handled &#8220;&#8221;</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Error on count indexes.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return $MYSQL_OUTPUT</p>
+</div></blockquote>
+<p>}
+# commons_mariadb_commons_mariadb_count_indexes_end</p>
+<p># commmons_mariadb_commons_mariadb_check_if_exist_procedure
+commons_mariadb_check_if_exist_procedure () {</p>
+<blockquote>
+<div><p>local result=1
+local name=&#8221;$1&#8221;
+local errmsg=&#8221;Error on check if exists procedure $name.&#8221;
+local cmd=&#8221;</p>
+<blockquote>
+<div>SELECT COUNT(1) AS CNT
+FROM INFORMATION_SCHEMA.ROUTINES
+WHERE ROUTINE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND ROUTINE_TYPE = &#8216;PROCEDURE&#8217;
+AND ROUTINE_NAME = &#8216;$name&#8217; ;&#8221;</div></blockquote>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; || return $result</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;$errmsg&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ x&#8221;$MYSQL_OUTPUT&#8221; == x&#8221;1&#8221; ] ; then</dt>
+<dd>result=0</dd>
+</dl>
+<p>fi</p>
+<p>return $result</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_check_if_exist_procedure_end</p>
+<p># commmons_mariadb_commons_mariadb_check_if_exist_function
+commons_mariadb_check_if_exist_function () {</p>
+<blockquote>
+<div><p>local result=1
+local name=&#8221;$1&#8221;
+local errmsg=&#8221;Error on check if exists function $name.&#8221;
+local cmd=&#8221;</p>
+<blockquote>
+<div>SELECT COUNT(1) AS CNT
+FROM INFORMATION_SCHEMA.ROUTINES
+WHERE ROUTINE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND ROUTINE_TYPE = &#8216;FUNCTION&#8217;
+AND ROUTINE_NAME = &#8216;$name&#8217;&#8221;</div></blockquote>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; || return $result</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;$errmsg&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ x&#8221;$MYSQL_OUTPUT&#8221; == x&#8221;1&#8221; ] ; then</dt>
+<dd>result=0</dd>
+</dl>
+<p>fi</p>
+<p>return $result</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_check_if_exist_function_end</p>
+<p># commmons_mariadb_commons_mariadb_check_if_exist_view
+commons_mariadb_check_if_exist_view () {</p>
+<blockquote>
+<div><p>local result=1
+local name=&#8221;$1&#8221;
+local errmsg=&#8221;Error on check if exists view $name.&#8221;
+local cmd=&#8221;</p>
+<blockquote>
+<div>SELECT COUNT(1) AS CNT
+FROM INFORMATION_SCHEMA.VIEWS
+WHERE TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND TABLE_NAME = &#8216;$name&#8217; ;&#8221;</div></blockquote>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; || return $result</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;$errmsg&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ x&#8221;$MYSQL_OUTPUT&#8221; == x&#8221;1&#8221; ] ; then</dt>
+<dd>result=0</dd>
+</dl>
+<p>fi</p>
+<p>return $result</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_check_if_exist_view_end</p>
+<p># commmons_mariadb_commons_mariadb_check_if_exist_fkey
+commons_mariadb_check_if_exist_fkey () {</p>
+<blockquote>
+<div><p>local result=1
+local name=&#8221;$1&#8221;
+local tname=&#8221;$2&#8221;
+local errmsg=&#8221;Error on check if exists foreign key with $name.&#8221;
+local cmd=&#8221;&#8221;
+local andWhere=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;${tname}&#8221; ] ; then</dt>
+<dd>andWhere=&#8221;AND TABLE_NAME = &#8216;${tname}&#8217;&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>cmd=&#8221;</dt>
+<dd><p class="first">SELECT COUNT(1) AS CNT
+FROM
+(</p>
+<blockquote class="last">
+<div><blockquote>
+<div>SELECT CONSTRAINT_NAME, TABLE_NAME
+FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS
+WHERE TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND CONSTRAINT_TYPE = &#8216;FOREIGN KEY&#8217;
+AND CONSTRAINT_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND CONSTRAINT_NAME = &#8216;$name&#8217;
+${andWhere}
+GROUP BY CONSTRAINT_NAME, TABLE_NAME</div></blockquote>
+<p>) TMP &#8220;</p>
+</div></blockquote>
+</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; || return $result</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;$errmsg&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ x&#8221;$MYSQL_OUTPUT&#8221; == x&#8221;1&#8221; ] ; then</dt>
+<dd>result=0</dd>
+<dt>elif [ x&#8221;$MYSQL_OUTPUT&#8221; == x&#8221;2&#8221; ] ; then</dt>
+<dd>result=2</dd>
+</dl>
+<p>fi</p>
+<p>return $result</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_check_if_exist_fkey_end</p>
+<p># commmons_mariadb_commons_mariadb_check_if_exist_index
+commons_mariadb_check_if_exist_index () {</p>
+<blockquote>
+<div><p>local result=1
+local name=&#8221;$1&#8221;
+local tname=&#8221;$2&#8221;
+local errmsg=&#8221;Error on check if exists index key with $name on table $tname.&#8221;
+local cmd=&#8221;</p>
+<blockquote>
+<div><p>SELECT COUNT(1) AS CNT
+FROM (</p>
+<blockquote>
+<div><blockquote>
+<div>SELECT TABLE_NAME, INDEX_NAME</div></blockquote>
+<p>FROM  INFORMATION_SCHEMA.STATISTICS
+WHERE TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND INDEX_NAME NOT IN (</p>
+<blockquote>
+<div>SELECT TC.CONSTRAINT_NAME
+FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
+WHERE TC.TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND TC.CONSTRAINT_SCHEMA = TC.TABLE_SCHEMA
+AND TC.CONSTRAINT_TYPE = &#8216;FOREIGN KEY&#8217;</div></blockquote>
+<p>)
+AND TABLE_NAME = &#8216;${tname}&#8217;
+AND INDEX_NAME = &#8216;${name}&#8217;
+GROUP BY TABLE_NAME, INDEX_NAME
+ORDER BY TABLE_NAME, INDEX_NAME</p>
+</div></blockquote>
+<p>) T&#8221;</p>
+</div></blockquote>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; || return $result</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;$errmsg&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ x&#8221;$MYSQL_OUTPUT&#8221; == x&#8221;1&#8221; ] ; then</dt>
+<dd>result=0</dd>
+</dl>
+<p>fi</p>
+<p>return $result</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_check_if_exist_index_end</p>
+<p># commmons_mariadb_commons_mariadb_get_triggers_list
+commons_mariadb_get_triggers_list () {</p>
+<blockquote>
+<div><p>local result=1
+local cmd=&#8221;</p>
+<blockquote>
+<div>SELECT TRIGGER_NAME, EVENT_OBJECT_TABLE, ACTION_TIMING, EVENT_MANIPULATION
+FROM INFORMATION_SCHEMA.TRIGGERS
+WHERE TRIGGER_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND ACTION_TIMING IN (&#8216;BEFORE&#8217;, &#8216;AFTER&#8217;)
+AND EVENT_MANIPULATION IN (&#8216;INSERT&#8217;, &#8216;UPDATE&#8217;, &#8216;DELETE&#8217;)
+AND ACTION_STATEMENT IS NOT NULL
+ORDER BY EVENT_OBJECT_TABLE, ACTION_ORDER;&#8221;</div></blockquote>
+<p>mysql_cmd_4var &#8220;_mariadb_ans&#8221; &#8220;$cmd&#8221; || return $result</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_get_triggers_list_end</p>
+<p># commmons_mariadb_commons_mariadb_count_tables
+commons_mariadb_count_tables () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd>SELECT COUNT(1) AS CNT
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;;&#8221;</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; &#8220;&#8221; &#8220;1&#8221; || error_handled &#8220;&#8221;</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Error on count tables.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return $MYSQL_OUTPUT</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_count_tables_end</p>
+<p># commmons_mariadb_commons_mariadb_get_fkeys_list
+commons_mariadb_get_fkeys_list () {</p>
+<blockquote>
+<div><p>local all=&#8221;$1&#8221;
+local custom_column=&#8221;$2&#8221;
+local fkey_name=&#8221;$3&#8221;
+local tname=&#8221;$4&#8221;
+local mode=&#8221;$5&#8221;
+local all_column=&#8221;&#8221;
+local fk_name=&#8221;&#8221;
+local ext_custom_column=&#8221;&#8221;
+local ext_all_columns=&#8221;&#8220;</p>
+<p># NOTE: Currently if all is not an empty string
+#       I think that custom_column is not used.</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$all&#8221; ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>all_column=&#8221;</dt>
+<dd>KCU.CONSTRAINT_NAME,
+KCU.TABLE_NAME,
+GROUP_CONCAT(KCU.COLUMN_NAME ORDER BY KCU.ORDINAL_POSITION) AS COLUMN_NAME,
+KCU.REFERENCED_TABLE_NAME,
+GROUP_CONCAT(KCU.REFERENCED_COLUMN_NAME ORDER BY KCU.ORDINAL_POSITION) AS REFERENCED_COLUMN_NAME,
+RC.UPDATE_RULE,
+RC.DELETE_RULE</dd>
+</dl>
+<p>&#8221;
+# KCU.POSITION_IN_UNIQUE_CONSTRAINT</p>
+<p># RC.MATCH_OPTION,
+# For now only possible value for this field is None.
+# See: <a class="reference external" href="http://dev.mysql.com/doc/refman/5.7/en/referential-constraints-table.html">http://dev.mysql.com/doc/refman/5.7/en/referential-constraints-table.html</a></p>
+<dl class="docutils">
+<dt>ext_all_columns=&#8221;</dt>
+<dd>TMP.CONSTRAINT_NAME,
+TMP.TABLE_NAME,
+TMP.COLUMN_NAME,
+TMP.REFERENCED_TABLE_NAME,
+TMP.REFERENCED_COLUMN_NAME,
+TMP.UPDATE_RULE,
+TMP.DELETE_RULE</dd>
+</dl>
+<p class="last">&#8220;</p>
+</dd>
+</dl>
+<p>else</p>
+<blockquote>
+<div># TODO: Currently replace only KCU table.
+ext_custom_column=${custom_column//KCU./TMP.}</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;${fkey_name}&#8221; ] ; then</dt>
+<dd>fk_name=&#8221;AND TS.CONSTRAINT_NAME = &#8216;${fkey_name}&#8217;&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ -n &#8220;$tname&#8221; &amp;&amp; -z &#8220;$mode&#8221; || -n &#8220;$tname&#8221; &amp;&amp; &#8220;$mode&#8221; == &#8220;in&#8221; ]] ; then</dt>
+<dd>andwhere=&#8221;AND TS.TABLE_NAME = &#8216;$tname&#8217;&#8221;</dd>
+<dt>else</dt>
+<dd><dl class="first docutils">
+<dt>if [[ -n &#8220;$tname&#8221; &amp;&amp; &#8220;$mode&#8221; == &#8220;ref&#8221; ]] ; then</dt>
+<dd>andwhere=&#8221;AND KCU.REFERENCED_TABLE_NAME = &#8216;$tname&#8217;&#8221;</dd>
+</dl>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd><p class="first">SELECT CONCAT_WS(&#8216;|&#8217;, ${ext_all_columns} ${ext_custom_column}) AS ANS
+FROM (</p>
+<blockquote>
+<div><p>SELECT ${all_column} ${custom_column}
+FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TS,</p>
+<blockquote>
+<div>INFORMATION_SCHEMA.KEY_COLUMN_USAGE KCU,
+INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS RC</div></blockquote>
+<p>WHERE TS.TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND TS.CONSTRAINT_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND KCU.TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND RC.CONSTRAINT_SCHEMA = KCU.TABLE_SCHEMA
+AND TS.CONSTRAINT_TYPE = &#8216;FOREIGN KEY&#8217;
+AND TS.CONSTRAINT_NAME = KCU.CONSTRAINT_NAME
+AND RC.CONSTRAINT_NAME = TS.CONSTRAINT_NAME
+AND RC.UNIQUE_CONSTRAINT_SCHEMA = KCU.TABLE_SCHEMA
+AND KCU.REFERENCED_TABLE_NAME IS NOT NULL
+${fk_name}
+${andwhere}
+GROUP BY KCU.CONSTRAINT_NAME
+ORDER BY TS.TABLE_NAME, TS.CONSTRAINT_NAME</p>
+</div></blockquote>
+<p class="last">) TMP</p>
+</dd>
+</dl>
+<p>&#8220;</p>
+<p>mysql_cmd_4var &#8220;_mariadb_ans&#8221; &#8220;$cmd&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_get_fkeys_list_end</p>
+<p># commmons_mariadb_commons_mariadb_get_indexes_list
+commons_mariadb_get_indexes_list () {</p>
+<blockquote>
+<div><p>local idx_types=&#8221;$1&#8221;
+local custom_column=&#8221;$2&#8221;
+local tname=&#8221;$3&#8221;
+local iname=&#8221;$4&#8221;
+local all_column=&#8221;&#8221;
+local andWhere_name=&#8221;&#8221;
+local andWhere_type=&#8221;&#8221;
+local ext_custom_column=&#8221;&#8221;
+local ext_all_columns=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$custom_column&#8221; ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>all_column=&#8221;</dt>
+<dd>S.TABLE_NAME,
+S.NON_UNIQUE,
+S.INDEX_NAME,
+GROUP_CONCAT(S.COLUMN_NAME ORDER BY S.SEQ_IN_INDEX) AS KEY_COLUMNS,
+S.INDEX_TYPE,
+S.COMMENT,
+S.INDEX_COMMENT</dd>
+</dl>
+<p>&#8221;
+# On Mysql 5.1 INDEX_COMMENT is not available.</p>
+<dl class="docutils">
+<dt>ext_all_columns=&#8221;</dt>
+<dd>TMP.TABLE_NAME,
+TMP.NON_UNIQUE,
+TMP.INDEX_NAME,
+TMP.KEY_COLUMNS,
+TMP.INDEX_TYPE,
+TMP.COMMENT,
+TMP.INDEX_COMMENT</dd>
+</dl>
+<p class="last">&#8220;</p>
+</dd>
+</dl>
+<p>else</p>
+<blockquote>
+<div># TODO: Currently replace only KCU table.
+ext_custom_column=${custom_column//S./TMP.}</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$idx_types&#8221; ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>if [ x&#8221;$idx_types&#8221; == x&#8221;primary&#8221; ] ; then</dt>
+<dd>andWhere_type=&#8221;AND S.INDEX_NAME = &#8216;PRIMARY&#8217;&#8221;</dd>
+<dt>else</dt>
+<dd><dl class="first docutils">
+<dt>if [ x&#8221;$idx_types&#8221; == x&#8221;not_primary&#8221; ] ; then</dt>
+<dd>andWhere_type=&#8221;AND S.INDEX_NAME &lt;&gt; &#8216;PRIMARY&#8217;&#8221;</dd>
+</dl>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;${tname}&#8221; ] ; then</dt>
+<dd>andWhere_name=&#8221;AND S.TABLE_NAME = &#8216;${tname}&#8217;&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;${iname}&#8221; ] ; then</dt>
+<dd>andWhere_iname=&#8221;AND S.INDEX_NAME = &#8216;${iname}&#8217;&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd><p class="first">SELECT CONCAT_WS(&#8216;|&#8217;, ${ext_all_columns} ${ext_custom_column}) AS ANS
+FROM (</p>
+<blockquote>
+<div><p>SELECT *
+FROM (</p>
+<blockquote>
+<div>SELECT ${all_column} ${custom_column}
+FROM  INFORMATION_SCHEMA.STATISTICS S
+WHERE S.TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+${andWhere_name}
+${andWhere_iname}
+${andWhere_type}
+GROUP BY S.TABLE_NAME, S.INDEX_NAME
+ORDER BY S.TABLE_NAME, S.INDEX_NAME</div></blockquote>
+<p>) IDX
+WHERE IDX.INDEX_NAME NOT IN (</p>
+<blockquote>
+<div>SELECT TC.CONSTRAINT_NAME AS INDEX_NAME
+FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
+WHERE TC.TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND TC.CONSTRAINT_SCHEMA = TC.TABLE_SCHEMA
+AND TC.CONSTRAINT_TYPE = &#8216;FOREIGN KEY&#8217;</div></blockquote>
+<p>)</p>
+</div></blockquote>
+<p class="last">) TMP</p>
+</dd>
+</dl>
+<p>&#8220;</p>
+<p>mysql_cmd_4var &#8220;_mariadb_ans&#8221; &#8220;$cmd&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_get_indexes_list_end</p>
+<p># commmons_mariadb_commons_mariadb_get_tables_list
+commons_mariadb_get_tables_list () {</p>
+<blockquote>
+<div><p>local all=&#8221;$1&#8221;
+local custom_column=&#8221;$2&#8221;
+local tname=&#8221;$3&#8221;
+local all_column=&#8221;&#8221;
+local andwhere=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$all&#8221; ] ; then</dt>
+<dd>all_column=&#8221;,T.ENGINE,T.TABLE_ROWS,T.DATA_LENGTH,CCSA.CHARACTER_SET_NAME,T.CREATE_TIME,T.UPDATE_TIME&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$tname&#8221; ] ; then</dt>
+<dd>andwhere=&#8221;AND T.TABLE_NAME = &#8216;${tname}&#8217;&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd><p class="first">SELECT T.TABLE_NAME ${all_column} ${custom_column}
+FROM INFORMATION_SCHEMA.TABLES T,</p>
+<blockquote>
+<div>INFORMATION_SCHEMA.COLLATION_CHARACTER_SET_APPLICABILITY CCSA</div></blockquote>
+<dl class="docutils">
+<dt>WHERE T.TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;</dt>
+<dd>AND T.TABLE_COLLATION = CCSA.COLLATION_NAME
+${andwhere}</dd>
+</dl>
+<p class="last">ORDER BY TABLE_NAME;&#8221;</p>
+</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;_mariadb_ans&#8221; &#8220;$cmd&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_get_tables_list_end</p>
+<p># commmons_mariadb_commons_mariadb_desc_table
+commons_mariadb_desc_table () {</p>
+<blockquote>
+<div><p>local tname=&#8221;$1&#8221;
+local custom_column=&#8221;$2&#8221;
+local cname=&#8221;$3&#8221;
+local andwhere=&#8221;&#8221;
+local all_column=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$cname&#8221; ] ; then</dt>
+<dd>andWhere=&#8221;AND COLUMN_NAME = &#8216;$cname&#8217;&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$custom_column&#8221; ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>all_column=&#8221;CONCAT_WS(&#8216;|&#8217;,</dt>
+<dd>COLUMN_NAME,
+IS_NULLABLE,
+UPPER(COLUMN_TYPE),
+COLUMN_KEY,
+UPPER(EXTRA)) AS C,
+&#8216;|&#8217; AS S,
+COLUMN_DEFAULT</dd>
+</dl>
+<p class="last">&#8220;</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd>SELECT ${all_column} ${custom_column}
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND TABLE_NAME = &#8216;$tname&#8217;
+${andWhere}
+ORDER BY ORDINAL_POSITION;&#8221;</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;_mariadb_ans&#8221; &#8220;$cmd&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_desc_table_end</p>
+<p># commmons_mariadb_commons_mariadb_exist_table
+commons_mariadb_exist_table () {</p>
+<blockquote>
+<div><p>local tname=&#8221;$1&#8221;
+local result=1</p>
+<dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd>SELECT COUNT(1)
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND TABLE_NAME = &#8216;$tname&#8217;&#8221;</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; || return 1</p>
+<dl class="docutils">
+<dt>if [ x&#8221;$MYSQL_OUTPUT&#8221; == x&#8221;1&#8221; ] ; then</dt>
+<dd>result=0</dd>
+</dl>
+<p>fi</p>
+<p>return $result</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_exist_table_end</p>
+<p># commmons_mariadb_commons_mariadb_exist_event
+commons_mariadb_exist_event () {</p>
+<blockquote>
+<div><p>local ename=&#8221;$1&#8221;
+local result=1</p>
+<dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd>SELECT COUNT(1)
+FROM INFORMATION_SCHEMA.EVENTS
+WHERE EVENT_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND EVENT_NAME = &#8216;$ename&#8217;&#8221;</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; || return 1</p>
+<dl class="docutils">
+<dt>if [ x&#8221;$MYSQL_OUTPUT&#8221; == x&#8221;1&#8221; ] ; then</dt>
+<dd>result=0</dd>
+</dl>
+<p>fi</p>
+<p>return $result</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_exist_event_end</p>
+<p># commmons_mariadb_commons_mariadb_get_procedures_list
+commons_mariadb_get_procedures_list () {</p>
+<blockquote>
+<div><p>local all=$1
+local all_column=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$all&#8221; ] ; then</dt>
+<dd>all_column=&#8221;,DEFINER, CREATED, LAST_ALTERED&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd>SELECT ROUTINE_NAME $all_column
+FROM INFORMATION_SCHEMA.ROUTINES
+WHERE ROUTINE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND ROUTINE_TYPE = &#8216;PROCEDURE&#8217;;&#8221;</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;_mariadb_ans&#8221; &#8220;$cmd&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_get_procedures_list_end</p>
+<p># commmons_mariadb_commons_mariadb_get_functions_list
+commons_mariadb_get_functions_list () {</p>
+<blockquote>
+<div><p>local all=$1
+local all_column=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$all&#8221; ] ; then</dt>
+<dd>all_column=&#8221;,DEFINER, CREATED, LAST_ALTERED&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd>SELECT ROUTINE_NAME $all_column
+FROM INFORMATION_SCHEMA.ROUTINES
+WHERE ROUTINE_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND ROUTINE_TYPE = &#8216;FUNCTION&#8217;;&#8221;</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;_mariadb_ans&#8221; &#8220;$cmd&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_get_functions_list_end</p>
+<p># commmons_mariadb_commons_mariadb_get_events_list
+commons_mariadb_get_events_list () {</p>
+<blockquote>
+<div><p>local opt=$1
+local ename=$2
+local add_columns=&#8221;&#8221;
+local and_where=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$opt&#8221; ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>if [[ &#8220;${opt}&#8221; == &#8216;all&#8217; ]] ; then</dt>
+<dd><dl class="first docutils">
+<dt>add_columns=&#8221;</dt>
+<dd>,
+DEFINER,
+TIME_ZONE,
+EVENT_TYPE,
+COALESCE(EXECUTE_AT, &#8216;&#8217;),
+COALESCE(INTERVAL_VALUE, &#8216;&#8217;),
+COALESCE(INTERVAL_FIELD, &#8216;&#8217;),
+COALESCE(STARTS, &#8216;&#8217;),
+COALESCE(ENDS, &#8216;&#8217;),
+STATUS,
+ON_COMPLETION,
+CREATED,
+LAST_ALTERED,
+COALESCE(LAST_EXECUTED, &#8216;&#8217;),
+COALESCE(EVENT_COMMENT)</dd>
+</dl>
+<p class="last">&#8220;</p>
+</dd>
+<dt>else</dt>
+<dd><dl class="first docutils">
+<dt>add_columns=&#8221;</dt>
+<dd>,
+DEFINER,
+TIME_ZONE,
+EVENT_TYPE,
+STATUS,
+CREATED,
+COALESCE(LAST_EXECUTED, &#8216;&#8217;)</dd>
+</dl>
+<p class="last">&#8220;</p>
+</dd>
+</dl>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;${ename}&#8221; ] ; then</dt>
+<dd>and_where=&#8221;AND EVENT_NAME = &#8216;${ename}&#8217;&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd>SELECT CONCAT_WS(&#8216;|&#8217;, EVENT_NAME ${add_columns}) AS ANS
+FROM INFORMATION_SCHEMA.EVENTS
+WHERE EVENT_SCHEMA = &#8216;$MARIADB_DB&#8217;
+${and_where}</dd>
+</dl>
+<p>&#8220;</p>
+<p>mysql_cmd_4var &#8220;_mariadb_ans&#8221; &#8220;$cmd&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_get_events_list_end</p>
+<p># commmons_mariadb_commons_mariadb_get_views_list
+commons_mariadb_get_views_list () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd>SELECT TABLE_NAME, IS_UPDATABLE
+FROM INFORMATION_SCHEMA.VIEWS
+WHERE TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;;&#8221;</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;_mariadb_ans&#8221; &#8220;$cmd&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_get_views_list_end</p>
+<p># commmons_mariadb_commons_mariadb_check_if_exist_trigger
+commons_mariadb_check_if_exist_trigger () {</p>
+<blockquote>
+<div><p>local result=1
+local name=&#8221;$1&#8221;
+local tname=&#8221;$2&#8221;
+local errmsg=&#8221;Error on check if exists trigger $name.&#8221;
+local whereCond=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;${tname}&#8221; ] ; then</dt>
+<dd>whereCond=&#8221;AND EVENT_OBJECT_TABLE = &#8216;${tname}&#8217;&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd>SELECT COUNT(1) AS CNT
+FROM INFORMATION_SCHEMA.TRIGGERS
+WHERE TRIGGER_SCHEMA = &#8216;$MARIADB_DB&#8217;
+AND TRIGGER_NAME = &#8216;$name&#8217;
+AND ACTION_TIMING IN (&#8216;BEFORE&#8217;, &#8216;AFTER&#8217;)
+AND EVENT_MANIPULATION IN (&#8216;INSERT&#8217;, &#8216;UPDATE&#8217;, &#8216;DELETE&#8217;)
+AND ACTION_STATEMENT IS NOT NULL
+${whereCond}</dd>
+</dl>
+<p>&#8220;</p>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; || return $result</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;$errmsg&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ x&#8221;$MYSQL_OUTPUT&#8221; == x&#8221;1&#8221; ] ; then</dt>
+<dd>result=0</dd>
+</dl>
+<p>fi</p>
+<p>return $result</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_check_if_exist_trigger_end</p>
+<p># commmons_mariadb_commons_mariadb_download_procedure
+commons_mariadb_download_procedure () {</p>
+<blockquote>
+<div><p>local name=&#8221;${1/.sql/}&#8221;
+name=`basename $name`
+local proceduresdir=&#8221;${MARIADB_DIR}/procedures&#8221;
+local f=&#8221;$proceduresdir/$name.sql&#8221;</p>
+<p>commons_mariadb_check_if_exist_procedure &#8220;$name&#8221; || error_handled &#8220;Procedure $name not found.&#8221;</p>
+<dl class="docutils">
+<dt>if [ ! -e &#8220;$proceduresdir&#8221; ] ; then</dt>
+<dd>mkdir &#8220;$proceduresdir&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>[ -f &#8220;$f&#8221; ] &amp;&amp; rm -f &#8220;$f&#8221;</p>
+<dl class="docutils">
+<dt>local query=&#8221;</dt>
+<dd><dl class="first docutils">
+<dt>SELECT CONCAT(&#8216;CREATE PROCEDURE `$name` (&#8216;, param_list, &#8216;)&#8217;,</dt>
+<dd><blockquote class="first">
+<div>CASE R.IS_DETERMINISTIC WHEN &#8216;NO&#8217; THEN &#8216;&#8217; ELSE &#8216;nDETERMINISTIC&#8217; END</div></blockquote>
+<p class="last">) AS SCRIPT</p>
+</dd>
+<dt>FROM mysql.proc M,</dt>
+<dd>INFORMATION_SCHEMA.ROUTINES R</dd>
+</dl>
+<p class="last">WHERE name = &#8216;$name&#8217; AND db = &#8216;$MARIADB_DB&#8217;
+AND R.ROUTINE_NAME = name
+AND R.ROUTINE_SCHEMA = db;&#8221;</p>
+</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$query&#8221; || return $result</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Error on download procedure params of the procedure $name.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>query=&#8221;</dt>
+<dd>SELECT body
+FROM mysql.proc
+WHERE name = &#8216;$name&#8217; AND db = &#8216;$MARIADB_DB&#8217;;&#8221;</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;PROCEDURE_BODY&#8221; &#8220;$query&#8221; || return $result</p>
+<p>#escape_var &#8220;PROCEDURE_BODY&#8221;</p>
+<p>local out=&#8221;</p>
+</div></blockquote>
+<p>&#8211; $Id$
+USE `DB_NAME`;
+DROP PROCEDURE IF EXISTS `$name`;</p>
+<p>DELIMITER $$
+USE `DB_NAME`$$
+$MYSQL_OUTPUT
+$PROCEDURE_BODY
+&#8220;</p>
+<blockquote>
+<div><p>unset PROCEDURE_BODY</p>
+<p>echo -en &#8220;$out&#8221; &gt; $f</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_download_procedure_end</p>
+<p># commmons_mariadb_commons_mariadb_download_function
+commons_mariadb_download_function () {</p>
+<blockquote>
+<div><p>local result=1
+local name=&#8221;${1/.sql/}&#8221;
+name=`basename $name`</p>
+<p>local functionsdir=&#8221;${MARIADB_DIR}/functions&#8221;
+local f=&#8221;$functionsdir/$name.sql&#8221;</p>
+<p>commons_mariadb_check_if_exist_function &#8220;$name&#8221; || error_handled &#8220;Function $name not found.&#8221;</p>
+<dl class="docutils">
+<dt>if [ ! -e &#8220;$functionsdir&#8221; ] ; then</dt>
+<dd>mkdir &#8220;$functionsdir&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>[ -f &#8220;$f&#8221; ] &amp;&amp; rm -f &#8220;$f&#8221;</p>
+<dl class="docutils">
+<dt>local query=&#8221;</dt>
+<dd><dl class="first docutils">
+<dt>SELECT CONCAT(&#8216;CREATE FUNCTION `$name` (&#8216;, param_list, &#8216;) RETURNS &#8216;, returns,</dt>
+<dd><blockquote class="first">
+<div>CASE R.IS_DETERMINISTIC WHEN &#8216;NO&#8217; THEN &#8216;&#8217; ELSE &#8216;nDETERMINISTIC&#8217; END</div></blockquote>
+<p class="last">) AS SCRIPT</p>
+</dd>
+<dt>FROM mysql.proc M,</dt>
+<dd>INFORMATION_SCHEMA.ROUTINES R</dd>
+</dl>
+<p class="last">WHERE name = &#8216;$name&#8217;
+AND db = &#8216;$MARIADB_DB&#8217;
+AND R.ROUTINE_NAME = name
+AND R.ROUTINE_SCHEMA = db;&#8221;</p>
+</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$query&#8221; || return $result</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Error on download function params of the function $name.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>query=&#8221;</dt>
+<dd>SELECT body
+FROM mysql.proc
+WHERE name = &#8216;$name&#8217; AND db = &#8216;$MARIADB_DB&#8217;;&#8221;</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;FUNCTION_BODY&#8221; &#8220;$query&#8221; || return $result</p>
+<p>#escape_var &#8220;FUNCTION_BODY&#8221;</p>
+<p>local out=&#8221;</p>
+</div></blockquote>
+<p>&#8211; $Id$
+USE `DB_NAME`;
+DROP FUNCTION IF EXISTS `$name`;</p>
+<p>DELIMITER $$
+USE `DB_NAME`$$
+$MYSQL_OUTPUT
+$FUNCTION_BODY
+&#8220;</p>
+<blockquote>
+<div><p>unset FUNCTION_BODY</p>
+<p>echo -en &#8220;$out&#8221; &gt; $f</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_download_function_end</p>
+<p># commmons_mariadb_commons_mariadb_download_trigger
+commons_mariadb_download_trigger () {</p>
+<blockquote>
+<div><p>local result=1
+local name=&#8221;${1/.sql/}&#8221;
+name=`basename $name`</p>
+<p>local triggersdir=&#8221;${MARIADB_DIR}/triggers&#8221;
+local f=&#8221;$triggersdir/$name.sql&#8221;</p>
+<p>commons_mariadb_check_if_exist_trigger &#8220;$name&#8221; || error_handled &#8220;Trigger $name not found or not supported.&#8221;</p>
+<dl class="docutils">
+<dt>if [ ! -e &#8220;$triggersdir&#8221; ] ; then</dt>
+<dd>mkdir &#8220;$triggersdir&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>[ -f &#8220;$f&#8221; ] &amp;&amp; rm -f &#8220;$f&#8221;</p>
+<dl class="docutils">
+<dt>local query=&#8221;</dt>
+<dd><dl class="first docutils">
+<dt>SELECT CONCAT(&#8216;CREATE TRIGGER `$name`&#8217;,</dt>
+<dd>ACTION_TIMING, &#8216; &#8216;, EVENT_MANIPULATION, &#8216; ON `&#8217;, EVENT_OBJECT_TABLE,
+&#8216;`nFOR EACH ROWn&#8217;,
+ACTION_STATEMENT, &#8216;;&#8217;)</dd>
+</dl>
+<p class="last">FROM INFORMATION_SCHEMA.TRIGGERS
+WHERE TRIGGER_NAME = &#8216;$name&#8217; AND TRIGGER_SCHEMA = &#8216;$MARIADB_DB&#8217;;&#8221;</p>
+</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$query&#8221; || return $result</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Error on download trigger params of the trigger $name.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>local out=&#8221;</p>
+</div></blockquote>
+<p>&#8211; $Id$
+USE `DB_NAME`;
+DROP TRIGGER IF EXISTS `$name`;</p>
+<p>DELIMITER $$
+USE `DB_NAME`$$
+$MYSQL_OUTPUT
+&#8220;</p>
+<blockquote>
+<div><p>unset MYSQL_BODY</p>
+<p>echo -en &#8220;$out&#8221; &gt; $f</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_download_trigger_end</p>
+<p># commmons_mariadb_commons_mariadb_download_event
+commons_mariadb_download_event () {</p>
+<blockquote>
+<div><p>local result=1
+local name=&#8221;${1/.sql/}&#8221;
+local with_tz=&#8221;$2&#8221;
+name=`basename $name`</p>
+<p>local eventsdir=&#8221;${MARIADB_DIR}/schedulers&#8221;
+local f=&#8221;$eventsdir/$name.sql&#8221;</p>
+<p>commons_mariadb_exist_event &#8220;$name&#8221; || error_handled &#8220;Event $name not found.&#8221;</p>
+<dl class="docutils">
+<dt>if [ ! -e &#8220;$eventsdir&#8221; ] ; then</dt>
+<dd>mkdir &#8220;$eventsdir&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>[ -f &#8220;$f&#8221; ] &amp;&amp; rm -f &#8220;$f&#8221;</p>
+<p># Retrieve event data
+commons_mariadb_get_events_list &#8220;all&#8221; &#8220;${name}&#8221; || </p>
+<blockquote>
+<div>error_handled &#8220;Error on get data of event ${name}.&#8221;</div></blockquote>
+<p>local row=$_mariadb_ans
+local def=`echo $row | awk &#8216;{split($row,a,&#8221;|&#8221;); print a[2]}&#8217;`
+local tzone=`echo $row | awk &#8216;{split($row,a,&#8221;|&#8221;); print a[3]}&#8217;`
+local etype=`echo $row | awk &#8216;{split($row,a,&#8221;|&#8221;); print a[4]}&#8217;`
+local exec_at=`echo $row | awk &#8216;{split($row,a,&#8221;|&#8221;); print a[5]}&#8217;`
+local int_field=`echo $row | awk &#8216;{split($row,a,&#8221;|&#8221;); print a[7]}&#8217;`
+local int_value=`echo $row | awk &#8216;{split($row,a,&#8221;|&#8221;); print a[6]}&#8217;`
+local starts=`echo $row | awk &#8216;{split($row,a,&#8221;|&#8221;); print a[8]}&#8217;`
+local ends=`echo $row | awk &#8216;{split($row,a,&#8221;|&#8221;); print a[9]}&#8217;`
+local status=`echo $row | awk &#8216;{split($row,a,&#8221;|&#8221;); print a[10]}&#8217;`
+local on_completion=`echo $row | awk &#8216;{split($row,a,&#8221;|&#8221;); print a[11]}&#8217;`
+local comment=`echo $row | awk &#8216;{split($row,a,&#8221;|&#8221;); print a[15]}&#8217;`</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd><dl class="first last docutils">
+<dt>echo -en &#8220;(commons_mariadb_download_event: def = &#8216;${def}&#8217;, tzone = &#8216;${tzone}&#8217;, &#8221; </dt>
+<dd>&#8220;etype = &#8216;${etype}&#8217;, exec_at = &#8216;${exec_at}&#8217;, int_field = &#8216;${int_field}&#8217;, &#8221; &#8220;int_value = &#8216;${int_value}&#8217;, starts = &#8216;${starts}&#8217;, ends = &#8216;${ends}&#8217;, &#8221; &#8220;status = &#8216;${status}&#8217;, on_completion = &#8216;${on_completion}&#8217;, comment = &#8216;${comment}&#8217;.n&#8221;</dd>
+</dl>
+</dd>
+<dt>local query=&#8221;</dt>
+<dd>SELECT EVENT_DEFINITION
+FROM INFORMATION_SCHEMA.EVENTS
+WHERE EVENT_NAME = &#8216;$name&#8217; AND EVENT_SCHEMA = &#8216;$MARIADB_DB&#8217;;&#8221;</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$query&#8221; || return $result</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Error on download data of the event $name.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>local at_row=&#8221;&#8221;
+local starts_row=&#8221;&#8221;
+local ends_row=&#8221;&#8221;
+local every_row=&#8221;&#8221;
+local comm_row=&#8221;&#8221;
+local status_row=&#8221;&#8221;
+local on_compl_row=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;${exec_at}&#8221; ] ; then</dt>
+<dd>at_row=&#8221;AT &#8216;${exec_at}&#8217;&#8221;</dd>
+</dl>
+<p>fi
+if [[ -n &#8220;${int_field}&#8221; &amp;&amp; -n &#8220;${int_value}&#8221; ]] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ -n &#8220;${at_row}&#8221; ] ; then</dt>
+<dd>every_row=&#8221;n  EVERY ${int_value} ${int_field}&#8221;</dd>
+<dt>else</dt>
+<dd>every_row=&#8221;EVERY ${int_value} ${int_field}&#8221;</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi
+if [[ -n &#8220;${on_completion}&#8221; &amp;&amp; ${on_completion} != &#8220;NOT PRESERVE&#8221; ]] ; then</p>
+<blockquote>
+<div>on_compl_row=&#8221;n  ON COMPLETION PRESERVE&#8221;</div></blockquote>
+<p>fi
+if [ -n &#8220;${starts}&#8221; ] ; then</p>
+<blockquote>
+<div>starts_row=&#8221;n  STARTS &#8216;${starts}&#8217;&#8221;</div></blockquote>
+<p>fi
+if [ -n &#8220;${ends}&#8221; ] ; then</p>
+<blockquote>
+<div>ends_row=&#8221;n  ENDS &#8216;${ends}&#8217;&#8221;</div></blockquote>
+<p>fi
+if [[ -n &#8220;${status}&#8221; ]] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ &#8220;${status}&#8221; == &#8220;ENABLED&#8221; ] ; then</dt>
+<dd>status_row=&#8221;ENABLE&#8221;</dd>
+<dt>else</dt>
+<dd><dl class="first docutils">
+<dt>if [ &#8220;${status}&#8221; == &#8216;SLAVESIDE_DISABLED&#8217; ] ; then</dt>
+<dd>status_row=&#8221;DISABLE SLAVE&#8221;</dd>
+<dt>else # DISABLED</dt>
+<dd>status_row=&#8221;DISABLE&#8221;</dd>
+</dl>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ -n &#8220;${comment}&#8221; ]] ; then</dt>
+<dd>comm_row=&#8221;n  COMMENT &#8216;${comment}&#8217;&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>local set_tz=&#8221;&#8221;
+if [[ -n &#8220;${with_tz}&#8221; &amp;&amp; &#8220;${with_tz}&#8221; == &#8220;1&#8221; ]] ; then</p>
+<blockquote>
+<div>set_tz=&#8221;SET time_zone = &#8216;${tzone}&#8217; $$&#8221;</div></blockquote>
+<p>fi</p>
+<p># TODO: check if add IF NOT EXISTS.</p>
+<p>local out=&#8221;</p>
+</div></blockquote>
+<p>&#8211; $Id$</p>
+<p>DELIMITER $$
+USE `DB_NAME`$$</p>
+<p>${set_tz}
+CREATE EVENT</p>
+<blockquote>
+<div><p>`${name}`
+ON SCHEDULE
+${at_row}${every_row}${starts_row}${ends_row}${on_compl_row}
+${status_row}${comm_row}
+DO</p>
+<blockquote>
+<div>$MYSQL_OUTPUT</div></blockquote>
+<p>$$</p>
+</div></blockquote>
+<p>DELIMITER ;
+&#8220;</p>
+<blockquote>
+<div><p>unset MYSQL_BODY</p>
+<p>echo -en &#8220;$out&#8221; &gt; $f</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_download_event_end</p>
+<p># commmons_mariadb_commons_mariadb_download_view
+commons_mariadb_download_view () {</p>
+<blockquote>
+<div><p>local result=1
+local name=&#8221;${1/.sql/}&#8221;
+name=`basename $name`</p>
+<p>local viewsdir=&#8221;${MARIADB_DIR}/views&#8221;
+local f=&#8221;$viewsdir/$name.sql&#8221;</p>
+<p>commons_mariadb_check_if_exist_view &#8220;$name&#8221; || error_handled &#8220;View $name not found or not supported.&#8221;</p>
+<dl class="docutils">
+<dt>if [ ! -e &#8220;$viewsdir&#8221; ] ; then</dt>
+<dd>mkdir &#8220;$viewsdir&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>[ -f &#8220;$f&#8221; ] &amp;&amp; rm -f &#8220;$f&#8221;</p>
+<dl class="docutils">
+<dt>local query=&#8221;</dt>
+<dd><dl class="first docutils">
+<dt>SELECT CONCAT(&#8216;CREATE OR REPLACE VIEW `$name`nAS &#8216;,</dt>
+<dd>VIEW_DEFINITION,
+&#8216;;n&#8217;)</dd>
+</dl>
+<p class="last">FROM INFORMATION_SCHEMA.VIEWS
+WHERE TABLE_NAME = &#8216;$name&#8217; AND TABLE_SCHEMA = &#8216;$MARIADB_DB&#8217;;&#8221;</p>
+</dd>
+</dl>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$query&#8221; || return $result</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$MYSQL_OUTPUT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Error on download views data of the view $name.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>local out=&#8221;</p>
+</div></blockquote>
+<p>&#8211; $Id$
+$MYSQL_OUTPUT
+&#8220;</p>
+<blockquote>
+<div><p>unset MYSQL_BODY</p>
+<p>echo -en &#8220;$out&#8221; &gt; $f</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_download_view_end</p>
+<p># commmons_mariadb_commons_mariadb_download_all_views
+commons_mariadb_download_all_views () {</p>
+<blockquote>
+<div><p>local n_rec=0
+local name=&#8221;&#8221;
+local i=1</p>
+<p>commons_mariadb_count_views
+n_rec=$?</p>
+<p>if [ $n_rec -gt 0 ] ; then</p>
+<blockquote>
+<div><p>commons_mariadb_get_views_list || error_handled &#8220;Error on get views name list.&#8221;</p>
+<p>IFS=$&#8217;n&#8217;
+for row in $_mariadb_ans ; do</p>
+<blockquote>
+<div><p>name=`echo $row | awk &#8216;{split($0,a,&#8221; &#8221;); print a[1]}&#8217;`</p>
+<p>unset IFS
+commons_mariadb_download_view &#8220;$name&#8221;
+if [ $? -ne 0 ] ; then</p>
+<blockquote>
+<div>echo -en &#8220;Error on download view $name ($i of $n_rec).n&#8221;</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>echo -en &#8220;Download view $name ($i of $n_rec).n&#8221;</dd>
+</dl>
+<p>fi
+let i++
+IFS=$&#8217;n&#8217;</p>
+</div></blockquote>
+<p>done
+unset IFS</p>
+</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_download_all_views_end</p>
+<p># commmons_mariadb_commons_mariadb_download_all_procedures
+commons_mariadb_download_all_procedures () {</p>
+<blockquote>
+<div><p>local n_rec=0
+local i=1</p>
+<p>commons_mariadb_count_procedures
+n_rec=$?</p>
+<p>if [ $n_rec -gt 0 ] ; then</p>
+<blockquote>
+<div><p>commons_mariadb_get_procedures_list || error_handled &#8220;Error on get procedures name list.&#8221;</p>
+<p>IFS=$&#8217;n&#8217;
+for row in $_mariadb_ans ; do</p>
+<blockquote>
+<div><p>unset IFS
+commons_mariadb_download_procedure &#8220;$row&#8221;
+if [ $? -ne 0 ] ; then</p>
+<blockquote>
+<div>echo -en &#8220;Error on download procedure $row ($i of $n_rec).n&#8221;</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>echo -en &#8220;Download procedure $row correctly ($i of $n_rec).n&#8221;</dd>
+</dl>
+<p>fi
+let i++
+IFS=$&#8217;n&#8217;</p>
+</div></blockquote>
+<p>done
+unset IFS</p>
+</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_download_all_procedures_end</p>
+<p># commmons_mariadb_commons_mariadb_download_all_functions
+commons_mariadb_download_all_functions () {</p>
+<blockquote>
+<div><p>local n_rec=0
+local i=1</p>
+<p>commons_mariadb_count_functions
+n_rec=$?</p>
+<p>if [ $n_rec -gt 0 ] ; then</p>
+<blockquote>
+<div><p>commons_mariadb_get_functions_list || error_handled &#8220;Error on get functions name list.&#8221;</p>
+<p>IFS=$&#8217;n&#8217;
+for row in $_mariadb_ans ; do</p>
+<blockquote>
+<div><p>unset IFS
+commons_mariadb_download_function &#8220;$row&#8221;
+if [ $? -ne 0 ] ; then</p>
+<blockquote>
+<div>echo -en &#8220;Error on download function $row ($i of $n_rec).n&#8221;</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>echo -en &#8220;Download function $row correctly ($i of $n_rec).n&#8221;</dd>
+</dl>
+<p>fi
+let i++
+IFS=$&#8217;n&#8217;</p>
+</div></blockquote>
+<p>done
+unset IFS</p>
+</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_download_all_functions_end</p>
+<p># commmons_mariadb_commons_mariadb_download_all_triggers
+commons_mariadb_download_all_triggers () {</p>
+<blockquote>
+<div><p>local n_rec=0
+local name=&#8221;&#8221;
+local i=1</p>
+<p>commons_mariadb_count_triggers
+n_rec=$?</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_commons_mariadb_count_triggers: Found $n_rec triggers.n&#8221;</p>
+<p>if [ $n_rec -gt 0 ] ; then</p>
+<blockquote>
+<div><p>commons_mariadb_get_triggers_list || error_handled &#8220;Error on get triggers name list.&#8221;</p>
+<p>IFS=$&#8217;n&#8217;
+for row in $_mariadb_ans ; do</p>
+<blockquote>
+<div><p>name=`echo $row | awk &#8216;{split($0,a,&#8221; &#8221;); print a[1]}&#8217;`</p>
+<p>unset IFS
+commons_mariadb_download_trigger &#8220;$name&#8221;
+if [ $? -ne 0 ] ; then</p>
+<blockquote>
+<div>echo -en &#8220;Error on download trigger $name ($i of $n_rec).n&#8221;</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>echo -en &#8220;Download trigger $name ($i of $n_rec).n&#8221;</dd>
+</dl>
+<p>fi
+let i++
+IFS=$&#8217;n&#8217;</p>
+</div></blockquote>
+<p>done
+unset IFS</p>
+</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_download_all_triggers_end</p>
+<p># commmons_mariadb_commons_mariadb_download_all_events
+commons_mariadb_download_all_events () {</p>
+<blockquote>
+<div><p>local n_rec=0
+local name=&#8221;&#8221;
+local i=1
+local with_tz=&#8221;$1&#8221;</p>
+<p>commons_mariadb_count_events
+n_rec=$?</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(_commons_mariadb_download_all_events: Found $n_rec events.n&#8221;</dd>
+</dl>
+<p>if [ $n_rec -gt 0 ] ; then</p>
+<blockquote>
+<div><p>commons_mariadb_get_events_list &#8220;view&#8221; || error_handled &#8220;Error on get events name list.&#8221;</p>
+<p>IFS=$&#8217;n&#8217;
+for row in $_mariadb_ans ; do</p>
+<blockquote>
+<div><p>name=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[1]}&#8217;`</p>
+<p>unset IFS
+commons_mariadb_download_event &#8220;$name&#8221; &#8220;${with_tz}&#8221;
+if [ $? -ne 0 ] ; then</p>
+<blockquote>
+<div>echo -en &#8220;Error on download event $name ($i of $n_rec).n&#8221;</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>echo -en &#8220;Download event $name ($i of $n_rec).n&#8221;</dd>
+</dl>
+<p>fi
+let i++
+IFS=$&#8217;n&#8217;</p>
+</div></blockquote>
+<p>done
+unset IFS</p>
+</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_download_all_events_end</p>
+<p># commmons_mariadb_commons_mariadb_download_fkey
+commons_mariadb_download_fkey () {</p>
+<blockquote>
+<div><p>local name=&#8221;${1/.sql/}&#8221;
+local table=&#8221;${2}&#8221;
+name=`basename $name`
+local fkeysdir=&#8221;${MARIADB_DIR}/foreign_keys&#8221;
+local f=&#8221;&#8221;
+local cname=&#8221;&#8221;
+local rtable=&#8221;&#8221;
+local rcname=&#8221;&#8221;
+local ur=&#8221;&#8221;
+local dr=&#8221;&#8221;
+local on_delete=&#8221;&#8221;
+local on_update=&#8221;&#8221;
+local res=&#8221;&#8220;</p>
+<p>commons_mariadb_check_if_exist_fkey &#8220;$name&#8221; &#8220;${table}&#8221;
+res=$?
+assertNot &#8220;$res&#8221; &#8220;2&#8221; &#8220;No table name supply and found more of one foreign key with name ${name}. Set table name.&#8221;
+assertNot &#8220;$res&#8221; &#8220;1&#8221; &#8220;Foreign key ${name} not found.&#8221;</p>
+<dl class="docutils">
+<dt>if [ ! -e &#8220;$fkeysdir&#8221; ] ; then</dt>
+<dd>mkdir &#8220;$fkeysdir&#8221;</dd>
+</dl>
+<p>fi</p>
+<p># Retrieve data about foreign key
+commons_mariadb_get_fkeys_list &#8220;1&#8221; &#8220;&#8221; &#8220;$name&#8221; &#8220;${table}&#8221; || </p>
+<blockquote>
+<div>error_handled &#8220;Error on retrieve data about foreign key $name.&#8221;</div></blockquote>
+<p>table=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[2]}&#8217;`
+cname=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[3]}&#8217;`
+rtable=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[4]}&#8217;`
+rcname=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[5]}&#8217;`
+ur=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[6]}&#8217;`
+dr=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[7]}&#8217;`</p>
+<dl class="docutils">
+<dt>if [ x&#8221;${dr}&#8221; != x&#8221;RESTRICT&#8221; ] ; then</dt>
+<dd>on_delete=&#8221;ON DELETE ${dr}&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ x&#8221;${ur}&#8221; != x&#8221;RESTRICT&#8221; ] ; then</dt>
+<dd>on_update=&#8221;ON UPDATE ${dr}&#8221;</dd>
+</dl>
+<p>fi</p>
+<p># TODO: Check if create a [index_name] field automatically
+#       See: <a class="reference external" href="http://dev.mysql.com/doc/refman/5.6/en/create-table-foreign-keys.html">http://dev.mysql.com/doc/refman/5.6/en/create-table-foreign-keys.html</a>
+local out=&#8221;</p>
+</div></blockquote>
+<p>&#8211; $Id$ &#8211;
+USE `DB_NAME`;
+ALTER TABLE `${table}`</p>
+<blockquote>
+<div><p>ADD CONSTRAINT `${name}`
+FOREIGN KEY</p>
+<blockquote>
+<div>(${cname})</div></blockquote>
+<dl class="docutils">
+<dt>REFERENCES `${rtable}`</dt>
+<dd>(${rcname})</dd>
+</dl>
+<p>${on_delete}
+${on_update}
+;</p>
+</div></blockquote>
+<p>&#8220;</p>
+<blockquote>
+<div><p>f=&#8221;${fkeysdir}/${table}-${name}.sql&#8221;
+[ -f &#8220;$f&#8221; ] &amp;&amp; rm -f &#8220;$f&#8221;</p>
+<p>echo -en &#8220;$out&#8221; &gt; $f</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_download_fkey_end</p>
+<p># commmons_mariadb_commons_mariadb_download_all_fkeys
+commons_mariadb_download_all_fkeys () {</p>
+<blockquote>
+<div><p>local n_rec=0
+local name=&#8221;&#8221;
+local tname=&#8221;&#8221;
+local i=1</p>
+<p>commons_mariadb_count_fkeys
+n_rec=$?</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(commons_mariadb_download_all_fkeys: Found $n_rec foreign keys.n&#8221;</p>
+<p>if [ $n_rec -gt 0 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>commons_mariadb_get_fkeys_list &#8220;&#8221; &#8220;KCU.CONSTRAINT_NAME, KCU.TABLE_NAME&#8221; || </dt>
+<dd>error_handled &#8220;Error on get foreign key name list.&#8221;</dd>
+</dl>
+<p>IFS=$&#8217;n&#8217;
+for row in $_mariadb_ans ; do</p>
+<blockquote>
+<div><p>name=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[1]}&#8217;`
+tname=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[2]}&#8217;`</p>
+<p>unset IFS
+commons_mariadb_download_fkey &#8220;$name&#8221; &#8220;${tname}&#8221;
+if [ $? -ne 0 ] ; then</p>
+<blockquote>
+<div>echo -en &#8220;Error on download foreign key $name of table ${tname} ($i of $n_rec).n&#8221;</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>echo -en &#8220;Download foreign key $name of table ${tname} ($i of $n_rec).n&#8221;</dd>
+</dl>
+<p>fi
+let i++
+IFS=$&#8217;n&#8217;</p>
+</div></blockquote>
+<p>done
+unset IFS</p>
+</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_download_all_fkeys_end</p>
+<p># commmons_mariadb_commons_mariadb_drop_fkey
+commons_mariadb_drop_fkey () {</p>
+<blockquote>
+<div><p>local is_present=1
+local name=&#8221;$1&#8221;
+local avoid_warn=&#8221;$2&#8221;
+local fk_tname=&#8221;&#8221;
+local fk=&#8221;&#8221;
+local tname=&#8221;$3&#8221;
+local cmd=&#8221;&#8220;</p>
+<p>_logfile_write &#8220;(mariadb) Start drop foreign key: $name&#8221; || return 1</p>
+<p># Try to check if is present table name from filename
+fktname=$(echo $name | awk &#8216;match($0, /[a-zA-Z]+/) { print substr($0, RSTART, RLENGTH ) }&#8217;)
+fk=$(echo $name | awk &#8216;match($0, /[-]/) { print substr($0, RSTART + 1) }&#8217;)</p>
+<p>if [ -z &#8220;${tname}&#8221; ] ; then</p>
+<blockquote>
+<div>[ -n &#8220;${fktname}&#8221; ] &amp;&amp; tname=&#8221;${fktname}&#8221;</div></blockquote>
+<dl class="docutils">
+<dt>elif [[ -n &#8220;${tname}&#8221; &amp;&amp; -n &#8220;${fk}&#8221; ]] ; then</dt>
+<dd><p class="first"># POST: fk_str contains both fk key name and fk key table.
+#       I check if tname in input is equal to fktname (string catch from fr_str)
+if [ &#8220;${tname}&#8221; != &#8220;${fktname}&#8221; ] ; then</p>
+<blockquote>
+<div><p>_logfile_write &#8220;(mariadb) WARNING: Foreign key ${name} is not related with table ${tname}.&#8221; || return 1</p>
+<p>fk=&#8221;${name}&#8221;
+# error_generate &#8220;Foreign key ${name} is not related with table ${tname}.&#8221;</p>
+</div></blockquote>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>fi</p>
+<p>[ -z &#8220;${fk}&#8221; ] &amp;&amp; fk=&#8221;${name}&#8221;</p>
+<p>commons_mariadb_check_if_exist_fkey &#8220;$fk&#8221; &#8220;${tname}&#8221;
+is_present=$?</p>
+<p># If fktname is empty and fk_table is not available and foreign key is present
+# I try to retrieve table name
+if [[ -z &#8220;${tname}&#8221; &amp;&amp; $fk_is_present -eq 0 ]] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>commons_mariadb_get_fkeys_list &#8220;&#8221; &#8220;KCU.CONSTRAINT_NAME, KCU.TABLE_NAME&#8221; &#8220;${fk}&#8221; || </dt>
+<dd>error_handled &#8220;Error on get data of foreign key $fk.&#8221;</dd>
+</dl>
+<p>tname=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[2]}&#8217;`</p>
+</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(commons_mariadb_drop: Dropping foreign key $fk of table ${tname} (is_present = $is_present).n&#8221;</dd>
+</dl>
+<p>if [ $is_present -eq 0 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>cmd=&#8221;</dt>
+<dd><p class="first">USE `${MARIADB_DB}` ;
+ALTER TABLE `${tname}`</p>
+<blockquote class="last">
+<div>DROP FOREIGN KEY `${name}`</div></blockquote>
+</dd>
+</dl>
+<p>&#8220;</p>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221;
+local ans=$?</p>
+<p>_logfile_write &#8220;Result = $ansn$MYSQL_OUTPUT&#8221; || return 1</p>
+</div></blockquote>
+<p>elif [ $is_present -eq 2 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>_logfile_write </dt>
+<dd>&#8220;Table name not set and found more of one foreign key with name ${name}.nSet table name and try again.&#8221; || return 1</dd>
+</dl>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ -z &#8220;$avoid_warn&#8221; ] ; then</dt>
+<dd>_logfile_write &#8220;nWARNING: Foreign key $name not present.&#8221; || return 1</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p>_logfile_write &#8220;(mariadb) End drop foreign key: $name&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_drop_fkey_end</p>
+<p># commmons_mariadb_commons_mariadb_download_index
+commons_mariadb_download_index () {</p>
+<blockquote>
+<div><p>local name=&#8221;${1/.sql/}&#8221;
+local tname=&#8221;${2}&#8221;
+name=`basename $name`
+local indexesdir=&#8221;${MARIADB_DIR}/indexes&#8221;
+local f=&#8221;${indexesdir}/${tname}-${name}.sql&#8221;
+local table=&#8221;&#8221;
+local not_unique=&#8221;&#8221;
+local keys=&#8221;&#8221;
+local itype=&#8221;&#8221;
+local comment=&#8221;&#8221;
+local icomment=&#8221;&#8221;
+local iname=&#8221;&#8221;
+local out=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>commons_mariadb_check_if_exist_index &#8220;$name&#8221; &#8220;${tname}&#8221; || </dt>
+<dd>error_handled &#8220;Index key $name on table ${tname} not found.&#8221;</dd>
+<dt>if [ ! -e &#8220;${indexesdir}&#8221; ] ; then</dt>
+<dd>mkdir &#8220;${indexesdir}&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>[ -f &#8220;$f&#8221; ] &amp;&amp; rm -f &#8220;$f&#8221;</p>
+<p># Retrieve data about index key
+commons_mariadb_get_indexes_list &#8220;all&#8221; &#8220;&#8221; &#8220;${tname}&#8221; &#8220;$name&#8221; || </p>
+<blockquote>
+<div>error_handled &#8220;Error on retrieve data about index key $name on table ${tname}.&#8221;</div></blockquote>
+<p># TODO: add support to comment and index comment
+table=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[1]}&#8217;`
+not_unique=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[2]}&#8217;`
+iname=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[3]}&#8217;`
+keys=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[4]}&#8217;`
+itype=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[5]}&#8217;`</p>
+<p>if [ &#8220;${iname}&#8221; == &#8216;PRIMARY&#8217; ] ; then</p>
+<blockquote>
+<div># TODO: check if customize index_name
+#       See <a class="reference external" href="http://dev.mysql.com/doc/refman/5.6/en/alter-table.html">http://dev.mysql.com/doc/refman/5.6/en/alter-table.html</a>
+out=&#8221;</div></blockquote>
+</div></blockquote>
+<p>&#8211; $Id$
+USE `DB_NAME`;
+ALTER TABLE `${table}`</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>ADD PRIMARY KEY</dt>
+<dd>(${keys})</dd>
+</dl>
+</div></blockquote>
+<div class="section" id="id3">
+<h1>;<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><p>else</p>
+<blockquote>
+<div><p>local itype_string=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ &#8220;${not_unique}&#8221; == &#8220;0&#8221; ] ; then</dt>
+<dd>itype_string=&#8221;UNIQUE&#8221;</dd>
+</dl>
+<p>else</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [[ &#8220;${itype}&#8221; == &#8216;FULLTEXT&#8217; || &#8220;${itype}&#8221; == &#8216;SPATIAL&#8217; ]] ; then</dt>
+<dd>itype_string=&#8221;${itype}&#8221;</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p>out=&#8221;</p>
+</div></blockquote>
+</div></blockquote>
+<p>&#8211; $Id$
+USE `DB_NAME`;
+ALTER TABLE `${table}`</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>ADD ${itype_string} INDEX `${name}`</dt>
+<dd>(${keys})</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="id4">
+<h1>;<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h1>
+<blockquote>
+<div><p>fi</p>
+<p>echo -en &#8220;$out&#8221; &gt; $f</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_download_index_end</p>
+<p># commmons_mariadb_commons_mariadb_download_all_indexes
+commons_mariadb_download_all_indexes () {</p>
+<blockquote>
+<div><p>local with_pk=&#8221;$1&#8221;
+local n_rec=0
+local tname=&#8221;&#8221;
+local iname=&#8221;&#8221;
+local i=1
+local itypes=&#8221;not_primary&#8221;</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;${with_pk}&#8221; ] ; then</dt>
+<dd>itypes=&#8221;all&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>commons_mariadb_count_indexes &#8220;&#8221; &#8220;${itypes}&#8221;
+n_rec=$?</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(commons_mariadb_download_all_indexes: Found $n_rec indexes.n&#8221;</p>
+<p>if [ $n_rec -gt 0 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>commons_mariadb_get_indexes_list &#8220;${itypes}&#8221; &#8220;S.TABLE_NAME,S.INDEX_NAME&#8221; || </dt>
+<dd>error_handled &#8220;Error on get indexes name list.&#8221;</dd>
+</dl>
+<p>IFS=$&#8217;n&#8217;
+for row in $_mariadb_ans ; do</p>
+<blockquote>
+<div><p>tname=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[1]}&#8217;`
+iname=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[2]}&#8217;`</p>
+<p>unset IFS
+commons_mariadb_download_index &#8220;${iname}&#8221; &#8220;${tname}&#8221;
+if [ $? -ne 0 ] ; then</p>
+<blockquote>
+<div>echo -en &#8220;Error on download data of index $iname of table ${tname} ($i of $n_rec).n&#8221;</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>echo -en &#8220;Download index $iname of table ${tname} ($i of $n_rec).n&#8221;</dd>
+</dl>
+<p>fi
+let i++
+IFS=$&#8217;n&#8217;</p>
+</div></blockquote>
+<p>done
+unset IFS</p>
+</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_download_all_indexes_end</p>
+<p># commmons_mariadb_commons_mariadb_drop_index
+commons_mariadb_drop_index () {</p>
+<blockquote>
+<div><p>local is_present=1
+local name=&#8221;$1&#8221;
+local tname=&#8221;$2&#8221;
+local avoid_warn=&#8221;$3&#8221;
+local cmd=&#8221;&#8221;
+local keys=&#8221;&#8221;
+local extra=&#8221;&#8221;
+local ctype=&#8221;&#8221;
+local is_nullable=&#8221;&#8221;
+local null=&#8221;&#8220;</p>
+<p>_logfile_write &#8220;(mariadb) Start drop index: $name (table ${tname}) &#8221; || return 1</p>
+<p>commons_mariadb_check_if_exist_index &#8220;${name}&#8221; &#8220;${tname}&#8221;
+is_present=$?</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(commons_mariadb_drop: Dropping index $name from table ${tname} (is_present = $is_present).n&#8221;</dd>
+</dl>
+<p>if [ $is_present -eq 0 ] ; then</p>
+<blockquote>
+<div><p>if [ &#8220;${name}&#8221; == &#8216;PRIMARY&#8217; ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>commons_mariadb_get_indexes_list &#8220;all&#8221; &#8220;&#8221; &#8220;${tname}&#8221; &#8220;${name}&#8221; || </dt>
+<dd>error_handled &#8220;Error on get index data.&#8221;</dd>
+</dl>
+<p>keys=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[4]}&#8217; | tr &#8221;,&#8221; &#8221; &#8220;`
+karr=($keys)</p>
+<p>for k in ${!karr[&#64;]} ; do</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>commons_mariadb_desc_table &#8220;${tname}&#8221; &#8220;UPPER(COLUMN_TYPE),IS_NULLABLE,UPPER(EXTRA)&#8221; &#8220;${karr[$k]}&#8221; || </dt>
+<dd>error_handled &#8220;Error on get column data of column ${arr[$k]}.&#8221;</dd>
+</dl>
+<p>ctype=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221; &#8221;); print a[1]}&#8217;`
+is_nullable=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221; &#8221;); print a[2]}&#8217;`
+extra=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221; &#8221;); print a[3]}&#8217;`</p>
+<p>if [ &#8220;$extra&#8221; == &#8216;AUTO_INCREMENT&#8217; ] ; then</p>
+<blockquote>
+<div><p>_logfile_write &#8220;(mariadb) Modify column ${karr[$k]} for remove AUTO_INCREMENT and permit drop of primary key.&#8221; || return 1</p>
+<dl class="docutils">
+<dt>if [ &#8220;$is_nullable&#8221; == &#8216;NO&#8217; ] ; then</dt>
+<dd>null=&#8221;NOT NULL&#8221;</dd>
+<dt>else</dt>
+<dd>null=&#8221;NULL&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>cmd=&#8221;</dt>
+<dd>USE `${MARIADB_DB}` ;
+ALTER TABLE `${tname}`
+CHANGE `${karr[$k]}` `${karr[$k]}` ${ctype} ${null}</dd>
+</dl>
+<p>&#8220;</p>
+<dl class="docutils">
+<dt>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221; || </dt>
+<dd>error_handled &#8220;Error on remove AUTO_INCREMENT from column ${karr[$k]} of table ${tname}.&#8221;</dd>
+</dl>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>done # end for k ..</p>
+<p># Check if keys contains AUTO_INCREMENT column.</p>
+<dl class="docutils">
+<dt>cmd=&#8221;</dt>
+<dd><p class="first">USE `${MARIADB_DB}` ;
+ALTER TABLE `${tname}`</p>
+<blockquote class="last">
+<div>DROP PRIMARY KEY</div></blockquote>
+</dd>
+</dl>
+<p>&#8220;</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd><dl class="first docutils">
+<dt>cmd=&#8221;</dt>
+<dd><p class="first">USE `${MARIADB_DB}` ;
+ALTER TABLE `${tname}`</p>
+<blockquote class="last">
+<div>DROP INDEX `${name}`</div></blockquote>
+</dd>
+</dl>
+<p class="last">&#8220;</p>
+</dd>
+</dl>
+<p>fi</p>
+<p>mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221;
+local ans=$?</p>
+<p>_logfile_write &#8220;Result = $ansn$MYSQL_OUTPUT&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ -z &#8220;$avoid_warn&#8221; ] ; then</dt>
+<dd>_logfile_write &#8220;nWARNING: Index $name on table ${tname} not present.&#8221; || return 1</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p>_logfile_write &#8220;(mariadb) End drop index: $name (table ${tname})&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_drop_index_end</p>
+<p># commmons_mariadb_commons_mariadb_create_fkey_file
+commons_mariadb_create_fkey_file () {</p>
+<blockquote>
+<div><p>local name=&#8221;$1&#8221;
+local table=&#8221;$2&#8221;
+local cname=&#8221;$3&#8221;
+local rtable=&#8221;$4&#8221;
+local rcname=&#8221;$5&#8221;
+local is_present=1
+local content=&#8221;&#8221;
+local fkeysdir=&#8221;${MARIADB_DIR}/foreign_keys&#8221;
+local f=&#8221;${fkeysdir}/${table}-${name}.sql&#8221;</p>
+<p># Check if exists foreign_keys or create it
+if [[ ! -d ${fkeysdir} ]] ; then</p>
+<blockquote>
+<div>mkdir -p ${fkeysdir} || error_generate &#8220;Error on create directory ${fkeysdir}.&#8221;</div></blockquote>
+<p>fi</p>
+<p>commons_mariadb_check_if_exist_fkey &#8220;${name}&#8221;
+is_present=$?</p>
+<dl class="docutils">
+<dt>if [ $is_present -eq 0 ] ; then</dt>
+<dd>error_generate &#8220;A foreign key with name ${name} is already present.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>content=&#8221;</p>
+</div></blockquote>
+<p>&#8211; $Id$ &#8211;
+USE `DB_NAME`;
+ALTER TABLE `${table}`</p>
+<blockquote>
+<div><p>ADD CONSTRAINT `${name}`
+FOREIGN KEY</p>
+<blockquote>
+<div>(${cname})</div></blockquote>
+<dl class="docutils">
+<dt>REFERENCES `${rtable}`</dt>
+<dd>(${rcname})
+;</dd>
+</dl>
+</div></blockquote>
+<p>&#8220;</p>
+<blockquote>
+<div><p>echo -en &#8220;$content&#8221; &gt; $f || error_generate &#8220;Error on write file $f.&#8221;</p>
+<p>_logfile_write &#8220;(mariadb) Create foreign key $name (file ${f})&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_create_fkey_file_end</p>
+<p># commmons_mariadb_commons_mariadb_create_index_file
+commons_mariadb_create_index_file () {</p>
+<blockquote>
+<div><p>local name=&#8221;$1&#8221;
+local table=&#8221;$2&#8221;
+local keys=&#8221;$3&#8221;
+local itype=&#8221;$4&#8221;
+local content=&#8221;&#8221;
+local indexesdir=&#8221;${MARIADB_DIR}/indexes&#8221;
+local f=&#8221;${indexesdir}/${table}-${name}.sql&#8221;</p>
+<p># Check if exists indexes or create it
+if [[ ! -d ${indexesdir} ]] ; then</p>
+<blockquote>
+<div>mkdir -p ${indexesdir} || error_generate &#8220;Error on create directory ${indexesdir}.&#8221;</div></blockquote>
+<p>fi</p>
+<p>commons_mariadb_check_if_exist_index &#8220;${name}&#8221; &#8220;${table}&#8221;
+is_present=$?</p>
+<dl class="docutils">
+<dt>if [ $is_present -eq 0 ] ; then</dt>
+<dd>error_generate &#8220;An index with name ${name} on table ${table} is already present.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>content=&#8221;</p>
+</div></blockquote>
+<p>&#8211; $Id$ &#8211;
+USE `DB_NAME`;
+ALTER TABLE `${table}`</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>ADD ${itype} INDEX `${name}`</dt>
+<dd>(${keys})
+;</dd>
+</dl>
+</div></blockquote>
+<p>&#8220;</p>
+<blockquote>
+<div><p>echo -en &#8220;$content&#8221; &gt; $f || error_generate &#8220;Error on write file $f.&#8221;</p>
+<dl class="docutils">
+<dt>_logfile_write &#8220;(mariadb) Create index ${name} on table ${table} (file ${f})&#8221; || </dt>
+<dd>return 1</dd>
+</dl>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_create_index_file_end</p>
+<p># commmons_mariadb_commons_mariadb_get_table_def
+commons_mariadb_get_table_def () {</p>
+<blockquote>
+<div><p>local tname=&#8221;$1&#8221;
+local def=&#8221;CREATE TABLE IF NOT EXISTS `${tname}` (n&#8221;
+local row_cname=&#8221;&#8221;
+local row_is_nullable=&#8221;&#8221;
+local row_ctype=&#8221;&#8221;
+local row_ckey=&#8221;&#8221;
+local row_cextra=&#8221;&#8221;
+local row_default=&#8221;&#8221;
+local cname=&#8221;&#8221;
+local is_nullable=&#8221;&#8221;
+local ctype=&#8221;&#8221;
+local cextra=&#8221;&#8221;
+local default=&#8221;&#8221;
+local counter=0
+local min_col_size=19
+local pre_spaces=4
+local engine=&#8221;&#8221;
+local charset=&#8221;&#8221;
+local has_pk=0</p>
+<p>commons_mariadb_exist_table &#8220;$tname&#8221;
+is_present=$?</p>
+<dl class="docutils">
+<dt>if [ $is_present -eq 1 ] ; then</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+<p>commons_mariadb_desc_table &#8220;$tname&#8221; || return 1</p>
+<p>IFS=$&#8217;n&#8217;
+for row in $_mariadb_ans ; do</p>
+<blockquote>
+<div><p>row_name[${counter}]=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[1]}&#8217;`
+row_is_nullable[${counter}]=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[2]}&#8217;`
+row_ctype[${counter}]=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[3]}&#8217;`
+row_ckey[${counter}]=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[4]}&#8217;`
+row_cextra[${counter}]=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[5]}&#8217; | xargs`
+row_default[${counter}]=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[6]}&#8217; | xargs`</p>
+<dl class="docutils">
+<dt>if [ ${#row_name[${counter}]} -ge $min_col_size ] ; then</dt>
+<dd>min_col_size=$((${#row_name[${counter}]}+1))</dd>
+</dl>
+<p>fi</p>
+<p>let counter++</p>
+</div></blockquote>
+<p>done
+unset IFS</p>
+<p># Check if is present a primary key
+commons_mariadb_count_indexes &#8220;${tname}&#8221; &#8220;primary&#8221;
+has_pk=$?</p>
+<p>for row_id in ${!row_name[&#64;]} ; do</p>
+<blockquote>
+<div><p>let counter&#8211;</p>
+<p>cname=&#8221;${row_name[${row_id}]}&#8221;
+is_nullable=&#8221;${row_is_nullable[${row_id}]}&#8221;
+ctype=&#8221;${row_ctype[${row_id}]}&#8221;
+ckey=&#8221;${row_ctype[${row_id}]}&#8221;
+cextra=&#8221;${row_cextra[${row_id}]}&#8221;
+default=&#8221;${row_default[${row_id}]}&#8221;</p>
+<p>local cname_str=&#8221;&#8220;</p>
+<p>get_space_str &#8220;cname_str&#8221; &#8220;${min_col_size}&#8221; &#8220;${cname}&#8221; &#8220;${pre_spaces}&#8221;
+def=&#8221;${def}${cname_str} ${ctype}&#8221;</p>
+<p># Set NOT NULL section if column is not nullable
+if [ &#8220;${is_nullable}&#8221; == &#8220;NO&#8221; ] ; then</p>
+<blockquote>
+<div>def=&#8221;${def} NOT NULL&#8221;</div></blockquote>
+<p>fi</p>
+<p># Set default section
+if [ &#8220;${default}&#8221; != &#8220;NULL&#8221; ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ &#8220;${default}&#8221; == &#8220;CURRENT_TIMESTAMP&#8221; ] ; then</dt>
+<dd>def=&#8221;${def} DEFAULT ${default}&#8221;</dd>
+<dt>else</dt>
+<dd>def=&#8221;${def} DEFAULT &#8216;${default}&#8217;&#8221;</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;${cextra}&#8221; ] ; then</dt>
+<dd>def=&#8221;${def} ${cextra}&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ $counter -gt 0 ] ; then</dt>
+<dd>def=&#8221;${def},n&#8221;</dd>
+<dt>else</dt>
+<dd>def=&#8221;${def}&#8221;</dd>
+</dl>
+<p>fi</p>
+<p># Clean field values
+row_name[${row_id}]=&#8221;&#8221;
+row_is_nullable[${row_id}]=&#8221;&#8221;
+row_ctype[${row_id}]=&#8221;&#8221;
+row_ckey[${row_id}]=&#8221;&#8221;
+row_cextra[${row_id}]=&#8221;&#8221;
+row_default[${row_id}]=&#8221;&#8220;</p>
+</div></blockquote>
+<p>done</p>
+<p># Add primary key
+if [ $has_pk -eq 1 ] ; then</p>
+<blockquote>
+<div><p>def=&#8221;${def},n&#8221;
+commons_mariadb_get_indexes_list &#8220;primary&#8221; &#8220;&#8221; &#8220;${tname}&#8221;
+local keys=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[4]}&#8217;`
+local pkey=&#8221;&#8220;</p>
+<p>get_space_str &#8220;pkey&#8221; &#8220;0&#8221; &#8220;&#8221; &#8220;${pre_spaces}&#8221;
+pkey=&#8221;${pkey}PRIMARY KEY(${keys})&#8221;</p>
+<p>def=&#8221;${def}${pkey}n&#8221;</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>def=&#8221;${def}n&#8221;</dd>
+</dl>
+<p>fi</p>
+<p># Add close round bracket and engine
+commons_mariadb_get_tables_list &#8220;1&#8221; &#8220;&#8221; &#8220;${tname}&#8221; || </p>
+<blockquote>
+<div>error_handled &#8220;Error on retrieve table data&#8221;</div></blockquote>
+<p>engine=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221; &#8221;); print a[2]}&#8217;`
+charset=`echo $_mariadb_ans | awk &#8216;{split($0,a,&#8221; &#8221;); print a[5]}&#8217;`</p>
+<p>def=&#8221;${def}) ENGINE=${engine} DEFAULT CHARSET=${charset};n&#8221;</p>
+<p>TABLE_DEF=&#8221;${def}&#8221;</p>
+<p>unset row_name
+unset row_is_nullable
+unset row_ctype
+unset row_ckey
+unset row_cextra
+unset row_default</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_get_table_def_end</p>
+<p># commmons_mariadb_commons_mariadb_download_all_tables
+commons_mariadb_download_all_tables () {</p>
+<blockquote>
+<div><p>local f=&#8221;$1&#8221;
+local tname=&#8221;$2&#8221;
+local is_present=0
+local n_tables=0
+local out=&#8221;&#8221;
+local counter=0
+local tname_list=&#8221;&#8221;
+local name=&#8221;&#8221;
+local tb_added=0
+local file_exists=false
+local table_is_present=0</p>
+<p>[[ -z &#8220;$f&#8221; ]] &amp;&amp; return 1</p>
+<p># Check if file exists
+if [[ -f &#8220;$f&#8221; ]] ; then</p>
+<blockquote>
+<div>file_exists=true</div></blockquote>
+<p>fi</p>
+<p># Check if directory must be created
+if [[ ! -d &#8220;$(dirname ${f})&#8221; ]] ; then</p>
+<blockquote>
+<div># Try to create directory
+mkdir -p $(dirname ${f}) || error_generate &#8220;Error on create directory $(dirname ${f}).&#8221;</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(commons_mariadb_download_all_tables: File $f exists: $file_exists.)n&#8221;</dd>
+</dl>
+<p>if [[ -z &#8220;${tname}&#8221; ]] ; then</p>
+<blockquote>
+<div><p>commons_mariadb_count_tables
+n_tables=$?</p>
+<p>if [ &#8220;$n_tables&#8221; -eq 0 ] ; then</p>
+<blockquote>
+<div>echo -en &#8220;No tables available.n&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>commons_mariadb_get_tables_list &#8220;1&#8221; || </dt>
+<dd>error_handled &#8220;Error on retrieve list of tables.&#8221;</dd>
+</dl>
+<p>IFS=$&#8217;n&#8217;
+for row in $_mariadb_ans ; do</p>
+<blockquote>
+<div><p>tname_list[${counter}]=`echo $row | awk &#8216;{split($0,a,&#8221; &#8221;); print a[1]}&#8217;`</p>
+<p>let counter++</p>
+</div></blockquote>
+<p>done
+unset IFS</p>
+<p>for t_id in ${!tname_list[&#64;]} ; do</p>
+<blockquote>
+<div><p>name=&#8221;${tname_list[${t_id}]}&#8221;
+[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;Table $t_id: ${name}.n&#8221;</p>
+<dl class="docutils">
+<dt>if [[ $file_exists &amp;&amp; $file_exists == true ]] ; then</dt>
+<dd><p class="first"># Check if table definition is already present.</p>
+<p>table_is_present=$(cat $f | grep &#8220;CREATE TABLE IF NOT EXISTS `${name}`&#8221; | wc -l)
+[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;Table ${name} is present: ${table_is_present}.&#8221;</p>
+<p>if [[ $table_is_present -eq 0 ]] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>commons_mariadb_get_table_def &#8220;${name}&#8221; || </dt>
+<dd>error_handled &#8220;Error on retrieve definition of table ${name}.&#8221;</dd>
+</dl>
+<p>out=&#8221;${out}${TABLE_DEF}n&#8221;</p>
+<p>let tb_added++</p>
+</div></blockquote>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>else</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>commons_mariadb_get_table_def &#8220;${name}&#8221; || </dt>
+<dd>error_handled &#8220;Error on retrieve definition of table ${name}.&#8221;</dd>
+</dl>
+<p>out=&#8221;${out}${TABLE_DEF}n&#8221;</p>
+<p>let tb_added++</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>done</p>
+<p>if [[ $file_exists &amp;&amp; $file_exists == true ]] ; then</p>
+<blockquote>
+<div><p>if [[ $tb_added -eq 0 ]] ; then</p>
+<blockquote>
+<div>echo -en &#8220;All tables are already present on file $f. Nothing to do.n&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>echo -en &#8220;$out&#8221; &gt;&gt; $f
+echo -en &#8220;Added ${tb_added} tables to file $f.n&#8221;</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>out=&#8221;</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<p>&#8211; $Id$ &#8211;</p>
+<dl class="docutils">
+<dt>${out}&#8221;</dt>
+<dd><blockquote class="first">
+<div><blockquote>
+<div><blockquote>
+<div>echo -en &#8220;$out&#8221; &gt; $f</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>else</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>commons_mariadb_get_table_def &#8220;${tname}&#8221; || </dt>
+<dd>error_handled &#8220;Error on create definition of table ${tname}.&#8221;</dd>
+</dl>
+<p>out=&#8221;</p>
+</div></blockquote>
+</dd>
+</dl>
+<p>&#8211; $Id$ &#8211;</p>
+<p>${TABLE_DEF}
+&#8220;</p>
+<blockquote>
+<div><blockquote>
+<div>echo -en &#8220;$out&#8221; &gt; $f</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_download_all_tables_end</p>
+<p># commmons_mariadb_commons_mariadb_drop_trigger
+commons_mariadb_drop_trigger () {</p>
+<blockquote>
+<div><p>local is_present=1
+local name=&#8221;$1&#8221;
+local tname=&#8221;$2&#8221;
+local avoid_warn=&#8221;$3&#8221;
+local cmd=&#8221;&#8220;</p>
+<p>local keys=&#8221;&#8221;
+local extra=&#8221;&#8221;
+local ctype=&#8221;&#8221;
+local is_nullable=&#8221;&#8221;
+local null=&#8221;&#8220;</p>
+<p>_logfile_write &#8220;(mariadb) Start drop trigger: $name (table ${tname}) &#8221; || return 1</p>
+<p>commons_mariadb_check_if_exist_trigger &#8220;${name}&#8221; &#8220;${tname}&#8221;
+is_present=$?</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(commons_mariadb_drop_trigger: Dropping trigger $name from table ${tname} (is_present = $is_present).n&#8221;</dd>
+</dl>
+<p>if [ $is_present -eq 0 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>cmd=&#8221;</dt>
+<dd>USE `${MARIADB_DB}` ;
+DROP TRIGGER `${name}`</dd>
+</dl>
+<p>&#8221;
+mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221;
+local ans=$?</p>
+<p>_logfile_write &#8220;Result = $ansn$MYSQL_OUTPUT&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ -z &#8220;$avoid_warn&#8221; ] ; then</dt>
+<dd>_logfile_write &#8220;nWARNING: Trigger $name on table ${tname} not present.&#8221; || return 1</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p>_logfile_write &#8220;(mariadb) End drop trigger: $name (table ${tname})&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_drop_trigger_end</p>
+<p># commmons_mariadb_commons_mariadb_drop_event
+commons_mariadb_drop_event () {</p>
+<blockquote>
+<div><p>local is_present=1
+local ename=&#8221;$1&#8221;
+local avoid_warn=&#8221;$2&#8221;
+local cmd=&#8221;&#8220;</p>
+<p>_logfile_write &#8220;(mariadb) Start drop event: $ename &#8221; || return 1</p>
+<p>commons_mariadb_exist_event &#8220;${ename}&#8221;
+is_present=$?</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(commons_mariadb_drop_event: Dropping event $ename (is_present = $is_present).n&#8221;</dd>
+</dl>
+<p>if [ $is_present -eq 0 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>cmd=&#8221;</dt>
+<dd>USE `${MARIADB_DB}` ;
+DROP EVENT `${ename}`</dd>
+</dl>
+<p>&#8221;
+mysql_cmd_4var &#8220;MYSQL_OUTPUT&#8221; &#8220;$cmd&#8221;
+local ans=$?</p>
+<p>_logfile_write &#8220;Result = $ansn$MYSQL_OUTPUT&#8221; || return 1</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ -z &#8220;$avoid_warn&#8221; ] ; then</dt>
+<dd>_logfile_write &#8220;nWARNING: Event $ename is not present.&#8221; || return 1</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p>_logfile_write &#8220;(mariadb) End drop event: $ename.&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_drop_event_end</p>
+<p># commmons_mariadb_commons_mariadb_show_gvars
+commons_mariadb_show_gvars () {</p>
+<blockquote>
+<div><p>local filter=&#8221;$1&#8221;
+local cmd=&#8221;&#8221;
+local and_where=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;${filter}&#8221; ] ; then</dt>
+<dd><dl class="first last docutils">
+<dt>and_where=&#8221;</dt>
+<dd>WHERE LOWER(VARIABLE_NAME)
+LIKE CONCAT(&#8216;%&#8217;, LOWER(&#8216;${filter}&#8217;), &#8216;%&#8217;)&#8221;</dd>
+</dl>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>local cmd=&#8221;</dt>
+<dd>SELECT CONCAT_WS(&#8216;|&#8217;, LOWER(VARIABLE_NAME),COALESCE(VARIABLE_VALUE, &#8216;&#8217;))
+FROM INFORMATION_SCHEMA.GLOBAL_VARIABLES
+${and_where}</dd>
+</dl>
+<p>&#8220;</p>
+<p>mysql_cmd_4var &#8220;_mariadb_ans&#8221; &#8220;$cmd&#8221; || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# commmons_mariadb_commons_mariadb_show_gvars_end</p>
+<p># vim: syn=sh filetype=sh</p>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

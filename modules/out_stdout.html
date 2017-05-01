@@ -1,0 +1,515 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title># Internal functions</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <p>#!/bin/bash
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+# Author(s): Geaaru, <a class="reference external" href="mailto:geaaru&#37;&#52;&#48;gmail&#46;com">geaaru<span>&#64;</span>gmail<span>&#46;</span>com</a>
+# $Id: 3e332fb9a121bf7b8abcb3529aeae758446adbd3 $
+# License: GPL 2.0
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p>name=&#8221;out_stdout&#8221;
+out_stdout_authors=&#8221;Geaaru&#8221;
+out_stdout_creation_date=&#8221;May 2, 2014&#8221;
+out_stdout_version=&#8221;0.1.0&#8221;
+out_stdout_plugin=&#8221;&#8220;</p>
+<p>#****f* out_stdout/out_stdout_version
+# FUNCTION
+#   Show version of out_stdout module.
+# SOURCE
+out_stdout_version () {</p>
+<blockquote>
+<div>echo -en &#8220;Version: ${out_stdout_version}n&#8221;
+return 0</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* out_stdout/out_stdout_arr
+# FUNCTION
+# DESCRIPTION
+#   Function search for this variables:
+#   out_ttitle       Define a table title.
+#   out_rows         With list of name of indirect array to use with columns data.
+#   out_tabs         Array of tabulation for columns. Default is one space.
+#   out_el_pre       Array with text prefix of an entry
+#   out_el_post      Array with text postfix of an entry
+#   out_headers      Array of header of tables. (Optional).
+#   out_htabs_mode   If present accept these values: tabs, htabs, noop.
+#   out_prepost_mode If present accept these values: data (default), headers, any, noop.
+#   out_htabs        Array of header tabulation. if out_htabs_mode is equals to htabs.
+#   out_hsep         Write a separator if this field is equal to 1.
+#   out_vertical     Enable vertical output of the row if this field is equal to 1. Default is 0.
+#   out_vert_sep     If present is used to separator line between vertical rows.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
+out_stdout_print_arr () {</p>
+<blockquote>
+<div><p>local ans=0</p>
+<dl class="docutils">
+<dt>if [ &#8220;${#out_rows[&#64;]}&#8221; -eq 0 ] ; then</dt>
+<dd># Nothing to do
+return $ans</dd>
+</dl>
+<p>fi</p>
+<p>local out_columns=&#8221;&#8221;
+local out_column_name=&#8221;&#8221;
+local counter=0
+local has1prefix=0 # set to 1 if is there only one entry on array.
+local def_prefix=0 # define if is present prefix array/configurations.
+local has1postfix=0 # set to 1 if is there only one entry on array.
+local def_postfix=0 # define if is present postfix array/configurations.
+local def_tab=0
+local has1tab=0
+local id_tab=0
+local id_prefix=0
+local id_postfix=0
+local prepost_headers=0
+local prepost_data=0
+local header=&#8221;&#8221;
+local field=&#8221;&#8221;
+local tsize=0
+local tspaces=0
+local print_vertical=0
+local column_counter=0</p>
+<p># Check if present a table title
+if [ -n &#8220;$out_ttitle&#8221; ] ; then</p>
+<blockquote>
+<div>echo -en &#8220;==============================================================================================================================n&#8221;
+echo -en &#8220;e[1;33m$out_ttitlee[mn&#8221;</div></blockquote>
+<p>fi</p>
+<p># Check if defined array with element prefix string
+if [ &#8220;${#out_el_pre[&#64;]}&#8221; -gt 0 ] ; then</p>
+<blockquote>
+<div><blockquote>
+<div>def_prefix=1</div></blockquote>
+<dl class="docutils">
+<dt>if [ &#8220;${#out_el_pre[&#64;]}&#8221; -eq 1 ] ; then</dt>
+<dd>has1prefix=1</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p># Check if defined array with element postfix string
+if [ &#8220;${#out_el_post[&#64;]}&#8221; -gt 0 ] ; then</p>
+<blockquote>
+<div><blockquote>
+<div>def_postfix=1</div></blockquote>
+<dl class="docutils">
+<dt>if [ &#8220;${#out_el_post[&#64;]}&#8221; -eq 1 ] ; then</dt>
+<dd>has1postfix=1</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p># Check if defined array with tabulations string
+if [ &#8220;${#out_tabs[&#64;]}&#8221; -gt 0 ] ; then</p>
+<blockquote>
+<div><blockquote>
+<div>def_tab=1</div></blockquote>
+<dl class="docutils">
+<dt>if [ &#8220;${#out_tabs[&#64;]}&#8221; -eq 1 ] ; then</dt>
+<dd>has1tab=1</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p># Check if defined out_prepost_mode
+if [[ -z &#8220;${out_prepost_mode}&#8221; || x&#8221;${out_prepost_mode}&#8221; == x&#8221;data&#8221; ]] ; then</p>
+<blockquote>
+<div>prepost_data=1</div></blockquote>
+<p>fi
+if [[ -n &#8220;${out_prepost_mode}&#8221; &amp;&amp; x&#8221;${out_prepost_mode}&#8221; == x&#8221;any&#8221; ]] ; then</p>
+<blockquote>
+<div>prepost_data=1
+prepost_headers=1</div></blockquote>
+<p>fi
+if [[ -n &#8220;${out_prepost_mode}&#8221; &amp;&amp; x&#8221;${out_prepost_mode}&#8221; == x&#8221;headers&#8221; ]] ; then</p>
+<blockquote>
+<div>prepost_headers=1</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ -n &#8220;${out_vertical}&#8221; &amp;&amp; x&#8221;${out_vertical}&#8221; == x&#8221;1&#8221; ]] ; then</dt>
+<dd>print_vertical=1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ -n &#8220;${out_hsep}&#8221; &amp;&amp; x&#8221;${out_hsep}&#8221; == x&#8221;1&#8221; ]] ; then</dt>
+<dd>echo -en &#8220;==============================================================================================================================n&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-
+# PRINT HEADERS
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-
+if [[ &#8220;${#out_headers[&#64;]}&#8221; -gt 0 &amp;&amp; $print_vertical -eq 0 ]] ; then</p>
+<blockquote>
+<div><p>id_tab=0
+counter=0
+id_prefix=0
+id_postfix=0</p>
+<p>for i in ${!out_headers[&#64;]}
+do</p>
+<blockquote>
+<div><p>header=&#8221;${out_headers[$i]}&#8221;</p>
+<p># Print element prefix
+if [[ $prepost_headers -eq 1 &amp;&amp; $def_prefix -eq 1 ]] ; then</p>
+<blockquote>
+<div><p>if [ $has1prefix -ne 1 ] ; then</p>
+<blockquote>
+<div>id_prefix=$counter</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ ! -z &#8220;${out_el_pre[$id_prefix]}&#8221; ] ; then</dt>
+<dd>echo -en &#8220;${out_el_pre[$id_prefix]}&#8221;</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi
+# End print element prefix</p>
+<p>echo -en &#8220;${header}&#8221;</p>
+<p># Print element postfix
+if [[ $prepost_headers -eq 1 &amp;&amp; $def_postfix -eq 1 ]] ; then</p>
+<blockquote>
+<div><p>if [ $has1postfix -ne 1 ] ; then</p>
+<blockquote>
+<div>id_postfix=$counter</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ ! -z &#8220;${out_el_post[$id_postfix]}&#8221; ] ; then</dt>
+<dd>echo -en &#8220;${out_el_post[$id_postfix]}&#8221;</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi
+# End print element postfix</p>
+<dl class="docutils">
+<dt>if [[ -z &#8220;$out_htabs_mode&#8221; || x&#8221;$out_htabs_mode&#8221; == x&#8221;tabs&#8221; ]] ; then</dt>
+<dd><p class="first"># Print tabulation
+if [ $def_tab -eq 1 ] ; then</p>
+<blockquote>
+<div><p>if [ $has1tab -ne 1 ] ; then</p>
+<blockquote>
+<div>id_tab=$counter</div></blockquote>
+<p>fi</p>
+<p>if [ ! -z &#8220;${out_tabs[$id_tab]}&#8221; ] ; then</p>
+<blockquote>
+<div><p>tsize=${out_tabs[$id_tab]}
+tspaces=$(($tsize - ${#header}))</p>
+<p>push_spaces $tspaces</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p class="last">fi
+# End print tab</p>
+</dd>
+</dl>
+<p>else</p>
+<blockquote>
+<div><p>if [ x&#8221;$out_htabs_mode&#8221; == x&#8221;htabs&#8221; ] ; then</p>
+<blockquote>
+<div><p>if [ &#8220;${#out_htabs[&#64;]}&#8221; -gt 0 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ &#8220;${#out_htabs[&#64;]}&#8221; -eq 1 ] ; then</dt>
+<dd>id_tab=0</dd>
+<dt>else</dt>
+<dd>id_tab=$counter</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ ! -z &#8220;${out_htabs[$id_tab]}&#8221; ] ; then</dt>
+<dd><p class="first">tsize=${out_htabs[$id_tab]}
+tspaces=$(($tsize - ${#header}))</p>
+<p class="last">push_spaces $tspaces</p>
+</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi
+# else noop. Do nothings.</p>
+</div></blockquote>
+<p>fi</p>
+<p>let counter++</p>
+</div></blockquote>
+<p>done</p>
+<p>echo -en &#8220;n&#8221;</p>
+</div></blockquote>
+<p>fi
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-</p>
+<dl class="docutils">
+<dt>if [[ -n &#8220;${out_hsep}&#8221; &amp;&amp; x&#8221;${out_hsep}&#8221; == x&#8221;1&#8221; &amp;&amp; ${print_vertical} -eq 0 ]] ; then</dt>
+<dd>echo -en &#8220;==============================================================================================================================n&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-
+# PRINT ROWS
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-
+for i in ${!out_rows[&#64;]}
+do</p>
+<blockquote>
+<div><p># Retrieve name of array with data per column.
+out_column_name=&#8221;${out_rows[$i]}&#8221;
+out_columns=&#8221;${out_column_name}[&#64;]&#8221;
+counter=0
+column_counter=0</p>
+<dl class="docutils">
+<dt>if [[ $print_vertical -eq 1 &amp;&amp; -n &#8220;${out_vert_sep}&#8221; ]]; then</dt>
+<dd>echo -en &#8220;${out_vert_sep}n&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>for j in &#8220;${!out_columns}&#8221;
+do</p>
+<blockquote>
+<div><p>id_prefix=0
+id_postfix=0
+id_tab=0
+field=&#8221;$j&#8221;</p>
+<p># Print element prefix
+if [[ $prepost_data -eq 1 &amp;&amp; $def_prefix -eq 1 ]] ; then</p>
+<blockquote>
+<div><p>if [ $has1prefix -ne 1 ] ; then</p>
+<blockquote>
+<div>id_prefix=$counter</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ ! -z &#8220;${out_el_pre[$id_prefix]}&#8221; ] ; then</dt>
+<dd>echo -en &#8220;${out_el_pre[$id_prefix]}&#8221;</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi
+# End print element prefix</p>
+<p># Print column field if it is enable print vertical.
+if [[ &#8220;${#out_headers[&#64;]}&#8221; -gt 0 &amp;&amp; $print_vertical -eq 1 ]] ; then</p>
+<blockquote>
+<div><p>header=&#8221;${out_headers[$column_counter]}&#8221;</p>
+<p>echo -en &#8220;${header}: &#8220;</p>
+<p>let column_counter++</p>
+<p>if [ x&#8221;$out_htabs_mode&#8221; == x&#8221;htabs&#8221; ] ; then</p>
+<blockquote>
+<div><p>if [ &#8220;${#out_htabs[&#64;]}&#8221; -gt 0 ] ; then</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ &#8220;${#out_htabs[&#64;]}&#8221; -eq 1 ] ; then</dt>
+<dd>id_tab=0</dd>
+<dt>else</dt>
+<dd>id_tab=$counter</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ ! -z &#8220;${out_htabs[$id_tab]}&#8221; ] ; then</dt>
+<dd><p class="first">tsize=${out_htabs[$id_tab]}
+tspaces=$(($tsize - ${#header} + 1))</p>
+<p class="last">push_spaces $tspaces</p>
+</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<p>#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;
+# Print element
+echo -en &#8220;$field&#8221;
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;</p>
+<p># Print element postfix
+if [[ $prepost_data -eq 1 &amp;&amp; $def_postfix -eq 1 ]] ; then</p>
+<blockquote>
+<div><p>if [ $has1postfix -ne 1 ] ; then</p>
+<blockquote>
+<div>id_postfix=$counter</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ ! -z &#8220;${out_el_post[$id_postfix]}&#8221; ] ; then</dt>
+<dd>echo -en &#8220;${out_el_post[$id_postfix]}&#8221;</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ $print_vertical -eq 0 ] ; then</dt>
+<dd><p class="first"># Print tabulation
+if [ $def_tab -eq 1 ] ; then</p>
+<blockquote>
+<div><p>if [ $has1tab -ne 1 ] ; then</p>
+<blockquote>
+<div>id_tab=$counter</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ ! -z &#8220;${out_tabs[$id_tab]}&#8221; ] ; then</dt>
+<dd><p class="first">tsize=${out_tabs[$id_tab]}
+tspaces=$(($tsize - ${#field}))</p>
+<p class="last">push_spaces $tspaces</p>
+</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p class="last">fi
+# End print tab</p>
+</dd>
+<dt>else</dt>
+<dd>echo -en &#8220;n&#8221;</dd>
+</dl>
+<p>fi
+# End print element postfix</p>
+<p>let counter++</p>
+</div></blockquote>
+<p>done</p>
+<dl class="docutils">
+<dt>if [ $print_vertical -eq 0 ] ; then</dt>
+<dd>echo -en &#8220;n&#8221;</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>done</p>
+<p>#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>out_stdout_print () {</p>
+<blockquote>
+<div><p>local msg=&#8221;$1&#8221;
+local ans=0</p>
+<p>echo -en &#8220;$msgn&#8221;</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}</p>
+<p>#****f* out_stdout/out_stdout_print
+# FUNCTION
+#   Unset all variables used on print functions
+# SOURCE
+out_stdout_clean () {</p>
+<blockquote>
+<div><p>local ans=0
+local i=0</p>
+<dl class="docutils">
+<dt>if [ &#8220;${#out_rows[&#64;]}&#8221; -gt 0 ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>for i in ${!out_rows[&#64;]} ; do</dt>
+<dd>unset ${out_rows[$i]}</dd>
+</dl>
+<p class="last">done</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ &#8220;${#out_headers[&#64;]}&#8221; -gt 0 ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>for i in ${!out_headers[&#64;]} ; do</dt>
+<dd>unset ${out_headers[$i]}</dd>
+</dl>
+<p class="last">done</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ &#8220;${#out_el_post[&#64;]}&#8221; -gt 0 ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>for i in ${!out_el_post[&#64;]} ; do</dt>
+<dd>out_el_post[$i]=&#8221;&#8220;</dd>
+</dl>
+<p class="last">done</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ &#8220;${#out_el_pre[&#64;]}&#8221; -gt 0 ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>for i in ${!out_el_pre[&#64;]} ; do</dt>
+<dd>out_el_pre[$i]=&#8221;&#8220;</dd>
+</dl>
+<p class="last">done</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ &#8220;${#out_tabs[&#64;]}&#8221; -gt 0 ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>for i in ${!out_tabs[&#64;]} ; do</dt>
+<dd>out_tabs[$i]=&#8221;&#8220;</dd>
+</dl>
+<p class="last">done</p>
+</dd>
+</dl>
+<p>fi</p>
+<p>unset out_ttitle
+unset out_rows
+unset out_tabs
+unset out_el_pre
+unset out_el_post
+unset out_headers
+unset out_htabs_mode
+unset out_prepost_mode
+unset out_htabs
+unset out_hsep
+unset out_vertical</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+#***</p>
+<div class="section" id="internal-functions">
+<h1># Internal functions<a class="headerlink" href="#internal-functions" title="Permalink to this headline">¶</a></h1>
+<p># vim: syn=sh filetype=sh ts=2 sw=2</p>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

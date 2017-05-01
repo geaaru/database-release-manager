@@ -1,0 +1,544 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title># Internal functions</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <p>#!/bin/bash
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+# Author(s): Geaaru, <a class="reference external" href="mailto:geaaru&#37;&#52;&#48;gmail&#46;com">geaaru<span>&#64;</span>gmail<span>&#46;</span>com</a>
+# $Id: bba8afdba216ca0e2e3d4d20a38a7a138135345f $
+# License: GPL 2.0
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p>name=&#8221;psql&#8221;
+psql_authors=&#8221;Geaaru&#8221;
+psql_creation_date=&#8221;June 24, 2016&#8221;
+psql_version=&#8221;0.1.0&#8221;
+psql_status=&#8221;0&#8221;</p>
+<p>#****f* psql/psql_version
+# FUNCTION
+#  Show version of psql module.
+# SOURCE
+psql_version() {</p>
+<blockquote>
+<div>echo -en &#8220;Version: ${psql_version}n&#8221;
+return 0</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* psql/psql_long_help
+# FUNCTION
+#   Show long help message.
+# SOURCE
+psql_long_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [psql]:n&#8221;
+echo -en &#8220;Author(s): ${psql_authors}n&#8221;
+echo -en &#8220;Created: ${psql_creation_date}n&#8221;
+echo -en &#8220;Version: ${psql_version}n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;tlong_help               Show long help informationsn&#8221;
+echo -en &#8220;tshow_help               Show command list.n&#8221;
+echo -en &#8220;tversion                 Show module version.n&#8221;
+echo -en &#8220;ttest_connection         Test connection versus database.n&#8221;
+echo -en &#8220;tshell                   Enter on command line shell of database.n&#8221;
+echo -en &#8220;show                     Show data from database.n&#8221;
+echo -en &#8220;tdump                    Dump database resources.n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;===========================================================================n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* psql/psql_show_help
+# FUNCTION
+#   Show help message.
+# SOURCE
+psql_show_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [psql]:n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;tlong_help               Show long help informationsn&#8221;
+echo -en &#8220;tshow_help               Show command list.n&#8221;
+echo -en &#8220;tversion                 Show module version.n&#8221;
+echo -en &#8220;ttest_connection         Test connection versus database.n&#8221;
+echo -en &#8220;tshell                   Enter on command line shell of database.n&#8221;
+echo -en &#8220;show                     Show data from database.n&#8221;
+echo -en &#8220;tdump                    Dump database resources.n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;===========================================================================n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* psql/psql_shell
+# FUNCTION
+#   Enter on command line shell of Mysql/MariaDB server
+# SEE ALSO
+#   _psql_connections_args for list of available arguments.
+# SOURCE
+psql_shell () {</p>
+<blockquote>
+<div><p>local result=1</p>
+<p># Shift first two input param
+shift 2</p>
+<p>_psql_check_status</p>
+<p>_psql_help_message=&#8221;print_help&#8221;</p>
+<p>_psql_connections_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<p>commons_psql_check_vars || error_handled &#8220;&#8221;</p>
+<p>psql_set_auth_var &#8220;$POSTGRESQL_DB&#8221; &#8220;$POSTGRESQL_USER&#8221; &#8220;$POSTGRESQL_PWD&#8221; &#8220;$POSTGRESQL_HOST&#8221; &#8220;${POSTGRESQL_SCHEMA}&#8221;</p>
+<p>commons_psql_check_connection || error_handled &#8220;psql client was unable to connect to DB with supplied credentials.&#8221;</p>
+<p>commons_psql_shell || error_handled &#8220;Error on enter on command line shell.&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* psql/psql_test_connection
+# FUNCTION
+#   Test connection to PostgreSQL server.
+# SEE ALSO
+#   _psql_connections_args for list of available arguments.
+# SOURCE
+psql_test_connection () {</p>
+<blockquote>
+<div><p>local result=1</p>
+<p># Shift first two input param
+shift 2</p>
+<p>_psql_check_status</p>
+<p>_psql_help_message=&#8221;print_help&#8221;</p>
+<p>_psql_connections_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<p>commons_psql_check_vars || error_handled &#8220;&#8221;</p>
+<p>psql_set_auth_var &#8220;$POSTGRESQL_DB&#8221; &#8220;$POSTGRESQL_USER&#8221; &#8220;$POSTGRESQL_PWD&#8221; &#8220;$POSTGRESQL_HOST&#8221; &#8220;${POSTGRESQL_SCHEMA}&#8221;</p>
+<p>commons_psql_check_connection || error_handled &#8220;psql client was unable to connect to DB with supplied credentials.&#8221;</p>
+<p>out_handler_print &#8220;Connected to $POSTGRESQL_DB with user $POSTGRESQL_USER correctly.&#8221;</p>
+<p>out_handler_clean</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* psql/psql_dump
+# FUNCTION
+#   Dump database schema.
+# SEE ALSO
+#   _psql_connections_args for list of available arguments.
+#   _psql_dump_args
+# SOURCE
+psql_dump () {</p>
+<blockquote>
+<div><p>local result=1</p>
+<p># Shift first two input param
+shift 2</p>
+<p>_psql_check_status</p>
+<p>commons_psql_check_client_dump || error_handled &#8220;&#8221;</p>
+<p>_psql_help_message=&#8221;print_help&#8221;</p>
+<p>_psql_connections_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<p>_psql_dump_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<p>commons_psql_check_vars || error_handled &#8220;&#8221;</p>
+<p>psql_set_auth_var &#8220;$POSTGRESQL_DB&#8221; &#8220;$POSTGRESQL_USER&#8221; &#8220;$POSTGRESQL_PWD&#8221; &#8220;$POSTGRESQL_HOST&#8221; &#8220;&#8221;</p>
+<p>commons_psql_check_connection || error_handled &#8220;psql client was unable to connect to DB with supplied credentials.&#8221;</p>
+<p>local dir=&#8221;$(dirname ${POSTGRESQL_DUMPFILE})&#8221;
+if [ ! -d &#8220;${dir}&#8221; ] ; then</p>
+<blockquote>
+<div>mkdir ${dir} || error_handled &#8220;Error on create directory ${dir} for dump.&#8221;</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>commons_psql_dump &#8220;${POSTGRESQL_DUMPFILE}&#8221; || </dt>
+<dd>error_handled &#8220;Error on dump schema ${POSTGRESQL_SCHEMA}.&#8221;</dd>
+</dl>
+<p>out_handler_print &#8220;Dump of $POSTGRESQL_SCHEMA executed correctly to: ${POSTGRESQL_DUMPFILE}.&#8221;</p>
+<p>out_handler_clean</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* psql/psql_show
+# FUNCTION
+#   Show data of Postgresql schema, database.
+# SEE ALSO
+#   _psql_connections_args for list of available arguments.
+# SOURCE
+psql_show () {</p>
+<blockquote>
+<div><p>local result=1</p>
+<p># Shift first two input param
+shift 2</p>
+<p>_psql_check_status</p>
+<p>_psql_help_message=&#8221;print_help&#8221;</p>
+<p>_psql_connections_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<p>_psql_show_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<p>commons_psql_check_vars || error_handled &#8220;&#8221;</p>
+<p>psql_set_auth_var &#8220;$POSTGRESQL_DB&#8221; &#8220;$POSTGRESQL_USER&#8221; &#8220;$POSTGRESQL_PWD&#8221; &#8220;$POSTGRESQL_HOST&#8221; &#8220;${POSTGRESQL_SCHEMA}&#8221;</p>
+<p>commons_psql_check_connection || error_handled &#8220;psql client was unable to connect to DB with supplied credentials.&#8221;</p>
+<p>commons_psql_shell || error_handled &#8220;Error on enter on command line shell.&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<div class="section" id="internal-functions">
+<h1># Internal functions<a class="headerlink" href="#internal-functions" title="Permalink to this headline">¶</a></h1>
+<p>#****f* psql/_psql_init
+# FUNCTION
+#   Internal function called on initialization of the psql module.
+# DESCRIPTION
+#   Mariadb module is usable when SQLCA variable contains psql string.
+#   So, if psql module is enabled then these check are done:
+#   * verify presence of mysql client program
+#   * check if POSTGRESQL_USER variable is set. This variable define user to use
+#     on connection to database.
+#   * check if POSTGRESQL_PWD variable is set. This variable define password to use
+#     on connection to database.
+#   * check if defined POSTGRESQL_DB variable. This variable define name of the
+#     schema to use on connection.
+#   * check if defined POSTGRESQL_DIR variable. This variable define path where
+#     save/retrieve files to compile.
+#   * if defined POSTGRESQL_TMZ then default UTC value is overrided. This variable
+#     is used to set TMZ on active connection to database.
+# SOURCE
+_psql_init () {</p>
+<blockquote>
+<div><p>if [[ ! -z &#8220;$SQLCA&#8221;  &amp;&amp; &#8220;$SQLCA&#8221; =~ .*psql.* ]] ; then</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_psql_init: Check requirements of the psql module.)n&#8221;</p>
+<p>commons_psql_check_client || error_handled &#8220;&#8221;</p>
+<dl class="docutils">
+<dt>if [ -z $POSTGRESQL_TMZ ] ; then</dt>
+<dd>POSTGRESQL_TMZ=&#8217;UTC&#8217;</dd>
+</dl>
+<p>fi</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_psql_init: All requirements are present. Continue my work.)n&#8221;</p>
+<p>psql_status=&#8221;1&#8221;</p>
+</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_psql_init: Nothing to do.)n&#8221;</div></blockquote>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* psql/_psql_check_status
+# FUNCTION
+#   Check status of the psql module.
+# RETURN VALUE
+#   0 if module is enable.
+#   exit if not enabled.
+# SOURCE
+_psql_check_status () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ x&#8221;$psql_status&#8221; = x&#8221;0&#8221; ] ; then</dt>
+<dd>error_generate &#8220;psql is not enable. Enable it with SQLCA variable&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* psql/_psql_connections_args
+# FUNCTION
+#   Parse command line and define environment variables.
+# DESCRIPTION
+#   Available commands line are:
+#   * -U [user]           Override username variable used on connection. If not present it is used
+#                         POSTGRESQL_USER variable from configuration file.
+#   * -P [pwd]            Override password variable used on connection. If not present it is used
+#                         POSTGRESQL_PWD variable from configuration file.
+#   * -D [dir path]       To define path where save/retrieve files to download/compile. This option
+#                         override POSTGRESQL_DIR variable of configuration file.
+#   * -H                  Override database host. If not present it is used POSTGRESQL_HOST variable
+#                         from configuration file.
+#   * -S [schema]         Override schema name variable used on connection. If not present is is used
+#                         POSTGRESQL_SCHEMA variable from configuration file.
+#   * &#8211;database [db]     Override database name variable used on connection. If not present it is used
+#                         POSTGRESQL_DB variable from configuration file.
+#   * &#8211;timezone [tmz]    Override Timezone variable used on connection initialization. If not present
+#                         it is used POSTGRESQL_TMZ variable from cofnfiguration file.
+#   * &#8211;ignore-timezone   Avoid initialization of Timezone on connection. If not present it is used
+#                         POSTGRESQL_IGNORE_TMZ variable from configuration file.
+#   * &#8211;conn-options [option]
+#                         Permit to configure extra connection parameters. This option could be used
+#                         more of one time.
+#   * -h                  Show help message
+# SOURCE
+_psql_connections_args () {</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_psql_connections_args args: $&#64;)n&#8221;</p>
+<p>local short_options=&#8221;U:P:hH:D:t:S:&#8221;
+local long_options=&#8221;database: timezone: conn-options: ignore-timezone help&#8221;</p>
+<dl class="docutils">
+<dt>$(set &#8211; $(getopt -u -q -o &#8220;$short_options&#8221; -l &#8220;$long_options&#8221; &#8211; &#8220;$&#64;&#8221;)) || </dt>
+<dd>error_handled &#8220;Invalid parameters&#8221;</dd>
+</dl>
+<p>[ $# -lt 1 ] &amp;&amp; return 0 # is there at least one param (&#8211;)</p>
+<p>local POSTGRESQL_EXTRAS_ENABLE=0</p>
+<dl class="docutils">
+<dt>while [ $# -gt 0 ] ; do</dt>
+<dd><p class="first">case &#8220;$1&#8221; in</p>
+<blockquote>
+<div><p>-U) POSTGRESQL_USER=&#8221;$2&#8221;;shift;;
+-P) POSTGRESQL_PWD=&#8221;$2&#8221;;shift;;
+-D) POSTGRESQL_DIR=&#8221;$2&#8221;;shift;;
+-H) POSTGRESQL_HOST=&#8221;$2&#8221;;shift;;
+-S) POSTGRESQL_SCHEMA=&#8221;$2&#8221;;shift;;
+&#8211;database)</p>
+<blockquote>
+<div>POSTGRESQL_DB=&#8221;$2&#8221;
+shift
+;;</div></blockquote>
+<dl class="docutils">
+<dt>&#8211;timezone)</dt>
+<dd>POSTGRESQL_TMZ=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;ignore-timezone)</dt>
+<dd>POSTGRESQL_IGNORE_TMZ=1
+;;</dd>
+<dt>&#8211;conn-options)</dt>
+<dd><dl class="first docutils">
+<dt>if [ $POSTGRESQL_EXTRAS_ENABLE -eq 0 ] ; then</dt>
+<dd>POSTGRESQL_EXTRAS_ENABLE=1
+POSTGRESQL_EXTRA_OPTIONS=&#8221;$2&#8221;</dd>
+<dt>else</dt>
+<dd>POSTGRESQL_EXTRA_OPTIONS=&#8221;$POSTGRESQL_EXTRA_OPTIONS $2&#8221;</dd>
+</dl>
+<p class="last">fi
+shift
+;;</p>
+</dd>
+<dt>&#8211;help|-h)</dt>
+<dd><dl class="first docutils">
+<dt>if [ -n &#8220;$_psql_help_message&#8221; ] ; then</dt>
+<dd>_psql_connection_help
+return 0</dd>
+</dl>
+<p class="last">fi
+return 1
+;;</p>
+</dd>
+<dt><a href="#id1"><span class="problematic" id="id2">*</span></a><a href="#id3"><span class="problematic" id="id4">|</span></a>&#8211;)</dt>
+<dd>;;</dd>
+</dl>
+</div></blockquote>
+<p>esac</p>
+<p class="last">shift</p>
+</dd>
+</dl>
+<p>done</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* psql/_psql_dump_args
+# FUNCTION
+#   Parse command line for dump command.
+# DESCRIPTION
+#   Available commands line are:
+#   * &#8211;to file           File where save dump.
+#   * -h                  Show help message
+# SOURCE
+_psql_dump_args () {</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_psql_dump_args args: $&#64;)n&#8221;</p>
+<p>local conn_s_options=&#8221;U:P:hH:D:t:S:&#8221;
+local conn_l_options=&#8221;database: timezone: conn-options: ignore-timezone help&#8221;
+local short_options=&#8221;${conn_s_options}&#8221;
+local long_options=&#8221;${conn_l_options} help to:&#8221;</p>
+<p>local ddate=$(date +%Y%m%d_%H%M%S)
+POSTGRESQL_DUMPFILE=${POSTGRESQL_DIR}/dumps/dump_${POSTGRESQL_SCHEMA}_${ddate}.sql</p>
+<dl class="docutils">
+<dt>$(set &#8211; $(getopt -u -q -o &#8220;$short_options&#8221; -l &#8220;$long_options&#8221; &#8211; &#8220;$&#64;&#8221;)) || </dt>
+<dd>error_handled &#8220;Invalid parameters&#8221;</dd>
+</dl>
+<p>[ $# -lt 1 ] &amp;&amp; return 0 # is there at least one param (&#8211;)</p>
+<dl class="docutils">
+<dt>while [ $# -gt 0 ] ; do</dt>
+<dd><p class="first">case &#8220;$1&#8221; in</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>-U|-P|-D|-H|-S|&#8211;database|&#8211;timezone|&#8211;conn-options)</dt>
+<dd>shift</dd>
+</dl>
+<p>;;
+&#8211;ignore-timezone)</p>
+<blockquote>
+<div>;;</div></blockquote>
+<dl class="docutils">
+<dt>&#8211;to)</dt>
+<dd>POSTGRESQL_DUMPFILE=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;help|-h)</dt>
+<dd>_psql_dump_help
+return 1
+;;</dd>
+<dt><a href="#id5"><span class="problematic" id="id6">*</span></a><a href="#id7"><span class="problematic" id="id8">|</span></a>&#8211;)</dt>
+<dd>;;</dd>
+</dl>
+</div></blockquote>
+<p>esac</p>
+<p class="last">shift</p>
+</dd>
+</dl>
+<p>done</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* psql/_psql_show_args
+# FUNCTION
+#   Parse command line for show command.
+# DESCRIPTION
+#   Available commands line are:
+#   * &#8211;tables            Show list of tables of the database.
+#   * -h                  Show help message
+# SOURCE
+_psql_show_args () {</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_psql_show_args args: $&#64;)n&#8221;</p>
+<p>local conn_s_options=&#8221;U:P:hH:D:t:S:&#8221;
+local conn_l_options=&#8221;database: timezone: conn-options: ignore-timezone help&#8221;
+local short_options=&#8221;${conn_s_options}&#8221;
+local long_options=&#8221;${conn_l_options} help :&#8221;</p>
+<dl class="docutils">
+<dt>$(set &#8211; $(getopt -u -q -o &#8220;$short_options&#8221; -l &#8220;$long_options&#8221; &#8211; &#8220;$&#64;&#8221;)) || </dt>
+<dd>error_handled &#8220;Invalid parameters&#8221;</dd>
+</dl>
+<p>[ $# -lt 1 ] &amp;&amp; return 0 # is there at least one param (&#8211;)</p>
+<dl class="docutils">
+<dt>while [ $# -gt 0 ] ; do</dt>
+<dd><p class="first">case &#8220;$1&#8221; in</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>-U|-P|-D|-H|-S|&#8211;database|&#8211;timezone|&#8211;conn-options)</dt>
+<dd>shift</dd>
+</dl>
+<p>;;
+&#8211;ignore-timezone)</p>
+<blockquote>
+<div>;;</div></blockquote>
+<dl class="docutils">
+<dt>&#8211;help|-h)</dt>
+<dd>_psql_show_help
+return 1
+;;</dd>
+<dt><a href="#id9"><span class="problematic" id="id10">*</span></a><a href="#id11"><span class="problematic" id="id12">|</span></a>&#8211;)</dt>
+<dd>;;</dd>
+</dl>
+</div></blockquote>
+<p>esac</p>
+<p class="last">shift</p>
+</dd>
+</dl>
+<p>done</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* psql/_psql_connection_help
+# FUNCTION
+#   Internal function that print help message of connection options.
+# SOURCE
+_psql_connection_help () {</p>
+<blockquote>
+<div>echo &#8220;</div></blockquote>
+<p>[-P psql_pwd]            Override POSTGRESQL_PWD variable.
+[-U psql_user]           Override POSTGRESQL_USER with username of the connection.
+[-H psql_host]           Override POSTGRESQL_HOST with host of the database.
+[-D psql_dir]            Override POSTGRESQL_DIR directory where save/retrieve script/functions, etc.
+[-S psql_schema]         Override POSTGRESQL_SCHEMA variable with schema of the database instance.
+[&#8211;database db]          Override POSTGRESQL_DB variable for database name.
+[&#8211;timezone tmz]         Override POSTGRESQL_TMZ variable for set timezone on connection session.
+[&#8211;conn-options opts]    Override POSTGRESQL_EXTRA_OPTIONS variable for enable extra connection options.
+[&#8211;ignore-timezone]      Set POSTGRESQL_IGNORE_TMZ variable to 1 for disable initial timezone settings.
+&#8220;</p>
+<blockquote>
+<div>return 0</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* psql/_psql_dump_help
+# FUNCTION
+#   Internal function that print help message of dump options.
+# SOURCE
+_psql_dump_help () {</p>
+<blockquote>
+<div>echo &#8220;</div></blockquote>
+<dl class="docutils">
+<dt>[&#8211;to file]              Indicate target file where execute dump.</dt>
+<dd>Default is ${POSTGRESQL_DIR}/dumps/<a href="#id13"><span class="problematic" id="id14">dump_</span></a>${POSTGRESQL_SCHEMA}_YYYYMMDD_HHmmss.sql</dd>
+</dl>
+<p>&#8220;</p>
+<blockquote>
+<div>return 0</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* psql/_psql_show_help
+# FUNCTION
+#   Internal function that print help message of show command.
+# SOURCE
+_psql_show_help () {</p>
+<blockquote>
+<div>echo &#8220;</div></blockquote>
+<p>[&#8211;tables]               Show list of tables present on database.</p>
+<p>&#8220;</p>
+<blockquote>
+<div>return 0</div></blockquote>
+<p>}
+#***</p>
+<p># vim: syn=sh filetype=sh</p>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,673 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title># Internal Functions #</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <p>#!/bin/bash</p>
+<p>name=&#8221;sqlite&#8221;
+sqlite_authors=&#8221;Geaaru&#8221;
+sqlite_creation_date=&#8221;August 26, 2008&#8221;
+sqlite_version=&#8221;0.1.0&#8221;
+sqlite_hidden=&#8221;0&#8221;</p>
+<p>#****f* sqlite/sqlite_version
+# FUNCTION
+#   Show version of sqlite module.
+# SOURCE
+sqlite_version () {</p>
+<blockquote>
+<div>echo -en &#8220;Version: ${sqlite_version}n&#8221;</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sqlite/sqlite_show_help
+# FUNCTION
+#   Show help message.
+# SOURCE
+sqlite_show_help () {</p>
+<blockquote>
+<div>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [sqlite]:n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;tlong_help               Show long help informationsn&#8221;
+echo -en &#8220;tcreate                  Create SQLite database.n&#8221;
+echo -en &#8220;tremove                  Remove SQLite database.n&#8221;
+echo -en &#8220;tquery                   Do a query to SQLite database.n&#8221;
+echo -en &#8220;tshell                   Enter on SQLite database shell.n&#8221;
+echo -en &#8220;tshow_autoincr_seq       Show list of autoincrement sequences values.n&#8221;
+echo -en &#8220;===========================================================================n&#8221;</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sqlite/sqlite_long_help
+# FUNCTION
+#   Show long help message.
+# SOURCE
+sqlite_long_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [sqlite]:n&#8221;
+echo -en &#8220;Author(s): ${sqlite_authors}n&#8221;
+echo -en &#8220;Created: ${sqlite_creation_date}n&#8221;
+echo -en &#8220;Version: ${sqlite_version}nn&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;tlong_help               Show long help informationsn&#8221;
+echo -en &#8220;tshow_help               Show command list.n&#8221;
+echo -en &#8220;tversion                 Show module version.n&#8221;
+echo -en &#8220;tshell                   Enter on SQLite database shell.n&#8221;
+echo -en &#8220;tcreate                  Create SQLite database to <a class="reference external" href="file:n">file:n</a>&#8221;
+if [[ -z &#8220;$SQLITEDB&#8221; ]] ; then</p>
+<blockquote>
+<div>echo -en &#8220;t (ATTENTION: you must set SQLITEDBn&#8221;
+echo -en &#8220;t                        in your configuration file).n&#8221;</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>echo -en &#8220;t                        $SQLITEDBn&#8221;</dd>
+</dl>
+<p>fi
+echo -en &#8220;tremove                  Remove SQLite database.n&#8221;
+echo -en &#8220;tquery                   Do a query to SQLite database.n&#8221;
+echo -en &#8220;tshow_autoincr_seq       Show list of autoincrement sequences values.n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;===========================================================================n&#8221;</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sqlite/sqlite_show_autoincr_seq
+# FUNCTION
+#   Show
+# RETURN VALUE
+#   1   error
+#   0   ok
+# SOURCE
+sqlite_show_autoincr_seq () {</p>
+<blockquote>
+<div><p>local query=&#8221;&#8221;
+local table=&#8221;&#8221;
+local sequence=&#8221;&#8221;
+local counter=0</p>
+<p>[[ $DEBUG ]] &amp;&amp; echo -en &#8220;(sqlite_show_autoincr_seq args: $&#64;)n&#8221;</p>
+<p># Shift first two input param
+shift 2</p>
+<p># TODO: use a dedicate check args function.
+_sqlite_check_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<dl class="docutils">
+<dt>query=&#8221;</dt>
+<dd>SELECT COUNT(1) AS N_SEQUENCES
+FROM sqlite_sequence&#8221;</dd>
+</dl>
+<p>_sqlite_query -c &#8220;$SQLITEDB&#8221; -q &#8220;$query&#8221; || error_handled &#8220;Unexpected error!&#8221;</p>
+<dl class="docutils">
+<dt>if [ $_sqlite_ans -eq 0 ]; then</dt>
+<dd>out_handler_print &#8220;No sequences available.&#8221;</dd>
+</dl>
+<p>else</p>
+<blockquote>
+<div><p>query=&#8221;SELECT * FROM sqlite_sequence&#8221;</p>
+<p>_sqlite_query -c &#8220;$SQLITEDB&#8221; -q &#8220;$query&#8221; || error_handled &#8220;Unexpected error!&#8221;</p>
+<p>out_hsep=1
+out_prepost_mode=&#8221;any&#8221;
+out_htabs_mode=&#8221;tabs&#8221;</p>
+<p>out_headers[0]=&#8221;TABLE&#8221;
+out_headers[1]=&#8221;SEQUENCE ID&#8221;</p>
+<p>out_el_pre[0]=&#8221;e[1;33m&#8221;
+out_el_pre[1]=&#8221;e[1;34m&#8221;</p>
+<p>out_el_post[0]=&#8221;e[m&#8221;</p>
+<p>out_tabs[0]=&#8221;20&#8221;
+out_tabs[1]=&#8221;23&#8221;</p>
+<p>IFS=$&#8217;n&#8217;
+for row in $_sqlite_ans ; do</p>
+<blockquote>
+<div><p>table=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[1]}&#8217;`
+sequence=`echo $row | awk &#8216;{split($0,a,&#8221;|&#8221;); print a[2]}&#8217;`</p>
+<p>out_rows[$counter]=&#8221;row&#8221;${counter}</p>
+<p>eval &#8220;row${counter}[0]=&#8221;${table}&#8221;&#8221;
+eval &#8220;row${counter}[1]=&#8221;${sequence}&#8221;&#8220;</p>
+<p>let counter++</p>
+</div></blockquote>
+<p>done
+unset IFS</p>
+<p>out_handler_print_arr</p>
+</div></blockquote>
+<p>fi</p>
+<p>out_handler_clean</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sqlite/sqlite_create
+# FUNCTION
+#   Create dbrm sqlite database file.
+# RETURN VALUE
+#   1   error
+#   0   ok
+# SOURCE
+sqlite_create () {</p>
+<blockquote>
+<div><p>local result=1</p>
+<p>[[ $DEBUG ]] &amp;&amp; echo -en &#8220;(sqlite_create args: $&#64;)n&#8221;</p>
+<p># Shift first two input param
+shift 2</p>
+<p>_sqlite_create &#8220;$&#64;&#8221;
+result=$?</p>
+<p>return $result</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sqlite/sqlite_query
+# FUNCTION
+#   Execute a query to SQLITEDB database.
+# RETURN VALUE
+#   1 on error.
+#   0 on success.
+# RESULT
+#   Answer of the query is save to _sqlite_ans variable.
+# SEE ALSO
+#   _sqlite_query
+# SOURCE
+sqlite_query () {</p>
+<blockquote>
+<div><p>local result=1</p>
+<p>[[ $DEBUG ]] &amp;&amp; echo -en &#8220;(sqlite_query args: $&#64;)n&#8221;</p>
+<p># Shift first two input param
+shift 2</p>
+<p>_sqlite_query &#8220;$&#64;&#8221;
+result=$?</p>
+<p>return $result</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sqlite/sqlite_remove
+# FUNCTION
+#   Remove SQLITEDB database file.
+# RETURN VALUE
+#   1 on error.
+#   0 on success.
+# SOURCE
+sqlite_remove () {</p>
+<blockquote>
+<div><p>local result=1</p>
+<p>[[ $DEBUG ]] &amp;&amp; echo -en &#8220;(sqlite_remove args: $&#64;)n&#8221;</p>
+<p># Shift first two input param
+shift 2</p>
+<p>_sqlite_remove &#8220;$&#64;&#8221;
+result=$?</p>
+<p>return $result</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sqliet/sqlite_shell
+# FUNCTION
+#   Enter on database shell.
+# RETURN VALUE
+#   1 on error
+#   0 on success.
+# SEE ALSO
+#   _sqlite_check_args
+# SOURCE
+sqlite_shell () {</p>
+<blockquote>
+<div><p>local result=1</p>
+<p>[[ $DEBUG ]] &amp;&amp; echo -en &#8220;(sqlite_shell args: $&#64;)n&#8221;</p>
+<p># Shift first two input param
+shift 2</p>
+<p>_sqlite_shell &#8220;$&#64;&#8221; || error_handled &#8220;Error on enter to sqlite database file $SQLITEDB.&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<div class="section" id="internal-functions">
+<h1># Internal Functions                                                  #<a class="headerlink" href="#internal-functions" title="Permalink to this headline">¶</a></h1>
+<p>#****f* sqlite/_sqlite_shell
+# FUNCTION
+#   Internal function for enter on sqlite database shell.
+# RESULT
+#   exit(1) if file doesn&#8217;t exits.
+# SOURCE
+_sqlite_shell () {</p>
+<blockquote>
+<div><p>_sqlite_check_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<p>_sqlite_check_db || return 1</p>
+<p>sqlite3 $SQLITEDB || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sqlite/_sqlite_check_db
+# FUNCTION
+#   Internal function for check if exists SQLITEDB database file.
+# RESULT
+#   exit(1) if file doesn&#8217;t exits.
+# SOURCE
+_sqlite_check_db () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [[ ! -e &#8220;$SQLITEDB&#8221; ]] ; then</dt>
+<dd>echo -en &#8220;$SQLITEDB database doesn&#8217;t exist.n&#8221;
+exit 1</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sqlite/_sqlite_check_args
+# FUNCTION
+#   Check commons arguments of the sqlite module.
+# DESCRIPTION
+#   Arguments of the function are:
+#   -c [sqlitedb file]        To define sqlite database file.
+#   -s [schema file]          Script to use on create sqlite database file.
+#   -q [sql query]            Query to execute on sqlite database.
+#   -t [table name]           Set table name to verify. Used only
+#                             on _sqlite_exists_table function.
+#   -f [sqlite file]          Script to execute on sqlite database.
+#   -p                        Print output to shell
+# RESULT
+#   Variables defined:
+#     * SQLITEDB: path of sqlite database. If not set it is used value
+#                 present on configuration file.
+#     * SQLITE_SCHEMA: path of the sqlite file used for initialized sqlite database.
+#                 For dbrm schema this parameter it is not needed. (optional)
+#     * SQLITE_QUERY: variable that contains query to execute. This parameter
+#                 is mandatary only for sqlite_query function.
+#     * SQLITE_TABLE: contains table name to analize.
+#     * SQLITE_FILE: contains script file to execute on sqlite database.
+# RETURN VALUE
+#   1 on error.
+#   0 on success.
+# SOURCE
+_sqlite_check_args () {</p>
+<blockquote>
+<div><p>[[ $DEBUG ]] &amp;&amp; echo -en &#8220;(_sqlite_check_args args: $&#64;)n&#8221;</p>
+<p>SQLITE_PRINT=0</p>
+<p># Reinitialize opt index position
+OPTIND=1
+while getopts &#8220;pc:s:q:t:f:&#8221; opts &#8220;$&#64;&#8221; ; do</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>case $opts in</dt>
+<dd><p class="first"># sqlite_create params
+c) SQLITEDB=&#8221;$OPTARG&#8221;;;</p>
+<ol class="loweralpha simple" start="16">
+<li>SQLITE_PRINT=1 ;;</li>
+</ol>
+<ol class="loweralpha simple" start="19">
+<li>SQLITE_SCHEMA=&#8221;$OPTARG&#8221;;;</li>
+</ol>
+<p># sqlite_query params
+q) SQLITE_QUERY=&#8221;$OPTARG&#8221;;;</p>
+<ol class="loweralpha simple" start="20">
+<li>SQLITE_TABLE=&#8221;$OPTARG&#8221;;;</li>
+</ol>
+<ol class="loweralpha simple" start="6">
+<li>SQLITE_FILE=&#8221;$OPTARG&#8221;;;</li>
+</ol>
+<p class="last"><a href="#id1"><span class="problematic" id="id2">*</span></a>) ;;</p>
+</dd>
+</dl>
+<p>esac</p>
+</div></blockquote>
+<p>done</p>
+<dl class="docutils">
+<dt>if [[ -z $SQLITEDB ]] ; then</dt>
+<dd>echo -en &#8220;_sqlite_check_args: Missing sqlite database parameter.n&#8221;
+return 1</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sqlite/_sqlite_remove
+# FUNCTION
+#   Internal function for remove sqlite database file.
+# RETURN VALUE
+#   1 on error
+#   0 on success
+# SOURCE
+_sqlite_remove () {</p>
+<blockquote>
+<div><p>local result=1</p>
+<p>_sqlite_check_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<p>_sqlite_check_db</p>
+<p>confirmation_question &#8220;Are you sure to remove file $SQLITEDB? [y/N]:&#8221;
+result=$?
+if [ $result -eq 0 ] ; then</p>
+<blockquote>
+<div><p>echo -en &#8220;Removing file $SQLITEDB...&#8221;
+$RM $SQLITEDB
+result=$?
+if [ $result -eq 0 ] ; then</p>
+<blockquote>
+<div>echo -en &#8220;OKn&#8221;</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>echo -en &#8220;Errorn&#8221;</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>echo -en &#8220;Remove cancelled.n&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return $result</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sqlite/_sqlite_create
+# FUNCTION
+#   Internal function for create sqlite database file.
+# SEE_ALSO
+#   _sqlite_check_args for environment variables.
+# RETURN VALUE
+#   1 on error
+#   0 on success.
+# SOURCE
+_sqlite_create () {</p>
+<blockquote>
+<div><p>local result=1</p>
+<p>_sqlite_check_args &#8220;$&#64;&#8221;
+if [[ -z $SQLITE_SCHEMA ]] ; then</p>
+<blockquote>
+<div>echo -en &#8220;_sqlite_create: Missing schema file.n&#8221;
+return 1</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -e $SQLITEDB ] ; then</dt>
+<dd>echo -en &#8220;File $SQLITEDB already exist.n&#8221;</dd>
+<dt>else</dt>
+<dd><dl class="first docutils">
+<dt>if [ -e &#8220;$SQLITE_SCHEMA&#8221; ] ; then</dt>
+<dd><p class="first">echo -en &#8220;Creating database $SQLITEDB&#8221;
+sqlite3 &#8220;$SQLITEDB&#8221; &lt; &#8220;$SQLITE_SCHEMA&#8221;
+result=$?
+if [ $result -ne 0 ] ; then</p>
+<blockquote>
+<div>echo -en &#8220;Error on initialize database.n&#8221;</div></blockquote>
+<dl class="docutils">
+<dt>else</dt>
+<dd>echo -en &#8221;...&#8221;</dd>
+</dl>
+<p class="last">fi
+echo -en &#8220;OKn&#8221;</p>
+</dd>
+<dt>else</dt>
+<dd>echo -en &#8220;No schema file found to $SQLITE_SCHEMAn&#8221;
+return 1</dd>
+</dl>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sqlite/_sqlite_query
+# FUNCTION
+#   Execute a query on sqlite database.
+# DESCRIPTION
+#   On execute query is add prefix command to enable foreign_keys.
+#   To disable it or insert custom prefix command it is needed
+#   override of SQLITEDB_INIT_SESSION variable.
+#   NOTE: On execute DROP command must be set SQLITEDB_INIT_SESSION to empty string &#8216; &#8216;.
+# RETURN VALUE
+#   1 on error
+#   0 on success.
+# RESULT
+#   Query result is save to _sqlite_ans variable.
+# SOURCE
+_sqlite_query () {</p>
+<blockquote>
+<div><p>local result=1
+local pragma=&#8221;PRAGMA foreign_keys = ON; &#8220;</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_sqlite_query: $&#64;)n&#8221;</p>
+<p>_sqlite_check_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<p>_sqlite_check_db || error_handled &#8220;&#8221;</p>
+<p>_sqlite_query_ || return 1</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sqlite/_sqlite_query_
+# FUNCTION
+#   Execute a query on sqlite database without check of sqlite database, etc.
+# DESCRIPTION
+#   On execute query is add prefix command to enable foreign_keys.
+#   To disable it or insert custom prefix command it is needed
+#   override of SQLITEDB_INIT_SESSION variable.
+#   NOTE: On execute DROP command must be set SQLITEDB_INIT_SESSION to empty string &#8216; &#8216;.
+# SEE ALSO
+#   _sqlite_query
+# RETURN VALUE
+#   1 on error
+#   0 on success.
+# RESULT
+#   Query result is save to _sqlite_ans variable.
+# SOURCE
+_sqlite_query_ () {</p>
+<blockquote>
+<div><p>local result=1
+local pragma=&#8221;PRAGMA foreign_keys = ON; &#8220;</p>
+<dl class="docutils">
+<dt>if [[ ! -z &#8220;$SQLITEDB_INIT_SESSION&#8221; ]] ; then</dt>
+<dd><dl class="first docutils">
+<dt>if [ &#8220;$SQLITEDB_INIT_SESSION&#8221; == &#8221; &#8221; ] ; then</dt>
+<dd>pragma=&#8221;&#8220;</dd>
+<dt>else</dt>
+<dd>pragma=&#8221;$SQLITEDB_INIT_SESSION&#8221;</dd>
+</dl>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>fi</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_sqlite_query_ execute: sqlite3 $SQLITEDB &#8220;$pragma $SQLITE_QUERY&#8221;n&#8221;
+_sqlite_ans=&#8221;$(sqlite3 $SQLITEDB &#8220;${pragma}${SQLITE_QUERY}&#8221;)&#8221;
+result=$?</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_sqlite_query_ ans:n$_sqlite_ansn)n&#8221;</p>
+<dl class="docutils">
+<dt>if [ x&#8221;${SQLITE_PRINT}&#8221; == x&#8221;1&#8221; ] ; then</dt>
+<dd>echo -en &#8220;${_sqlite_ans}n&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return $result</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sqlite/_sqlite_get_table_schema
+# FUNCTION
+#   Retrieve table schema and save content to $_sqlite_ans.
+# RETURN VALUE
+#   1 on error
+#   0 on success.
+# SOURCE
+_sqlite_get_table_schema () {</p>
+<blockquote>
+<div><p>_sqlite_check_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<p>_sqlite_check_db || error_handled &#8220;&#8221;</p>
+<p>SQLITE_QUERY=&#8221;.schema $SQLITE_TABLE&#8221;</p>
+<p># Disable PRAGMA options
+SQLITEDB_INIT_SESSION=&#8221; &#8220;</p>
+<p>_sqlite_query_  || error_handled &#8220;Unexpected error!&#8221;</p>
+<p># Re-enable PRAGMA options
+unset SQLITEDB_INIT_SESSION</p>
+<dl class="docutils">
+<dt>if [ x&#8221;$_sqlite_ans&#8221; == x&#8221;&#8221; ] ; then</dt>
+<dd><dl class="first docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;Error on retrieve schema of the table $SQLITE_TABLE.n&#8221;</dd>
+</dl>
+<p class="last">return 1</p>
+</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sqlite/_sqlite_exists_table
+# FUNCTION
+#   Check if exists a table on sqlite database file.
+# RETURN VALUE
+#   0 if table doesn&#8217;t exist.
+#   1 if table exists.
+# SOURCE
+_sqlite_exists_table () {</p>
+<blockquote>
+<div><p>_sqlite_check_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;</p>
+<p>_sqlite_check_db || error_handled &#8220;&#8221;</p>
+<dl class="docutils">
+<dt>SQLITE_QUERY=&#8221;</dt>
+<dd>SELECT count(1)
+FROM sqlite_master
+WHERE type=&#8217;table&#8217;
+AND name=&#8217;$SQLITE_TABLE&#8217;&#8221;</dd>
+</dl>
+<p>_sqlite_query_ || error_handled &#8220;Unexpected error!&#8221;</p>
+<dl class="docutils">
+<dt>if [ x&#8221;$_sqlite_ans&#8221; == x&#8221;0&#8221; ] ; then</dt>
+<dd>return 0</dd>
+<dt>else</dt>
+<dd>return 1</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sqlite/_sqlite_compile
+# FUNCTION
+#   Compile imput file on sqlite database file.
+# TODO
+#   Check if it is correct use of error_handled function
+#   or use return 1.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
+_sqlite_compile () {</p>
+<blockquote>
+<div><p>_sqlite_check_args &#8220;$&#64;&#8221; || error_handled &#8220;&#8221;
+_sqlite_check_db || error_handled &#8220;&#8221;</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$SQLITE_FILE&#8221; ] ; then</dt>
+<dd>error_handled &#8220;Missing file to compile.&#8221;</dd>
+<dt>else</dt>
+<dd><dl class="first docutils">
+<dt>if [ -e &#8220;$SQLITE_FILE&#8221; ] ; then</dt>
+<dd>error_handled &#8220;File $SQLITE_FILE not found.&#8221;</dd>
+</dl>
+<p class="last">fi</p>
+</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;Compiling file ${SQLITE_FILE} on database ${SQLITEDB}...&#8221;</dd>
+</dl>
+<p>sqlite3 &#8220;$SQLITEDB&#8221; &lt; &#8220;$SQLITE_FILE&#8221;
+result=$?
+if [ $result -ne 0 ] ; then</p>
+<blockquote>
+<div>echo -en &#8220;Error on compile file ${SQLITE_FILE}.n&#8221;</div></blockquote>
+<p>fi
+[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;OKn&#8221;</p>
+<p>return $result</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* dbm/_dbm_get_table_schema_from_file
+# FUNCTION
+#  Retrieve table schema from a .sql file and save creation script
+#  to $_sqlite_ans variable.
+# RETURN VALUE
+#   1 on error
+#   0 on success.
+# SOURCE
+_sqlite_get_tschema_from_file () {</p>
+<blockquote>
+<div><p>local ans=0
+local schemafile=&#8221;$1&#8221;
+local tname=&#8221;$2&#8221;</p>
+<dl class="docutils">
+<dt>if [ ! -f &#8220;$schemafile&#8221; ] ; then</dt>
+<dd>error_generate &#8220;(_sqlite_get_tschema_from_file): Invalid file $schemafile.&#8221; &#8220;0&#8221;
+return 1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$tname&#8221; ] ; then</dt>
+<dd>error_generate &#8220;(_sqlite_get_tschema_from_file): Invalid table name $tname.&#8221; &#8220;&#8221;
+return 1</dd>
+</dl>
+<p>fi</p>
+<p>local sed_pattern=&#8221;/CREATE TABLE ${tname} (.*/,/);/p&#8221;</p>
+<p>_sqlite_ans=$(cat $schemafile | sed -n &#8220;$sed_pattern&#8221;)</p>
+<dl class="docutils">
+<dt>if [ $? -ne 0 ] ; then</dt>
+<dd>ans=1</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;(_sqlite_get_tschema_from_file): For table $tname in schema $schemafile found:n$_sqlite_ansn&#8221;</dd>
+</dl>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p># vim: syn=sh filetype=sh ts=2 sw=2</p>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,492 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt;</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <p>#!/bin/bash
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+# Author(s): Valx2, <a class="reference external" href="mailto:valerio&#46;lazzcasa&#37;&#52;&#48;gmail&#46;com">valerio<span>&#46;</span>lazzcasa<span>&#64;</span>gmail<span>&#46;</span>com</a>
+# $Id: 513b8ed74b10db2ace9458b3f89a4aad40e35614 $
+# License: GPL 2.0
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p>name=&#8221;sweeper&#8221;
+sweeper_authors=&#8221;Valx2&#8221;
+sweeper_creation_date=&#8221;Feb 3, 2017&#8221;
+sweeper_version=&#8221;0.1.0&#8221;</p>
+<p>#****f* sweeper/sweeper_version
+# FUNCTION
+#   Show version of sweeper module.
+# SOURCE
+sweeper_version () {</p>
+<blockquote>
+<div>echo -en &#8220;Version: ${sweeper_version}n&#8221;
+return 0</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sweeper/sweeper_long_help
+# FUNCTION
+#  Show long help message.
+# SOURCE
+sweeper_long_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [sweeper]:n&#8221;
+echo -en &#8220;Author(s): ${sweeper_authors}n&#8221;
+echo -en &#8220;Created: ${sweeper_creation_date}n&#8221;
+echo -en &#8220;Version: ${sweeper_version}n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;tlong_help               Show long help informationsn&#8221;
+echo -en &#8220;tshow_help               Show command list.n&#8221;
+echo -en &#8220;tversion                 Show module version.n&#8221;
+echo -en &#8220;tcompress                Compress files in folder (and subfolder) older than &lt;days&gt;n&#8221;
+echo -en &#8220;texpunge                 Expunge files in folder (and subfolder) older than &lt;days&gt; andn&#8221;
+echo -en &#8220;t                        Remove empty folders.n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;===========================================================================n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sweeper/sweeper_show_help
+# FUNCTION
+#  Show help message
+# SOURCE
+sweeper_show_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;===========================================================================n&#8221;
+echo -en &#8220;Module [sweeper]:n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;tlong_help               Show long help informationsn&#8221;
+echo -en &#8220;tshow_help               Show command list.n&#8221;
+echo -en &#8220;tversion                 Show module version.n&#8221;
+echo -en &#8220;tcompress                Compress files in folder (and subfolder)n&#8221;
+echo -en &#8220;t                        older than &lt;days&gt;n&#8221;
+echo -en &#8220;texpunge                 Expunge files in folder (and subfolder)n&#8221;
+echo -en &#8220;t                        older than &lt;days&gt; and remove empty folders.n&#8221;
+echo -en &#8220;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;n&#8221;
+echo -en &#8220;===========================================================================n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sweeper/sweeper_compress
+# FUNCTION
+#  Compress command function.
+# SOURCE
+sweeper_compress () {</p>
+<blockquote>
+<div><p>local out=&#8221;&#8221;
+local tar_name=&#8221;&#8221;
+local file_list=&#8221;&#8221;
+local file_count=&#8221;&#8221;
+local tar_options=&#8221;&#8221;
+shift 2</p>
+<p>_sweeper_compress_args &#8220;$&#64;&#8221; || return 1</p>
+<dl class="docutils">
+<dt>_logfile_write &#8220;sweeper_compress... START</dt>
+<dd>source-dir:      ${DBRM_SWEEPER_SRCDIR}
+compressed-file: ${DBRM_SWEEPER_DESTDIR}/${tar_name}
+source-filter:   ${DBRM_SWEEPER_REGEX}
+age:             ${DBRM_SWEEPER_AGE}
+clean-src:       ${DBRM_SWEEPER_REMOVE_SRC_FILES}
+clean-empty-dir: ${DBRM_SWEEPER_REMOVE_EMPTY_DIR}&#8221;</dd>
+</dl>
+<p>#Gatering all files matching
+[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo find ${DBRM_SWEEPER_SRCDIR} -type f -mtime ${DBRM_SWEEPER_AGE} -regex &#8220;${DBRM_SWEEPER_REGEX}&#8221; -exec readlink -f {} ;
+tar_name=${DBRM_SWEEPER_CONTEXT}_$(date +%F_%R).tar.gz</p>
+<p>#Generate tar file containing file matched
+tar_options=&#8221;zcvf&#8221;-</p>
+<p>file_list=&#8221;$(find ${DBRM_SWEEPER_SRCDIR} -type f -mtime ${DBRM_SWEEPER_AGE} -regex &#8220;${DBRM_SWEEPER_REGEX}&#8221; -exec readlink -f {} ;)&#8221;
+out=$(tar ${tar_options} ${DBRM_SWEEPER_DESTDIR}/${tar_name} ${file_list})
+echo &#8220;${out}&#8221;
+_logfile_write &#8220;tar: ${out}&#8221;</p>
+<p>#Eventually generate log file with content of tar
+if [ ! -z &#8220;${DBRM_SWEEPER_ARCHIVE_PATH}&#8221; ]; then</p>
+<blockquote>
+<div><p>file_count=$(echo ${file_list} | wc -w )</p>
+<p>echo -en &#8220;&#8212;&#8212;-$(date +%F_%R) compressing &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;nn&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}
+echo -en &#8221;    source-n&#8221;dir:      ${DBRM_SWEEPER_SRCDIR}&gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}
+echo -en &#8221;    compressed-file: ${DBRM_SWEEPER_DESTDIR}/${tar_name}n&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}
+echo -en &#8221;    source-filter:   ${DBRM_SWEEPER_REGEX}n&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}
+echo -en &#8221;    age:             ${DBRM_SWEEPER_AGE}n&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}
+echo -en &#8221;    clean-src:       ${DBRM_SWEEPER_REMOVE_SRC_FILES}n&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}
+echo -en &#8221;    clean-empty-dir: ${DBRM_SWEEPER_REMOVE_EMPTY_DIR}nn&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}
+echo -en &#8221;    eligible files:  ${file_count}n&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}</p>
+<dl class="docutils">
+<dt>if [ ${file_count} -eq &#8220;0&#8221; ]; then</dt>
+<dd>echo -en &#8220;n Nothing to compress.n&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}</dd>
+<dt>else</dt>
+<dd>echo -en &#8221;    File list: nn&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}
+echo -en ${file_list} | tr &#8221; &#8221; &#8220;n&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}
+echo -en &#8220;n&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}</dd>
+</dl>
+<p>fi</p>
+<p>echo -en &#8216;n&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;nn&#8217; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}</p>
+</div></blockquote>
+<p>fi</p>
+<p>#Eventually removing tarred files and empty directories
+if [ &#8220;${DBRM_SWEEPER_REMOVE_SRC_FILES}&#8221; -eq &#8220;1&#8221; ]; then</p>
+<blockquote>
+<div>out=$(rm ${file_list})
+echo &#8220;${out}&#8221;
+_logfile_write &#8220;remove: ${out}&#8221;</div></blockquote>
+<p>fi
+if [ &#8220;${DBRM_SWEEPER_REMOVE_EMPTY_DIR}&#8221; -eq &#8220;1&#8221; ]; then</p>
+<blockquote>
+<div>out=$(find ${DBRM_SWEEPER_SRCDIR}/* -type d -empty -delete)
+echo &#8220;${out}&#8221;
+_logfile_write &#8220;remove empty dir: ${out}&#8221;</div></blockquote>
+<p>fi
+_logfile_write &#8220;sweeper_compress... END&#8221;</p>
+</div></blockquote>
+<p>}</p>
+<p>#****f* sweeper/sweeper_expunge
+# FUNCTION
+#  Compress expunge function.
+# SOURCE
+sweeper_expunge () {</p>
+<blockquote>
+<div><p>local out=&#8221;&#8221;
+local file_list=&#8221;&#8221;
+local file_count=&#8221;&#8220;</p>
+<p>shift 2
+_sweeper_expunge_args &#8220;$&#64;&#8221; || return 1</p>
+<dl class="docutils">
+<dt>_logfile_write &#8220;sweeper_compress... START</dt>
+<dd>source-dir:      ${DBRM_SWEEPER_SRCDIR}
+compressed-file: ${DBRM_SWEEPER_DESTDIR}/${tar_name}
+source-filter:   ${DBRM_SWEEPER_REGEX}
+age:             ${DBRM_SWEEPER_AGE}&#8221;</dd>
+</dl>
+<p>#Gatering all files matching
+file_list=&#8221;$(find ${DBRM_SWEEPER_SRCDIR} -type f -mtime ${DBRM_SWEEPER_AGE} -exec readlink -f {} ;)&#8221;</p>
+<p>#Deleting files and empty folders
+out=$(rm ${file_list})
+echo &#8220;${out}&#8221;
+_logfile_write &#8220;remove: ${out}&#8221;</p>
+<p>out=$(find ${DBRM_SWEEPER_SRCDIR} -type d -empty -delete)
+echo ${out}
+_logfile_write &#8220;remove empty dirs: ${out}&#8221;</p>
+<p>#Eventually generate log file with content of tar
+if [ ! -z &#8220;${DBRM_SWEEPER_ARCHIVE_PATH}&#8221; ]; then</p>
+<blockquote>
+<div><p>file_count=$(echo ${file_list} | wc -w )</p>
+<p>echo -en &#8220;&#8212;&#8212;-$(date +%F_%R) expunging &#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;nn&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}
+echo -en &#8221;    source-dir:      ${DBRM_SWEEPER_SRCDIR}n&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}
+echo -en &#8221;    compressed-file: ${DBRM_SWEEPER_DESTDIR}/${tar_name}n&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}
+echo -en &#8221;    source-filter:   ${DBRM_SWEEPER_REGEX}n&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}
+echo -en &#8221;    age:             ${DBRM_SWEEPER_AGE}n&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}
+echo -en &#8221;    eligible files:  ${file_count}n&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}</p>
+<dl class="docutils">
+<dt>if [ ${file_count} -eq &#8220;0&#8221; ]; then</dt>
+<dd>echo -en &#8220;n Nothing to expunge.n&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}</dd>
+<dt>else</dt>
+<dd>echo -en &#8221;    File list: nn&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}
+echo -en ${file_list} | tr &#8221; &#8221; &#8220;n&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}
+echo -en &#8220;n&#8221; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}</dd>
+</dl>
+<p>fi</p>
+<p>echo -en &#8216;n&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;nn&#8217; &gt;&gt; ${DBRM_SWEEPER_ARCHIVE_PATH}</p>
+</div></blockquote>
+<p>fi
+_logfile_write &#8220;sweeper_expunge... END&#8221;</p>
+</div></blockquote>
+<p>}</p>
+<p>#****f* sweeper/_sweeper_compress_args
+# FUNCTION
+#   Parse command line arguments of compress method.
+# SOURCE
+_sweeper_compress_args () {</p>
+<blockquote>
+<div><p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_sweeper_compress_args args: $&#64;)n&#8221;</p>
+<p>local short_options=&#8221;h&#8221;
+local long_options=&#8221;source-dir: dest-dir: context-name: age:&#8221;</p>
+<dl class="docutils">
+<dt>$(set &#8211; $(getopt -u -q -a -o &#8220;$short_options&#8221; -l &#8220;$long_options&#8221; &#8211; &#8220;$&#64;&#8221;)) || </dt>
+<dd>error_handled &#8220;Invalid parameters&#8221;</dd>
+<dt>if [ $# -lt 2 ] ; then</dt>
+<dd>_sweeper_compress_help
+return 1</dd>
+</dl>
+<p>fi</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_sweeper_compress_args: Found $# params)n&#8221;</p>
+<p>DBRM_SWEEPER_CONTEXT=&#8221;&#8221;
+DBRM_SWEEPER_SRCDIR=&#8221;&#8221;
+DBRM_SWEEPER_DESTDIR=&#8221;&#8221;
+DBRM_SWEEPER_ARCHIVE_PATH=&#8221;&#8221;
+DBRM_SWEEPER_AGE=&#8221;&#8221;
+DBRM_SWEEPER_REGEX=&#8221;.*&#8221;
+DBRM_SWEEPER_REMOVE_SRC_FILES=0;
+DBRM_SWEEPER_REMOVE_EMPTY_DIR=0;</p>
+<dl class="docutils">
+<dt>while [ $# -gt 0 ] ; do</dt>
+<dd><p class="first">case &#8220;$1&#8221; in</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>-h|&#8211;help)</dt>
+<dd>_sweeper_compress_help
+return 1
+;;</dd>
+<dt>&#8211;source-dir)</dt>
+<dd>DBRM_SWEEPER_SRCDIR=&#8221;$(readlink -f $2)&#8221;
+shift
+;;</dd>
+<dt>&#8211;dest-dir)</dt>
+<dd>DBRM_SWEEPER_DESTDIR=&#8221;$(readlink -f $2)&#8221;
+shift
+;;</dd>
+<dt>&#8211;age)</dt>
+<dd>DBRM_SWEEPER_AGE=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;context-name)</dt>
+<dd>DBRM_SWEEPER_CONTEXT=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;clean-src)</dt>
+<dd>DBRM_SWEEPER_REMOVE_SRC_FILES=1
+;;</dd>
+<dt>&#8211;clean-empty-dir)</dt>
+<dd>DBRM_SWEEPER_REMOVE_EMPTY_DIR=1
+;;</dd>
+<dt>&#8211;source-filter)</dt>
+<dd>DBRM_SWEEPER_REGEX=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;gen-archive)</dt>
+<dd>DBRM_SWEEPER_ARCHIVE_PATH=&#8221;$(readlink -f $2)&#8221;
+shift
+;;</dd>
+<dt><a href="#id1"><span class="problematic" id="id2">*</span></a>)</dt>
+<dd>error_generate &#8220;Invalid parameter $1.&#8221;
+;;</dd>
+</dl>
+</div></blockquote>
+<p class="last">esac
+shift</p>
+</dd>
+</dl>
+<p>done</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$DBRM_SWEEPER_SRCDIR&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Missing &#8211;source-dir option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$DBRM_SWEEPER_DESTDIR&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Missing &#8211;dest-dir option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$DBRM_SWEEPER_AGE&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Missing &#8211;age option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$DBRM_SWEEPER_CONTEXT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Missing &#8211;context-name option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sweeper/_sweeper_compress_args
+# FUNCTION
+#   Print help message of sweeper compress.
+# SOURCE
+_sweeper_compress_help () {</p>
+<blockquote>
+<div>echo -en &#8220;[&#8211;context-name name]    The context name for which the procedure is launched, usedn&#8221;
+echo -en &#8221;                         for naming output file.n&#8221;
+echo -en &#8220;[&#8211;source-dir dir]       Local Directory containing files to compress.n&#8221;
+echo -en &#8220;[&#8211;source-filter regex]  Define regoular expression to filter source files.n&#8221;
+echo -en &#8221;                         Default -source-dir/* .n&#8221;
+echo -en &#8220;[&#8211;dest-dir dir]         Target directory where .tar file will be created.n&#8221;
+echo -en &#8220;[&#8211;age days]             Procedure affect only files older than &lt;days&gt;.n&#8221;
+echo -en &#8220;[&#8211;gen-archive path]     Generate archive log to files contained in tar.n&#8221;
+echo -en &#8220;[&#8211;clean-src]            Remove compressed source files.n&#8221;
+echo -en &#8220;[&#8211;clean-empty-dir]      Remove empty dirs from source-dir.n&#8221;
+echo -en &#8220;n&#8221;
+echo -en &#8220;Examples: n&#8221;
+echo -en &#8220;$&gt; dbrm sweeper compress &#8211;context-name test_ctx &#8211;source-dir /playground n&#8221;
+echo -en &#8221;                         &#8211;dest-dir /tmp &#8211;age 10 &#8211;gen-archive /tmp/tmp.archive n&#8221;
+echo -en &#8221;                         &#8211;source-filter &#8216;.*log&#8217; &#8211;clean-src &#8211;clean-empty-dir n&#8221;
+echo -en &#8220;n&#8221;
+echo -en &#8220;$&gt; dbrm sweeper compress &#8211;context-name test_ctx &#8211;source-dir /playground  n&#8221;
+echo -en &#8221;                         &#8211;dest-dir /tmp &#8211;age 10 &#8211;gen-archive /tmp/tmp.archive n&#8221;
+echo -en &#8221;                         &#8211;clean-src &#8211;clean-empty-dir n&#8221;
+return 0</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sweeper/_sweeper_expunge_args
+# FUNCTION
+#   Parse command line arguments of expunge method.
+# SOURCE
+_sweeper_expunge_args () {</p>
+<blockquote>
+<div><p>[[ $DEBUG ]] &amp;&amp; echo -en &#8220;(_sweeper_expunge_args args: $&#64;)n&#8221;</p>
+<p>local short_options=&#8221;h&#8221;
+local long_options=&#8221;source-dir: dest-dir: contest: age:&#8221;</p>
+<dl class="docutils">
+<dt>$(set &#8211; $(getopt -u -q -a -o &#8220;$short_options&#8221; -l &#8220;$long_options&#8221; &#8211; &#8220;$&#64;&#8221;)) || </dt>
+<dd>error_handled &#8220;Invalid parameters&#8221;</dd>
+<dt>if [ $# -lt 2 ] ; then</dt>
+<dd>_sweeper_expunge_help
+return 1</dd>
+</dl>
+<p>fi</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;(_sweeper_expunge_args: Found $# params)n&#8221;</p>
+<p>DBRM_SWEEPER_CONTEXT=&#8221;&#8221;
+DBRM_SWEEPER_SRCDIR=&#8221;&#8221;
+DBRM_SWEEPER_DESTDIR=&#8221;&#8221;
+DBRM_SWEEPER_AGE=&#8221;&#8221;
+DBRM_SWEEPER_REGEX=&#8221;.*&#8221;</p>
+<dl class="docutils">
+<dt>while [ $# -gt 0 ] ; do</dt>
+<dd><p class="first">case &#8220;$1&#8221; in</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>-h|&#8211;help)</dt>
+<dd>_sweeper_expunge_help
+return 1
+;;</dd>
+<dt>&#8211;source-dir)</dt>
+<dd>DBRM_SWEEPER_SRCDIR=&#8221;$(readlink -f $2)&#8221;
+shift
+;;</dd>
+<dt>&#8211;dest-dir)</dt>
+<dd>DBRM_SWEEPER_DESTDIR=&#8221;$(readlink -f $2)&#8221;
+shift
+;;</dd>
+<dt>&#8211;age)</dt>
+<dd>DBRM_SWEEPER_AGE=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;context-name)</dt>
+<dd>DBRM_SWEEPER_CONTEXT=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;source-filter)</dt>
+<dd>DBRM_SWEEPER_REGEX=&#8221;$2&#8221;
+shift
+;;</dd>
+<dt>&#8211;gen-archive)</dt>
+<dd>DBRM_SWEEPER_ARCHIVE_PATH=&#8221;$(readlink -f $2)&#8221;
+shift
+;;</dd>
+<dt><a href="#id3"><span class="problematic" id="id4">*</span></a>)</dt>
+<dd>error_generate &#8220;Invalid parameter $1.&#8221;
+;;</dd>
+</dl>
+</div></blockquote>
+<p class="last">esac
+shift</p>
+</dd>
+</dl>
+<p>done</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$DBRM_SWEEPER_SRCDIR&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Missing &#8211;source-dir option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$DBRM_SWEEPER_DESTDIR&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Missing &#8211;dest-dir option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$DBRM_SWEEPER_AGE&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Missing &#8211;age option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$DBRM_SWEEPER_CONTEXT&#8221; ] ; then</dt>
+<dd>error_generate &#8220;Missing &#8211;context-name option.&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* sweeper/_sweeper_expunge_args
+# FUNCTION
+#   Print help message of sweeper expunge.
+# SOURCE
+_sweeper_expunge_help () {</p>
+<blockquote>
+<div><p>echo -en &#8220;[&#8211;context-name name]    The context name for which the procedure is launched, usedn&#8221;
+echo -en &#8221;                         for naming output file.n&#8221;
+echo -en &#8220;[&#8211;source-dir dir]       Local Directory containing files to expunge.n&#8221;
+echo -en &#8220;[&#8211;source-filter regex]  Define regoular expression to filter source filesn&#8221;
+echo -en &#8221;                         Default -source-dir/* .n&#8221;
+echo -en &#8220;[&#8211;age days]             Procedure affect only files older than &lt;days&gt;.n&#8221;
+echo -en &#8220;[&#8211;gen-archive path]     Generate archive log containing the list of deleted files.n&#8221;
+echo -en &#8220;n&#8221;
+echo -en &#8220;Examples: n&#8221;
+echo -en &#8220;$&gt; dbrm sweeper expunge  &#8211;context-name test_ctx &#8211;source-dir /playground n&#8221;
+echo -en &#8221;                         &#8211;dest-dir /tmp &#8211;age 10 &#8211;gen-archive /tmp/tmp.archive n&#8221;
+echo -en &#8221;                         &#8211;source-filter &#8216;.*log&#8217;n&#8221;
+echo -en &#8220;n&#8221;
+echo -en &#8220;$&gt; dbrm sweeper expunge  &#8211;context-name test_ctx &#8211;source-dir /playground  n&#8221;
+echo -en &#8221;                         &#8211;dest-dir /tmp &#8211;age 10 &#8211;gen-archive /tmp/tmp.archive n&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+#***</p>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

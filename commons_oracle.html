@@ -1,0 +1,2447 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Commons Oracle API &#8212; Database Release Manager</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/dbrm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/superhero/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Commons MariaDB API" href="commons_mariadb.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          Database Release Manager</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="dbm.html">Dbm Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logfile.html">Logfile Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common.html">Commons API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mysql.html">Mysql API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sqlplus.html">Sqlplus API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="psql.html">Psql API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commons_mariadb.html">Commons Mariadb API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Commons Oracle API</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Commons Oracle API</a><ul>
+<li><a class="reference internal" href="#api">API</a><ul>
+<li><a class="reference internal" href="#commons-oracle-check-tnsnames">commons_oracle_check_tnsnames</a></li>
+<li><a class="reference internal" href="#commons-oracle-check-sqlplus">commons_oracle_check_sqlplus</a></li>
+<li><a class="reference internal" href="#commons-oracle-check-vars">commons_oracle_check_vars</a></li>
+<li><a class="reference internal" href="#commons-oracle-check-connection">commons_oracle_check_connection</a></li>
+<li><a class="reference internal" href="#commons-oracle-shell">commons_oracle_shell</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-all-packages">commons_oracle_download_all_packages</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-create-export-packages">commons_oracle_download_create_export_packages</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-create-export-package">commons_oracle_download_create_export_package</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-package">commons_oracle_download_package</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-all-functions">commons_oracle_download_all_functions</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-create-export-functions">commons_oracle_download_create_export_functions</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-create-export-function">commons_oracle_download_create_export_function</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-function">commons_oracle_download_function</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-all-views">commons_oracle_download_all_views</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-create-export-views">commons_oracle_download_create_export_views</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-create-export-view">commons_oracle_download_create_export_view</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-view">commons_oracle_download_view</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-all-jobs">commons_oracle_download_all_jobs</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-create-export-jobs">commons_oracle_download_create_export_jobs</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-job">commons_oracle_download_job</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-create-export-job">commons_oracle_download_create_export_job</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-all-schedules">commons_oracle_download_all_schedules</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-create-export-schedules">commons_oracle_download_create_export_schedules</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-schedule">commons_oracle_download_schedule</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-create-export-schedule">commons_oracle_download_create_export_schedule</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-all-triggers">commons_oracle_download_all_triggers</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-create-export-triggers">commons_oracle_download_create_export_triggers</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-trigger">commons_oracle_download_trigger</a></li>
+<li><a class="reference internal" href="#commons-oracle-download-create-export-trigger">commons_oracle_download_create_export_trigger</a></li>
+<li><a class="reference internal" href="#commons-oracle-compile-file">commons_oracle_compile_file</a></li>
+<li><a class="reference internal" href="#commons-oracle-compile-all-packages">commons_oracle_compile_all_packages</a></li>
+<li><a class="reference internal" href="#commons-oracle-compile-all-triggers">commons_oracle_compile_all_triggers</a></li>
+<li><a class="reference internal" href="#commons-oracle-compile-all-functions">commons_oracle_compile_all_functions</a></li>
+<li><a class="reference internal" href="#commons-oracle-compile-all-views">commons_oracle_compile_all_views</a></li>
+<li><a class="reference internal" href="#commons-oracle-compile-all-jobs">commons_oracle_compile_all_jobs</a></li>
+<li><a class="reference internal" href="#commons-oracle-compile-all-schedules">commons_oracle_compile_all_schedules</a></li>
+<li><a class="reference internal" href="#commons-oracle-compile-all-from-dir">commons_oracle_compile_all_from_dir</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="commons_mariadb.html" title="Previous Chapter: Commons MariaDB API"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Commons Maria...</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row" >
+    <div class="col-md-12 content">
+      
+  <div class="section" id="commons-oracle-api">
+<span id="commons-oracle-api"></span><h1>Commons Oracle API<a class="headerlink" href="#commons-oracle-api" title="Permalink to this headline">¶</a></h1>
+<p>A list of functions used with <code class="docutils literal"><span class="pre">sqlplus</span></code> client tool to retrieve data from Oracle Database server.</p>
+<div class="section" id="api">
+<span id="api"></span><h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="commons-oracle-check-tnsnames">
+<span id="commons-oracle-check-tnsnames"></span><h3>commons_oracle_check_tnsnames<a class="headerlink" href="#commons-oracle-check-tnsnames" title="Permalink to this headline">¶</a></h3>
+<p>Check and set <code class="docutils literal"><span class="pre">TNS_ADMIN</span></code> variable.
+As first step try to see if exists file tnsnames.ora under <code class="docutils literal"><span class="pre">$packagedir</span></code>/etc/ directory, if exists use that directory and set TNS_ADMIN.
+If doesn&#8217;t exists then try to see if TNS_ADMIN variable is already set.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (packagedir) Project directory.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on sucess</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock75'))">(Show/Hide)</a><br /><div id="hiddencodeblock75" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_check_tnsnames <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">packagedir</span><span class="o">=</span><span class="nv">$1</span>
+
+  <span class="k">if</span> <span class="o">[</span> -f <span class="s2">&quot;</span><span class="nv">$packagedir</span><span class="s2">/etc/tnsnames.ora&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">export</span> <span class="nv">TNS_ADMIN</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$packagedir</span><span class="s2">/etc/&quot;</span>
+  <span class="k">else</span>
+    <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$TNS_ADMIN</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+      <span class="k">return</span> 1
+    <span class="k">else</span>
+      <span class="k">if</span> <span class="o">[</span> ! -e <span class="s2">&quot;</span><span class="nv">$TNS_ADMIN</span><span class="s2">/tnsnames.ora&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+        <span class="nb">echo</span> <span class="s2">&quot;Missing tnsnames.ora file.&quot;</span>
+        <span class="k">return</span> 1
+      <span class="k">fi</span>
+
+      <span class="c1"># Export TNS_ADMIN if is not global (probably it isn&#39;t needed)</span>
+      <span class="nb">export</span> TNS_ADMIN
+    <span class="k">fi</span>
+  <span class="k">fi</span>
+
+  <span class="k">return</span> 0
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-check-sqlplus">
+<span id="commons-oracle-check-sqlplus"></span><h3>commons_oracle_check_sqlplus<a class="headerlink" href="#commons-oracle-check-sqlplus" title="Permalink to this headline">¶</a></h3>
+<p>Check and set <code class="docutils literal"><span class="pre">SQLPLUS</span></code> variable with path of the
+<code class="docutils literal"><span class="pre">sqlplus</span></code> program.</p>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on sucess</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock76'))">(Show/Hide)</a><br /><div id="hiddencodeblock76" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_check_sqlplus <span class="o">()</span> <span class="o">{</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$sqlplus</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+
+    <span class="c1"># POST: sqlplus variable not set</span>
+    <span class="nv">tmp</span><span class="o">=</span><span class="sb">`</span>which sqlplus 2&gt; /dev/null<span class="sb">`</span>
+    <span class="nv">var</span><span class="o">=</span><span class="nv">$?</span>
+
+    <span class="k">if</span> <span class="o">[</span> <span class="nv">$var</span> -eq <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+
+      <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;Use sqlplus: </span><span class="nv">$tmp</span><span class="s2">\n&quot;</span>
+
+      <span class="nv">SQLPLUS</span><span class="o">=</span><span class="nv">$tmp</span>
+
+      <span class="nb">unset</span> tmp
+
+    <span class="k">else</span>
+
+      error_generate <span class="s2">&quot;sqlplus program not found&quot;</span>
+
+      <span class="k">return</span> 1
+
+    <span class="k">fi</span>
+
+  <span class="k">else</span>
+
+    <span class="c1"># POST: sqlplus variable set</span>
+
+    <span class="c1"># Check if file is correct</span>
+    <span class="k">if</span> <span class="o">[</span> -f <span class="s2">&quot;</span><span class="nv">$sqlplus</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+
+      <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;Use sqlplus: </span><span class="nv">$sqlplus</span><span class="s2">\n&quot;</span>
+
+      <span class="nv">SQLPLUS</span><span class="o">=</span><span class="nv">$sqlplus</span>
+
+    <span class="k">else</span>
+
+      error_generate <span class="s2">&quot;</span><span class="nv">$sqlplus</span><span class="s2"> program invalid&quot;</span>
+
+      <span class="k">return</span> 1
+
+    <span class="k">fi</span>
+
+  <span class="k">fi</span>
+
+  <span class="nb">export</span> SQLPLUS
+
+  <span class="k">return</span> 0
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-check-vars">
+<span id="commons-oracle-check-vars"></span><h3>commons_oracle_check_vars<a class="headerlink" href="#commons-oracle-check-vars" title="Permalink to this headline">¶</a></h3>
+<p>Check if are present mandatary oracle environment variables
+and check validity of TNS_ADMIN variable path.</p>
+<p><em>Variables</em>:</p>
+<ul class="simple">
+<li>ORACLE_USER</li>
+<li>ORACLE_PWD</li>
+<li>ORACLE_SID</li>
+<li>ORACLE_DIR</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on sucess</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error (exit with value 1)</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock77'))">(Show/Hide)</a><br /><div id="hiddencodeblock77" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_check_vars <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">commons_msg</span><span class="o">=</span><span class="s1">&#39;variable on configuration file, through arguments or on current profile.&#39;</span>
+
+  check_var <span class="s2">&quot;ORACLE_USER&quot;</span> <span class="o">||</span> error_handled <span class="s2">&quot;You must define ORACLE_USER </span><span class="nv">$commons_msg</span><span class="s2">&quot;</span>
+  check_var <span class="s2">&quot;ORACLE_PWD&quot;</span>  <span class="o">||</span> error_handled <span class="s2">&quot;You must define ORACLE_PWD </span><span class="nv">$commons_msg</span><span class="s2">&quot;</span>
+  check_var <span class="s2">&quot;ORACLE_SID&quot;</span>  <span class="o">||</span> error_handled <span class="s2">&quot;You must define ORACLE_SID </span><span class="nv">$commons_msg</span><span class="s2">&quot;</span>
+  check_var <span class="s2">&quot;ORACLE_DIR&quot;</span>  <span class="o">||</span> error_handled <span class="s2">&quot;You must define ORACLE_DIR </span><span class="nv">$commons_msg</span><span class="s2">&quot;</span>
+
+  commons_oracle_check_tnsnames <span class="nv">$LOCAL_DIR</span> <span class="o">||</span> error_handled <span class="s2">&quot;Invalid TNS_ADMIN variable&quot;</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-check-connection">
+<span id="commons-oracle-check-connection"></span><h3>commons_oracle_check_connection<a class="headerlink" href="#commons-oracle-check-connection" title="Permalink to this headline">¶</a></h3>
+<p>Check that SQLPLUS and sqlplus_auth variables are set
+and try to do a connection to database.</p>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: when connection is ok.</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock78'))">(Show/Hide)</a><br /><div id="hiddencodeblock78" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_check_connection <span class="o">()</span> <span class="o">{</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$SQLPLUS</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$sqlplus_auth</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="nv">$SQLPLUS</span> -S -l <span class="nv">$sqlplus_auth</span> &gt;/dev/null 2&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="s">&lt;&lt; EOF</span>
+<span class="s">exit</span>
+<span class="s">EOF</span>
+
+  <span class="nv">errorCode</span><span class="o">=</span><span class="nv">$?</span>
+  <span class="k">if</span> <span class="o">[</span> <span class="si">${</span><span class="nv">errorCode</span><span class="si">}</span> -ne <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="nb">unset</span> errorCode
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&quot;SQLPlus was connected successfully&quot;</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-shell">
+<span id="commons-oracle-shell"></span><h3>commons_oracle_shell<a class="headerlink" href="#commons-oracle-shell" title="Permalink to this headline">¶</a></h3>
+<p>Enter on command line shell of Oracle Database server.</p>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">n</span></code>: exit value of sqlplus program.</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock79'))">(Show/Hide)</a><br /><div id="hiddencodeblock79" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_shell <span class="o">()</span> <span class="o">{</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$SQLPLUS</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$sqlplus_auth</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="nv">$SQLPLUS</span> -L <span class="nv">$sqlplus_auth</span>
+
+  <span class="k">return</span> <span class="nv">$?</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-all-packages">
+<span id="commons-oracle-download-all-packages"></span><h3>commons_oracle_download_all_packages<a class="headerlink" href="#commons-oracle-download-all-packages" title="Permalink to this headline">¶</a></h3>
+<p>Download all packages to ORACLE_DIR/packages directory.</p>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock80'))">(Show/Hide)</a><br /><div id="hiddencodeblock80" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_packages<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">packagesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/packages
+  <span class="nb">local</span> <span class="nv">export_packages_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span>/export_packages.sql
+
+  _logfile_write <span class="s2">&quot;Start download of all packages.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_packages
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_packages_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of all packages.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-create-export-packages">
+<span id="commons-oracle-download-create-export-packages"></span><h3>commons_oracle_download_create_export_packages<a class="headerlink" href="#commons-oracle-download-create-export-packages" title="Permalink to this headline">¶</a></h3>
+<p>Create export_packages_file script used for download all packages.
+If script is present and creation date has less of 7200 seconds
+then this function do nothing.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>manage download packages script dynamically</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock81'))">(Show/Hide)</a><br /><div id="hiddencodeblock81" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_packages<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">packagesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/packages
+  <span class="nb">local</span> <span class="nv">export_packages_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span>/export_packages.sql
+  <span class="nb">local</span> <span class="nv">export_packages_file</span><span class="o">=</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span>/export_packages_gen.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_packages_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_packages_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_packages_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_packages_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_packages.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:PACKAGES_DIR:&#39;</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_packages_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_packages_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:PACKAGES_DIR:&#39;</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_packages_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_packages_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_packages_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_packages_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_packages_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-create-export-package">
+<span id="commons-oracle-download-create-export-package"></span><h3>commons_oracle_download_create_export_package<a class="headerlink" href="#commons-oracle-download-create-export-package" title="Permalink to this headline">¶</a></h3>
+<p>Create export_packages_file script used for download a particular
+package.
+Create export_packages_file script used for download all packages.
+If script is present and creation date has less of 7200 seconds
+then this function do nothing.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>manage download package script dynamically</li>
+</ul>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (packagename) Name of the package to insert on export script.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock82'))">(Show/Hide)</a><br /><div id="hiddencodeblock82" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_packages<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">packagesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/packages
+  <span class="nb">local</span> <span class="nv">export_packages_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span>/export_packages.sql
+  <span class="nb">local</span> <span class="nv">export_packages_file</span><span class="o">=</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span>/export_packages_gen.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_packages_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_packages_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_packages_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_packages_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_packages.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:PACKAGES_DIR:&#39;</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_packages_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_packages_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:PACKAGES_DIR:&#39;</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_packages_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_packages_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_packages_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_packages_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_packages_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+<span class="c1"># commons_oracle_commons_oracle_download_create_export_packages_end</span>
+
+<span class="c1"># commons_oracle_commons_oracle_download_create_export_package</span>
+commons_oracle_download_create_export_package<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">packagename</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+
+  <span class="nb">local</span> <span class="nv">packagesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/packages
+  <span class="nb">local</span> <span class="nv">export_package_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span>/export_package_<span class="si">${</span><span class="nv">packagename</span><span class="si">}</span>.sql
+  <span class="nb">local</span> <span class="nv">export_package_file</span><span class="o">=</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span>/export_packages_gen_<span class="si">${</span><span class="nv">packagename</span><span class="si">}</span>.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_package_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_package_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_package_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_package_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_package_${packagename}.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:PACKAGES_DIR:&#39;</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_package_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_package_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:PACKAGES_DIR:&#39;</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_package_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_package_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Replace PACKAGE_NAME string</span>
+    _logfile_write <span class="s2">&quot;sed -i -e &#39;s:PACKAGE_NAME:&#39;</span><span class="si">${</span><span class="nv">packagename</span><span class="si">}</span><span class="s2">&#39;:g&#39; \&quot;</span><span class="si">${</span><span class="nv">export_package_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -i -e <span class="s1">&#39;s:PACKAGE_NAME:&#39;</span><span class="si">${</span><span class="nv">packagename</span><span class="si">}</span><span class="s1">&#39;:g&#39;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_package_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_package_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_package_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_package_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-package">
+<span id="commons-oracle-download-package"></span><h3>commons_oracle_download_package<a class="headerlink" href="#commons-oracle-download-package" title="Permalink to this headline">¶</a></h3>
+<p>Download a particular package to ORACLE_DIR/packages directory.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (packagename) Name of the package to download.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock83'))">(Show/Hide)</a><br /><div id="hiddencodeblock83" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_package<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">packagename</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+  <span class="nb">local</span> <span class="nv">packagesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/packages
+  <span class="nb">local</span> <span class="nv">export_package_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span>/export_package_<span class="si">${</span><span class="nv">packagename</span><span class="si">}</span>.sql
+
+  _logfile_write <span class="s2">&quot;Start download of the package </span><span class="si">${</span><span class="nv">packagename</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_package <span class="nv">$packagename</span>
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_package_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of the package </span><span class="si">${</span><span class="nv">packagename</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-all-functions">
+<span id="commons-oracle-download-all-functions"></span><h3>commons_oracle_download_all_functions<a class="headerlink" href="#commons-oracle-download-all-functions" title="Permalink to this headline">¶</a></h3>
+<p>Download all functions from schema to ORACLE_DIR/functions directory.</p>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock84'))">(Show/Hide)</a><br /><div id="hiddencodeblock84" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_functions<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">functionsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/functions
+  <span class="nb">local</span> <span class="nv">export_functions_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span>/export_function.sql
+
+  _logfile_write <span class="s2">&quot;Start download of all functions.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_functions
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_functions_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of all functions.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-create-export-functions">
+<span id="commons-oracle-download-create-export-functions"></span><h3>commons_oracle_download_create_export_functions<a class="headerlink" href="#commons-oracle-download-create-export-functions" title="Permalink to this headline">¶</a></h3>
+<p>Create export_function_file script used for download all functions.
+If script is present and creation date has less of 7200 seconds
+then this function do nothing.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>manage download functions script dynamically</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock85'))">(Show/Hide)</a><br /><div id="hiddencodeblock85" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_functions<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">functionsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/functions
+  <span class="nb">local</span> <span class="nv">export_functions_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span>/export_function.sql
+  <span class="nb">local</span> <span class="nv">export_functions_file</span><span class="o">=</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span>/export_function_gen.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_functions_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_functions_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_functions_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_functions_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_function.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:FUNCTIONS_DIR:&#39;</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_functions_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_functions_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:FUNCTIONS_DIR:&#39;</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_functions_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_functions_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_functions_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_functions_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_functions_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-create-export-function">
+<span id="commons-oracle-download-create-export-function"></span><h3>commons_oracle_download_create_export_function<a class="headerlink" href="#commons-oracle-download-create-export-function" title="Permalink to this headline">¶</a></h3>
+<p>Create export_function_file script used for download a particular
+function.
+If script is present and creation date has less of 7200 seconds
+then this function do nothing.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>manage download function script dynamically</li>
+</ul>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (functionname) Name of the function to insert on export script.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock86'))">(Show/Hide)</a><br /><div id="hiddencodeblock86" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_functions<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">functionsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/functions
+  <span class="nb">local</span> <span class="nv">export_functions_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span>/export_function.sql
+  <span class="nb">local</span> <span class="nv">export_functions_file</span><span class="o">=</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span>/export_function_gen.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_functions_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_functions_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_functions_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_functions_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_function.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:FUNCTIONS_DIR:&#39;</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_functions_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_functions_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:FUNCTIONS_DIR:&#39;</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_functions_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_functions_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_functions_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_functions_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_functions_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+<span class="c1"># commons_oracle_commons_oracle_download_create_export_functions_end</span>
+
+<span class="c1"># commons_oracle_commons_oracle_download_function</span>
+commons_oracle_download_function<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">functionname</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+  <span class="nb">local</span> <span class="nv">functionsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/functions
+  <span class="nb">local</span> <span class="nv">export_function_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span>/export_function_<span class="si">${</span><span class="nv">functionname</span><span class="si">}</span>.sql
+
+  _logfile_write <span class="s2">&quot;Start download of the function </span><span class="si">${</span><span class="nv">functionname</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_function <span class="nv">$functionname</span>
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_function_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of the function </span><span class="si">${</span><span class="nv">functionname</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+<span class="c1"># commons_oracle_commons_oracle_download_function_end</span>
+
+<span class="c1"># commons_oracle_commons_oracle_download_create_export_function</span>
+commons_oracle_download_create_export_function<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">functionname</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+
+  <span class="nb">local</span> <span class="nv">functionsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/functions
+  <span class="nb">local</span> <span class="nv">export_function_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span>/export_function_<span class="si">${</span><span class="nv">functionname</span><span class="si">}</span>.sql
+  <span class="nb">local</span> <span class="nv">export_function_file</span><span class="o">=</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span>/export_functions_gen_<span class="si">${</span><span class="nv">functionname</span><span class="si">}</span>.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_function_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_function_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_function_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_function_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_function_${functionname}.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:FUNCTIONS_DIR:&#39;</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_function_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_function_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:FUNCTIONS_DIR:&#39;</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_function_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_function_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Replace FUNCTION_NAME string</span>
+    _logfile_write <span class="s2">&quot;sed -i -e &#39;s:FUNCTION_NAME:&#39;</span><span class="si">${</span><span class="nv">functionname</span><span class="si">}</span><span class="s2">&#39;:g&#39; \&quot;</span><span class="si">${</span><span class="nv">export_function_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -i -e <span class="s1">&#39;s:FUNCTION_NAME:&#39;</span><span class="si">${</span><span class="nv">functionname</span><span class="si">}</span><span class="s1">&#39;:g&#39;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_function_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_function_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_function_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_function_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-function">
+<span id="commons-oracle-download-function"></span><h3>commons_oracle_download_function<a class="headerlink" href="#commons-oracle-download-function" title="Permalink to this headline">¶</a></h3>
+<p>Download a particular function to ORACLE_DIR/functions directory.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (functionname) Name of the function to download.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock87'))">(Show/Hide)</a><br /><div id="hiddencodeblock87" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_function<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">functionname</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+  <span class="nb">local</span> <span class="nv">functionsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/functions
+  <span class="nb">local</span> <span class="nv">export_function_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span>/export_function_<span class="si">${</span><span class="nv">functionname</span><span class="si">}</span>.sql
+
+  _logfile_write <span class="s2">&quot;Start download of the function </span><span class="si">${</span><span class="nv">functionname</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_function <span class="nv">$functionname</span>
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_function_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of the function </span><span class="si">${</span><span class="nv">functionname</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-all-views">
+<span id="commons-oracle-download-all-views"></span><h3>commons_oracle_download_all_views<a class="headerlink" href="#commons-oracle-download-all-views" title="Permalink to this headline">¶</a></h3>
+<p>Download all functions from schema to ORACLE_DIR/views directory.</p>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock88'))">(Show/Hide)</a><br /><div id="hiddencodeblock88" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_views<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">viewsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/views
+  <span class="nb">local</span> <span class="nv">export_views_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span>/export_view.sql
+
+  _logfile_write <span class="s2">&quot;Start download of all views.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_views
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_views_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of all views.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-create-export-views">
+<span id="commons-oracle-download-create-export-views"></span><h3>commons_oracle_download_create_export_views<a class="headerlink" href="#commons-oracle-download-create-export-views" title="Permalink to this headline">¶</a></h3>
+<p>Create export_views_file script used for download all views.
+If script is present and creation date has less of 7200 seconds
+then this function do nothing.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>manage download views script dynamically</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock89'))">(Show/Hide)</a><br /><div id="hiddencodeblock89" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_views<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">viewsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/views
+  <span class="nb">local</span> <span class="nv">export_views_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span>/export_view.sql
+  <span class="nb">local</span> <span class="nv">export_views_file</span><span class="o">=</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span>/export_view_gen.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_views_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_views_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_views_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_views_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_view.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:VIEWS_DIR:&#39;</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_views_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_views_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:VIEWS_DIR:&#39;</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_views_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_views_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_views_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_views_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_views_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-create-export-view">
+<span id="commons-oracle-download-create-export-view"></span><h3>commons_oracle_download_create_export_view<a class="headerlink" href="#commons-oracle-download-create-export-view" title="Permalink to this headline">¶</a></h3>
+<p>Create export_view_file script used for download a particular
+view.
+If script is present and creation date has less of 7200 seconds
+then this function do nothing.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>manage download view script dynamically</li>
+</ul>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (viewname) Name of the view to insert on export script.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock90'))">(Show/Hide)</a><br /><div id="hiddencodeblock90" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_views<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">viewsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/views
+  <span class="nb">local</span> <span class="nv">export_views_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span>/export_view.sql
+  <span class="nb">local</span> <span class="nv">export_views_file</span><span class="o">=</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span>/export_view_gen.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_views_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_views_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_views_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_views_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_view.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:VIEWS_DIR:&#39;</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_views_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_views_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:VIEWS_DIR:&#39;</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_views_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_views_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_views_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_views_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_views_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+<span class="c1"># commons_oracle_commons_oracle_download_create_export_views_end</span>
+
+<span class="c1"># commons_oracle_commons_oracle_download_view</span>
+commons_oracle_download_view<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">viewname</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+  <span class="nb">local</span> <span class="nv">viewsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/views
+  <span class="nb">local</span> <span class="nv">export_view_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span>/export_view_<span class="si">${</span><span class="nv">viewname</span><span class="si">}</span>.sql
+
+  _logfile_write <span class="s2">&quot;Start download of the view </span><span class="si">${</span><span class="nv">viewname</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_view <span class="nv">$viewname</span>
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_view_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of the view </span><span class="si">${</span><span class="nv">viewname</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+<span class="c1"># commons_oracle_commons_oracle_download_view_end</span>
+
+<span class="c1"># commons_oracle_commons_oracle_download_create_export_view</span>
+commons_oracle_download_create_export_view<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">viewname</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+
+  <span class="nb">local</span> <span class="nv">viewsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/views
+  <span class="nb">local</span> <span class="nv">export_view_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span>/export_view_<span class="si">${</span><span class="nv">viewname</span><span class="si">}</span>.sql
+  <span class="nb">local</span> <span class="nv">export_view_file</span><span class="o">=</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span>/export_views_gen_<span class="si">${</span><span class="nv">viewname</span><span class="si">}</span>.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_view_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_view_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_view_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_view_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_view_${viewname}.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:VIEWS_DIR:&#39;</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_view_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_view_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:VIEWS_DIR:&#39;</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_view_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_view_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Replace VIEW_NAME string</span>
+    _logfile_write <span class="s2">&quot;sed -i -e &#39;s:VIEW_NAME:&#39;</span><span class="si">${</span><span class="nv">viewname</span><span class="si">}</span><span class="s2">&#39;:g&#39; \&quot;</span><span class="si">${</span><span class="nv">export_view_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -i -e <span class="s1">&#39;s:VIEW_NAME:&#39;</span><span class="si">${</span><span class="nv">viewname</span><span class="si">}</span><span class="s1">&#39;:g&#39;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_view_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_view_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_view_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_view_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-view">
+<span id="commons-oracle-download-view"></span><h3>commons_oracle_download_view<a class="headerlink" href="#commons-oracle-download-view" title="Permalink to this headline">¶</a></h3>
+<p>Download a particular view to ORACLE_DIR/views directory.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (viewname) Name of the view to download.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock91'))">(Show/Hide)</a><br /><div id="hiddencodeblock91" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_view<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">viewname</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+  <span class="nb">local</span> <span class="nv">viewsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/views
+  <span class="nb">local</span> <span class="nv">export_view_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span>/export_view_<span class="si">${</span><span class="nv">viewname</span><span class="si">}</span>.sql
+
+  _logfile_write <span class="s2">&quot;Start download of the view </span><span class="si">${</span><span class="nv">viewname</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_view <span class="nv">$viewname</span>
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_view_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of the view </span><span class="si">${</span><span class="nv">viewname</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-all-jobs">
+<span id="commons-oracle-download-all-jobs"></span><h3>commons_oracle_download_all_jobs<a class="headerlink" href="#commons-oracle-download-all-jobs" title="Permalink to this headline">¶</a></h3>
+<p>Download all jobs from schema to ORACLE_DIR/jobs directory.</p>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock92'))">(Show/Hide)</a><br /><div id="hiddencodeblock92" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_jobs<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">jobsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/jobs
+  <span class="nb">local</span> <span class="nv">export_jobs_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span>/export_job.sql
+
+  _logfile_write <span class="s2">&quot;Start download of all jobs.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_jobs
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_jobs_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of all jobs.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-create-export-jobs">
+<span id="commons-oracle-download-create-export-jobs"></span><h3>commons_oracle_download_create_export_jobs<a class="headerlink" href="#commons-oracle-download-create-export-jobs" title="Permalink to this headline">¶</a></h3>
+<p>Create export_jobs_file script used for download all jobs.
+If script is present and creation date has less of 7200 seconds
+then this function do nothing.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>manage download jobs script dynamically</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock93'))">(Show/Hide)</a><br /><div id="hiddencodeblock93" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_jobs<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">jobsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/jobs
+  <span class="nb">local</span> <span class="nv">export_jobs_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span>/export_job.sql
+  <span class="nb">local</span> <span class="nv">export_jobs_file</span><span class="o">=</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span>/export_job_gen.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_jobs_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_jobs_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_jobs_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_jobs_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_job.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:JOBS_DIR:&#39;</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_jobs_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_jobs_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:JOBS_DIR:&#39;</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_jobs_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_jobs_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_jobs_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_jobs_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_jobs_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-job">
+<span id="commons-oracle-download-job"></span><h3>commons_oracle_download_job<a class="headerlink" href="#commons-oracle-download-job" title="Permalink to this headline">¶</a></h3>
+<p>Download a particular job to ORACLE_DIR/jobs directory.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (jobname) Name of the job to download.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock94'))">(Show/Hide)</a><br /><div id="hiddencodeblock94" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_job<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">jobname</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+  <span class="nb">local</span> <span class="nv">jobsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/jobs
+  <span class="nb">local</span> <span class="nv">export_job_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span>/export_job_<span class="si">${</span><span class="nv">jobname</span><span class="si">}</span>.sql
+
+  _logfile_write <span class="s2">&quot;Start download of the job </span><span class="si">${</span><span class="nv">jobname</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_job <span class="nv">$jobname</span>
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_job_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of the job </span><span class="si">${</span><span class="nv">jobname</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-create-export-job">
+<span id="commons-oracle-download-create-export-job"></span><h3>commons_oracle_download_create_export_job<a class="headerlink" href="#commons-oracle-download-create-export-job" title="Permalink to this headline">¶</a></h3>
+<p>Create export_job_file script used for download a particular
+job.
+If script is present and creation date has less of 7200 seconds
+then this function do nothing.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>manage download job script dynamically</li>
+</ul>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (jobname) Name of the job to insert on export script.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock95'))">(Show/Hide)</a><br /><div id="hiddencodeblock95" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_jobs<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">jobsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/jobs
+  <span class="nb">local</span> <span class="nv">export_jobs_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span>/export_job.sql
+  <span class="nb">local</span> <span class="nv">export_jobs_file</span><span class="o">=</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span>/export_job_gen.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_jobs_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_jobs_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_jobs_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_jobs_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_job.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:JOBS_DIR:&#39;</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_jobs_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_jobs_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:JOBS_DIR:&#39;</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_jobs_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_jobs_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_jobs_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_jobs_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_jobs_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+<span class="c1"># commons_oracle_commons_oracle_download_create_export_jobs_end</span>
+
+<span class="c1"># commons_oracle_commons_oracle_download_job</span>
+commons_oracle_download_job<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">jobname</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+  <span class="nb">local</span> <span class="nv">jobsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/jobs
+  <span class="nb">local</span> <span class="nv">export_job_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span>/export_job_<span class="si">${</span><span class="nv">jobname</span><span class="si">}</span>.sql
+
+  _logfile_write <span class="s2">&quot;Start download of the job </span><span class="si">${</span><span class="nv">jobname</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_job <span class="nv">$jobname</span>
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_job_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of the job </span><span class="si">${</span><span class="nv">jobname</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+<span class="c1"># commons_oracle_commons_oracle_download_job_end</span>
+
+<span class="c1"># commons_oracle_commons_oracle_download_create_export_job</span>
+commons_oracle_download_create_export_job<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">jobname</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+
+  <span class="nb">local</span> <span class="nv">jobsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/jobs
+  <span class="nb">local</span> <span class="nv">export_job_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span>/export_job_<span class="si">${</span><span class="nv">jobname</span><span class="si">}</span>.sql
+  <span class="nb">local</span> <span class="nv">export_job_file</span><span class="o">=</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span>/export_jobs_gen_<span class="si">${</span><span class="nv">jobname</span><span class="si">}</span>.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_job_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_job_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_job_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_job_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_job_${jobname}.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:JOBS_DIR:&#39;</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_job_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_job_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:JOBS_DIR:&#39;</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_job_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_job_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Replace JOB_NAME string</span>
+    _logfile_write <span class="s2">&quot;sed -i -e &#39;s:JOB_NAME:&#39;</span><span class="si">${</span><span class="nv">jobname</span><span class="si">}</span><span class="s2">&#39;:g&#39; \&quot;</span><span class="si">${</span><span class="nv">export_job_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -i -e <span class="s1">&#39;s:JOB_NAME:&#39;</span><span class="si">${</span><span class="nv">jobname</span><span class="si">}</span><span class="s1">&#39;:g&#39;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_job_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_job_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_job_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_job_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-all-schedules">
+<span id="commons-oracle-download-all-schedules"></span><h3>commons_oracle_download_all_schedules<a class="headerlink" href="#commons-oracle-download-all-schedules" title="Permalink to this headline">¶</a></h3>
+<p>Download all schedulers from schema to ORACLE_DIR/schedules directory.</p>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock96'))">(Show/Hide)</a><br /><div id="hiddencodeblock96" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_schedules<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">schedulesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/schedules
+  <span class="nb">local</span> <span class="nv">export_schedules_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span>/export_schedule.sql
+
+  _logfile_write <span class="s2">&quot;Start download of all schedules.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_schedules
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_schedules_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of all schedules.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-create-export-schedules">
+<span id="commons-oracle-download-create-export-schedules"></span><h3>commons_oracle_download_create_export_schedules<a class="headerlink" href="#commons-oracle-download-create-export-schedules" title="Permalink to this headline">¶</a></h3>
+<p>Create export_schedules_file script used for download all schedules.
+If script is present and creation date has less of 7200 seconds
+then this function do nothing.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>manage download schedules script dynamically</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock97'))">(Show/Hide)</a><br /><div id="hiddencodeblock97" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_schedules<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">schedulesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/schedules
+  <span class="nb">local</span> <span class="nv">export_schedules_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span>/export_schedule.sql
+  <span class="nb">local</span> <span class="nv">export_schedules_file</span><span class="o">=</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span>/export_schedule_gen.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_schedules_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_schedules_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_schedules_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_schedules_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_schedule.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:SCHEDULES_DIR:&#39;</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_schedules_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_schedules_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:SCHEDULES_DIR:&#39;</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_schedules_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_schedules_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_schedules_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_schedules_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_schedules_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-schedule">
+<span id="commons-oracle-download-schedule"></span><h3>commons_oracle_download_schedule<a class="headerlink" href="#commons-oracle-download-schedule" title="Permalink to this headline">¶</a></h3>
+<p>Download a particular schedule to ORACLE_DIR/schedules directory.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (schedulename) Name of the schedule to download.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock98'))">(Show/Hide)</a><br /><div id="hiddencodeblock98" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_schedule<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">schedulename</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+  <span class="nb">local</span> <span class="nv">schedulesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/schedules
+  <span class="nb">local</span> <span class="nv">export_schedule_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span>/export_schedule_<span class="si">${</span><span class="nv">schedulename</span><span class="si">}</span>.sql
+
+  _logfile_write <span class="s2">&quot;Start download of the schedule </span><span class="si">${</span><span class="nv">schedulename</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_schedule <span class="nv">$schedulename</span>
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_schedule_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of the schedule </span><span class="si">${</span><span class="nv">schedulename</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-create-export-schedule">
+<span id="commons-oracle-download-create-export-schedule"></span><h3>commons_oracle_download_create_export_schedule<a class="headerlink" href="#commons-oracle-download-create-export-schedule" title="Permalink to this headline">¶</a></h3>
+<p>Create export_schedule_file script used for download a particular
+schedule.
+If script is present and creation date has less of 7200 seconds
+then this function do nothing.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>manage download schedule script dynamically</li>
+</ul>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (schedulename) Name of the schedule to insert on export script.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock99'))">(Show/Hide)</a><br /><div id="hiddencodeblock99" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_schedules<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">schedulesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/schedules
+  <span class="nb">local</span> <span class="nv">export_schedules_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span>/export_schedule.sql
+  <span class="nb">local</span> <span class="nv">export_schedules_file</span><span class="o">=</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span>/export_schedule_gen.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_schedules_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_schedules_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_schedules_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_schedules_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_schedule.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:SCHEDULES_DIR:&#39;</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_schedules_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_schedules_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:SCHEDULES_DIR:&#39;</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_schedules_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_schedules_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_schedules_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_schedules_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_schedules_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+<span class="c1"># commons_oracle_commons_oracle_download_create_export_schedules_end</span>
+
+<span class="c1"># commons_oracle_commons_oracle_download_schedule</span>
+commons_oracle_download_schedule<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">schedulename</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+  <span class="nb">local</span> <span class="nv">schedulesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/schedules
+  <span class="nb">local</span> <span class="nv">export_schedule_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span>/export_schedule_<span class="si">${</span><span class="nv">schedulename</span><span class="si">}</span>.sql
+
+  _logfile_write <span class="s2">&quot;Start download of the schedule </span><span class="si">${</span><span class="nv">schedulename</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_schedule <span class="nv">$schedulename</span>
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_schedule_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of the schedule </span><span class="si">${</span><span class="nv">schedulename</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+<span class="c1"># commons_oracle_commons_oracle_download_schedule_end</span>
+
+<span class="c1"># commons_oracle_commons_oracle_download_create_export_schedule</span>
+commons_oracle_download_create_export_schedule<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">schedulename</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+
+  <span class="nb">local</span> <span class="nv">schedulesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/schedules
+  <span class="nb">local</span> <span class="nv">export_schedule_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span>/export_schedule_<span class="si">${</span><span class="nv">schedulename</span><span class="si">}</span>.sql
+  <span class="nb">local</span> <span class="nv">export_schedule_file</span><span class="o">=</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span>/export_schedules_gen_<span class="si">${</span><span class="nv">schedulename</span><span class="si">}</span>.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_schedule_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_schedule_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_schedule_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_schedule_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_schedule_${schedulename}.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:SCHEDULES_DIR:&#39;</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_schedule_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_schedule_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:SCHEDULES_DIR:&#39;</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_schedule_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_schedule_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Replace SCHEDULE_NAME string</span>
+    _logfile_write <span class="s2">&quot;sed -i -e &#39;s:SCHEDULE_NAME:&#39;</span><span class="si">${</span><span class="nv">schedulename</span><span class="si">}</span><span class="s2">&#39;:g&#39; \&quot;</span><span class="si">${</span><span class="nv">export_schedule_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -i -e <span class="s1">&#39;s:SCHEDULE_NAME:&#39;</span><span class="si">${</span><span class="nv">schedulename</span><span class="si">}</span><span class="s1">&#39;:g&#39;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_schedule_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_schedule_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_schedule_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_schedule_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-all-triggers">
+<span id="commons-oracle-download-all-triggers"></span><h3>commons_oracle_download_all_triggers<a class="headerlink" href="#commons-oracle-download-all-triggers" title="Permalink to this headline">¶</a></h3>
+<p>Download all triggers from schema to ORACLE_DIR/triggers directory.</p>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock100'))">(Show/Hide)</a><br /><div id="hiddencodeblock100" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_triggers<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">triggersdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/triggers
+  <span class="nb">local</span> <span class="nv">export_triggers_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span>/export_trigger.sql
+
+  _logfile_write <span class="s2">&quot;Start download of all triggers.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_triggers
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_triggers_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of all triggers.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-create-export-triggers">
+<span id="commons-oracle-download-create-export-triggers"></span><h3>commons_oracle_download_create_export_triggers<a class="headerlink" href="#commons-oracle-download-create-export-triggers" title="Permalink to this headline">¶</a></h3>
+<p>Create export_trigger_file script used for download all triggers.
+If script is present and creation date has less of 7200 seconds
+then this function do nothing.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>manage download schedules script dynamically</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock101'))">(Show/Hide)</a><br /><div id="hiddencodeblock101" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_triggers<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">triggersdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/triggers
+  <span class="nb">local</span> <span class="nv">export_triggers_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span>/export_trigger.sql
+  <span class="nb">local</span> <span class="nv">export_triggers_file</span><span class="o">=</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span>/export_trigger_gen.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_triggers_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_triggers_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_triggers_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_triggers_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_trigger.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:TRIGGERS_DIR:&#39;</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_triggers_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_triggers_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:TRIGGERS_DIR:&#39;</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_triggers_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_triggers_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_triggers_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_triggers_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_triggers_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-trigger">
+<span id="commons-oracle-download-trigger"></span><h3>commons_oracle_download_trigger<a class="headerlink" href="#commons-oracle-download-trigger" title="Permalink to this headline">¶</a></h3>
+<p>Download a particular trigger to ORACLE_DIR/triggers directory.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (triggername) Name of the trigger to download.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock102'))">(Show/Hide)</a><br /><div id="hiddencodeblock102" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_trigger<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">triggername</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+  <span class="nb">local</span> <span class="nv">triggersdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/triggers
+  <span class="nb">local</span> <span class="nv">export_trigger_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span>/export_trigger_<span class="si">${</span><span class="nv">triggername</span><span class="si">}</span>.sql
+
+  _logfile_write <span class="s2">&quot;Start download of the trigger </span><span class="si">${</span><span class="nv">triggername</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_trigger <span class="nv">$triggername</span>
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_trigger_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of the trigger </span><span class="si">${</span><span class="nv">triggername</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-download-create-export-trigger">
+<span id="commons-oracle-download-create-export-trigger"></span><h3>commons_oracle_download_create_export_trigger<a class="headerlink" href="#commons-oracle-download-create-export-trigger" title="Permalink to this headline">¶</a></h3>
+<p>Create export_trigger_file script used for download a particular
+trigger.
+If script is present and creation date has less of 7200 seconds
+then this function do nothing.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>manage download trigger script dynamically</li>
+</ul>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (triggername) Name of the trigger to insert on export script.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock103'))">(Show/Hide)</a><br /><div id="hiddencodeblock103" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_triggers<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">triggersdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/triggers
+  <span class="nb">local</span> <span class="nv">export_triggers_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span>/export_trigger.sql
+  <span class="nb">local</span> <span class="nv">export_triggers_file</span><span class="o">=</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span>/export_trigger_gen.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_triggers_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_triggers_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_triggers_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_triggers_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_trigger.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:TRIGGERS_DIR:&#39;</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_triggers_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_triggers_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:TRIGGERS_DIR:&#39;</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_triggers_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_triggers_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_triggers_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_triggers_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_triggers_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+<span class="c1"># commons_oracle_commons_oracle_download_create_export_triggers_end</span>
+
+<span class="c1"># commons_oracle_commons_oracle_download_trigger</span>
+commons_oracle_download_trigger<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">triggername</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+  <span class="nb">local</span> <span class="nv">triggersdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/triggers
+  <span class="nb">local</span> <span class="nv">export_trigger_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span>/export_trigger_<span class="si">${</span><span class="nv">triggername</span><span class="si">}</span>.sql
+
+  _logfile_write <span class="s2">&quot;Start download of the trigger </span><span class="si">${</span><span class="nv">triggername</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  commons_oracle_download_create_export_trigger <span class="nv">$triggername</span>
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_trigger_sql</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;End download of the trigger </span><span class="si">${</span><span class="nv">triggername</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+<span class="c1"># commons_oracle_commons_oracle_download_trigger_end</span>
+
+<span class="c1"># commons_oracle_commons_oracle_download_create_export_trigger</span>
+commons_oracle_download_create_export_trigger<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">triggername</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
+
+  <span class="nb">local</span> <span class="nv">triggersdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/triggers
+  <span class="nb">local</span> <span class="nv">export_trigger_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span>/export_trigger_<span class="si">${</span><span class="nv">triggername</span><span class="si">}</span>.sql
+  <span class="nb">local</span> <span class="nv">export_trigger_file</span><span class="o">=</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span>/export_triggers_gen_<span class="si">${</span><span class="nv">triggername</span><span class="si">}</span>.sql
+
+  <span class="nb">local</span> <span class="nv">expire_time_sec</span><span class="o">=</span><span class="s2">&quot;7200&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="k">if</span> <span class="o">[[</span> ! -e <span class="si">${</span><span class="nv">export_trigger_file</span><span class="si">}</span> <span class="o">||</span> ! -e <span class="si">${</span><span class="nv">export_trigger_sql</span><span class="si">}</span> <span class="o">||</span> <span class="s2">&quot;</span><span class="k">$((</span> <span class="k">$(</span>date +<span class="s2">&quot;%s&quot;</span><span class="k">)</span> <span class="o">-</span> <span class="k">$(</span>stat -c <span class="s2">&quot;%Y&quot;</span> <span class="nv">$export_trigger_file</span><span class="k">)</span> <span class="k">))</span><span class="s2">&quot;</span> -gt <span class="si">${</span><span class="nv">expire_time_sec</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    _logfile_write <span class="s2">&quot;Start creation of the </span><span class="si">${</span><span class="nv">export_trigger_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    <span class="c1"># Create export_trigger_${triggername}.sql file</span>
+    _logfile_write <span class="s2">&quot;sed -e &#39;s:TRIGGERS_DIR:&#39;</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span><span class="s2">/&#39;:g&#39; \</span>
+<span class="s2">      \&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_trigger_gen.sql.in\&quot; &gt; \&quot;</span><span class="si">${</span><span class="nv">export_trigger_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -e <span class="s1">&#39;s:TRIGGERS_DIR:&#39;</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span><span class="s1">&#39;/:g&#39;</span> <span class="s2">&quot;</span><span class="nv">$_oracle_scripts</span><span class="s2">/export_trigger_gen.sql.in&quot;</span> &gt; <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_trigger_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Replace TRIGGER_NAME string</span>
+    _logfile_write <span class="s2">&quot;sed -i -e &#39;s:TRIGGER_NAME:&#39;</span><span class="si">${</span><span class="nv">triggername</span><span class="si">}</span><span class="s2">&#39;:g&#39; \&quot;</span><span class="si">${</span><span class="nv">export_trigger_file</span><span class="si">}</span><span class="s2">\&quot;&quot;</span>
+    sed -i -e <span class="s1">&#39;s:TRIGGER_NAME:&#39;</span><span class="si">${</span><span class="nv">triggername</span><span class="si">}</span><span class="s1">&#39;:g&#39;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_trigger_file</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+    sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_trigger_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+    _logfile_write <span class="s2">&quot;End creation of the </span><span class="si">${</span><span class="nv">export_trigger_sql</span><span class="si">}</span><span class="s2"> file.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">else</span>
+
+    _logfile_write <span class="s2">&quot;</span><span class="si">${</span><span class="nv">export_trigger_file</span><span class="si">}</span><span class="s2"> is updated.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-compile-file">
+<span id="commons-oracle-compile-file"></span><h3>commons_oracle_compile_file<a class="headerlink" href="#commons-oracle-compile-file" title="Permalink to this headline">¶</a></h3>
+<p>Compile a file to current oracle schema.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (file) File to compile.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (msg) message to write on logfile before and after compilation.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock104'))">(Show/Hide)</a><br /><div id="hiddencodeblock104" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_file<span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="nv">$1</span>
+  <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="nv">$2</span>
+  <span class="nb">local</span> <span class="nv">f_base</span><span class="o">=</span><span class="k">$(</span>basename <span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span><span class="k">)</span>
+
+  <span class="k">if</span> <span class="o">[</span> ! -e <span class="nv">$f</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    _logfile_write <span class="s2">&quot;(oracle) File </span><span class="nv">$f</span><span class="s2"> not found.&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  _logfile_write <span class="s2">&quot;(oracle) Start compilation (file </span><span class="nv">$f_base</span><span class="s2">): </span><span class="nv">$msg</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="nb">echo</span> <span class="s2">&quot;(oracle) Start compilation (file </span><span class="nv">$f_base</span><span class="s2">): </span><span class="nv">$msg</span><span class="s2">&quot;</span>
+
+  <span class="nv">SQLPLUS_OUTPUT</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  sqlplus_file <span class="s2">&quot;SQLPLUS_OUTPUT&quot;</span> <span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  _logfile_write <span class="s2">&quot;</span><span class="nv">$SQLPLUS_OUTPUT</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  _logfile_write <span class="s2">&quot;(oracle) End compilation (file </span><span class="nv">$f_base</span><span class="s2">, result =&gt; </span><span class="nv">$ans</span><span class="s2">): </span><span class="nv">$msg</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="nb">echo</span> -en <span class="s2">&quot;(oracle) End compilation (file </span><span class="nv">$f_base</span><span class="s2">, result =&gt; </span><span class="nv">$ans</span><span class="s2">): </span><span class="nv">$msg</span><span class="s2">\n&quot;</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-compile-all-packages">
+<span id="commons-oracle-compile-all-packages"></span><h3>commons_oracle_compile_all_packages<a class="headerlink" href="#commons-oracle-compile-all-packages" title="Permalink to this headline">¶</a></h3>
+<p>Compile all packages under ORACLE_DIR/packages directory.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (msg) message to write on logfile before and after compilation.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock105'))">(Show/Hide)</a><br /><div id="hiddencodeblock105" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_packages <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ORACLE_DIR</span><span class="s2">/packages&quot;</span>
+
+  commons_oracle_compile_all_from_dir <span class="s2">&quot;</span><span class="nv">$directory</span><span class="s2">&quot;</span> <span class="s2">&quot;of all packages&quot;</span> <span class="s2">&quot;</span><span class="nv">$msg</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-compile-all-triggers">
+<span id="commons-oracle-compile-all-triggers"></span><h3>commons_oracle_compile_all_triggers<a class="headerlink" href="#commons-oracle-compile-all-triggers" title="Permalink to this headline">¶</a></h3>
+<p>Compile all triggers under ORACLE_DIR/triggers directory.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (msg) message to write on logfile before and after compilation.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock106'))">(Show/Hide)</a><br /><div id="hiddencodeblock106" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_triggers <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ORACLE_DIR</span><span class="s2">/triggers&quot;</span>
+
+  commons_oracle_compile_all_from_dir <span class="s2">&quot;</span><span class="nv">$directory</span><span class="s2">&quot;</span> <span class="s2">&quot;of all triggers&quot;</span> <span class="s2">&quot;</span><span class="nv">$msg</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-compile-all-functions">
+<span id="commons-oracle-compile-all-functions"></span><h3>commons_oracle_compile_all_functions<a class="headerlink" href="#commons-oracle-compile-all-functions" title="Permalink to this headline">¶</a></h3>
+<p>Compile all functions under ORACLE_DIR/functions directory.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (msg) message to write on logfile before and after compilation.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock107'))">(Show/Hide)</a><br /><div id="hiddencodeblock107" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_functions <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ORACLE_DIR</span><span class="s2">/functions&quot;</span>
+
+  commons_oracle_compile_all_from_dir <span class="s2">&quot;</span><span class="nv">$directory</span><span class="s2">&quot;</span> <span class="s2">&quot;of all functions&quot;</span> <span class="s2">&quot;</span><span class="nv">$msg</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-compile-all-views">
+<span id="commons-oracle-compile-all-views"></span><h3>commons_oracle_compile_all_views<a class="headerlink" href="#commons-oracle-compile-all-views" title="Permalink to this headline">¶</a></h3>
+<p>Compile all views under ORACLE_DIR/views directory.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (msg) message to write on logfile before and after compilation.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock108'))">(Show/Hide)</a><br /><div id="hiddencodeblock108" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_views <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ORACLE_DIR</span><span class="s2">/views&quot;</span>
+
+  commons_oracle_compile_all_from_dir <span class="s2">&quot;</span><span class="nv">$directory</span><span class="s2">&quot;</span> <span class="s2">&quot;of all views&quot;</span> <span class="s2">&quot;</span><span class="nv">$msg</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-compile-all-jobs">
+<span id="commons-oracle-compile-all-jobs"></span><h3>commons_oracle_compile_all_jobs<a class="headerlink" href="#commons-oracle-compile-all-jobs" title="Permalink to this headline">¶</a></h3>
+<p>Compile all jobs under ORACLE_DIR/jobs directory.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (msg) message to write on logfile before and after compilation.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock109'))">(Show/Hide)</a><br /><div id="hiddencodeblock109" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_jobs <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ORACLE_DIR</span><span class="s2">/jobs&quot;</span>
+
+  commons_oracle_compile_all_from_dir <span class="s2">&quot;</span><span class="nv">$directory</span><span class="s2">&quot;</span> <span class="s2">&quot;of all jobs&quot;</span> <span class="s2">&quot;</span><span class="nv">$msg</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-compile-all-schedules">
+<span id="commons-oracle-compile-all-schedules"></span><h3>commons_oracle_compile_all_schedules<a class="headerlink" href="#commons-oracle-compile-all-schedules" title="Permalink to this headline">¶</a></h3>
+<p>Compile all schedules under ORACLE_DIR/schedules directory.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (msg) message to write on logfile before and after compilation.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock110'))">(Show/Hide)</a><br /><div id="hiddencodeblock110" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_jobs <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ORACLE_DIR</span><span class="s2">/jobs&quot;</span>
+
+  commons_oracle_compile_all_from_dir <span class="s2">&quot;</span><span class="nv">$directory</span><span class="s2">&quot;</span> <span class="s2">&quot;of all jobs&quot;</span> <span class="s2">&quot;</span><span class="nv">$msg</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-oracle-compile-all-from-dir">
+<span id="commons-oracle-compile-all-from-dir"></span><h3>commons_oracle_compile_all_from_dir<a class="headerlink" href="#commons-oracle-compile-all-from-dir" title="Permalink to this headline">¶</a></h3>
+<p>Compile all files with .sql extension from input directory
+It is possible esclude some .sql files through <code class="docutils literal"><span class="pre">ORACLE_COMPILE_FILES_EXCLUDED</span></code> variable.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (directory) directory where found .sql files to compile</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (msg_head) message header to insert on logfile.</li>
+<li><code class="docutils literal"><span class="pre">$3</span></code>: (msg) message to write on logfile before and after compilation.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock111'))">(Show/Hide)</a><br /><div id="hiddencodeblock111" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_from_dir <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">msg_head</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$3</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="nb">local</span> <span class="nv">fb</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="nb">local</span> <span class="nv">ex_f</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="nb">local</span> <span class="nv">exc</span><span class="o">=</span>0
+
+  _logfile_write <span class="s2">&quot;(oracle) Start compilation </span><span class="nv">$msg_head</span><span class="s2">: </span><span class="nv">$msg</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">for</span> i in <span class="nv">$directory</span>/*.sql <span class="p">;</span> <span class="k">do</span>
+
+    <span class="nv">exc</span><span class="o">=</span>0
+
+    <span class="nv">fb</span><span class="o">=</span><span class="sb">`</span>basename <span class="nv">$i</span><span class="sb">`</span>
+    <span class="nv">f</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">fb</span><span class="p">/.sql/</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Check if file is excluded</span>
+    <span class="k">if</span> <span class="o">[</span> ! -z <span class="s2">&quot;</span><span class="nv">$ORACLE_COMPILE_FILES_EXCLUDED</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+
+      <span class="k">for</span> e in <span class="nv">$ORACLE_COMPILE_FILES_EXCLUDED</span> <span class="p">;</span> <span class="k">do</span>
+
+        <span class="nv">ex_f</span><span class="o">=</span><span class="sb">`</span>basename <span class="nv">$e</span><span class="sb">`</span>
+        <span class="nv">ex_f</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">ex_f</span><span class="p">/.sql/</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$ex_f</span><span class="s2">&quot;</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+          <span class="nv">exc</span><span class="o">=</span>1
+
+          _logfile_write <span class="s2">&quot;(oracle) Exclude file </span><span class="nv">$fb</span><span class="s2"> for user request.&quot;</span>
+
+          <span class="nb">break</span>
+        <span class="k">fi</span>
+
+      <span class="k">done</span> <span class="c1"># end for exclueded</span>
+
+    <span class="k">fi</span>
+
+    <span class="c1"># If file is excluded go to the next</span>
+    <span class="o">[</span> <span class="nv">$exc</span> -eq <span class="m">1</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="k">continue</span>
+
+    commons_oracle_compile_file <span class="s2">&quot;</span><span class="nv">$i</span><span class="s2">&quot;</span> <span class="s2">&quot;</span><span class="nv">$msg</span><span class="s2">&quot;</span>
+    <span class="c1"># POST: on error go to next file</span>
+
+
+  <span class="k">done</span> <span class="c1"># end for</span>
+
+  _logfile_write <span class="s2">&quot;(oracle) End compilation </span><span class="nv">$msg_head</span><span class="s2">: </span><span class="nv">$msg</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> 0
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+      dbrm
+        &copy; Copyright 2017, Geaaru.<br/>
+      Last updated on May 01, 2017.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

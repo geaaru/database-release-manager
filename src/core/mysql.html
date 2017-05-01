@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt;</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <p>#!/bin/bash
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+# Author(s): Geaaru, <a class="reference external" href="mailto:geaaru&#37;&#52;&#48;gmail&#46;com">geaaru<span>&#64;</span>gmail<span>&#46;</span>com</a>
+# $Id: 3d14e3b7d93e02878dd9ff24e53afb94ebe5f34d $
+# License: GPL 2.0
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p># mysql_mysql_set_auth_var
+mysql_set_auth_var () {</p>
+<blockquote>
+<div><p>local db=$1
+local user=$2
+local pwd=$3
+local host=$4
+local v_host=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ ! -z &#8220;$host&#8221; ] ; then</dt>
+<dd>v_host=&#8221;&#8211;host $host&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>if [ -n &#8220;MYSQL5_6_ENV_PWD&#8221; ] ; then</p>
+<blockquote>
+<div>export MYSQL_PWD=&#8221;$pwd&#8221;
+mysql_auth=&#8221;$v_host -u $user $db&#8221;</div></blockquote>
+<p>else</p>
+<blockquote>
+<div>mysql_auth=&#8221;$v_host -u $user &#8211;password=$pwd $db&#8221;</div></blockquote>
+<p>fi</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo &#8220;Use &#8216;$mysql_auth&#8217;&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# mysql_mysql_set_auth_var_end</p>
+<p># mysql_mysql_file
+mysql_file () {</p>
+<blockquote>
+<div><p>local var=$1
+local f=$2
+local avoid_tmz=$3
+local v=&#8221;&#8221;
+local opts=&#8221;-N&#8221;</p>
+<p>local tz=&#8221;SET time_zone = &#8216;$MARIADB_TMZ&#8217;;&#8221;
+if [[ ! -z &#8220;$avoid_tmz&#8221; &amp;&amp; x&#8221;$avoid_tmz&#8221; == x&#8221;1&#8221; ]] ; then</p>
+<blockquote>
+<div>tz=&#8221;&#8220;</div></blockquote>
+<p>fi
+if [[ ! -z &#8220;$MARIADB_IGNORE_TMZ&#8221; &amp;&amp; $MARIADB_IGNORE_TMZ -eq 1 ]] ; then</p>
+<blockquote>
+<div>tz=&#8221;&#8220;</div></blockquote>
+<p>fi
+local sql=&#8221;$(cat $f | sed -e &#8216;s:<cite>DB_NAME</cite>:<cite>&#8216;$MARIADB_DB&#8217;</cite>:g&#8217; )&#8221;</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$MARIADB_SHOW_COLUMNS&#8221; ] ; then</dt>
+<dd>opts=&#8221;&#8220;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ -n &#8220;$MARIADB_ENABLE_COMMENTS&#8221; &amp;&amp; x&#8221;$MARIADB_ENABLE_COMMENTS&#8221; == x&#8221;1&#8221; ]] ; then</dt>
+<dd>opts=&#8221;$opts -c&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;Execute $MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth for sql command:n$sqln&#8221;</dd>
+</dl>
+<p>v=$($MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth 2&gt;&amp;1 &lt;&lt;EOF</p>
+</div></blockquote>
+<p>$tz
+$sql;
+EOF
+)</p>
+<blockquote>
+<div><p>local ans=$?</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;Compile $f ==&gt; $v ($ans)n&#8221;</p>
+<p>eval &#8220;$var=$v&#8221;
+#read -r &#8220;$var&#8221; &lt;&lt;&lt; &#8220;$v&#8221;</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# mysql_mysql_file_end</p>
+<p># mysql_mysql_source_file
+mysql_source_file () {</p>
+<blockquote>
+<div><p>local var=$1
+local f=$2
+local avoid_tmz=$3
+local v=&#8221;&#8221;
+local opts=&#8221;-N&#8221;</p>
+<p>local tz=&#8221;SET time_zone = &#8216;$MARIADB_TMZ&#8217;;&#8221;
+if [[ ! -z &#8220;$avoid_tmz&#8221; &amp;&amp; x&#8221;$avoid_tmz&#8221; == x&#8221;1&#8221; ]] ; then</p>
+<blockquote>
+<div>tz=&#8221;&#8220;</div></blockquote>
+<p>fi
+if [[ ! -z &#8220;$MARIADB_IGNORE_TMZ&#8221; &amp;&amp; $MARIADB_IGNORE_TMZ -eq 1 ]] ; then</p>
+<blockquote>
+<div>tz=&#8221;&#8220;</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$MARIADB_SHOW_COLUMNS&#8221; ] ; then</dt>
+<dd>opts=&#8221;&#8220;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ -n &#8220;$MARIADB_ENABLE_COMMENTS&#8221; &amp;&amp; x&#8221;$MARIADB_ENABLE_COMMENTS&#8221; == x&#8221;1&#8221; ]] ; then</dt>
+<dd>opts=&#8221;$opts -c&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; </dt>
+<dd>echo -en &#8220;Execute $MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth for sql command:n$sqln&#8221;</dd>
+</dl>
+<p>v=$($MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth 2&gt;&amp;1 &lt;&lt;EOF</p>
+</div></blockquote>
+<p>$tz
+source $f;
+EOF
+)</p>
+<blockquote>
+<div><p>local ans=$?</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;Compile $f ==&gt; $v ($ans)n&#8221;</p>
+<p>eval &#8220;$var=$v&#8221;
+#read -r &#8220;$var&#8221; &lt;&lt;&lt; &#8220;$v&#8221;</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+# mysql_mysql_source_file_end</p>
+<p># mysql_mysql_cmd_4var
+mysql_cmd_4var () {</p>
+<blockquote>
+<div><p>set -f
+local var=$1
+local cmd=&#8221;$2&#8221;
+local rm_lf=$3
+local avoid_tmz=$4
+local v=&#8221;&#8221;
+local opts=&#8221;-N&#8221;</p>
+<p>local tz=&#8221;SET time_zone = &#8216;$MARIADB_TMZ&#8217;;&#8221;
+if [[ -n &#8220;$avoid_tmz&#8221; &amp;&amp; x&#8221;$avoid_tmz&#8221; == x&#8221;1&#8221; ]] ; then</p>
+<blockquote>
+<div>tz=&#8221;&#8220;</div></blockquote>
+<p>fi
+if [[ ! -z &#8220;$MARIADB_IGNORE_TMZ&#8221; &amp;&amp; $MARIADB_IGNORE_TMZ -eq 1 ]] ; then</p>
+<blockquote>
+<div>tz=&#8221;&#8220;</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -n &#8220;$MARIADB_SHOW_COLUMNS&#8221; ] ; then</dt>
+<dd>opts=&#8221;&#8220;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [[ -n &#8220;$MARIADB_ENABLE_COMMENTS&#8221; &amp;&amp; x&#8221;$MARIADB_ENABLE_COMMENTS&#8221; == x&#8221;1&#8221; ]] ; then</dt>
+<dd>opts=&#8221;$opts -c&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;Connection options: $MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_authn&#8221;</p>
+<p>v=$($MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth 2&gt;&amp;1 &lt;&lt;EOF</p>
+</div></blockquote>
+<p>$tz
+$cmd;
+EOF
+)</p>
+<blockquote>
+<div><p>local ans=$?</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;$cmd ==&gt; $v ($ans)n&#8221;</p>
+<p>if [[ $ans -eq 0 &amp;&amp; -n &#8220;$v&#8221; ]] ; then</p>
+<blockquote>
+<div><p>if [[ -n $rm_lf ]] ; then</p>
+<blockquote>
+<div>v=`echo $v | sed &#8216;s/n//g&#8217;`</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>#  declare -x &#8220;$var&#8221;=&#8221;$v&#8221;</dt>
+<dd><p class="first">#read -r &#8220;$var&#8221; &lt;&lt;&lt; &#8220;$v&#8221;
+eval &#8220;$var=$v&#8221;</p>
+<p>set +f</p>
+<p class="last">return $ans</p>
+</dd>
+</dl>
+<p>}
+# mysql_mysql_cmd_4var_end</p>
+<p># vim: syn=sh filetype=sh</p>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

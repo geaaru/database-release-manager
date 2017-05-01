@@ -1,0 +1,295 @@
+#!/bin/bash
+#------------------------------------------------
+# Author(s): Geaaru, geaaru@gmail.com
+# $Id: 4cd836a1ae352fb291d377b2bc6e44a3d5dd70da $
+# License: GPL 2.0
+#------------------------------------------------
+
+name="install"
+install_authors="Geaaru"
+install_creation_date="May 5, 2013"
+install_version="0.1.0"
+
+#****f* install/install_version
+# FUNCTION
+#  Show version of install module.
+# SOURCE
+install_version () {
+   echo -en "Version: ${install_version}\n"
+   return 0
+}
+#***
+
+#****f* install/install_long_help
+# FUNCTION
+#  Show long help message.
+# SOURCE
+install_long_help () {
+
+   echo -en "===========================================================================\n"
+   echo -en "Module [install]:\n"
+   echo -en "Author(s): ${install_authors}\n"
+   echo -en "Created: ${install_creation_date}\n"
+   echo -en "Version: ${install_version}\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "\tlong_help               Show long help informations\n"
+   echo -en "\tshow_help               Show command list.\n"
+   echo -en "\tversion                 Show module version.\n"
+   echo -en "\tshow_installable        Show installable script between versions.\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "===========================================================================\n"
+
+   return 0
+}
+#***
+
+#****f* install/install_show_help
+# FUNCTION
+#  Show help message.
+# SOURCE
+install_show_help () {
+
+   echo -en "===========================================================================\n"
+   echo -en "Module [install]:\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "\tlong_help               Show long help informations\n"
+   echo -en "\tshow_help               Show command list.\n"
+   echo -en "\tversion                 Show module version.\n"
+   echo -en "\tshow_installable        Show installable script between versions.\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "===========================================================================\n"
+
+   return 0
+}
+#***
+
+#****f* install/install_show_installable
+# FUNCTION
+#  Show executable script on installation of a project to a release (and optional from a
+#  particular release).
+# DESCRIPTION
+#  NOT COMPLETED. TODO
+# SEE ALSO
+#  _install_check_show_installable_args for a list of valid attributes.
+# SOURCE
+install_show_installable () {
+
+  local result=1
+  local query=""
+  local id_rel_to=""
+  local id_order=""
+  local id_order_to=""
+  local id_rel_from=""
+
+  # Shift first two input param
+  shift 2
+
+  _install_check_show_installable_args "$@" || return $result
+
+  _dbm_check_if_exist_rel "$DBM_REL_NAME" "$DBM_REL_VERSION_TO" || return $result
+  _dbm_check_if_exist_rel "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM" || return $result
+
+  # Retrieve id release from
+  _dbm_retrieve_field_rel "id_release" "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM"
+  id_rel_from=$_sqlite_ans
+
+  # Retrieve id release to
+  _dbm_retrieve_field_rel "id_release" "$DBM_REL_NAME" "$DBM_REL_VERSION_TO"
+  id_rel_to=$_sqlite_ans
+
+  # Retrive id order of the release from
+  _dbm_retrieve_field_rel "id_order" "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM"
+  id_order=$_sqlite_ans
+
+  # Retrieve id order of the release to
+  _dbm_retrieve_field_rel "id_order" "$DBM_REL_NAME" "$DBM_REL_VERSION_TO"
+  id_order_to=$_sqlite_ans
+
+  if [ $id_order -gt $id_order_to ] ; then
+    error_generate "Currently downgrade it isn't supported! Maybe in the future this will change!"
+  fi
+
+  query="SELECT id_script,filename,type,directory,id_release,id_order
+        FROM Scripts
+        WHERE id_script NOT IN (
+           SELECT sri.id_script
+           FROM ScriptRelInhibitions sri, Releases rf, Releases rt, Releases ro
+           WHERE rf.id_release = ${id_rel_from} AND rt.id_release = ${id_rel_to}
+           AND ro.id_order >= rf.id_order AND ro.id_order <= rt.id_order
+           AND (sri.id_release_from = ro.id_release OR sri.id_release_to = ro.id_release)
+           GROUP BY sri.id_script
+        )
+        AND id_script NOT IN (
+              SELECT srd.id_script
+              FROM ScriptRelDedicated srd, Releases rf, Releases rt, Releases ro
+              WHERE rf.id_release = ${id_rel_from} AND rt.id_release = ${id_rel_to}
+              AND ro.id_order >= rf.id_order AND ro.id_order <= rt.id_order
+              AND (srd.id_release_from = ro.id_release OR srd.id_release_to = ro.id_release)
+              GROUP BY srd.id_script
+           )
+        AND active = 1
+        UNION
+        SELECT id_script,filename,type,directory,id_release,id_order
+        FROM Scripts
+        WHERE id_script IN (
+              SELECT srd.id_script
+              FROM ScriptRelDedicated srd, Releases rf, Releases rt, Releases ro
+              WHERE rf.id_release = ${id_rel_from} AND rt.id_release = ${id_rel_to}
+              AND ro.id_order >= rf.id_order AND ro.id_order <= rt.id_order
+              AND (srd.id_release_from = ro.id_release OR srd.id_release_to = ro.id_release)
+              GROUP BY srd.id_script
+        )
+        AND active = 1
+        ORDER BY id_release,id_order"
+
+  _sqlite_query -c "$DRM_DB" -q "${query}" || error_handled "Unexpected error!"
+
+  echo -en "======================================================================================\n"
+  echo -en "\e[1;33mID\e[m\t"
+  echo -en "\e[1;34mFILENAME\e[m\t\t"
+  echo -en "\e[1;35mTYPE\e[m\t\t"
+  echo -en "\e[1;31mDIRECTORY\e[m\t"
+  echo -en "\e[1;37mID_RELEASE\e[m\n"
+  echo -en "======================================================================================\n"
+
+  IFS=$'\n'
+  for row in $_sqlite_ans ; do
+
+    #[[ $DEBUG ]] && echo "ROW = ${row}"
+
+    id_script=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+    filename=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+    s_type=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+    directory=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+    id_release=`echo $row | awk '{split($0,a,"|"); print a[5]}'`
+
+    if [ ${#filename} -lt 16 ] ; then
+      filename_tab="\t\t"
+    else
+      filename_tab="\t"
+    fi
+
+    echo -en "\e[1;33m${id_script}\e[m\t"
+    echo -en "\e[1;34m${filename}${filename_tab}\e[m"
+    echo -en "\e[1;35m${s_type}\e[m\t"
+    echo -en "\e[1;31m${directory}\e[m\t"
+    echo -en "\e[1;37m${id_release}\e[m\n"
+
+  done
+  unset IFS
+
+  return 0
+}
+#***
+
+#****f* install/install_install
+# FUNCTION
+#  Install or upgrade a project to a particular release.
+# DESCRIPTION
+#  NOT COMPLETED. TODO
+# SEE ALSO
+#  _install_check_show_installable_args for a list of valid arguments.
+# SOURCE
+install_install () {
+
+  local result=1
+  local query=""
+  local id_rel_to=""
+  local id_order=""
+  local id_order_to=""
+  local id_rel_from=""
+
+  # Shift first two input param
+  shift 2
+
+  _install_check_show_installable_args "$@" || return $result
+
+  _dbm_check_if_exist_rel "$DBM_REL_NAME" "$DBM_REL_VERSION_TO" || return $result
+  _dbm_check_if_exist_rel "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM" || return $result
+
+  # Retrieve id release from
+  _dbm_retrieve_field_rel "id_release" "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM"
+  id_rel_from=$_sqlite_ans
+
+  # Retrieve id release to
+  _dbm_retrieve_field_rel "id_release" "$DBM_REL_NAME" "$DBM_REL_VERSION_TO"
+  id_rel_to=$_sqlite_ans
+
+  # Retrive id order of the release from
+  _dbm_retrieve_field_rel "id_order" "$DBM_REL_NAME" "$DBM_REL_VERSION_FROM"
+  id_order=$_sqlite_ans
+
+  # Retrieve id order of the release to
+  _dbm_retrieve_field_rel "id_order" "$DBM_REL_NAME" "$DBM_REL_VERSION_TO"
+  id_order_to=$_sqlite_ans
+
+  if [ $id_order -gt $id_order_to ] ; then
+    error_generate "Currently downgrade it isn't supported! Maybe in the future this will change!"
+  fi
+
+}
+#***
+
+##################################################################
+# Internal functions
+##################################################################
+
+#****f* install/_install_check_show_installable_args
+# FUNCTION
+#  Internal function for read and parse command line arguments.
+# DESCRIPTION
+#  Argument accepted are:
+#     -n [rel_name]              Release name. Mandatary argument.
+#     -f [version_from]          Release version from. Mandatary argument.
+#     -t [version_to]            Release version to. Mandatary argument.
+#     -h                         For print help message.
+#     *                          Others arguments are ignored.
+# RESULT
+#  Variable defined are:
+#     * DBM_REL_NAME for release name.
+#     * DBM_REL_VERSION_TO for release version to.
+#     * DBM_REL_VERSION_FROM for release version from.
+# SOURCE
+_install_check_show_installable_args () {
+
+  [[ $DEBUG ]] && echo -en "(_install_check_show_installable_args args: $@)\n"
+
+  # Reinitialize opt index position
+  OPTIND=1
+  while getopts "n:t:f:h" opts "$@" ; do
+    case $opts in
+
+      n) DBM_REL_NAME="$OPTARG";;
+      t) DBM_REL_VERSION_TO="$OPTARG";;
+      f) DBM_REL_VERSION_FROM="$OPTARG";;
+      h)
+        echo -en "[-n name]               Release Name.\n"
+        echo -en "[-t version_to]         Release version target of the installation.\n"
+        echo -en "[-f version_from]       Release version source of the installation.\n"
+        return 1
+        ;;
+
+    esac
+  done
+
+  if [ -z "$DBM_REL_NAME" ] ; then
+    echo "Missing Release Name."
+    return 1
+  fi
+
+  if [ -z "$DBM_REL_VERSION_TO" ] ; then
+    echo "Missing Release version that has a dependency."
+    return 1
+  fi
+
+  if [ -z "$DBM_REL_VERSION_FROM" ] ; then
+    echo "Missing Release version needed on target."
+    return 1
+  fi
+
+  return 0
+}
+#***
+
+
+# vim: syn=sh filetype=sh ts=2 sw=2

@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Mysql API &#8212; Database Release Manager</title>
+    
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/dbrm.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootswatch-3.3.6/superhero/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Sqlplus API" href="sqlplus.html" />
+    <link rel="prev" title="Commons API" href="common.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          Database Release Manager</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="dbm.html">Dbm Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logfile.html">Logfile Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common.html">Commons API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Mysql API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sqlplus.html">Sqlplus API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="psql.html">Psql API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commons_mariadb.html">Commons Mariadb API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commons_oracle.html">Commons Oracle API</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Mysql API</a><ul>
+<li><a class="reference internal" href="#variables">Variables</a></li>
+<li><a class="reference internal" href="#api">API</a><ul>
+<li><a class="reference internal" href="#mysql-set-auth-var">mysql_set_auth_var</a></li>
+<li><a class="reference internal" href="#mysql-file">mysql_file</a></li>
+<li><a class="reference internal" href="#mysql-source-file">mysql_source_file</a></li>
+<li><a class="reference internal" href="#mysql-cmd-4var">mysql_cmd_4var</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="common.html" title="Previous Chapter: Commons API"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Commons API</span>
+    </a>
+  </li>
+  <li>
+    <a href="sqlplus.html" title="Next Chapter: Sqlplus API"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Sqlplus API &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row" >
+    <div class="col-md-12 content">
+      
+  <div class="section" id="mysql-api">
+<span id="mysql-api"></span><h1>Mysql API<a class="headerlink" href="#mysql-api" title="Permalink to this headline">¶</a></h1>
+<p>A series of functions used for interact directly with <code class="docutils literal"><span class="pre">mysql</span></code> (for both Mysql or MariaDB servers) client program.</p>
+<div class="section" id="variables">
+<span id="variables"></span><h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="33%" />
+<col width="67%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Variable</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MARIADB_IGNORE_TMZ</span></code></td>
+<td>This variable is used as an alternative to set third parameter
+of the function and avoid set of timezone on session.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MARIADB_TMZ</span></code></td>
+<td>Set timezone to use on session. Default is UTC.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MARIADB_SHOW_COLUMNS</span></code></td>
+<td>If this variable is set remove &#8216;-N&#8217; option from mysql client
+command to print column data.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MARIADB_CLIENT</span></code></td>
+<td>Path of mysql client.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MARIADB_EXTRA_OPTIONS</span></code></td>
+<td>Extra options for mysql client.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MARIADB_DB</span></code></td>
+<td>Name of the schema/database to use.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MARIADB_ENABLE_COMMENTS</span></code></td>
+<td>With value 0 (disable) or 1 (enable) insert of comments
+in compilation. Default is 0.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MARIADB_IGNORE_TMZ</span></code></td>
+<td>If set to 1 then <em>dbrm</em> avoid to set timezone on session.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MYSQL5_6_ENV_PWD</span></code></td>
+<td>From version 5.6 of mysql command line command is present an annoying warning
+message like this &#8216;Warning: Using a password on the command line interface
+can be insecure.&#8217; when is used a &#8211;password argument.
+This warning message broken database-release-manager and it is required add
+MYSQL5_6_ENV_PWD=&#8221;1&#8221; on dbrm.conf file.</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="api">
+<span id="api"></span><h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mysql-set-auth-var">
+<span id="mysql-set-auth-var"></span><h3>mysql_set_auth_var<a class="headerlink" href="#mysql-set-auth-var" title="Permalink to this headline">¶</a></h3>
+<p>Set <code class="docutils literal"><span class="pre">mysql_auth</span></code> variable with authentication string like: -u username &#8211;password=pwd database to use with mysql client program.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (db) Name of the schema to use.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (user) User to use on authentication</li>
+<li><code class="docutils literal"><span class="pre">$3</span></code>: (pwd) Password to use on authentication</li>
+<li><code class="docutils literal"><span class="pre">$4</span></code>: (host) Optionally host of the database server.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: always</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock146'))">(Show/Hide)</a><br /><div id="hiddencodeblock146" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mysql_set_auth_var <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">db</span><span class="o">=</span><span class="nv">$1</span>
+  <span class="nb">local</span> <span class="nv">user</span><span class="o">=</span><span class="nv">$2</span>
+  <span class="nb">local</span> <span class="nv">pwd</span><span class="o">=</span><span class="nv">$3</span>
+  <span class="nb">local</span> <span class="nv">host</span><span class="o">=</span><span class="nv">$4</span>
+  <span class="nb">local</span> <span class="nv">v_host</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  <span class="k">if</span> <span class="o">[</span> ! -z <span class="s2">&quot;</span><span class="nv">$host</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">v_host</span><span class="o">=</span><span class="s2">&quot;--host </span><span class="nv">$host</span><span class="s2">&quot;</span>
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -n <span class="s2">&quot;MYSQL5_6_ENV_PWD&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+
+    <span class="nb">export</span> <span class="nv">MYSQL_PWD</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$pwd</span><span class="s2">&quot;</span>
+    <span class="nv">mysql_auth</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$v_host</span><span class="s2"> -u </span><span class="nv">$user</span><span class="s2"> </span><span class="nv">$db</span><span class="s2">&quot;</span>
+
+  <span class="k">else</span>
+
+    <span class="nv">mysql_auth</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$v_host</span><span class="s2"> -u </span><span class="nv">$user</span><span class="s2"> --password=</span><span class="nv">$pwd</span><span class="s2"> </span><span class="nv">$db</span><span class="s2">&quot;</span>
+
+  <span class="k">fi</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&quot;Use &#39;</span><span class="nv">$mysql_auth</span><span class="s2">&#39;&quot;</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div><p>TODO:</p>
+<ul class="simple">
+<li>add support to configuration file with credentials.</li>
+</ul>
+</div>
+<div class="section" id="mysql-file">
+<span id="mysql-file"></span><h3>mysql_file<a class="headerlink" href="#mysql-file" title="Permalink to this headline">¶</a></h3>
+<p>Compile a file and save output to input variable.</p>
+<p><em>Notes</em>:</p>
+<p>This command try to repalce string `DB_NAME` with name of the schema
+defined on MARIADB_DB variable.</p>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">MARIADB_IGNORE_TMZ</span></code>: this variable is used as an alternative to set third parameter
+of the function and avoid set of timezone on session.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_TMZ</span></code>: timezone to use on session. Default is UTC.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_SHOW_COLUMNS</span></code> if this variable is set remove &#8216;-N&#8217; option from mysql client
+command to print column data.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_CLIENT</span></code>: Path of mysql client.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_EXTRA_OPTIONS</span></code>: Extra options for mysql client.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_DB</span></code>: name of the schema to use.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_ENABLE_COMMENTS</span></code>: With value 0 (disable) or 1 (enable) insert of comments
+in compilation. Default is 0.</li>
+</ul>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: Name of the variable where is save output command.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: File to compile.</li>
+<li><code class="docutils literal"><span class="pre">$3</span></code>: Flag to avoid set of timezone on session (1 to avoid, 0 to leave default).
+(Optional)</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock147'))">(Show/Hide)</a><br /><div id="hiddencodeblock147" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mysql_file <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">var</span><span class="o">=</span><span class="nv">$1</span>
+  <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="nv">$2</span>
+  <span class="nb">local</span> <span class="nv">avoid_tmz</span><span class="o">=</span><span class="nv">$3</span>
+  <span class="nb">local</span> <span class="nv">v</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;-N&quot;</span>
+
+  <span class="nb">local</span> <span class="nv">tz</span><span class="o">=</span><span class="s2">&quot;SET time_zone = &#39;</span><span class="nv">$MARIADB_TMZ</span><span class="s2">&#39;;&quot;</span>
+  <span class="k">if</span> <span class="o">[[</span> ! -z <span class="s2">&quot;</span><span class="nv">$avoid_tmz</span><span class="s2">&quot;</span> <span class="o">&amp;&amp;</span> x<span class="s2">&quot;</span><span class="nv">$avoid_tmz</span><span class="s2">&quot;</span> <span class="o">==</span> x<span class="s2">&quot;1&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">tz</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="k">fi</span>
+  <span class="k">if</span> <span class="o">[[</span> ! -z <span class="s2">&quot;</span><span class="nv">$MARIADB_IGNORE_TMZ</span><span class="s2">&quot;</span> <span class="o">&amp;&amp;</span> <span class="nv">$MARIADB_IGNORE_TMZ</span> -eq <span class="m">1</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">tz</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="k">fi</span>
+  <span class="nb">local</span> <span class="nv">sql</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>cat <span class="nv">$f</span> <span class="p">|</span> sed -e <span class="s1">&#39;s:`DB_NAME`:`&#39;</span><span class="nv">$MARIADB_DB</span><span class="s1">&#39;`:g&#39;</span> <span class="k">)</span><span class="s2">&quot;</span>
+
+  <span class="k">if</span> <span class="o">[</span> -n <span class="s2">&quot;</span><span class="nv">$MARIADB_SHOW_COLUMNS</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[[</span> -n <span class="s2">&quot;</span><span class="nv">$MARIADB_ENABLE_COMMENTS</span><span class="s2">&quot;</span> <span class="o">&amp;&amp;</span> x<span class="s2">&quot;</span><span class="nv">$MARIADB_ENABLE_COMMENTS</span><span class="s2">&quot;</span> <span class="o">==</span> x<span class="s2">&quot;1&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$opts</span><span class="s2"> -c&quot;</span>
+  <span class="k">fi</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;Execute </span><span class="nv">$MARIADB_CLIENT</span><span class="s2"> -A </span><span class="nv">$opts</span><span class="s2"> </span><span class="nv">$MARIADB_EXTRA_OPTIONS</span><span class="s2"> </span><span class="nv">$mysql_auth</span><span class="s2"> for sql command:\n</span><span class="nv">$sql</span><span class="s2">\n&quot;</span>
+
+  <span class="nv">v</span><span class="o">=</span><span class="k">$(</span><span class="nv">$MARIADB_CLIENT</span> -A <span class="nv">$opts</span> <span class="nv">$MARIADB_EXTRA_OPTIONS</span> <span class="nv">$mysql_auth</span> 2&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="s">&lt;&lt;EOF</span>
+<span class="s">$tz</span>
+<span class="s">$sql;</span>
+<span class="s">EOF</span>
+<span class="k">)</span>
+
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;Compile </span><span class="nv">$f</span><span class="s2"> ==&gt; </span><span class="nv">$v</span><span class="s2"> (</span><span class="nv">$ans</span><span class="s2">)\n&quot;</span>
+
+  <span class="nb">eval</span> <span class="s2">&quot;</span><span class="nv">$var</span><span class="s2">=\$v&quot;</span>
+  <span class="c1">#read -r &quot;$var&quot; &lt;&lt;&lt; &quot;$v&quot;</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="mysql-source-file">
+<span id="mysql-source-file"></span><h3>mysql_source_file<a class="headerlink" href="#mysql-source-file" title="Permalink to this headline">¶</a></h3>
+<p>Compile a file and save output to input variable.
+This command is an alternative to mysql_file function that use source command.
+This command doesn&#8217;t replace placeholder DB_NAME.</p>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">MARIADB_IGNORE_TMZ</span></code>: this variable is used as an alternative to set third parameter
+of the function and avoid set of timezone on session.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_TMZ</span></code>: timezone to use on session. Default is UTC.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_SHOW_COLUMNS</span></code> if this variable is set remove &#8216;-N&#8217; option from mysql client
+command to print column data.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_CLIENT</span></code>: Path of mysql client.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_EXTRA_OPTIONS</span></code>: Extra options for mysql client.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_DB</span></code>: name of the schema to use.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_ENABLE_COMMENTS</span></code>: With value 0 (disable) or 1 (enable) insert of comments
+in compilation. Default is 0.</li>
+</ul>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: Name of the variable where is save output command.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: File to compile.</li>
+<li><code class="docutils literal"><span class="pre">$3</span></code>: Flag to avoid set of timezone on session (1 to avoid, 0 to leave default).
+(Optional)</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock148'))">(Show/Hide)</a><br /><div id="hiddencodeblock148" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mysql_source_file <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">var</span><span class="o">=</span><span class="nv">$1</span>
+  <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="nv">$2</span>
+  <span class="nb">local</span> <span class="nv">avoid_tmz</span><span class="o">=</span><span class="nv">$3</span>
+  <span class="nb">local</span> <span class="nv">v</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;-N&quot;</span>
+
+  <span class="nb">local</span> <span class="nv">tz</span><span class="o">=</span><span class="s2">&quot;SET time_zone = &#39;</span><span class="nv">$MARIADB_TMZ</span><span class="s2">&#39;;&quot;</span>
+  <span class="k">if</span> <span class="o">[[</span> ! -z <span class="s2">&quot;</span><span class="nv">$avoid_tmz</span><span class="s2">&quot;</span> <span class="o">&amp;&amp;</span> x<span class="s2">&quot;</span><span class="nv">$avoid_tmz</span><span class="s2">&quot;</span> <span class="o">==</span> x<span class="s2">&quot;1&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">tz</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="k">fi</span>
+  <span class="k">if</span> <span class="o">[[</span> ! -z <span class="s2">&quot;</span><span class="nv">$MARIADB_IGNORE_TMZ</span><span class="s2">&quot;</span> <span class="o">&amp;&amp;</span> <span class="nv">$MARIADB_IGNORE_TMZ</span> -eq <span class="m">1</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">tz</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -n <span class="s2">&quot;</span><span class="nv">$MARIADB_SHOW_COLUMNS</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[[</span> -n <span class="s2">&quot;</span><span class="nv">$MARIADB_ENABLE_COMMENTS</span><span class="s2">&quot;</span> <span class="o">&amp;&amp;</span> x<span class="s2">&quot;</span><span class="nv">$MARIADB_ENABLE_COMMENTS</span><span class="s2">&quot;</span> <span class="o">==</span> x<span class="s2">&quot;1&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$opts</span><span class="s2"> -c&quot;</span>
+  <span class="k">fi</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;Execute </span><span class="nv">$MARIADB_CLIENT</span><span class="s2"> -A </span><span class="nv">$opts</span><span class="s2"> </span><span class="nv">$MARIADB_EXTRA_OPTIONS</span><span class="s2"> </span><span class="nv">$mysql_auth</span><span class="s2"> for sql command:\n</span><span class="nv">$sql</span><span class="s2">\n&quot;</span>
+
+  <span class="nv">v</span><span class="o">=</span><span class="k">$(</span><span class="nv">$MARIADB_CLIENT</span> -A <span class="nv">$opts</span> <span class="nv">$MARIADB_EXTRA_OPTIONS</span> <span class="nv">$mysql_auth</span> 2&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="s">&lt;&lt;EOF</span>
+<span class="s">$tz</span>
+<span class="s">source $f;</span>
+<span class="s">EOF</span>
+<span class="k">)</span>
+
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;Compile </span><span class="nv">$f</span><span class="s2"> ==&gt; </span><span class="nv">$v</span><span class="s2"> (</span><span class="nv">$ans</span><span class="s2">)\n&quot;</span>
+
+  <span class="nb">eval</span> <span class="s2">&quot;</span><span class="nv">$var</span><span class="s2">=\$v&quot;</span>
+  <span class="c1">#read -r &quot;$var&quot; &lt;&lt;&lt; &quot;$v&quot;</span>
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="mysql-cmd-4var">
+<span id="mysql-cmd-4var"></span><h3>mysql_cmd_4var<a class="headerlink" href="#mysql-cmd-4var" title="Permalink to this headline">¶</a></h3>
+<p>Execute an input statement on configured schema.</p>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">MARIADB_IGNORE_TMZ</span></code>: this variable is used as an alternative to set third parameter
+of the function and avoid set of timezone on session.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_TMZ</span></code>: timezone to use on session. Default is UTC.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_SHOW_COLUMNS</span></code> if this variable is set remove &#8216;-N&#8217; option from mysql client
+command to print column data.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_CLIENT</span></code>: Path of mysql client.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_EXTRA_OPTIONS</span></code>: Extra options for mysql client.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_DB</span></code>: name of the schema to use.</li>
+<li><code class="docutils literal"><span class="pre">MARIADB_ENABLE_COMMENTS</span></code>: With value 0 (disable) or 1 (enable) insert of comments
+in compilation. Default is 0.</li>
+</ul>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (var) Name of the variable where is save output command.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (cmd) Command to execute.</li>
+<li><code class="docutils literal"><span class="pre">$3</span></code>: (rm_lf) If string length is not zero than from output command are remove LF.</li>
+<li><code class="docutils literal"><span class="pre">$4</span></code>: (avoid_tmz) Flag to avoid set of timezone on session (1 to avoid, 0 to leave default).
+(Optional)</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock149'))">(Show/Hide)</a><br /><div id="hiddencodeblock149" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mysql_cmd_4var <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">set</span> -f
+  <span class="nb">local</span> <span class="nv">var</span><span class="o">=</span><span class="nv">$1</span>
+  <span class="nb">local</span> <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">rm_lf</span><span class="o">=</span><span class="nv">$3</span>
+  <span class="nb">local</span> <span class="nv">avoid_tmz</span><span class="o">=</span><span class="nv">$4</span>
+  <span class="nb">local</span> <span class="nv">v</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;-N&quot;</span>
+
+  <span class="nb">local</span> <span class="nv">tz</span><span class="o">=</span><span class="s2">&quot;SET time_zone = &#39;</span><span class="nv">$MARIADB_TMZ</span><span class="s2">&#39;;&quot;</span>
+  <span class="k">if</span> <span class="o">[[</span> -n <span class="s2">&quot;</span><span class="nv">$avoid_tmz</span><span class="s2">&quot;</span> <span class="o">&amp;&amp;</span> x<span class="s2">&quot;</span><span class="nv">$avoid_tmz</span><span class="s2">&quot;</span> <span class="o">==</span> x<span class="s2">&quot;1&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">tz</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="k">fi</span>
+  <span class="k">if</span> <span class="o">[[</span> ! -z <span class="s2">&quot;</span><span class="nv">$MARIADB_IGNORE_TMZ</span><span class="s2">&quot;</span> <span class="o">&amp;&amp;</span> <span class="nv">$MARIADB_IGNORE_TMZ</span> -eq <span class="m">1</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">tz</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -n <span class="s2">&quot;</span><span class="nv">$MARIADB_SHOW_COLUMNS</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[[</span> -n <span class="s2">&quot;</span><span class="nv">$MARIADB_ENABLE_COMMENTS</span><span class="s2">&quot;</span> <span class="o">&amp;&amp;</span> x<span class="s2">&quot;</span><span class="nv">$MARIADB_ENABLE_COMMENTS</span><span class="s2">&quot;</span> <span class="o">==</span> x<span class="s2">&quot;1&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$opts</span><span class="s2"> -c&quot;</span>
+  <span class="k">fi</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;Connection options: </span><span class="nv">$MARIADB_CLIENT</span><span class="s2"> -A </span><span class="nv">$opts</span><span class="s2"> </span><span class="nv">$MARIADB_EXTRA_OPTIONS</span><span class="s2"> </span><span class="nv">$mysql_auth</span><span class="s2">\n&quot;</span>
+
+  <span class="nv">v</span><span class="o">=</span><span class="k">$(</span><span class="nv">$MARIADB_CLIENT</span> -A <span class="nv">$opts</span> <span class="nv">$MARIADB_EXTRA_OPTIONS</span> <span class="nv">$mysql_auth</span> 2&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="s">&lt;&lt;EOF</span>
+<span class="s">$tz</span>
+<span class="s">$cmd;</span>
+<span class="s">EOF</span>
+<span class="k">)</span>
+
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span><span class="nv">$?</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;</span><span class="nv">$cmd</span><span class="s2"> ==&gt; </span><span class="nv">$v</span><span class="s2"> (</span><span class="nv">$ans</span><span class="s2">)\n&quot;</span>
+
+  <span class="k">if</span> <span class="o">[[</span> <span class="nv">$ans</span> -eq <span class="m">0</span> <span class="o">&amp;&amp;</span> -n <span class="s2">&quot;</span><span class="nv">$v</span><span class="s2">&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    <span class="k">if</span> <span class="o">[[</span> -n <span class="nv">$rm_lf</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+      <span class="nv">v</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="nv">$v</span> <span class="p">|</span> sed <span class="s1">&#39;s/\n//g&#39;</span><span class="sb">`</span>
+
+    <span class="k">fi</span>
+
+  <span class="k">fi</span>
+
+<span class="c1">#  declare -x &quot;$var&quot;=&quot;$v&quot;</span>
+  <span class="c1">#read -r &quot;$var&quot; &lt;&lt;&lt; &quot;$v&quot;</span>
+  <span class="nb">eval</span> <span class="s2">&quot;</span><span class="nv">$var</span><span class="s2">=\$v&quot;</span>
+
+  <span class="nb">set</span> +f
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+      dbrm
+        &copy; Copyright 2017, Geaaru.<br/>
+      Last updated on May 01, 2017.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt;</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <p>#!/bin/bash
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+# Author(s): Geaaru, <a class="reference external" href="mailto:geaaru&#37;&#52;&#48;gmail&#46;com">geaaru<span>&#64;</span>gmail<span>&#46;</span>com</a>
+# $Id: 552efebd13e28713e7ef6ea144a5923e5238ac93 $
+# License: GPL 2.0
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p># psql_set_auth_var
+psql_set_auth_var () {</p>
+<blockquote>
+<div><p>local db=$1
+local user=$2
+local pwd=$3
+local host=$4
+local schema=$5
+local v_host=&#8221;&#8221;
+local v_schema=&#8221;&#8220;</p>
+<dl class="docutils">
+<dt>if [ ! -z &#8220;$host&#8221; ] ; then</dt>
+<dd>v_host=&#8221;-h $host&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ ! -z &#8220;$schema&#8221; ] ; then</dt>
+<dd>v_schema=&#8221;-v schema=${schema}&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>export PGPASSWORD=&#8221;$pwd&#8221;
+# TODO: handle ~/.pgpass file</p>
+<p>psql_auth=&#8221;$v_host $v_schema -U $user -w $db&#8221;</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo &#8220;Use &#8216;$psql_auth&#8217;&#8221;</p>
+<p>return 0</p>
+</div></blockquote>
+<p>}
+# psql_set_auth_var_end</p>
+<p># psql_psql_cmd_4var
+psql_cmd_4var () {</p>
+<blockquote>
+<div><p>set -f
+local var=$1
+local cmd=&#8221;$2&#8221;
+local rm_lf=$3
+local avoid_tmz=$4
+local v=&#8221;&#8221;
+local opts=&#8221;&#8221;
+# Set separator
+opts=&#8221;${opts} -P fieldsep=&#8217;|&#8217;&#8221;
+# Disable footer
+opts=&#8221;${opts} -P footer=off&#8221;
+# Tuple only
+opts=&#8221;${opts} -t&#8221; # equals to -P tuples_only=true
+# Quiet mode
+# opts=&#8221;${opts} -q&#8221;</p>
+<p>local tz=&#8221;</p>
+</div></blockquote>
+<p>o /dev/null
+SET timezone = &#8216;$POSTGRESQL_TMZ&#8217;;
+o
+&#8220;</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [[ -n &#8220;$avoid_tmz&#8221; &amp;&amp; x&#8221;$avoid_tmz&#8221; == x&#8221;1&#8221; ]] ; then</dt>
+<dd>tz=&#8221;&#8220;</dd>
+</dl>
+<p>fi
+if [[ ! -z &#8220;$POSTGRESQL_IGNORE_TMZ&#8221; &amp;&amp; $POSTGRESQL_IGNORE_TMZ -eq 1 ]] ; then</p>
+<blockquote>
+<div>tz=&#8221;&#8220;</div></blockquote>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;$POSTGRESQL_SHOW_COLUMNS&#8221; ] ; then</dt>
+<dd># Disable columns as default
+opts=&#8221;${opts} -P columns=off&#8221;</dd>
+</dl>
+<p>fi</p>
+<dl class="docutils">
+<dt>if [ -z &#8220;${POSTGRESQL_FORMAT}&#8221; ] ; then</dt>
+<dd># Format unaligned
+opts=&#8221;${opts} -P format=unaligned&#8221;</dd>
+</dl>
+<p>fi</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;Connection options: $POSTGRESQL_CLIENT $opts $POSTGRESQL_EXTRA_OPTIONS $psql_authn&#8221;</p>
+<p>v=$($POSTGRESQL_CLIENT $opts $POSTGRESQL_EXTRA_OPTIONS $psql_auth 2&gt;&amp;1 &lt;&lt;EOF</p>
+</div></blockquote>
+<p>$tz
+$cmd;
+q
+EOF
+)</p>
+<blockquote>
+<div><p>local ans=$?</p>
+<p>[[ $DEBUG &amp;&amp; $DEBUG == true ]] &amp;&amp; echo -en &#8220;$cmd ==&gt; $v ($ans)n&#8221;</p>
+<p>if [[ $ans -eq 0 &amp;&amp; -n &#8220;$v&#8221; ]] ; then</p>
+<blockquote>
+<div><p>if [[ -n $rm_lf ]] ; then</p>
+<blockquote>
+<div>v=`echo $v | sed &#8216;s/n//g&#8217;`</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<p>fi</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>#  declare -x &#8220;$var&#8221;=&#8221;$v&#8221;</dt>
+<dd><p class="first">#read -r &#8220;$var&#8221; &lt;&lt;&lt; &#8220;$v&#8221;
+eval &#8220;$var=$v&#8221;</p>
+<p>set +f</p>
+<p class="last">return $ans</p>
+</dd>
+</dl>
+<p>}
+# psql_psql_cmd_4var_end</p>
+<p># vim: syn=sh filetype=sh</p>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

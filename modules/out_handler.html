@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title># Internal functions</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <p>#!/bin/bash
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;
+# Author(s): Geaaru, <a class="reference external" href="mailto:geaaru&#37;&#52;&#48;gmail&#46;com">geaaru<span>&#64;</span>gmail<span>&#46;</span>com</a>
+# $Id: c190e8200d65da360842e4af64f019ecc9d77a26 $
+# License: GPL 2.0
+#&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p>name=&#8221;out_handler&#8221;
+out_handler_authors=&#8221;Geaaru&#8221;
+out_handler_creation_date=&#8221;May 2, 2014&#8221;
+out_handler_version=&#8221;0.1.0&#8221;
+out_handler_plugin=&#8221;&#8220;</p>
+<p>#****f* out_handler/out_handler_version
+# FUNCTION
+#   Show version of out_handler module.
+# SOURCE
+out_handler_version () {</p>
+<blockquote>
+<div>echo -en &#8220;Version: ${out_handler_version}n&#8221;
+return 0</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* out_handler/out_handler_print
+# FUNCTION
+#
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
+out_handler_print () {</p>
+<blockquote>
+<div><p>local msg=&#8221;$1&#8221;
+local ans=0
+local i=&#8221;&#8220;</p>
+<p>for i in &#8220;$out_handler_plugin&#8221; ; do</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if type -t ${i}_print &gt; /dev/null ; then</dt>
+<dd>${i}_print &#8220;$msg&#8221;</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>done</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* out_handler/out_handler_print_arr
+# FUNCTION
+#  Call print_arr function for any active out_handler plugins.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
+out_handler_print_arr () {</p>
+<blockquote>
+<div><p>local ans=0</p>
+<p>for i in &#8220;$out_handler_plugin&#8221; ; do</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if type -t ${i}_print_arr &gt; /dev/null ; then</dt>
+<dd>${i}_print_arr</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>done</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p>#****f* out_handler/out_handler_clean
+# FUNCTION
+#   Unset all array used to call any active out_handler plugins.
+# RETURN VALUE
+#   0 on success
+#   1 on error
+# SOURCE
+out_handler_clean () {</p>
+<blockquote>
+<div><p>local ans=0</p>
+<p>for i in &#8220;$out_handler_plugin&#8221; ; do</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if type -t ${i}_clean &gt; /dev/null ; then</dt>
+<dd>${i}_clean</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>done</p>
+<p>return $ans</p>
+</div></blockquote>
+<p>}
+#***</p>
+<div class="section" id="internal-functions">
+<h1># Internal functions<a class="headerlink" href="#internal-functions" title="Permalink to this headline">¶</a></h1>
+<p>#****f* out_handler/_out_handler_init
+# FUNCTION
+#   Internal function called on initialization of out_handler module.
+# DESCRIPTION
+#   Check if it defined OUT_HANDLER_PLUGIN variable that define plugin
+#   to use for print message.
+# SOURCE
+_out_handler_init () {</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>if [ -z &#8220;$OUT_HANDLER_PLUGIN&#8221; ] ; then</dt>
+<dd>out_handler_plugin=&#8221;out_stdout&#8221;</dd>
+</dl>
+<p>fi</p>
+</div></blockquote>
+<p>}
+#***</p>
+<p># vim: syn=sh filetype=sh ts=2 sw=2</p>
+</div>
+
+
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
