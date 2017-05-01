@@ -23,7 +23,7 @@ Target of this module is supply logging features to user and to dbrm itself.
 
 Show version of logfile module.
 
-```bash
+```shell
   $# dbrm logfile version 
   Version: 0.1.0
 ```
@@ -32,7 +32,7 @@ Show version of logfile module.
 
 With info command is possible retrieve status of the `logfile` module and what is current logfile use for store logging string.
 
-```bash
+```shell
 
   $# dbrm logfile info
   ===========================================================================

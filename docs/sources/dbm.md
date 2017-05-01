@@ -45,7 +45,7 @@ Currently, only management of profiles is a stable features; all others features
 
 Show version of dbm module.
 
-```bash
+```shell
   $# dbrm dbm version
   Version: 0.1.0
 ```
@@ -54,7 +54,7 @@ Show version of dbm module.
 
 Show active parameters of dbrm module.
 
-```bash
+```shell
   $# dbrm dbm info
   LOCAL_DIR = /tmp/database-release-manager
   LOCAL_CONFIG_FILE = /home/geaaru/.local/share/dbrm/dbrm.conf
@@ -98,8 +98,7 @@ _Exit Values_:
   * `1`: On error or if a dbrm.conf file or dbrm.db file is already present.
   * `0`: On success
 
-```bash
-
+```shell
   $# dbrm dbm initenv --help
   [--to-current-dir]      Initialize current directory [.].
   [--to-dir target]       Initialize target directory.
@@ -126,7 +125,7 @@ _Exit Values_:
   * `1`: On error
   * `0`: On success
 
-```bash
+```shell
 $# dbrm dbm shell
 SQLite version 3.13.0 2016-05-18 10:57:30
 Enter ".help" for usage hints.
@@ -142,7 +141,7 @@ _Exit Values_:
   * `1`: On error
   * `0`: On success
 
-```bash
+```shell
 
   $# dbrm dbm show_profiles
   ===============================================================================================================
@@ -169,7 +168,7 @@ _Exit Values_:
   * `1`: On error
   * `0`: On success
 
-```bash
+```shell
 
   $# dbrm dbm show_releases
   ===============================================================================================================
@@ -196,7 +195,7 @@ _Exit Values_:
   * `1`: On error
   * `0`: On success
 
-```bash
+```shell
 
   $# dbrm dbm show_scripts -h
   ===============================================================================================================
@@ -222,7 +221,7 @@ _Exit Values_:
   * `1`: On error
   * `0`: On success
 
-```bash
+```shell
 
   $# dbrm dbm show_script_types
   ===============================================================================================================
@@ -251,7 +250,7 @@ _Exit Values_:
   * `1`: On error
   * `0`: On success
 
-```bash
+```shell
 
   $# dbrm dbm show_rel_dep
   ===============================================================================================================
@@ -273,7 +272,7 @@ _Exit Values_:
   * `1`: On error
   * `0`: On success
 
-```bash
+```shell
 
   $# dbrm dbm show_inhibit_scripts
   ===============================================================================================================
@@ -292,7 +291,7 @@ _Exit Values_:
   * `1`: On error
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm show_rel_ded_scripts
   No scripts available.
 
@@ -307,7 +306,7 @@ _Exit Values_:
   * `1`: On error
   * `0`: On success
 
-```bash
+```shell
   $ dbrm dbm show_adapters
   ===============================================================================================================
   ADAPTER        DESCRIPTION
@@ -359,7 +358,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm update_release -i 5 -a oracle -d ./0.1.2
   Release 5 updated correctly.
 ```
@@ -380,7 +379,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm add_profile --name test_profile --file profile1.conf
   Created profile 7.
 
@@ -401,7 +400,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm del_profile --id 7
   Profile 7 is been deleted.
 
@@ -422,7 +421,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm set_profile --id 7
   Profile 7 is now set as default.
 
@@ -448,7 +447,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm insert_release
   [-n name]               Release Name.
   [-d YYYY-MM-DD]         Release Date. (Use now if not available)
@@ -477,7 +476,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm remove_release
   [-r id_release]         Id Release of the script to remove.
   [-f]                    Force remove without confirmation question.
@@ -503,7 +502,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm remove_script
   [-i id_script]          Id Script of the script to remove.
 
@@ -537,7 +536,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm update_script -h
   [-i id_script]          Id Script.
   [-f filename]           Script filename.
@@ -579,7 +578,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm insert_script
   [-f filename]           Script filename.
   [-n name]               Release Name.
@@ -613,7 +612,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm insert_script_type
   [-c code]               Script Type Code.
   [-d description]        Script Type Description
@@ -640,7 +639,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm insert_rel_dep -h
   [-n name]               Release Name.
   [-t version_to]         Release version that has a dependency.
@@ -669,7 +668,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm remove_rel_dep -h
   [-n name]               Release Name.
   [-t version_to]         Release version that has a dependency.
@@ -698,7 +697,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm insert_inhibit_script -h
   [-n name]               Release Name.
   [-i id_script]          Script Id.
@@ -730,7 +729,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm insert_ded_script -h
   [-n name]               Release Name.
   [-i id_script]          Script Id.
@@ -761,7 +760,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
 
   $# dbrm dbm remove_inhibit_script -h
   [-n name]               Release Name.
@@ -793,7 +792,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm remove_ded_script -h
   [-n name]               Release Name.
   [-i id_script]          Script Id.
@@ -816,7 +815,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm show_branches
   ===============================================================================================================
   ID        CREATION_DATE           UPDATE_DATE             NAME
@@ -841,7 +840,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm insert_branch
   [-n name]               Branch Name.
   [-d YYYY-MM-DD]         Branch Date. (Use now if not available)
@@ -869,7 +868,7 @@ _Exit Values_:
   * `1`: On error.
   * `0`: On success
 
-```bash
+```shell
   $# dbrm dbm move_script -h
   [-i id_script]          Id script of the script to move.
   [-a x]                  After script with id x.
