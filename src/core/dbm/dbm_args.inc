@@ -5,11 +5,8 @@
 # License: GPL 2.0
 #------------------------------------------------
 
-
-#****f* dbm/_dbm_initenv_help
-# FUNCTION
 #   Help of the dbm initenv command.
-# SOURCE
+# dbm__dbm_initenv_help
 _dbm_initenv_help () {
 
   echo -en "[--to-current-dir]      Initialize current directory [.].\n"
@@ -20,19 +17,9 @@ _dbm_initenv_help () {
 
   return 0
 }
-#***
+# dbm_dbm_initenv_help_end
 
-
-#****f* dbm/_dbm_check_initenv_args
-# FUNCTION
-#   Internal function for parse command line arguments related to
-#   initenv command.
-# DESCRIPTION
-#   * --to-current-dir     Initialize current directory.
-#   * --to-dir target      Initialize target directory.
-#   * --enable-profiles    Enable profiles mode.
-#   * --help|-h            Show help message.
-# SOURCE
+# dbm__dbm_check_initenv_args
 _dbm_check_initenv_args () {
 
   [[ $DEBUG ]] && echo -en "(_dbm_check_initenv_args: $@)\n"

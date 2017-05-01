@@ -851,7 +851,7 @@ _Parameters_:
                 CREATED, LAST_ALTERED, LAST_EXECUTED, EVENT_COMMENT
                 otherwise EVENT_NAME, DEFINED, TIME_ZONE, EVENT_TYPE,
                 STATUS, CREATED end LAST_EXECUTED.
-  * `$`: (ename) Name of the event.
+  * `$2`: (ename) Name of the event.
 
 _Returns_:
 

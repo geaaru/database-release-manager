@@ -1555,3 +1555,53 @@ _Return_:
     :end-before: dbm__dbm_exts_check_dbm_end
 ```
 
+#### _dbm_initenv_help
+
+Print on stdout help message of command `initenv`
+
+_Return_:
+
+  * `0`: always
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_initenv_help
+    :end-before: dbm__dbm_initenv_help_end
+```
+
+#### _dbm_check_initenv_args
+
+Internal function for parse command line arguments related to
+`initenv` command.
+
+_Command Arguments_:
+
+  * `--to-current-dir`: Initialize current directory.
+  * `--to-dir target`: Initialize target directory.
+  * `--enable-profiles`: Enable profiles mode.
+  * `--help|-h`: Show help message.
+
+_Variables Used_:
+
+  * `DBM_INIT_CURRDIR`: Set to 1 if --to-current-dir option is used. Default is 0.
+  * `DBM_INIT_DIR`: Set with target directory of the --to-dir option.
+  * `DBM_INIT_TARGETDIR`: Set to 1 if --to-dir option is used. Default is 0.
+  * `DBM_INIT_PROFILES`: Set to 1 if --enable-profiles is present. Default is 0.
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_exts.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_check_initenv_args
+    :end-before: dbm__dbm_check_initenv_args_end
+```
+
