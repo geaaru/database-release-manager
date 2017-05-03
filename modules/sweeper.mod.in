@@ -88,55 +88,64 @@ sweeper_compress () {
     source-filter:   ${DBRM_SWEEPER_REGEX} 
     age:             ${DBRM_SWEEPER_AGE} 
     clean-src:       ${DBRM_SWEEPER_REMOVE_SRC_FILES} 
-    clean-empty-dir: ${DBRM_SWEEPER_REMOVE_EMPTY_DIR}"
+    clean-empty-dir: ${DBRM_SWEEPER_REMOVE_EMPTY_DIR}
+    dry-run:         ${DBRM_SWEEPER_DRYRUN}
+    file-type:       ${DBRM_SWEEPER_FILE_TYPE}"
 
-  #Gatering all files matching
-  [[ $DEBUG && $DEBUG == true ]] && echo find ${DBRM_SWEEPER_SRCDIR} -type f -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" -exec readlink -f {} \;
-  tar_name=${DBRM_SWEEPER_CONTEXT}_$(date +%F_%R).tar.gz
+  #Gathering all files matching
+  file_list="$(find ${DBRM_SWEEPER_SRCDIR} ${DBRM_SWEEPER_FILE_TYPE} -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" -exec readlink -f {} \;)"
+  [[ ($DEBUG && $DEBUG == true) || $DBRM_SWEEPER_DRYRUN ]] && echo "$file_list"
 
-  #Generate tar file containing file matched
-  tar_options="zcvf"-
+  if [ $DBRM_SWEEPER_DRYRUN -ne 0 ]; then
 
-  file_list="$(find ${DBRM_SWEEPER_SRCDIR} -type f -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" -exec readlink -f {} \;)"
-  out=$(tar ${tar_options} ${DBRM_SWEEPER_DESTDIR}/${tar_name} ${file_list})
-  echo "${out}"
-  _logfile_write "tar: ${out}"
+    tar_name=${DBRM_SWEEPER_CONTEXT}_$(date +%F_%R).tar.gz
 
-  #Eventually generate log file with content of tar
-  if [ ! -z "${DBRM_SWEEPER_ARCHIVE_PATH}" ]; then
-    file_count=$(echo ${file_list} | wc -w )
+    #Generate tar file containing file matched
+    tar_options="zcvf"-
 
-    echo -en "-------$(date +%F_%R) compressing ---------------------------------\n\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-    echo -en "    source-n"dir:      ${DBRM_SWEEPER_SRCDIR}\ >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-    echo -en "    compressed-file: ${DBRM_SWEEPER_DESTDIR}/${tar_name}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-    echo -en "    source-filter:   ${DBRM_SWEEPER_REGEX}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-    echo -en "    age:             ${DBRM_SWEEPER_AGE}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-    echo -en "    clean-src:       ${DBRM_SWEEPER_REMOVE_SRC_FILES}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-    echo -en "    clean-empty-dir: ${DBRM_SWEEPER_REMOVE_EMPTY_DIR}\n\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-    echo -en "    eligible files:  ${file_count}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+    #file_list="$(find ${DBRM_SWEEPER_SRCDIR} -type f -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" -exec readlink -f {} \;)"
+    out=$(tar ${tar_options} ${DBRM_SWEEPER_DESTDIR}/${tar_name} ${file_list})
+    echo "${out}"
+    _logfile_write "tar: ${out}"
 
-    if [ ${file_count} -eq "0" ]; then
-      echo -en "\n Nothing to compress.\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-    else
-      echo -en "    File list: \n\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-      echo -en ${file_list} | tr " " "\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-      echo -en "\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+    #Eventually generate log file with content of tar
+    if [ ! -z "${DBRM_SWEEPER_ARCHIVE_PATH}" ]; then
+      file_count=$(echo ${file_list} | wc -w )
+
+      echo -en "-------$(date +%F_%R) compressing ---------------------------------\n\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    source-n"dir:      ${DBRM_SWEEPER_SRCDIR}\ >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    compressed-file: ${DBRM_SWEEPER_DESTDIR}/${tar_name}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    source-filter:   ${DBRM_SWEEPER_REGEX}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    age:             ${DBRM_SWEEPER_AGE}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    clean-src:       ${DBRM_SWEEPER_REMOVE_SRC_FILES}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    clean-empty-dir: ${DBRM_SWEEPER_REMOVE_EMPTY_DIR}\n\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    eligible files:  ${file_count}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+
+      if [ ${file_count} -eq "0" ]; then
+        echo -en "\n Nothing to compress.\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      else
+        echo -en "    File list: \n\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+        echo -en ${file_list} | tr " " "\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+        echo -en "\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      fi
+
+      echo -en '\n--------------------------------------------------------------------\n\n' >> ${DBRM_SWEEPER_ARCHIVE_PATH}
     fi
 
-    echo -en '\n--------------------------------------------------------------------\n\n' >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+    #Eventually removing tarred files/dirs and empty directories
+    if [ "${DBRM_SWEEPER_REMOVE_SRC_FILES}" -eq "1" ]; then
+      out=$(rm -r ${file_list})
+      echo "${out}"
+      _logfile_write "remove: ${out}"
+    fi
+    if [ "${DBRM_SWEEPER_REMOVE_EMPTY_DIR}" -eq "1" ]; then
+      out=$(find ${DBRM_SWEEPER_SRCDIR}/* -type d -empty -delete)
+      echo "${out}"
+      _logfile_write "remove empty dir: ${out}"
+    fi
+
   fi
 
-  #Eventually removing tarred files and empty directories
-  if [ "${DBRM_SWEEPER_REMOVE_SRC_FILES}" -eq "1" ]; then
-    out=$(rm ${file_list})
-    echo "${out}"
-    _logfile_write "remove: ${out}"
-  fi
-  if [ "${DBRM_SWEEPER_REMOVE_EMPTY_DIR}" -eq "1" ]; then
-    out=$(find ${DBRM_SWEEPER_SRCDIR}/* -type d -empty -delete)
-    echo "${out}"
-    _logfile_write "remove empty dir: ${out}"
-  fi
   _logfile_write "sweeper_compress... END"
 
 }
@@ -157,41 +166,49 @@ sweeper_expunge () {
     source-dir:      ${DBRM_SWEEPER_SRCDIR}
     compressed-file: ${DBRM_SWEEPER_DESTDIR}/${tar_name} 
     source-filter:   ${DBRM_SWEEPER_REGEX} 
-    age:             ${DBRM_SWEEPER_AGE}"
-
+    age:             ${DBRM_SWEEPER_AGE}
+    clean-empty-dir: ${DBRM_SWEEPER_REMOVE_EMPTY_DIR}
+    dry-run:         ${DBRM_SWEEPER_DRYRUN}
+    file-type:       ${DBRM_SWEEPER_FILE_TYPE}"
+    
   #Gatering all files matching
-  file_list="$(find ${DBRM_SWEEPER_SRCDIR} -type f -mtime ${DBRM_SWEEPER_AGE} -exec readlink -f {} \;)"
+  file_list="$(find ${DBRM_SWEEPER_SRCDIR} ${DBRM_SWEEPER_FILE_TYPE} -mtime ${DBRM_SWEEPER_AGE} -exec readlink -f {} \;)"
+  [[ $DBRM_SWEEPER_DRYRUN ]] && echo "$file_list"
 
-  #Deleting files and empty folders
-  out=$(rm ${file_list})
-  echo "${out}"
-  _logfile_write "remove: ${out}"
+  if [ $DBRM_SWEEPER_DRYRUN -ne 0 ]; then
+
+    #Deleting files/dirs and empty folders
+    out=$(rm -r ${file_list})
+    echo "${out}"
+    _logfile_write "remove: ${out}"
 
 
-  out=$(find ${DBRM_SWEEPER_SRCDIR} -type d -empty -delete)
-  echo ${out}
-  _logfile_write "remove empty dirs: ${out}"
+    out=$(find ${DBRM_SWEEPER_SRCDIR} -type d -empty -delete)
+    echo ${out}
+    _logfile_write "remove empty dirs: ${out}"
 
-  #Eventually generate log file with content of tar
-  if [ ! -z "${DBRM_SWEEPER_ARCHIVE_PATH}" ]; then
-    file_count=$(echo ${file_list} | wc -w )
+    #Eventually generate log file with content of tar
+    if [ ! -z "${DBRM_SWEEPER_ARCHIVE_PATH}" ]; then
+      file_count=$(echo ${file_list} | wc -w )
 
-    echo -en "-------$(date +%F_%R) expunging ---------------------------------\n\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-    echo -en "    source-dir:      ${DBRM_SWEEPER_SRCDIR}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-    echo -en "    compressed-file: ${DBRM_SWEEPER_DESTDIR}/${tar_name}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-    echo -en "    source-filter:   ${DBRM_SWEEPER_REGEX}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-    echo -en "    age:             ${DBRM_SWEEPER_AGE}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-    echo -en "    eligible files:  ${file_count}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "-------$(date +%F_%R) expunging ---------------------------------\n\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    source-dir:      ${DBRM_SWEEPER_SRCDIR}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    compressed-file: ${DBRM_SWEEPER_DESTDIR}/${tar_name}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    source-filter:   ${DBRM_SWEEPER_REGEX}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    age:             ${DBRM_SWEEPER_AGE}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    eligible files:  ${file_count}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
 
-    if [ ${file_count} -eq "0" ]; then
-      echo -en "\n Nothing to expunge.\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-    else
-      echo -en "    File list: \n\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-      echo -en ${file_list} | tr " " "\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
-      echo -en "\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      if [ ${file_count} -eq "0" ]; then
+        echo -en "\n Nothing to expunge.\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      else
+        echo -en "    File list: \n\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+        echo -en ${file_list} | tr " " "\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+        echo -en "\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      fi
+
+      echo -en '\n--------------------------------------------------------------------\n\n' >> ${DBRM_SWEEPER_ARCHIVE_PATH}
     fi
 
-    echo -en '\n--------------------------------------------------------------------\n\n' >> ${DBRM_SWEEPER_ARCHIVE_PATH}
   fi
   _logfile_write "sweeper_expunge... END"
 }
@@ -225,6 +242,8 @@ _sweeper_compress_args () {
   DBRM_SWEEPER_REGEX=".*"
   DBRM_SWEEPER_REMOVE_SRC_FILES=0;
   DBRM_SWEEPER_REMOVE_EMPTY_DIR=0;
+  DBRM_SWEEPER_DRYRUN=1
+  DBRM_SWEEPER_FILE_TYPE=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -261,6 +280,14 @@ _sweeper_compress_args () {
         ;;
       --gen-archive)
         DBRM_SWEEPER_ARCHIVE_PATH="$(readlink -f $2)"
+        shift
+        ;;
+      --dry-run)
+        DBRM_SWEEPER_DRYRUN=0
+        shift
+        ;;
+      --file-type)
+        DBRM_SWEEPER_FILE_TYPE="-type $2"
         shift
         ;;
       *)
@@ -303,9 +330,11 @@ _sweeper_compress_help () {
   echo -en "                         Default -source-dir/* .\n"
   echo -en "[--dest-dir dir]         Target directory where .tar file will be created.\n"
   echo -en "[--age days]             Procedure affect only files older than <days>.\n"
+  echo -en "[--file-type ftype]      Procedure affect only files with file type equal than <ftype>.\n"
   echo -en "[--gen-archive path]     Generate archive log to files contained in tar.\n"
   echo -en "[--clean-src]            Remove compressed source files.\n"
   echo -en "[--clean-empty-dir]      Remove empty dirs from source-dir.\n"
+  echo -en "[--dry-run]              Print only list of file affected and do nothing else.\n"
   echo -en "\n"
   echo -en "Examples: \n"
   echo -en "$> dbrm sweeper compress --context-name test_ctx --source-dir /playground \ \n"
@@ -314,6 +343,14 @@ _sweeper_compress_help () {
   echo -en "\n"
   echo -en "$> dbrm sweeper compress --context-name test_ctx --source-dir /playground  \ \n"
   echo -en "                         --dest-dir /tmp --age 10 --gen-archive /tmp/tmp.archive \ \n"
+  echo -en "                         --clean-src --clean-empty-dir \n"
+  echo -en "\n"
+  echo -en "$> dbrm sweeper compress --context-name test_ctx --source-dir /playground  \ \n"
+  echo -en "                         --dest-dir /tmp --age 10 --file-type f --gen-archive /tmp/tmp.archive \ \n"
+  echo -en "                         --clean-src --clean-empty-dir \n"
+  echo -en "\n"
+  echo -en "$> dbrm sweeper compress --context-name test_ctx --source-dir /playground  \ \n"
+  echo -en "                         --dest-dir /tmp --age 10 --file-type d --gen-archive /tmp/tmp.archive \ \n"
   echo -en "                         --clean-src --clean-empty-dir \n"
   return 0
 }
@@ -345,6 +382,8 @@ _sweeper_expunge_args () {
   DBRM_SWEEPER_DESTDIR=""
   DBRM_SWEEPER_AGE=""
   DBRM_SWEEPER_REGEX=".*"
+  DBRM_SWEEPER_DRYRUN=1
+  DBRM_SWEEPER_FILE_TYPE=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -375,6 +414,14 @@ _sweeper_expunge_args () {
         ;;
       --gen-archive)
         DBRM_SWEEPER_ARCHIVE_PATH="$(readlink -f $2)"
+        shift
+        ;;
+      --dry-run)
+        DBRM_SWEEPER_DRYRUN=0
+        shift
+        ;;
+      --file-type)
+        DBRM_SWEEPER_FILE_TYPE="-type $2"
         shift
         ;;
       *)
@@ -416,7 +463,9 @@ _sweeper_expunge_help () {
   echo -en "[--source-filter regex]  Define regoular expression to filter source files\n"
   echo -en "                         Default -source-dir/* .\n"
   echo -en "[--age days]             Procedure affect only files older than <days>.\n"
+  echo -en "[--file-type ftype]      Procedure affect only files with file type equal than <ftype>.\n"
   echo -en "[--gen-archive path]     Generate archive log containing the list of deleted files.\n"
+  echo -en "[--dry-run]              Print only list of file affected and do nothing else.\n"
   echo -en "\n"
   echo -en "Examples: \n"
   echo -en "$> dbrm sweeper expunge  --context-name test_ctx --source-dir /playground \ \n"
@@ -425,6 +474,13 @@ _sweeper_expunge_help () {
   echo -en "\n"
   echo -en "$> dbrm sweeper expunge  --context-name test_ctx --source-dir /playground  \ \n"
   echo -en "                         --dest-dir /tmp --age 10 --gen-archive /tmp/tmp.archive \ \n"
+  echo -en "\n"
+  echo -en "$> dbrm sweeper expunge  --context-name test_ctx --source-dir /playground  \ \n"
+  echo -en "                         --dest-dir /tmp --age 10 --file-type f --gen-archive /tmp/tmp.archive \ \n"
+  echo -en "\n"
+  echo -en "$> dbrm sweeper expunge  --context-name test_ctx --source-dir /playground  \ \n"
+  echo -en "                         --dest-dir /tmp --age 10 --file-type d --gen-archive /tmp/tmp.archive \ \n"
+
 
   return 0
 }
