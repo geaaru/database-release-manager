@@ -317,7 +317,7 @@ _dbm_check_add_prof_args () {
 }
 # dbm__dbm_check_add_prof_args_end
 
-# Args for insert branch command
+# dbm__dbm_check_ins_bra_args
 _dbm_check_ins_bra_args () {
 
   local ans=0
@@ -359,18 +359,19 @@ _dbm_check_ins_bra_args () {
 
   return $ans
 }
+# dbm__dbm_check_ins_bra_args_end
 
-_dbm_ins_script_type_help () {
-
-  echo -en "[-c code]               Script Type Code.\n"
-  echo -en "[-d description]        Script Type Description\n"
-
-  return 0
-}
-
+# dbm__dbm_check_ins_script_type_args
 _dbm_check_ins_script_type_args () {
 
   [[ $DEBUG ]] && echo -en "(_dbm_check_ins_script_type_args args: $@)\n"
+
+  _dbm_ins_script_type_help () {
+    echo -en "[-c code]               Script Type Code.\n"
+    echo -en "[-d description]        Script Type Description\n"
+
+    return 0
+  }
 
   # Reinitialize opt index position
   OPTIND=1
@@ -402,27 +403,30 @@ _dbm_check_ins_script_type_args () {
     return 1
   fi
 
-  return 0
-}
-
-_dbm_ins_script_help () {
-
-  echo -en "[-f filename]           Script filename.\n"
-  echo -en "[-n name]               Release Name.\n"
-  echo -en "[-v version]            Release Version\n"
-  echo -en "[-t script_type]        Script Type.\n"
-  echo -en "[-a 0|1]                Set active flag. Default is 1 (active)\n"
-  echo -en "[-d directory]          Directory of the script.\n"
-  echo -en "[-o id_order]           Script Id Order (optional). Default is used MAX(id) of the same id_release.\n"
-  echo -en "[-r id_release]         Id_release of the script. Use this instead of release name and version.\n"
-  echo -en "[-h]                    Show this message.\n"
+  unset -f _dbm_ins_script_type_help
 
   return 0
 }
+# dbm__dbm_check_ins_script_type_args_end
 
 _dbm_check_ins_script_args () {
 
   [[ $DEBUG ]] && echo -en "(_dbm_check_ins_script_args args: $@)\n"
+
+  _dbm_ins_script_help () {
+
+    echo -en "[-f filename]           Script filename.\n"
+    echo -en "[-n name]               Release Name.\n"
+    echo -en "[-v version]            Release Version\n"
+    echo -en "[-t script_type]        Script Type.\n"
+    echo -en "[-a 0|1]                Set active flag. Default is 1 (active)\n"
+    echo -en "[-d directory]          Directory of the script.\n"
+    echo -en "[-o id_order]           Script Id Order (optional). Default is used MAX(id) of the same id_release.\n"
+    echo -en "[-r id_release]         Id_release of the script. Use this instead of release name and version.\n"
+    echo -en "[-h]                    Show this message.\n"
+
+    return 0
+  }
 
   local short_options="f:t:a:d:hr:n:v:o:"
 
@@ -488,6 +492,8 @@ _dbm_check_ins_script_args () {
       DBM_SCRIPT_ACTIVE="1"
     fi
   fi
+
+  unset -f _dbm_ins_script_help
 
   return 0
 }

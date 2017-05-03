@@ -1759,3 +1759,62 @@ _Return_:
     :end-before: dbm__dbm_check_add_prof_args_end
 ```
 
+#### _dbm_check_ins_bra_args
+
+Internal function for parse command line arguments related to `insert_branch` command.
+
+_Command Arguments_:
+
+  * `-n NAME`: Name of the branch to insert.
+  * `-d YYYY-MM-DD`: Date of the branch (optional). Default valeu is now.
+  * `-h`: Show command options.
+
+_Variables Used_:
+
+  * `DBM_BRA_NAME`: Name of the branch.
+  * `DBM_BRA_DATE`: Date of the branch.
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_check_ins_bra_args
+    :end-before: dbm__dbm_check_ins_bra_args_end
+```
+
+#### _dbm_check_ins_script_type_args
+
+Internal function for parse command line arguments related to `insert_script_type` command.
+
+_Command Arguments_:
+
+  * `-c CODE`: String used as code of the script type.
+  * `-d DESCRIPTION`: Description of the script type.
+  * `-h`: Show command options.
+
+_Variables Used_:
+
+  * `DBM_SCRIPT_TYPE_CODE`: Code of the script type.
+  * `DBM_SCRIPT_TYPE_DESCR`: Description of the script type.
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_check_ins_script_type_args
+    :end-before: dbm__dbm_check_ins_script_type_args_end
+```
+
+
