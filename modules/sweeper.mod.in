@@ -122,6 +122,7 @@ sweeper_compress () {
       echo -en "    file type:       ${DBRM_SWEEPER_FILE_TYPE}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
       echo -en "    follow link:     ${DBRM_SWEEPER_FOLLOW_LINK}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
       echo -en "    eligible files:  ${file_count}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    remove src dir:  ${DBRM_SWEEPER_REMOVE_SRC_DIR}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
 
       if [ ${file_count} -eq "0" ]; then
         echo -en "\n Nothing to compress.\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
@@ -144,6 +145,13 @@ sweeper_compress () {
       out=$(find ${DBRM_SWEEPER_SRCDIR}/* -type d -empty -delete)
       echo "${out}"
       _logfile_write "remove empty dir: ${out}"
+    fi
+    if [ $DBRM_SWEEPER_REMOVE_SRC_DIR -eq 1 ]; then
+
+      out=$(find ${DBRM_SWEEPER_SRCDIR} -type d -empty -delete)
+      echo ${out}
+      _logfile_write "remove empty dirs: ${out}"
+
     fi
 
   fi
@@ -255,6 +263,7 @@ _sweeper_compress_args () {
   DBRM_SWEEPER_DRYRUN=0
   DBRM_SWEEPER_FILE_TYPE=""
   DBRM_SWEEPER_FOLLOW_LINK=""
+  DBRM_SWEEPER_REMOVE_SRC_DIR=0
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -303,6 +312,9 @@ _sweeper_compress_args () {
       --follow-link)
         DBRM_SWEEPER_FOLLOW_LINK="-exec readlink -f {} \;"
         ;;
+      --remove-src-dir)
+        DBRM_SWEEPER_REMOVE_SRC_DIR=1
+        ;;
       *)
         error_generate "Invalid parameter $1."
         ;;
@@ -349,6 +361,7 @@ _sweeper_compress_help () {
   echo -en "[--clean-empty-dir]      Remove empty dirs from source-dir.\n"
   echo -en "[--dry-run]              Print only list of file affected and do nothing else.\n"
   echo -en "[--follow-link]          Resolve symbolic link to target in list of file affected.\n"
+  echo -en "[--remove-src-dir]       Remove also directory src (only if empty) in which was present file to expunge.\n"
   echo -en "\n"
   echo -en "Examples: \n"
   echo -en "$> dbrm sweeper compress --context-name test_ctx --source-dir /playground \ \n"
@@ -492,7 +505,7 @@ _sweeper_expunge_help () {
   echo -en "[--gen-archive path]     Generate archive log containing the list of deleted files.\n"
   echo -en "[--dry-run]              Print only list of file affected and do nothing else.\n"
   echo -en "[--follow-link]          Resolve symbolic link to target in list of file affected.\n"
-  echo -en "[--remove-src-dir]       Remove also directory src in which are present file to expunge.\n"
+  echo -en "[--remove-src-dir]       Remove also directory src (only if empty) in which was present file to expunge.\n"
   echo -en "\n"
   echo -en "Examples: \n"
   echo -en "$> dbrm sweeper expunge  --context-name test_ctx --source-dir /playground \ \n"
