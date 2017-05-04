@@ -95,9 +95,9 @@ sweeper_compress () {
 
   #Gathering all files matching
   file_list="$(find ${DBRM_SWEEPER_SRCDIR} ${DBRM_SWEEPER_FILE_TYPE} -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" ${DBRM_SWEEPER_FOLLOW_LINK})"
-  [[ ($DEBUG && $DEBUG == true) || $DBRM_SWEEPER_DRYRUN -eq 0 ]] && echo "$file_list"
+  [[ ($DEBUG && $DEBUG == true) || $DBRM_SWEEPER_DRYRUN -eq 1 ]] && echo "$file_list"
 
-  if [ $DBRM_SWEEPER_DRYRUN -ne 0 ]; then
+  if [ $DBRM_SWEEPER_DRYRUN -ne 1 ]; then
 
     tar_name=${DBRM_SWEEPER_CONTEXT}_$(date +%F_%R).tar.gz
 
@@ -172,23 +172,27 @@ sweeper_expunge () {
     clean-empty-dir: ${DBRM_SWEEPER_REMOVE_EMPTY_DIR}
     dry-run:         ${DBRM_SWEEPER_DRYRUN}
     file-type:       ${DBRM_SWEEPER_FILE_TYPE}
-    follow-link:     ${DBRM_SWEEPER_FOLLOW_LINK}"
+    follow-link:     ${DBRM_SWEEPER_FOLLOW_LINK}
+    remove-src-dir:  ${DBRM_SWEEPER_REMOVE_SRC_DIR}"
     
   #Gatering all files matching
   file_list="$(find ${DBRM_SWEEPER_SRCDIR} ${DBRM_SWEEPER_FILE_TYPE} -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" ${DBRM_SWEEPER_FOLLOW_LINK})"
-  [[ $DBRM_SWEEPER_DRYRUN -eq 0 ]] && echo "$file_list"
+  [[ $DBRM_SWEEPER_DRYRUN -eq 1 ]] && echo "$file_list"
 
-  if [ $DBRM_SWEEPER_DRYRUN -ne 0 ]; then
+  if [ $DBRM_SWEEPER_DRYRUN -ne 1 ]; then
 
     #Deleting files/dirs and empty folders
     out=$(rm -r ${file_list})
     echo "${out}"
     _logfile_write "remove: ${out}"
 
+    if [ $DBRM_SWEEPER_REMOVE_SRC_DIR -eq 1 ]; then
 
-    out=$(find ${DBRM_SWEEPER_SRCDIR} -type d -empty -delete)
-    echo ${out}
-    _logfile_write "remove empty dirs: ${out}"
+      out=$(find ${DBRM_SWEEPER_SRCDIR} -type d -empty -delete)
+      echo ${out}
+      _logfile_write "remove empty dirs: ${out}"
+
+    fi
 
     #Eventually generate log file with content of tar
     if [ ! -z "${DBRM_SWEEPER_ARCHIVE_PATH}" ]; then
@@ -202,6 +206,7 @@ sweeper_expunge () {
       echo -en "    eligible files:  ${file_count}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
       echo -en "    file type:       ${DBRM_SWEEPER_FILE_TYPE}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
       echo -en "    follow link:     ${DBRM_SWEEPER_FOLLOW_LINK}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    remove src dir:  ${DBRM_SWEEPER_REMOVE_SRC_DIR}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
 
       if [ ${file_count} -eq "0" ]; then
         echo -en "\n Nothing to expunge.\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
@@ -247,7 +252,7 @@ _sweeper_compress_args () {
   DBRM_SWEEPER_REGEX=".*"
   DBRM_SWEEPER_REMOVE_SRC_FILES=0;
   DBRM_SWEEPER_REMOVE_EMPTY_DIR=0;
-  DBRM_SWEEPER_DRYRUN=1
+  DBRM_SWEEPER_DRYRUN=0
   DBRM_SWEEPER_FILE_TYPE=""
   DBRM_SWEEPER_FOLLOW_LINK=""
 
@@ -289,7 +294,7 @@ _sweeper_compress_args () {
         shift
         ;;
       --dry-run)
-        DBRM_SWEEPER_DRYRUN=0
+        DBRM_SWEEPER_DRYRUN=1
         shift
         ;;
       --file-type)
@@ -397,9 +402,10 @@ _sweeper_expunge_args () {
   DBRM_SWEEPER_DESTDIR=""
   DBRM_SWEEPER_AGE=""
   DBRM_SWEEPER_REGEX=".*"
-  DBRM_SWEEPER_DRYRUN=1
+  DBRM_SWEEPER_DRYRUN=0
   DBRM_SWEEPER_FILE_TYPE=""
   DBRM_SWEEPER_FOLLOW_LINK=""
+  DBRM_SWEEPER_REMOVE_SRC_DIR=0
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -433,7 +439,7 @@ _sweeper_expunge_args () {
         shift
         ;;
       --dry-run)
-        DBRM_SWEEPER_DRYRUN=0
+        DBRM_SWEEPER_DRYRUN=1
         shift
         ;;
       --file-type)
@@ -442,6 +448,10 @@ _sweeper_expunge_args () {
         ;;
       --follow-link)
         DBRM_SWEEPER_FOLLOW_LINK="-exec readlink -f {} \;"
+        shift
+        ;;
+      --remove-src-dir)
+        DBRM_SWEEPER_REMOVE_SRC_DIR=1
         shift
         ;;
       *)
@@ -487,6 +497,7 @@ _sweeper_expunge_help () {
   echo -en "[--gen-archive path]     Generate archive log containing the list of deleted files.\n"
   echo -en "[--dry-run]              Print only list of file affected and do nothing else.\n"
   echo -en "[--follow-link]          Resolve symbolic link to target in list of file affected.\n"
+  echo -en "[--remove-src-dir]       Remove also directory src in which are present file to expunge.\n"
   echo -en "\n"
   echo -en "Examples: \n"
   echo -en "$> dbrm sweeper expunge  --context-name test_ctx --source-dir /playground \ \n"
