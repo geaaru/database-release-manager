@@ -91,7 +91,8 @@ sweeper_compress () {
     clean-empty-dir: ${DBRM_SWEEPER_REMOVE_EMPTY_DIR}
     dry-run:         ${DBRM_SWEEPER_DRYRUN}
     file-type:       ${DBRM_SWEEPER_FILE_TYPE}
-    follow-link:     ${DBRM_SWEEPER_FOLLOW_LINK}"
+    follow-link:     ${DBRM_SWEEPER_FOLLOW_LINK}
+    remove-src-dir:  ${DBRM_SWEEPER_REMOVE_SRC_DIR}"
 
   #Gathering all files matching
   file_list="$(find ${DBRM_SWEEPER_SRCDIR} ${DBRM_SWEEPER_FILE_TYPE} -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" ${DBRM_SWEEPER_FOLLOW_LINK})"
