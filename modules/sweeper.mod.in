@@ -203,7 +203,7 @@ sweeper_expunge () {
       echo -en "    file type:       ${DBRM_SWEEPER_FILE_TYPE}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
       echo -en "    follow link:     ${DBRM_SWEEPER_FOLLOW_LINK}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
 
-      if [ ${file_count} -eq "0" ]; then/home/walter/provasweeper/t1
+      if [ ${file_count} -eq "0" ]; then
         echo -en "\n Nothing to expunge.\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
       else
         echo -en "    File list: \n\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
