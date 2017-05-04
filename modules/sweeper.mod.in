@@ -164,7 +164,7 @@ sweeper_expunge () {
   shift 2
   _sweeper_expunge_args "$@" || return 1
 
-  _logfile_write "sweeper_compress... START
+  _logfile_write "sweeper_expunge... START
     source-dir:      ${DBRM_SWEEPER_SRCDIR}
     compressed-file: ${DBRM_SWEEPER_DESTDIR}/${tar_name} 
     source-filter:   ${DBRM_SWEEPER_REGEX} 
@@ -295,7 +295,6 @@ _sweeper_compress_args () {
         ;;
       --dry-run)
         DBRM_SWEEPER_DRYRUN=1
-        shift
         ;;
       --file-type)
         DBRM_SWEEPER_FILE_TYPE="-type $2"
@@ -303,7 +302,6 @@ _sweeper_compress_args () {
         ;;
       --follow-link)
         DBRM_SWEEPER_FOLLOW_LINK="-exec readlink -f {} \;"
-        shift
         ;;
       *)
         error_generate "Invalid parameter $1."
@@ -440,7 +438,6 @@ _sweeper_expunge_args () {
         ;;
       --dry-run)
         DBRM_SWEEPER_DRYRUN=1
-        shift
         ;;
       --file-type)
         DBRM_SWEEPER_FILE_TYPE="-type $2"
@@ -448,11 +445,9 @@ _sweeper_expunge_args () {
         ;;
       --follow-link)
         DBRM_SWEEPER_FOLLOW_LINK="-exec readlink -f {} \;"
-        shift
         ;;
       --remove-src-dir)
         DBRM_SWEEPER_REMOVE_SRC_DIR=1
-        shift
         ;;
       *)
         error_generate "Invalid parameter $1."
