@@ -175,7 +175,7 @@ sweeper_expunge () {
     follow-link:     ${DBRM_SWEEPER_FOLLOW_LINK}"
     
   #Gatering all files matching
-  file_list="$(find ${DBRM_SWEEPER_SRCDIR} ${DBRM_SWEEPER_FILE_TYPE} -mtime ${DBRM_SWEEPER_AGE} ${DBRM_SWEEPER_FOLLOW_LINK})"
+  file_list="$(find ${DBRM_SWEEPER_SRCDIR} ${DBRM_SWEEPER_FILE_TYPE} -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" ${DBRM_SWEEPER_FOLLOW_LINK})"
   [[ $DBRM_SWEEPER_DRYRUN -eq 0 ]] && echo "$file_list"
 
   if [ $DBRM_SWEEPER_DRYRUN -ne 0 ]; then
@@ -203,7 +203,7 @@ sweeper_expunge () {
       echo -en "    file type:       ${DBRM_SWEEPER_FILE_TYPE}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
       echo -en "    follow link:     ${DBRM_SWEEPER_FOLLOW_LINK}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
 
-      if [ ${file_count} -eq "0" ]; then
+      if [ ${file_count} -eq "0" ]; then/home/walter/provasweeper/t1
         echo -en "\n Nothing to expunge.\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
       else
         echo -en "    File list: \n\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
