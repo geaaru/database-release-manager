@@ -97,7 +97,8 @@ sweeper_compress () {
 
   #Gathering all files matching
   file_list="$(find ${DBRM_SWEEPER_SRCDIR} ${DBRM_SWEEPER_FILE_TYPE} -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" ${DBRM_SWEEPER_FOLLOW_LINK})"
-  [[ ($DEBUG && $DEBUG == true) || $DBRM_SWEEPER_DRYRUN -eq 1 ]] && echo "$file_list"
+  [[ $DBRM_SWEEPER_DRYRUN -eq 1 ]] && echo "file to compress affected ="`echo "$file_list" | wc -l`
+  [[ $DBRM_SWEEPER_DRYRUN -eq 1 ]] && echo "$file_list"
 
   if [ $DBRM_SWEEPER_DRYRUN -ne 1 ]; then
 
@@ -192,6 +193,7 @@ sweeper_expunge () {
     
   #Gatering all files matching
   file_list="$(find ${DBRM_SWEEPER_SRCDIR} ${DBRM_SWEEPER_FILE_TYPE} -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" ${DBRM_SWEEPER_FOLLOW_LINK})"
+  [[ $DBRM_SWEEPER_DRYRUN -eq 1 ]] && echo "file to expunge affected ="`echo "$file_list" | wc -l`
   [[ $DBRM_SWEEPER_DRYRUN -eq 1 ]] && echo "$file_list"
 
   if [ $DBRM_SWEEPER_DRYRUN -ne 1 ]; then
