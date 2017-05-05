@@ -92,7 +92,8 @@ sweeper_compress () {
     dry-run:         ${DBRM_SWEEPER_DRYRUN}
     file-type:       ${DBRM_SWEEPER_FILE_TYPE}
     follow-link:     ${DBRM_SWEEPER_FOLLOW_LINK}
-    remove-src-dir:  ${DBRM_SWEEPER_REMOVE_SRC_DIR}"
+    remove-src-dir:  ${DBRM_SWEEPER_REMOVE_SRC_DIR}
+    use-xz-compress: ${DBRM_SWEEPER_USE_XZ_COMPRESS}"
 
   #Gathering all files matching
   file_list="$(find ${DBRM_SWEEPER_SRCDIR} ${DBRM_SWEEPER_FILE_TYPE} -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" ${DBRM_SWEEPER_FOLLOW_LINK})"
@@ -101,9 +102,13 @@ sweeper_compress () {
   if [ $DBRM_SWEEPER_DRYRUN -ne 1 ]; then
 
     tar_name=${DBRM_SWEEPER_CONTEXT}_$(date +%F_%R).tar.gz
-
+    
     #Generate tar file containing file matched
     tar_options="zcvf"-
+
+    if [ $DBRM_SWEEPER_USE_XZ_COMPRESS -eq 1 ]; then
+      tar_options=${tar_options/z/J}      
+    fi
 
     out=$(tar ${tar_options} ${DBRM_SWEEPER_DESTDIR}/${tar_name} ${file_list})
     echo "${out}"
@@ -124,6 +129,7 @@ sweeper_compress () {
       echo -en "    follow link:     ${DBRM_SWEEPER_FOLLOW_LINK}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
       echo -en "    eligible files:  ${file_count}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
       echo -en "    remove src dir:  ${DBRM_SWEEPER_REMOVE_SRC_DIR}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    use xz compress: ${DBRM_SWEEPER_USE_XZ_COMPRESS}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
 
       if [ ${file_count} -eq "0" ]; then
         echo -en "\n Nothing to compress.\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
@@ -265,6 +271,7 @@ _sweeper_compress_args () {
   DBRM_SWEEPER_FILE_TYPE=""
   DBRM_SWEEPER_FOLLOW_LINK=""
   DBRM_SWEEPER_REMOVE_SRC_DIR=0
+  DBRM_SWEEPER_USE_XZ_COMPRESS=0
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -316,6 +323,9 @@ _sweeper_compress_args () {
       --remove-src-dir)
         DBRM_SWEEPER_REMOVE_SRC_DIR=1
         ;;
+      --use-xz-compress)
+        DBRM_SWEEPER_USE_XZ_COMPRESS=1
+        ;;
       *)
         error_generate "Invalid parameter $1."
         ;;
@@ -363,6 +373,7 @@ _sweeper_compress_help () {
   echo -en "[--dry-run]              Print only list of file affected and do nothing else.\n"
   echo -en "[--follow-link]          Resolve symbolic link to target in list of file affected.\n"
   echo -en "[--remove-src-dir]       Remove also directory src (only if empty) in which was present file to expunge.\n"
+  echo -en "[--use-xz-compress]      Use xz to compress tar archive (default is gzip).\n"
   echo -en "\n"
   echo -en "Examples: \n"
   echo -en "$> dbrm sweeper compress --context-name test_ctx --source-dir /playground \ \n"
