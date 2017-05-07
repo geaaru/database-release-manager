@@ -409,6 +409,7 @@ _dbm_check_ins_script_type_args () {
 }
 # dbm__dbm_check_ins_script_type_args_end
 
+# dbm__dbm_check_ins_script_args
 _dbm_check_ins_script_args () {
 
   [[ $DEBUG ]] && echo -en "(_dbm_check_ins_script_args args: $@)\n"
@@ -497,8 +498,9 @@ _dbm_check_ins_script_args () {
 
   return 0
 }
+# dbm__dbm_check_ins_script_args_end
 
-
+# dbm__dbm_check_rel_dep_args
 _dbm_check_rel_dep_args () {
 
   [[ $DEBUG ]] && echo -en "(_dbm_check_ins_rel_dep_args args: $@)\n"
@@ -543,10 +545,25 @@ _dbm_check_rel_dep_args () {
 
   return 0
 }
+# dbm__dbm_check_rel_dep_args_end
 
+# dbm__dbm_check_upd_script_args
 _dbm_check_upd_script_args () {
 
   [[ $DEBUG ]] && echo -en "(_dbm_check_upd_script_args args: $@)\n"
+
+
+  _dbm_check_upd_script_help () {
+    echo -en "[-i id_script]          Id Script.\n"
+    echo -en "[-f filename]           Script filename.\n"
+    echo -en "[-n name]               Release Name.\n"
+    echo -en "[-v version]            Release Version\n"
+    echo -en "[-t script_type]        Script Type.\n"
+    echo -en "[-a 0|1]                Set active flag.\n"
+    echo -en "[-d directory]          Directory of the script.\n"
+    echo -en "[-o id_order]           Script Id Order (optional). Default is used MAX(id) of the same id_release.\n"
+    echo -en "[-r id_release]         Id_release of the script. Use this instead of release name and version.\n"
+  }
 
   # Reinitialize opt index position
   OPTIND=1
@@ -563,15 +580,7 @@ _dbm_check_upd_script_args () {
       v) DBM_SCRIPT_REL_VERSION="$OPTARG";;
       o) DBM_SCRIPT_ID_ORDER="$OPTARG";;
       h)
-        echo -en "[-i id_script]          Id Script.\n"
-        echo -en "[-f filename]           Script filename.\n"
-        echo -en "[-n name]               Release Name.\n"
-        echo -en "[-v version]            Release Version\n"
-        echo -en "[-t script_type]        Script Type.\n"
-        echo -en "[-a 0|1]                Set active flag.\n"
-        echo -en "[-d directory]          Directory of the script.\n"
-        echo -en "[-o id_order]           Script Id Order (optional). Default is used MAX(id) of the same id_release.\n"
-        echo -en "[-r id_release]         Id_release of the script. Use this instead of release name and version.\n"
+        _dbm_check_upd_script_help
         return 1
         ;;
 
@@ -589,18 +598,20 @@ _dbm_check_upd_script_args () {
     fi
   fi
 
-  return 0
-}
-
-_dbm_rm_script_help () {
-
-  echo -en "[-i id_script]          Id Script of the script to remove.\n"
+  unset -f _dbm_check_upd_script_help
 
   return 0
 }
+# dbm__dbm_check_upd_script_args_end
 
-
+# dbm__dbm_check_rm_script_args
 _dbm_check_rm_script_args () {
+
+  local show_help=false
+
+  _dbm_rm_script_help () {
+    echo -en "[-i id_script]          Id Script of the script to remove.\n"
+  }
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_rm_script_args args: $@)\n"
 
@@ -610,6 +621,7 @@ _dbm_check_rm_script_args () {
 
   if [ $# -lt 2 ] ; then
     _dbm_rm_script_help
+    unset -f _dbm_rm_script_help
     return 1
   fi
 
@@ -620,8 +632,7 @@ _dbm_check_rm_script_args () {
 
       -i) DBM_SCRIPT_ID="$2";shift;;
       -h)
-        _dbm_rm_script_help
-        return 1
+        show_help=true
         ;;
       --) ;;
       *)
@@ -632,31 +643,38 @@ _dbm_check_rm_script_args () {
 
   done
 
-  if [ -z "$DBM_SCRIPT_ID" ] ; then
-    echo "Missing Script Id."
-    return 1
+  if [ $show_help == true ] ; then
+    _dbm_rm_script_help
+    ans = 1
+  else
+    ans = 0
+    if [ -z "$DBM_SCRIPT_ID" ] ; then
+      echo "Missing Script Id."
+      ans = 1
+    fi
   fi
 
-  return 0
+  unset -f _dbm_rm_script_help
+
+  return $ans
 }
+# dbm__dbm_check_rm_script_args_end
 
-_dbm_upd_release_help () {
-
-  echo -en "[-n name]               Release Name.\n"
-  echo -en "[-d YYYY-MM-DD]         Release Date.\n"
-  echo -en "[-v version]            Release Version\n"
-  echo -en "[-a adapter]            Release Adapter.\n"
-  echo -en "[-b id_branch]          Id Branch.\n"
-  echo -en "[-i id_release]         Id Release to update.\n"
-  echo -en "[--dir directory]       Directory to update.\n"
-  echo -en "\n"
-
-  return 0
-}
-
+# dbm__dbm_check_upd_release_args
 _dbm_check_upd_release_args () {
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_upd_release_args: $@)\n"
+
+  _dbm_upd_release_help () {
+    echo -en "[-n name]               Release Name.\n"
+    echo -en "[-d YYYY-MM-DD]         Release Date.\n"
+    echo -en "[-v version]            Release Version\n"
+    echo -en "[-a adapter]            Release Adapter.\n"
+    echo -en "[-b id_branch]          Id Branch.\n"
+    echo -en "[-i id_release]         Id Release to update.\n"
+    echo -en "[--dir directory]       Directory to update.\n"
+    echo -en "\n"
+  }
 
   DBM_REL_NAME_UPD=0
   DBM_REL_DATE_UPD=0
@@ -736,29 +754,30 @@ _dbm_check_upd_release_args () {
   if [[ $DBM_REL_NAME_UPD -eq 0 && $DBM_REL_DATE_UPD -eq 0 &&
         $DBM_REL_VERSION_UPD -eq 0 && $DBM_REL_ADAPTER_UPD -eq 0 &&
         $DBM_REL_BRANCH_UPD -eq 0 && $DBM_REL_DIR_UPD -eq 0 ]] ; then
-
     echo -en "No fields to update.\n"
     return 1
 
   fi
 
-  return 0
-}
-
-_dbm_mv_release_help () {
-  echo -en "[-r version]            Release version.\n"
-  echo -en "[-n name]               Release Name.\n"
-  echo -en "[-a version_to]         After release version_to.\n"
-  echo -en "[-b version_to]         Before release version_to.\n"
-  echo -en "\n"
-  echo -en "Example: -n 'Project1' -r '0.1.1' -a '0.1.0' (Release 0.1.1 after release 0.1.0)\n"
+  unset -f _dbm_upd_release_help
 
   return 0
 }
+# dbm__dbm_check_upd_release_args_end
 
+# dbm__dbm_check_move_release_args
 _dbm_check_move_release_args () {
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_ins_inhibit_script_args args: $@)\n"
+
+  _dbm_mv_release_help () {
+    echo -en "[-r version]            Release version.\n"
+    echo -en "[-n name]               Release Name.\n"
+    echo -en "[-a version_to]         After release version_to.\n"
+    echo -en "[-b version_to]         Before release version_to.\n"
+    echo -en "\n"
+    echo -en "Example: -n 'Project1' -r '0.1.1' -a '0.1.0' (Release 0.1.1 after release 0.1.0)\n"
+  }
 
   DBM_BEFORE=0
   DBM_AFTER=0
@@ -803,10 +822,14 @@ _dbm_check_move_release_args () {
     return 1
   fi
 
+  unset -f _dbm_mv_release_help
+
   return 0
 
 }
+# dbm__dbm_check_move_release_args_end
 
+# dbm__dbm_check_inhibit_script_args
 _dbm_check_inhibit_script_args () {
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_ins_inhibit_script_args args: $@)\n"
@@ -858,20 +881,19 @@ _dbm_check_inhibit_script_args () {
 
   return 0
 }
+# dbm__dbm_check_inhibit_script_args_end
 
-_dbm_move_script_help () {
-
-  echo -en "[-i id_script]          Id script of the script to move.\n"
-  echo -en "[-a x]                  After script with id x.\n"
-  echo -en "[-b x]                  Before script with id x.\n"
-  echo -en "[-r id_release]         Id Release of the script to move.\n"
-
-  return 0
-}
-
+# dbm__dbm_check_move_script_args
 _dbm_check_move_script_args () {
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_move_script_args: $@)\n"
+
+  _dbm_move_script_help () {
+    echo -en "[-i id_script]          Id script of the script to move.\n"
+    echo -en "[-a x]                  After script with id x.\n"
+    echo -en "[-b x]                  Before script with id x.\n"
+    echo -en "[-r id_release]         Id Release of the script to move.\n"
+  }
 
   DBM_BEFORE=0
   DBM_AFTER=0
@@ -915,31 +937,34 @@ _dbm_check_move_script_args () {
     return 1
   fi
 
-  return 0
-}
-
-_dbm_rem_rel_help () {
-
-  echo -en "[-r id_release]         Id Release of the script to remove.\n"
-  echo -en "[-f]                    Force remove without confirmation question.\n"
+  unset -f _dbm_move_script_help
 
   return 0
 }
+# dbm__dbm_check_move_script_args_end
 
+# dbm__dbm_check_rem_rel_args
 _dbm_check_rem_rel_args () {
-
-  [[ $DEBUG ]] && echo -en "(_dbm_check_rem_rel_args args: $@)\n"
 
   local short_options="r:hf"
 
-  $(set -- $(getopt -u -q -a -o "$short_options" -- "$@")) || error_handled "Invalid parameters"
+  [[ $DEBUG ]] && echo -en "(_dbm_check_rem_rel_args args: $@)\n"
+
+  _dbm_rem_rel_help () {
+    echo -en "[-r id_release]         Id Release of the script to remove.\n"
+    echo -en "[-f]                    Force remove without confirmation question.\n"
+  }
+
+  $(set -- $(getopt -u -q -a -o "$short_options" -- "$@")) || \
+    error_handled "Invalid parameters"
 
   if [ $# -lt 2 ] ; then
     _dbm_rem_rel_help
     return 1
   fi
 
-  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_rem_rel_args: Found $# params)\n"
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(_dbm_check_rem_rel_args: Found $# params)\n"
 
   DBM_FORCE_RM=0
 
@@ -958,7 +983,6 @@ _dbm_check_rem_rel_args () {
         ;;
     esac
     shift
-
   done
 
   if [ -z "$DBM_REL_ID" ] ; then
@@ -966,25 +990,28 @@ _dbm_check_rem_rel_args () {
     return 1
   fi
 
-  return 0
-}
-
-_dbm_show_rel_help () {
-
-  echo -en "[-b id_branch]          Id branch to filter.\n"
+  unset -f _dbm_rem_rel_help
 
   return 0
 }
+# dbm__dbm_check_rem_rel_args_end
 
+# dbm__dbm_show_rel_args
 _dbm_show_rel_args () {
-
-  [[ $DEBUG ]] && echo -en "(_dbm_check_show_rel_args args: $@)\n"
 
   local short_options="b:h"
 
-  $(set -- $(getopt -u -q -a -o "$short_options" -- "$@")) || error_handled "Invalid parameters"
+  [[ $DEBUG ]] && echo -en "(_dbm_check_show_rel_args args: $@)\n"
 
-  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_show_rel_args: Found $# params)\n"
+  _dbm_show_rel_help () {
+    echo -en "[-b id_branch]          Id branch to filter.\n"
+  }
+
+  $(set -- $(getopt -u -q -a -o "$short_options" -- "$@")) || \
+    error_handled "Invalid parameters"
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(_dbm_check_show_rel_args: Found $# params)\n"
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -1000,11 +1027,13 @@ _dbm_show_rel_args () {
         ;;
     esac
     shift
-
   done
+
+  unset -f _dbm_show_rel_help
 
   return 0
 }
+# dbm__dbm_show_rel_args_end
 
 
 # vim: syn=sh filetype=sh
