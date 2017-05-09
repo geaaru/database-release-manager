@@ -93,10 +93,11 @@ sweeper_compress () {
     file-type:       ${DBRM_SWEEPER_FILE_TYPE}
     follow-link:     ${DBRM_SWEEPER_FOLLOW_LINK}
     remove-src-dir:  ${DBRM_SWEEPER_REMOVE_SRC_DIR}
-    use-xz-compress: ${DBRM_SWEEPER_USE_XZ_COMPRESS}"
+    use-xz-compress: ${DBRM_SWEEPER_USE_XZ_COMPRESS}
+    max-depth:       ${DBRM_SWEEPER_MAX_DEPTH}"
 
   #Gathering all files matching
-  file_list="$(find ${DBRM_SWEEPER_SRCDIR} ${DBRM_SWEEPER_FILE_TYPE} -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" ${DBRM_SWEEPER_FOLLOW_LINK})"
+  file_list="$(find ${DBRM_SWEEPER_SRCDIR} ${DBRM_SWEEPER_MAX_DEPTH} ${DBRM_SWEEPER_FILE_TYPE} -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" ${DBRM_SWEEPER_FOLLOW_LINK})"
   [[ $DBRM_SWEEPER_DRYRUN -eq 1 ]] && echo "file to compress affected ="`echo "$file_list" | wc -l`
   [[ $DBRM_SWEEPER_DRYRUN -eq 1 ]] && echo "$file_list"
 
@@ -131,6 +132,7 @@ sweeper_compress () {
       echo -en "    eligible files:  ${file_count}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
       echo -en "    remove src dir:  ${DBRM_SWEEPER_REMOVE_SRC_DIR}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
       echo -en "    use xz compress: ${DBRM_SWEEPER_USE_XZ_COMPRESS}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    max depth:       ${DBRM_SWEEPER_MAX_DEPTH}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
 
       if [ ${file_count} -eq "0" ]; then
         echo -en "\n Nothing to compress.\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
@@ -189,10 +191,11 @@ sweeper_expunge () {
     dry-run:         ${DBRM_SWEEPER_DRYRUN}
     file-type:       ${DBRM_SWEEPER_FILE_TYPE}
     follow-link:     ${DBRM_SWEEPER_FOLLOW_LINK}
-    remove-src-dir:  ${DBRM_SWEEPER_REMOVE_SRC_DIR}"
+    remove-src-dir:  ${DBRM_SWEEPER_REMOVE_SRC_DIR}
+    max-depth:       ${DBRM_SWEEPER_MAX_DEPTH}"
     
   #Gatering all files matching
-  file_list="$(find ${DBRM_SWEEPER_SRCDIR} ${DBRM_SWEEPER_FILE_TYPE} -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" ${DBRM_SWEEPER_FOLLOW_LINK})"
+  file_list="$(find ${DBRM_SWEEPER_SRCDIR} ${DBRM_SWEEPER_MAX_DEPTH} ${DBRM_SWEEPER_FILE_TYPE} -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" ${DBRM_SWEEPER_FOLLOW_LINK})"
   [[ $DBRM_SWEEPER_DRYRUN -eq 1 ]] && echo "file to expunge affected ="`echo "$file_list" | wc -l`
   [[ $DBRM_SWEEPER_DRYRUN -eq 1 ]] && echo "$file_list"
 
@@ -224,6 +227,7 @@ sweeper_expunge () {
       echo -en "    file type:       ${DBRM_SWEEPER_FILE_TYPE}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
       echo -en "    follow link:     ${DBRM_SWEEPER_FOLLOW_LINK}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
       echo -en "    remove src dir:  ${DBRM_SWEEPER_REMOVE_SRC_DIR}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
+      echo -en "    max depth:       ${DBRM_SWEEPER_MAX_DEPTH}\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
 
       if [ ${file_count} -eq "0" ]; then
         echo -en "\n Nothing to expunge.\n" >> ${DBRM_SWEEPER_ARCHIVE_PATH}
@@ -274,6 +278,7 @@ _sweeper_compress_args () {
   DBRM_SWEEPER_FOLLOW_LINK=""
   DBRM_SWEEPER_REMOVE_SRC_DIR=0
   DBRM_SWEEPER_USE_XZ_COMPRESS=0
+  DBRM_SWEEPER_MAX_DEPTH=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -328,6 +333,10 @@ _sweeper_compress_args () {
       --use-xz-compress)
         DBRM_SWEEPER_USE_XZ_COMPRESS=1
         ;;
+      --maxdepth)
+        DBRM_SWEEPER_MAX_DEPTH="-maxdepth $2"
+        shift
+        ;;
       *)
         error_generate "Invalid parameter $1."
         ;;
@@ -376,6 +385,7 @@ _sweeper_compress_help () {
   echo -en "[--follow-link]          Resolve symbolic link to target in list of file affected.\n"
   echo -en "[--remove-src-dir]       Remove also directory src (only if empty) in which was present file to expunge.\n"
   echo -en "[--use-xz-compress]      Use xz to compress tar archive (default is gzip).\n"
+  echo -en "[--maxdepth level]       Procedure affect only files at most <level> levels of directories below the starting-points.\n"
   echo -en "\n"
   echo -en "Examples: \n"
   echo -en "$> dbrm sweeper compress --context-name test_ctx --source-dir /playground \ \n"
@@ -431,6 +441,7 @@ _sweeper_expunge_args () {
   DBRM_SWEEPER_FILE_TYPE=""
   DBRM_SWEEPER_FOLLOW_LINK=""
   DBRM_SWEEPER_REMOVE_SRC_DIR=0
+  DBRM_SWEEPER_MAX_DEPTH=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -476,6 +487,10 @@ _sweeper_expunge_args () {
       --remove-src-dir)
         DBRM_SWEEPER_REMOVE_SRC_DIR=1
         ;;
+      --maxdepth)
+        DBRM_SWEEPER_MAX_DEPTH="-maxdepth $2"
+        shift
+        ;;
       *)
         error_generate "Invalid parameter $1."
         ;;
@@ -520,6 +535,7 @@ _sweeper_expunge_help () {
   echo -en "[--dry-run]              Print only list of file affected and do nothing else.\n"
   echo -en "[--follow-link]          Resolve symbolic link to target in list of file affected.\n"
   echo -en "[--remove-src-dir]       Remove also directory src (only if empty) in which was present file to expunge.\n"
+  echo -en "[--maxdepth level]       Procedure affect only files at most <level> levels of directories below the starting-points.\n"
   echo -en "\n"
   echo -en "Examples: \n"
   echo -en "$> dbrm sweeper expunge  --context-name test_ctx --source-dir /playground \ \n"
