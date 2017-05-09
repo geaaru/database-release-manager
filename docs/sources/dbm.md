@@ -1759,3 +1759,398 @@ _Return_:
     :end-before: dbm__dbm_check_add_prof_args_end
 ```
 
+#### _dbm_check_ins_bra_args
+
+Internal function for parse command line arguments related to `insert_branch` command.
+
+_Command Arguments_:
+
+  * `-n NAME`: Name of the branch to insert.
+  * `-d YYYY-MM-DD`: Date of the branch (optional). Default valeu is now.
+  * `-h`: Show command options.
+
+_Variables Used_:
+
+  * `DBM_BRA_NAME`: Name of the branch.
+  * `DBM_BRA_DATE`: Date of the branch.
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_check_ins_bra_args
+    :end-before: dbm__dbm_check_ins_bra_args_end
+```
+
+#### _dbm_check_ins_script_type_args
+
+Internal function for parse command line arguments related to `insert_script_type` command.
+
+_Command Arguments_:
+
+  * `-c CODE`: String used as code of the script type.
+  * `-d DESCRIPTION`: Description of the script type.
+  * `-h`: Show command options.
+
+_Variables Used_:
+
+  * `DBM_SCRIPT_TYPE_CODE`: Code of the script type.
+  * `DBM_SCRIPT_TYPE_DESCR`: Description of the script type.
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_check_ins_script_type_args
+    :end-before: dbm__dbm_check_ins_script_type_args_end
+```
+
+#### _dbm_check_ins_script_args
+
+Internal function for parse command line arguments related to `insert_script` command.
+
+_Command Arguments_:
+
+  * `-f FILENAME`: Script filename.
+  * `-n NAME`: Name of the release of the script to insert.
+  * `-v VERSION`: Version of the release of the script to insert.
+  * `-t STYPE`: Type of the script to insert.
+  * `-a FLAG`: Set active (1) or disable (0) flag of the script.
+  * `-d DIRECTORY`: Directory of the script to insert.
+  * `-o ID_ORDER`: Id order of the script to update (optional).
+                   Default is used MAX(id) of the same id_release.
+  * `-r RELEASE_ID`: Id of the release of the script.
+                     If this option is present are not needed release name and release version.
+  * `-h`: Show command options.
+
+_Variables Used_:
+
+  * `DBM_SCRIPT_TYPE`: Code of the script type.
+  * `DBM_SCRIPT_FILENAME`: Name of the script file.
+  * `DBM_SCRIPT_ACTIVE`: Script status: active (1) or disable (0).
+  * `DBM_SCRIPT_DIRECTORY`: Directory of the script. Relative path from `LOCAL_DIR`.
+  * `DBM_SCRIPT_ID_RELEASE`: Id of the release related with script.
+  * `DBM_SCRIPT_REL_NAME`: Release name.
+  * `DBM_SCRIPT_REL_VERSION`: Release version.
+  * `DBM_SCRIPT_ID_ORDER`: Id order of the release script.
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_check_ins_script_args
+    :end-before: dbm__dbm_check_ins_script_args_end
+```
+
+#### _dbm_check_rel_dep_args
+
+Internal function for parse command line arguments related to `insert_rel_dept` command.
+
+_Command Arguments_:
+
+  * `-n NAME`: Name of the release where add a new dependency.
+  * `-t VERSION_TO`: Version of the release that has a dependency.
+  * `-f VERSION_FROM`: Version of the release that is needed for VERSION_TO.
+  * `-h`: Show command options.
+
+_Variables Used_:
+
+  * `DBM_REL_NAME`: Name of the release.
+  * `DBM_REL_VERSION_TO`: Release version target of the dependency.
+  * `DBM_REL_VERSION_FROM`: Release version of the release source for the dependency.
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_check_rel_dep_args
+    :end-before: dbm__dbm_check_rel_dep_args_end
+```
+
+#### _dbm_check_upd_script_args
+
+Internal function for parse command line arguments related to `update_script` command.
+
+_Command Arguments_:
+
+  * `-i SCRIPT_ID`: Id of the script to update.
+  * `-f FILENAME`: Script filename to update.
+  * `-n NAME`: Name of the release of the script to update.
+  * `-v VERSION`: Version of the release of the script to update.
+  * `-t STYPE`: Type of the script to update
+  * `-a FLAG`: Set active (1) or disable (0) flag of the script.
+  * `-d DIRECTORY`: Directory of the script to update.
+  * `-o ID_ORDER`: Id order of the script to update (optional).
+  * `-r RELEASE_ID`: Id of the release of the script.
+                     If this option is present are not needed release name and release version.
+  * `-h`: Show update_script command options.
+
+_Variables Used_:
+
+  * `DBM_SCRIPT_ID`: Id of the script to update.
+  * `DBM_SCRIPT_FILENAME`: Filename of the script.
+  * `DBM_SCRIPT_TYPE`: Type of the script to update.
+  * `DBM_SCRIPT_ACTIVE`: Status of the script.
+  * `DBM_SCRIPT_DIRECTORY`: Directory of the script
+  * `DBM_SCRIPT_ID_RELEASE`: Id release of the script
+  * `DBM_SCRIPT_REL_NAME`: Release name related with script to update
+  * `DBM_SCRIPT_REL_VERSION`: Release version related with script to update
+  * `DBM_SCRIPT_ID_ORDER`: Order Id of the script
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_check_upd_script_args
+    :end-before: dbm__dbm_check_upd_script_args_end
+```
+
+#### _dbm_check_rm_script_args
+
+Internal function for parse command line arguments related to `remove_script` command.
+
+_Command Arguments_:
+
+  * `-i SCRIPT_ID`: Id of the script to remove.
+  * `-h`: Show command options.
+
+_Variables Used_:
+
+  * `DBM_SCRIPT_ID`: Id of the script to remove.
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_check_rm_script_args
+    :end-before: dbm__dbm_check_rm_script_args_end
+```
+
+#### _dbm_check_upd_release_args
+
+Internal function for parse command line arguments related to `update_release` command.
+
+_Command Arguments_:
+
+  * `-n NAME`: Name of the release to update.
+  * `-v VERSION`: Version of the release to update.
+  * `-d YYYY-MM-DD`: Date of the release to update.
+  * `-a ADAPTER`: Adapter value to update on release.
+  * `-b ID_BRANCH`: Branch Id value to update on release.
+  * `-i ID_RELEASE`: Id of the release to update
+  * `--dir DIR`: Directory of the release to update
+  * `-h`: Show command options.
+
+_Variables Used_:
+
+  * `DBM_REL_NAME_UPD`: Name of the release
+  * `DBM_REL_DATE_UPD`: Date of the release
+  * `DBM_REL_VERSION_UPD`: Version of the release
+  * `DBM_REL_ADAPTER_UPD`: Adapter of the release
+  * `DBM_REL_BRANCH_UPD`: Branch of the release
+  * `DBM_REL_DIR_UPD`: Directory of the release.
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_check_upd_release_args
+    :end-before: dbm__dbm_check_upd_release_args_end
+```
+
+#### _dbm_check_move_release_args
+
+Internal function for parse command line arguments related to `move_release` command.
+
+_Command Arguments_:
+
+  * `-r RELEASE_ID`: Id of the release to remove.
+  * `-f`: For remove of the selected release without confirmation question.
+  * `-h`: Show command options.
+
+_Variables Used_:
+
+  * `DBM_BEFORE`: Set to 1 when move require that a version is moved before another. Default 0.
+  * `DBM_AFTER`: Set to 1 when move require that a version is moved after another. Default 0.
+  * `DBM_REL_NAME`: Name of the release
+  * `DBM_REL_VERSION_TO`: Version to use for move
+  * `DBM_REL_VERSION_FROM`: Version to move.
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_check_move_release_args
+    :end-before: dbm__dbm_check_move_release_args_end
+```
+
+#### _dbm_check_inhibit_script_args
+
+Internal function for parse command line arguments related to `insert_inhibit_script` command.
+
+_Command Arguments_:
+
+  * `-n NAME`: Name of the release where add an inhibited script between two version.
+  * `-i SCRIPT_ID`: Id of the script to inhibit.
+  * `-t VERSION_TO`: Version of the release target of the installation.
+  * `-f VERSION_FROM`: Version of the release source of the installation.
+  * `-h`: Show command options.
+
+_Variables Used_:
+
+  * `DBM_SCRIPT_ID`: Script Id
+  * `DBM_REL_NAME`: Name of the release
+  * `DBM_REL_VERSION_TO`: Version to use for inhibition as source.
+  * `DBM_REL_VERSION_FROM`: Version to for inhibition as target.
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_check_inhibit_script_args
+    :end-before: dbm__dbm_check_inhibit_script_args_end
+```
+
+#### _dbm_check_move_script_args
+
+Internal function for parse command line arguments related to `move_script` command.
+
+_Command Arguments_:
+
+  * `-i SCRIPT_ID`: Id of the script to move.
+  * `-a SCRIPT_ID_X`: Move script *after* script with id SCRIPT_ID_X.
+  * `-b SCRIPT_ID_X`: Move script *before* script with id SCRIPT_ID_X.
+  * `-r ID_RELEASE`: Release id of the script to move.
+  * `-h`: Show command options.
+
+_Variables Used_:
+
+  * `DBM_REL_ID`: Release id of the script.
+  * `DBM_BEFORE`: Set to 1 when script must be move before another. Default 0.
+  * `DBM_AFTER`: Set to 1 when script must be move after another. Default 0.
+  * `DBM_SCRIPT_ID_TO`: Version to use for move as target
+  * `DBM_SCRIPT_ID_FROM`: Version to use for move as source
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_check_move_script_args
+    :end-before: dbm__dbm_check_move_release_args_end
+```
+#### _dbm_check_rem_rel_args
+
+Internal function for parse command line arguments related to `remove_release` command.
+
+_Command Arguments_:
+
+  * `-r RELEASE_ID`: Id of the release to remove.
+  * `-f`: For remove of the selected release without confirmation question.
+  * `-h`: Show command options.
+
+_Variables Used_:
+
+  * `DBM_FORCE_RM`: Set to 1 when is not ask configuration question before remove release.
+  * `DBM_REL_ID`: Id of the release to remove
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_check_rem_rel_args
+    :end-before: dbm__dbm_check_rem_rel_args_end
+```
+
+#### _dbm_check_show_rel_args
+
+Internal function for parse command line arguments related to `show_releases` command.
+
+_Command Arguments_:
+
+  * `-b ID_BRANCH`: Filter list for a particular Branch Id.
+  * `-h`: Show command options.
+
+_Variables Used_:
+
+  * `DBM_BRANCH_ID`: Id of the branch to use as filter.
+
+_Return_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/dbm/dbm_args.inc
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: dbm__dbm_show_rel_args
+    :end-before: dbm__dbm_show_rel_args_end
+```
+

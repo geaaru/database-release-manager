@@ -8,6 +8,8 @@ Database Release Manager
 
     Dbm Module <dbm.md>
     Logfile Module <logfile.md>
+    Install Module <install.md>
+    MariaDB Module <mariadb.md>
     Commons API <common.md>
     Mysql API <mysql.md>
     Sqlplus API <sqlplus.md>

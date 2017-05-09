@@ -10,20 +10,14 @@ install_authors="Geaaru"
 install_creation_date="May 5, 2013"
 install_version="@PACKAGE_VERSION@"
 
-#****f* install/install_version
-# FUNCTION
-#  Show version of install module.
-# SOURCE
+# install_install_version
 install_version () {
    echo -en "Version: ${install_version}\n"
    return 0
 }
-#***
+# install_install_version_end
 
-#****f* install/install_long_help
-# FUNCTION
-#  Show long help message.
-# SOURCE
+# install_install_long_help
 install_long_help () {
 
    echo -en "===========================================================================\n"
@@ -41,12 +35,9 @@ install_long_help () {
 
    return 0
 }
-#***
+# install_install_long_help_end
 
-#****f* install/install_show_help
-# FUNCTION
-#  Show help message.
-# SOURCE
+# install_install_show_help
 install_show_help () {
 
    echo -en "===========================================================================\n"
@@ -61,17 +52,9 @@ install_show_help () {
 
    return 0
 }
-#***
+# install_install_show_help_end
 
-#****f* install/install_show_installable
-# FUNCTION
-#  Show executable script on installation of a project to a release (and optional from a
-#  particular release).
-# DESCRIPTION
-#  NOT COMPLETED. TODO
-# SEE ALSO
-#  _install_check_show_installable_args for a list of valid attributes.
-# SOURCE
+# install_install_show_installable
 install_show_installable () {
 
   local result=1
@@ -180,16 +163,9 @@ install_show_installable () {
 
   return 0
 }
-#***
+# install_install_show_installable_end
 
-#****f* install/install_install
-# FUNCTION
-#  Install or upgrade a project to a particular release.
-# DESCRIPTION
-#  NOT COMPLETED. TODO
-# SEE ALSO
-#  _install_check_show_installable_args for a list of valid arguments.
-# SOURCE
+# install_install_install
 install_install () {
 
   local result=1
@@ -228,28 +204,13 @@ install_install () {
   fi
 
 }
-#***
+# install_install_install_end
 
 ##################################################################
 # Internal functions
 ##################################################################
 
-#****f* install/_install_check_show_installable_args
-# FUNCTION
-#  Internal function for read and parse command line arguments.
-# DESCRIPTION
-#  Argument accepted are:
-#     -n [rel_name]              Release name. Mandatary argument.
-#     -f [version_from]          Release version from. Mandatary argument.
-#     -t [version_to]            Release version to. Mandatary argument.
-#     -h                         For print help message.
-#     *                          Others arguments are ignored.
-# RESULT
-#  Variable defined are:
-#     * DBM_REL_NAME for release name.
-#     * DBM_REL_VERSION_TO for release version to.
-#     * DBM_REL_VERSION_FROM for release version from.
-# SOURCE
+# install__install_check_show_installable_args
 _install_check_show_installable_args () {
 
   [[ $DEBUG ]] && echo -en "(_install_check_show_installable_args args: $@)\n"
@@ -289,7 +250,7 @@ _install_check_show_installable_args () {
 
   return 0
 }
-#***
+# install__install_check_show_installable_args_end
 
 
 # vim: syn=sh filetype=sh ts=2 sw=2
