@@ -78,6 +78,7 @@ sweeper_compress () {
   local file_list=""
   local file_count=""
   local tar_options=""
+  local tar_extension=""
   shift 2
 
   _sweeper_compress_args "$@" || return 1
@@ -103,7 +104,14 @@ sweeper_compress () {
 
   if [ $DBRM_SWEEPER_DRYRUN -ne 1 ]; then
 
-    tar_name=${DBRM_SWEEPER_CONTEXT}_$(date +%F_%R).tar.gz
+    #Generate tar extension
+    tar_extension="tar.gz"
+
+    if [ $DBRM_SWEEPER_USE_XZ_COMPRESS -eq 1 ]; then
+      tar_extension=${tar_extension/gz/xz}      
+    fi
+
+    tar_name=${DBRM_SWEEPER_CONTEXT}_$(date +%F_%R).${tar_extension}
     
     #Generate tar file containing file matched
     tar_options="zcvf"-
