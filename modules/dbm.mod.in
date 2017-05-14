@@ -255,6 +255,15 @@ ${dbrm_profiles_options}
       cp $CONFIG_FILE_STUB ${DBM_INIT_DIR}/dbrm-profiles/dev.conf || error_handled \
         "Unexpected error on copy dbrm.conf stub file to dev.conf profile file."
 
+      # Fix generic options
+      sed -i -e 's/LOCAL_DIR=/#LOCAL_DIR=/g' \
+        ${DBM_INIT_DIR}/dbrm-profiles/dev.conf || \
+        error_handled "Error on comment LOCAL_DIR variable."
+
+      sed -i -e 's/LOCAL_CONFIG_FILE=/#LOCAL_CONFIG_FILE=/g' \
+        ${DBM_INIT_DIR}/dbrm-profiles/dev.conf || \
+        error_handled "Error on comment LOCAL_CONFIG_FILE variable."
+
       # Insert dev profile to DRM db.
       dbm_add_profile "dbrm" "add_profile" "--name" "develop" "--file" "dev.conf" "--default" ||
         error_handled "Error on add default profile."
