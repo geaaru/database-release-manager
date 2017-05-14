@@ -30,9 +30,10 @@ _dbm_check_initenv_args () {
   $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || \
     error_handled "Invalid parameters"
 
-  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_dbm_check_initenv_args: Found $# params)\n"
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(_dbm_check_initenv_args: Found $# params)\n"
 
-  if [ $# -lt 0 ] ; then
+  if [ $# -le 0 ] ; then
     _dbm_initenv_help
     return 1
   fi
