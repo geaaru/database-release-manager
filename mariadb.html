@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>MariadDB Module &#8212; Database Release Manager</title>
+    
+    <link rel="stylesheet" href="static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="static/dbrm.css" type="text/css" />
+    <link rel="stylesheet" href="static/bootswatch-3.3.6/superhero/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <script type="text/javascript" src="static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="static/bootstrap-sphinx.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Commons API" href="common.html" />
+    <link rel="prev" title="Install Module" href="install.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          Database Release Manager</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="dbm.html">Dbm Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logfile.html">Logfile Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">MariaDB Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common.html">Commons API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mysql.html">Mysql API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sqlplus.html">Sqlplus API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="psql.html">Psql API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commons_mariadb.html">Commons Mariadb API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commons_oracle.html">Commons Oracle API</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">MariadDB Module</a><ul>
+<li><a class="reference internal" href="#project-folder-structure">Project Folder Structure</a></li>
+<li><a class="reference internal" href="#permissions-and-options-required">Permissions and options required</a><ul>
+<li><a class="reference internal" href="#fix-for-mysql-5-6">Fix for Mysql &gt;= 5.6</a></li>
+<li><a class="reference internal" href="#best-practices">Best Practices</a></li>
+<li><a class="reference internal" href="#notes-about-events">Notes about Events</a><ul>
+<li><a class="reference internal" href="#event-scheduler">Event Scheduler</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#variables">Variables</a></li>
+<li><a class="reference internal" href="#commands">Commands</a><ul>
+<li><a class="reference internal" href="#mariadb-version">mariadb version</a></li>
+<li><a class="reference internal" href="#mariadb-test-connection">mariadb test_connection</a><ul>
+<li><a class="reference internal" href="#test-connection-options">test_connection options:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mariadb-initenv">mariadb initenv</a><ul>
+<li><a class="reference internal" href="#initenv-options">initenv options:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mariadb-show">mariadb show</a><ul>
+<li><a class="reference internal" href="#show-options">show options:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mariadb-download">mariadb download</a><ul>
+<li><a class="reference internal" href="#download-options">download options:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="install.html" title="Previous Chapter: Install Module"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Install Module</span>
+    </a>
+  </li>
+  <li>
+    <a href="common.html" title="Next Chapter: Commons API"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Commons API &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row" >
+    <div class="col-md-12 content">
+      
+  <div class="section" id="mariaddb-module">
+<span id="mariaddb-module"></span><h1>MariadDB Module<a class="headerlink" href="#mariaddb-module" title="Permalink to this headline">¶</a></h1>
+<p>Target of this module is supply a tool for simplify development process and
+sources organization.</p>
+<p>Main features are:</p>
+<ul class="simple">
+<li>compilation of scripts, indexes, foreign keys, functions, procedures, triggers, views and events</li>
+<li>download from an existing database all indexes, foreign keys, functions, procedures, triggers, view and events and save it through a fixed structure.</li>
+<li>create initial DDL script with all tables of an existing database or simplify aligthnement of this file on development process</li>
+<li>display a list of information of an existing database (list of tables, foreign keys between tables, table size, etc.)</li>
+<li>drop procedure, functions, index, etc.</li>
+<li>simplify access to database between developers.
+q
+Mission of <code class="docutils literal"><span class="pre">dbrm</span></code> is NOT create a new IDE for SQL, every users can use any IDE for create tables, functions, etc. but with <code class="docutils literal"><span class="pre">dbrm</span></code> is it possible unify process for trace database informations and store to a repository in an ordered mode.</li>
+</ul>
+<div class="section" id="project-folder-structure">
+<span id="project-folder-structure"></span><h2>Project Folder Structure<a class="headerlink" href="#project-folder-structure" title="Permalink to this headline">¶</a></h2>
+<p>An initialized project folder is composed by these directories:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">creation_scripts</span></code>: this directory contains initial DDL script for create all
+tables of the project from zero. This directory could be used
+at begin of the project for the first release, in the next release
+is then used <em>update_scripts</em> directory that contains script for
+upgrade project and trace changes between releasees.</li>
+<li><code class="docutils literal"><span class="pre">dbrm-profiles</span></code>: if profiles are enable contains all configuration files for
+different environment (dev, test, prod, etc.). This directory could be with
+a different name and depend of value present of DRM_PROFILES_PATH variable.</li>
+<li><code class="docutils literal"><span class="pre">foreign_keys</span></code>: this directory contains files related with all foreign keys of the project&#8217;s tables</li>
+<li><code class="docutils literal"><span class="pre">functions</span></code>: this directory contains files with database functions code</li>
+<li><code class="docutils literal"><span class="pre">indexes</span></code>: this directory contains files with all indexes of the database.</li>
+<li><code class="docutils literal"><span class="pre">procedures</span></code>: this directory contains files with database procedure code</li>
+<li><code class="docutils literal"><span class="pre">schemas</span></code>: this directory is created automatically when dbrm initialize a directory
+and could be used from users for store database schemas (in my case I use Dia).</li>
+<li><code class="docutils literal"><span class="pre">triggers</span></code>: this directory contains all files for compile all triggers of the
+project database.</li>
+<li><code class="docutils literal"><span class="pre">update_scripts</span></code>: this directory is used for store script with changes on database between
+first release and next releases.</li>
+<li><code class="docutils literal"><span class="pre">views</span></code>: this directory contains files for compiles project database views.</li>
+</ul>
+<p>Under project directory normally is also available <code class="docutils literal"><span class="pre">dbrm.conf</span></code> file with main configuration
+options of the project and <code class="docutils literal"><span class="pre">dbrm.db</span></code> sqlite database used by <code class="docutils literal"><span class="pre">dbrm</span></code> for the project.</p>
+</div>
+<div class="section" id="permissions-and-options-required">
+<span id="permissions-and-options-required"></span><h2>Permissions and options required<a class="headerlink" href="#permissions-and-options-required" title="Permalink to this headline">¶</a></h2>
+<p>For permit to normal user of the database to retrieve informations used by <code class="docutils literal"><span class="pre">dbrm</span></code> it is
+required set of this <em>GRANT</em>:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>mysql&gt; GRANT SELECT ON mysql.proc TO <span class="s1">&#39;project_user&#39;</span>@<span class="s1">&#39;127.0.0.1&#39;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>While, to avoid an error like this on triggers compilation:</p>
+<p><em>You do not have the SUPER privilege and binary logging is enabled (you <em>might</em> want to use the less safe log_bin_trust_function_creators variable)</em></p>
+<p>it is required add this option to <code class="docutils literal"><span class="pre">my.cnf</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">log_bin_trust_function_creators</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="section" id="fix-for-mysql-5-6">
+<span id="fix-for-mysql-5-6"></span><h3>Fix for Mysql &gt;= 5.6<a class="headerlink" href="#fix-for-mysql-5-6" title="Permalink to this headline">¶</a></h3>
+<p>From version 5.6 of mysql command line tool is present an annoying
+warning message like this:</p>
+<p><em>&#8216;Warning: Using a password on the command line interface can be insecure.&#8217;</em>
+<em>when is used a &#8211;password argument.</em></p>
+<p>This warning message broken <code class="docutils literal"><span class="pre">dbrm</span></code> and it is required add MYSQL5_6_ENV_PWD=&#8221;1&#8221; on <code class="docutils literal"><span class="pre">dbrm.conf</span></code> file.</p>
+</div>
+<div class="section" id="best-practices">
+<span id="best-practices"></span><h3>Best Practices<a class="headerlink" href="#best-practices" title="Permalink to this headline">¶</a></h3>
+<p>Because <code class="docutils literal"><span class="pre">dbrm</span></code> manage foreign keys on separated mode, initial DDL script must avoid declaration of
+foreign keys inside CREATE TABLE statement, but only PRIMARY KEY.</p>
+<p>To simplify this process we can create tables with foreign keys also with external tools and then use
+<code class="docutils literal"><span class="pre">download</span></code> command to create a correct initial DDL or also, create tables only with primary keys and
+then use <code class="docutils literal"><span class="pre">create</span></code> command for create foreign keys.</p>
+</div>
+<div class="section" id="notes-about-events">
+<span id="notes-about-events"></span><h3>Notes about Events<a class="headerlink" href="#notes-about-events" title="Permalink to this headline">¶</a></h3>
+<p>By design when is compiled a recurrence event on information schema of mysql is register event
+with a start date that depends by the compilation time, so there is a limit about <code class="docutils literal"><span class="pre">dbrm</span></code> can
+download this particular events.</p>
+<p>So for recurrence events the best choice is create script manually and avoid download or download it
+and then manually modify code. For example,
+for an event like this (created under <em>schedulers</em> directory):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>  DELIMITER $$
+  USE `DB_NAME`$$
+
+  CREATE EVENT
+    `eventTest1`
+    ON SCHEDULE
+    EVERY 2 HOUR
+    DISABLE
+    DO
+      BEGIN
+        CALL `function1`(0);
+      END
+    $$
+  DELIMITER ;
+</pre></div>
+</div>
+<p>after compilation is possible show event details with <code class="docutils literal"><span class="pre">show</span></code> command:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb show  --event <span class="nv">eventTest1</span>
+  <span class="o">===============================================================================================================</span>
+  EVENT: <span class="nv">eventTest1</span>
+  <span class="o">===============================================================================================================</span>
+  DEFINER:                                   db1@192.168.0.%
+  TIME_ZONE:                                 UTC
+  EVENT_TYPE:                                RECURRING
+  EXECUTE_AT:                                
+  INTERVAL_FIELD:                            HOUR
+  INTERVAL_VALUE:                            2
+  STARTS:                                    2017-05-14 15:35:53
+  ENDS:                                      
+  STATUS:                                    DISABLED
+  ON_COMPLETION:                             NOT PRESERVE
+  CREATED:                                   2017-05-14 15:35:53
+  LAST_ALTERED:                              2017-05-14 15:35:53
+  LAST_EXECUTED:                             
+</pre></div>
+</div>
+<p>but if event is downloaded again under <em>schedulers</em> directory event is then like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>  -- $Id$
+  DELIMITER $$
+  USE `DB_NAME`$$
+
+  CREATE EVENT
+    `eventTest1`
+    ON SCHEDULE
+    EVERY 2 HOUR
+    STARTS &#39;2017-05-14 15:35:53&#39;
+    DISABLE
+    DO
+      BEGIN
+        CALL `function1`(0);
+      END
+    $$
+  DELIMITER ;
+</pre></div>
+</div>
+<p>As is visible on download is added <strong>STARTS</strong> option and so in this case must be removed manually.
+I will add in the near future a command line option to remove automatically <strong>STARTS</strong> on download
+if required from user.</p>
+<div class="section" id="event-scheduler">
+<span id="event-scheduler"></span><h4>Event Scheduler<a class="headerlink" href="#event-scheduler" title="Permalink to this headline">¶</a></h4>
+<p>On default MySql/MariaDB configuration event scheduler service is disable as default, so for enable and
+start events is required enable <em>event_scheduler</em> a runtime (with root user):</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb shell
+
+  MariaDB <span class="o">[</span>db1<span class="o">]</span>&gt; SET GLOBAL <span class="nv">event_scheduler</span> <span class="o">=</span> ON  <span class="p">;</span>
+</pre></div>
+</div>
+<p>or from my.cnf configuration file.</p>
+<p>To check if event_scheduler is enable could be used <code class="docutils literal"><span class="pre">show</span></code> command:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb show  --global-vars --vars-filter <span class="s2">&quot;scheduler&quot;</span>
+  <span class="o">===============================================================================================================</span>
+  GLOBAL <span class="nv">VARIABLES</span>
+  <span class="o">===============================================================================================================</span>
+  VARIABLE_NAME       <span class="nv">VARIABLE_VALUE</span>      
+  <span class="o">===============================================================================================================</span>
+  event_scheduler     OFF
+</pre></div>
+</div>
+<p>On cluster configuration <em>Event Scheduler</em> doesn&#8217;t manage automatically activation on single node, so we
+can manage concurrent execution through an application mutex or with activation of <em>event scheduler</em>
+service only on single node.</p>
+</div>
+</div>
+</div>
+<div class="section" id="variables">
+<span id="variables"></span><h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="33%" />
+<col width="67%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Variable</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MARIADB_USER</span></code></td>
+<td>Contains username to use for connection to database.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MARIADB_PWD</span></code></td>
+<td>Contains passwrod to use for connection to database.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MARIADB_DB</span></code></td>
+<td>Contains name of the database to use.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MARIADB_DIR</span></code></td>
+<td>Contains path of the directory used for store all database scripts.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MARIADB_EXTRA_OPTIONS</span></code></td>
+<td>Contains optional extra argument to use with <cite>mysql</cite> client command.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MARIADB_ENABLE_COMMENTS</span></code></td>
+<td>Set to 1 to enable compilation and store of comment inside function/procedures or to 0
+to remove comments from compiled functions/procedures (Option that could be used on production).</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MYSQL5_6_ENV_PWD</span></code></td>
+<td>As describe on next chapter this option is needed for Mysql &gt;= 5.6.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MARIADB_HOST</span></code></td>
+<td>Contains host address to use for connection to database.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MARIADB_CLIENT</span></code></td>
+<td>Contains path of <cite>myql</cite> program. If not initialized dbrm try to automatically set
+this variable.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MARIADB_TMZ</span></code></td>
+<td>Contains Timezone to use on database session. Default is UTC.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MARIADB_IGNORE_TMZ</span></code></td>
+<td>Set to 1 when to avoid initialization of Timezone on database connection. Default is 0.</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MARIADB_COMPILE_FILES_EXCLUDED</span></code></td>
+<td>Permit to define a list of script that are present on project directory to ignore
+on compilation proecess.</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="commands">
+<span id="commands"></span><h2>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mariadb-version">
+<span id="mariadb-version"></span><h3>mariadb version<a class="headerlink" href="#mariadb-version" title="Permalink to this headline">¶</a></h3>
+<p>Show version of mariadb module.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb version
+  Version: 0.1.0
+</pre></div>
+</div>
+</div>
+<div class="section" id="mariadb-test-connection">
+<span id="mariadb-test-connection"></span><h3>mariadb test_connection<a class="headerlink" href="#mariadb-test-connection" title="Permalink to this headline">¶</a></h3>
+<p>Test connection to database of the active profile or active configuration.</p>
+<div class="section" id="test-connection-options">
+<span id="test-connection-options"></span><h4>test_connection options:<a class="headerlink" href="#test-connection-options" title="Permalink to this headline">¶</a></h4>
+<p>This options are generic option for handle connection and are avilable on different
+commands.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-P</span> <span class="pre">MARIADB_PWD</span></code>: Override MARIADB_PWD variable of the configuration file.</li>
+<li><code class="docutils literal"><span class="pre">-U</span> <span class="pre">MARIADB_USER</span></code>: Override MARIADB_USER with username of the connection.</li>
+<li><code class="docutils literal"><span class="pre">-H</span> <span class="pre">MARIADB_HOST</span></code>: Override MARIADB_HOST with host of the database.</li>
+<li><code class="docutils literal"><span class="pre">-D</span> <span class="pre">MARIADB_DIR</span></code>: Override MARIADB_DIR directory where save/retrieve
+script/functions, etc.</li>
+<li><code class="docutils literal"><span class="pre">--database</span> <span class="pre">db</span></code>: Override MARIADB_DB variable for database name.</li>
+<li><code class="docutils literal"><span class="pre">--timezone</span> <span class="pre">tmz</span></code>: Override MARIADB_TMZ variable for set timezone on connection session.</li>
+<li><code class="docutils literal"><span class="pre">--conn-options</span> <span class="pre">OPTS</span></code>: Override MARIADB_EXTRA_OPTIONS variable for enable
+extra connection options.</li>
+<li><code class="docutils literal"><span class="pre">--ignore-timezone</span></code>: Set MARIADB_IGNORE_TMZ variable to 1 for disable initial
+timezone settings.</li>
+</ul>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb test_connection
+  Connected to openstack_neutron with user neutron correctly.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="mariadb-initenv">
+<span id="mariadb-initenv"></span><h3>mariadb initenv<a class="headerlink" href="#mariadb-initenv" title="Permalink to this headline">¶</a></h3>
+<p>Initialize project directory that use MariaDB adapter.
+Normally, after or before this command is used <code class="docutils literal"><span class="pre">dbm</span> <span class="pre">initenv</span></code> command.</p>
+<div class="section" id="initenv-options">
+<span id="initenv-options"></span><h4>initenv options:<a class="headerlink" href="#initenv-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--to-current-dir</span></code>: Initialize current directory [.].</li>
+<li><code class="docutils literal"><span class="pre">--to-dir</span> <span class="pre">TARGET</span></code>: Initialize target directory.</li>
+<li><code class="docutils literal"><span class="pre">--help|-h</span></code>: Show help message.</li>
+</ul>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb initenv  --to-current-dir 
+  Directories created: 10.
+  <span class="nv">$#</span> ls
+  creation_scripts  foreign_keys  functions  indexes  procedures  schedulers  schemas  triggers  update_scripts  views
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="mariadb-show">
+<span id="mariadb-show"></span><h3>mariadb show<a class="headerlink" href="#mariadb-show" title="Permalink to this headline">¶</a></h3>
+<p>Command <code class="docutils literal"><span class="pre">show</span></code> permit to analyze different elements of the database:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">procedures</span></code>: Permit to show list of procedures available on database</li>
+<li><code class="docutils literal"><span class="pre">triggers</span></code>: Permit to show list of triggers available on database</li>
+<li><code class="docutils literal"><span class="pre">functions</span></code>: Permit to show list of functions available on database.</li>
+<li><code class="docutils literal"><span class="pre">views</span></code>: Permit to show list of views available on database.</li>
+<li><code class="docutils literal"><span class="pre">foreign-keys</span></code>: Permit to show list of foreign keys available on database.
+In particular, permit to retrieve foreign key name, column name, table
+name and referenced column.</li>
+<li><code class="docutils literal"><span class="pre">tables</span></code>: Permit to show list of tables with Engine name, number of rows, length of data,
+charset and creation date.</li>
+<li><code class="docutils literal"><span class="pre">indexes</span></code>: Permit to show list of indexes available on database with table name,
+index type, unique flag, name of the indexes, and keys columns.</li>
+<li><code class="docutils literal"><span class="pre">events</span></code>: Permit to show list of events available on database.</li>
+<li><code class="docutils literal"><span class="pre">single</span> <span class="pre">data</span> <span class="pre">table</span></code>: Permit to obtain a summary with different table data: list of table columns,
+list of foreign key of the table, list of foreign keys from other
+tables to analyzed table and optional show script of create table.</li>
+<li><code class="docutils literal"><span class="pre">single</span> <span class="pre">foreign</span> <span class="pre">key</span> <span class="pre">data</span></code>: detail about a foreign key.</li>
+<li><code class="docutils literal"><span class="pre">single</span> <span class="pre">event</span> <span class="pre">details</span></code>: show detail about an event</li>
+<li><code class="docutils literal"><span class="pre">global</span> <span class="pre">variables</span></code>: Show configured global variables and filter for a particular value.</li>
+</ul>
+<div class="section" id="show-options">
+<span id="show-options"></span><h4>show options:<a class="headerlink" href="#show-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--procedures</span></code>: Show list of procedures name present on database.</li>
+<li><code class="docutils literal"><span class="pre">--triggers</span></code>: Show list of trigger name present on database.</li>
+<li>`&#8211;functions: Show list of functions name present on database.</li>
+<li><code class="docutils literal"><span class="pre">--views</span></code>: Show list of view name present on database.</li>
+<li><code class="docutils literal"><span class="pre">--foreign-keys</span></code>: Show list of foreign keys name present on database.</li>
+<li><code class="docutils literal"><span class="pre">--tables</span></code>: Show list of tables present on database.</li>
+<li><code class="docutils literal"><span class="pre">--indexes</span></code>: Show list of indexes present on database.</li>
+<li><code class="docutils literal"><span class="pre">--all</span></code>: Show list of all procedures, triggers, functions and views present on database.</li>
+<li><code class="docutils literal"><span class="pre">--events</span></code>: Show list of event/scheduler present on database.</li>
+<li><code class="docutils literal"><span class="pre">--table</span> <span class="pre">TABLE_NAME</span></code>: Show detail of a table. This option could be repeated.</li>
+<li><code class="docutils literal"><span class="pre">--fkey</span> <span class="pre">FKEY_NAME</span></code>: Show detail of a foreign key. This option could be repeated.</li>
+<li><code class="docutils literal"><span class="pre">--event</span> <span class="pre">EVENT_NAME</span></code>: Show detail of a event. This option could be repeated.</li>
+<li><code class="docutils literal"><span class="pre">--table-def</span></code>: Show table definition SQL (To use with &#8211;table).</li>
+<li><code class="docutils literal"><span class="pre">--global-vars</span></code>: Show global variables of the instance.</li>
+<li><code class="docutils literal"><span class="pre">--vars-filter</span> <span class="pre">FILTER</span></code>: Apply filter in LIKE as %FILTER% (To use with &#8211;global-vars).</li>
+</ul>
+<p>There are many options with <code class="docutils literal"><span class="pre">show</span></code> command so I propose only few examples here related with
+Openstack Juno database.</p>
+<p><em>Show table details</em></p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb show --table <span class="nv">vips</span> 
+  <span class="o">===============================================================================================================</span>
+  TABLE: <span class="nv">vips</span>
+  <span class="o">===============================================================================================================</span>
+  COLUMN_NAME         DEFAULT             NULLABLE  TYPE                        KEY       <span class="nv">EXTRA</span>              
+  <span class="o">===============================================================================================================</span>
+  tenant_id           NULL                YES       VARCHAR<span class="o">(</span>255<span class="o">)</span>                                             
+  id                  NULL                NO        VARCHAR<span class="o">(</span>36<span class="o">)</span>                 PRI                          
+  status              NULL                NO        VARCHAR<span class="o">(</span>16<span class="o">)</span>                                              
+  status_description  NULL                YES       VARCHAR<span class="o">(</span>255<span class="o">)</span>                                             
+  name                NULL                YES       VARCHAR<span class="o">(</span>255<span class="o">)</span>                                             
+  description         NULL                YES       VARCHAR<span class="o">(</span>255<span class="o">)</span>                                             
+  port_id             NULL                YES       VARCHAR<span class="o">(</span>36<span class="o">)</span>                 MUL                          
+  protocol_port       NULL                NO        INT<span class="o">(</span>11<span class="o">)</span>                                                  
+  protocol            NULL                NO        ENUM<span class="o">(</span><span class="s1">&#39;HTTP&#39;</span>,<span class="s1">&#39;HTTPS&#39;</span>,<span class="s1">&#39;TCP&#39;</span><span class="o">)</span>                               
+  pool_id             NULL                NO        VARCHAR<span class="o">(</span>36<span class="o">)</span>                 UNI                          
+  admin_state_up      NULL                NO        TINYINT<span class="o">(</span>1<span class="o">)</span>                                               
+  connection_limit    NULL                YES       INT<span class="o">(</span>11<span class="o">)</span>                                                  
+
+  <span class="o">===============================================================================================================</span>
+  TABLE FOREIGN <span class="nv">KEYS</span>
+  <span class="o">===============================================================================================================</span>
+  FOREIGN_KEY_NAME         COLUMN_NAME         TABLE_NAME                  REF_COLUMN_NAME  <span class="nv">REF_TABLE_NAME</span>   
+  <span class="o">===============================================================================================================</span>
+  vips_ibfk_1              port_id             vips                        id               <span class="nv">ports</span>           
+
+  <span class="o">===============================================================================================================</span>
+  FOREIGN KEYS VS. TABLE <span class="nv">vips</span>
+  <span class="o">===============================================================================================================</span>
+  FOREIGN_KEY_NAME              COLUMN_NAME         TABLE_NAME                  REF_COLUMN_NAME  <span class="nv">REF_TABLE_NAME</span>
+  <span class="o">===============================================================================================================</span>
+  pools_ibfk_1                  vip_id              pools                       id               vips        
+  sessionpersistences_ibfk_1    vip_id              sessionpersistences         id               vips        
+  vcns_edge_vip_bindings_ibfk_1 vip_id              vcns_edge_vip_bindings      id               vips     
+</pre></div>
+</div>
+<p><em>Show database indexes</em></p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb show --indexes
+  <span class="o">===============================================================================================================</span>
+  <span class="nv">INDEXES</span>
+  <span class="o">===============================================================================================================</span>
+  TABLE_NAME                 UNIQUE      INDEX_NAME                  KEYS_COLUMNS                      <span class="nv">INDEX_TYPE</span>
+  <span class="o">===============================================================================================================</span>
+  agents                     <span class="m">1</span>           PRIMARY                     id                                BTREE
+  agents                     <span class="m">1</span>           uniq_agents0agent_type0host agent_type,host                   BTREE
+  allowedaddresspairs        <span class="m">1</span>           PRIMARY                     port_id,mac_address,ip_address    BTREE
+  arista_provisioned_nets    <span class="m">1</span>           PRIMARY                     id                                BTREE
+  arista_provisioned_tenants <span class="m">1</span>           PRIMARY                     id                                BTREE
+  arista_provisioned_vms     <span class="m">1</span>           PRIMARY                     id                                BTREE
+  brocadenetworks            <span class="m">1</span>           PRIMARY                     id                                BTREE
+  brocadeports               <span class="m">0</span>           network_id                  network_id                        BTREE
+  brocadeports               <span class="m">1</span>           PRIMARY                     port_id                           BTREE
+  cisco_credentials          <span class="m">1</span>           PRIMARY                     credential_name                   BTREE
+  cisco_csr_identifier_map   <span class="m">1</span>           PRIMARY                     ipsec_site_conn_id                BTREE
+  cisco_hosting_devices      <span class="m">0</span>           cfg_agent_id                cfg_agent_id                      BTREE
+
+  ...
+</pre></div>
+</div>
+<p><em>Show database tables</em></p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb show --tables
+  <span class="o">===============================================================================================================</span>
+  TABLE_NAME               ENGINE     TABLE_ROWS     DATA_LENGTH    CHARSET   CREATE_TIME          <span class="nv">UPDATE_TIME</span>
+  <span class="o">===============================================================================================================</span>
+  agents                   InnoDB     <span class="m">0</span>              <span class="m">16384</span>          utf8      2015-09-28 09:08:51  NULL
+  alembic_version          InnoDB     <span class="m">0</span>              <span class="m">16384</span>          utf8      2015-09-28 09:08:43  NULL
+  allowedaddresspairs      InnoDB     <span class="m">0</span>              <span class="m">16384</span>          utf8      2015-09-28 09:08:44  NULL
+  ml2_gre_allocations      InnoDB     <span class="m">14508</span>          <span class="m">393216</span>         utf8      2015-09-28 09:08:51  NULL
+  ml2_gre_endpoints        InnoDB     <span class="m">0</span>              <span class="m">16384</span>          utf8      2015-09-28 09:08:44  NULL
+  ml2_network_segments     InnoDB     <span class="m">0</span>              <span class="m">16384</span>          utf8      2015-09-28 09:08:54  NULL
+  ml2_port_bindings        InnoDB     <span class="m">1</span>              <span class="m">16384</span>          utf8      2015-09-28 09:08:52  NULL
+  ml2_vlan_allocations     InnoDB     <span class="m">2452</span>           <span class="m">114688</span>         utf8      2015-09-28 09:08:44  NULL
+
+  ...
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="mariadb-download">
+<span id="mariadb-download"></span><h3>mariadb download<a class="headerlink" href="#mariadb-download" title="Permalink to this headline">¶</a></h3>
+<p>Download procedures, trigger, functions, foreign keys, indexes, views, events and database schema from active database.</p>
+<div class="section" id="download-options">
+<span id="download-options"></span><h4>download options:<a class="headerlink" href="#download-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--all-procedure</span></code>: Download all procedures SQL statements from database and save every procedure
+under <em>procedures</em> directory where name of the file is equal to name of the
+procedure with .sql extension.</li>
+<li><code class="docutils literal"><span class="pre">--all-triggers</span></code>: Download all triggers SQL statements from database and save every
+trigger under <em>triggers</em> directory where name of the file is equal
+to name of the trigger with .sql extension.
+User must manage manually conflit name or use auto-naming feature
+of <code class="docutils literal"><span class="pre">dbrm</span></code> on creation.</li>
+<li><code class="docutils literal"><span class="pre">--all-functions</span></code>: Download all functions SQL statements from database and save every
+function under <em>functions</em> directory where name of the file is
+equal to name of the function with .sql extension.</li>
+<li><code class="docutils literal"><span class="pre">--all-foreign-keys</span></code>: Download all foreign keys SQL statements from database and save
+every foreign key under <em>foreign_keys</em> directory where name of
+the file is equal to &lt;TABLE_NAME&gt;-&lt;FKEY_NAME&gt; with .sql
+extension.</li>
+<li><code class="docutils literal"><span class="pre">--all-indexes</span></code>: Download all indexes SQL statements from database and save every
+index creation command under <em>indexes</em> directory where name of the
+file is equal to &lt;TABLE_NAME&gt;-&lt;INDEX_NAME&gt; with .sql extension.</li>
+<li><code class="docutils literal"><span class="pre">--all-views</span></code>: Download all views from database and save every view under <em>views</em>
+directory</li>
+<li><code class="docutils literal"><span class="pre">--all-events</span></code>: Download all events/schedulers.</li>
+<li><code class="docutils literal"><span class="pre">--all</span></code>: Download all (no tables schemas).</li>
+<li><code class="docutils literal"><span class="pre">--procedure</span> <span class="pre">name</span></code>: Download a particular procedure.</li>
+<li><code class="docutils literal"><span class="pre">--trigger</span> <span class="pre">name</span></code>: Download a particular trigger.</li>
+<li><code class="docutils literal"><span class="pre">--function</span> <span class="pre">name</span></code>: Download a particular function.</li>
+<li><code class="docutils literal"><span class="pre">--view</span> <span class="pre">name</span></code>: Download a particular view.</li>
+<li><code class="docutils literal"><span class="pre">--foreign-key</span> <span class="pre">name</span></code>: Download a particular foreign key.</li>
+<li><code class="docutils literal"><span class="pre">--event</span> <span class="pre">name</span></code>: Download a particular event.</li>
+<li><code class="docutils literal"><span class="pre">--index</span> <span class="pre">name</span></code>: Download a particular index (Require &#8211;index-table)
+Only one index a time.</li>
+<li><code class="docutils literal"><span class="pre">--index-table</span> <span class="pre">tname</span></code>: Name of table of index to download. (To use with &#8211;index).</li>
+<li><code class="docutils literal"><span class="pre">--with-pk-indexes</span></code>: Download also primary key indexes.
+(To use with &#8211;all|&#8211;index|&#8211;all-indexes)</li>
+<li><code class="docutils literal"><span class="pre">--all-tables</span></code>: Download all tables definitions that aren&#8217;t present on target
+file. This option could be used with &#8211;file.</li>
+<li><code class="docutils literal"><span class="pre">--table</span> <span class="pre">name</span></code>: Download schema of a particular table
+This option could be used with &#8211;file.</li>
+<li><code class="docutils literal"><span class="pre">--file</span> <span class="pre">file</span></code>: (optional) File where write tables definitions.
+Default is creation_scripts/initial_ddl.sql</li>
+<li><code class="docutils literal"><span class="pre">--fk-table</span> <span class="pre">tname</span></code>: Table name of foreign key to download. To use with &#8211;foreign-key.
+If this param is missing dbrm try to identify table
+name. If there are more or one fkey with same name
+then elaboration is blocked.</li>
+</ul>
+<p>There are many options with <code class="docutils literal"><span class="pre">show</span></code> command so I propose only few examples here related
+with Openstack Juno database.</p>
+<p><em>Download all indexes (not primary keys)</em></p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb download --all-indexes
+  Download index uniq_agents0agent_type0host of table agents <span class="o">(</span><span class="m">1</span> of 76<span class="o">)</span>.
+  Download index network_id of table brocadeports <span class="o">(</span><span class="m">2</span> of 76<span class="o">)</span>.
+  Download index cfg_agent_id of table cisco_hosting_devices <span class="o">(</span><span class="m">3</span> of 76<span class="o">)</span>.
+  Download index management_port_id of table cisco_hosting_devices <span class="o">(</span><span class="m">4</span> of 76<span class="o">)</span>.
+  Download index profile_id of table cisco_n1kv_network_bindings <span class="o">(</span><span class="m">5</span> of 76<span class="o">)</span>.
+  Download index profile_id of table cisco_n1kv_port_bindings <span class="o">(</span><span class="m">6</span> of 76<span class="o">)</span>.
+  Download index profile_id of table cisco_n1kv_vmnetworks <span class="o">(</span><span class="m">7</span> of 76<span class="o">)</span>.
+  Download index hosting_port_id of table cisco_port_mappings <span class="o">(</span><span class="m">8</span> of 76<span class="o">)</span>.
+  Download index logical_port_id of table cisco_port_mappings <span class="o">(</span><span class="m">9</span> of 76<span class="o">)</span>.
+  Download index hosting_device_id of table cisco_router_mappings <span class="o">(</span><span class="m">10</span> of 76<span class="o">)</span>.
+  Download index csnat_gw_port_id of table csnat_l3_agent_bindings <span class="o">(</span><span class="m">11</span> of 76<span class="o">)</span>.
+  Download index l3_agent_id of table csnat_l3_agent_bindings <span class="o">(</span><span class="m">12</span> of 76<span class="o">)</span>.
+  Download index subnet_id of table dnsnameservers <span class="o">(</span><span class="m">13</span> of 76<span class="o">)</span>.
+  Download index mac_address of table dvr_host_macs <span class="o">(</span><span class="m">14</span> of 76<span class="o">)</span>.
+  Download index uidx_portid_optname of table extradhcpopts <span class="o">(</span><span class="m">15</span> of 76<span class="o">)</span>.
+  Download index fixed_port_id of table floatingips <span class="o">(</span><span class="m">16</span> of 76<span class="o">)</span>.
+  Download index floating_port_id of table floatingips <span class="o">(</span><span class="m">17</span> of 76<span class="o">)</span>.
+  Download index router_id of table floatingips <span class="o">(</span><span class="m">18</span> of 76<span class="o">)</span>.
+  Download index l3_agent_id of table ha_router_agent_port_bindings <span class="o">(</span><span class="m">19</span> of 76<span class="o">)</span>.
+  Download index router_id of table ha_router_agent_port_bindings <span class="o">(</span><span class="m">20</span> of 76<span class="o">)</span>.
+  Download index network_id of table ha_router_networks <span class="o">(</span><span class="m">21</span> of 76<span class="o">)</span>.
+  Download index idx_autoinc_vr_id of table ha_router_vrid_allocations <span class="o">(</span><span class="m">22</span> of 76<span class="o">)</span>.
+  Download index subnet_id of table ipallocationpools <span class="o">(</span><span class="m">23</span> of 76<span class="o">)</span>.
+  Download index network_id of table ipallocations <span class="o">(</span><span class="m">24</span> of 76<span class="o">)</span>.
+  Download index port_id of table ipallocations <span class="o">(</span><span class="m">25</span> of 76<span class="o">)</span>.
+  Download index subnet_id of table ipallocations <span class="o">(</span><span class="m">26</span> of 76<span class="o">)</span>.
+  Download index ipsec_site_connection_id of table ipsecpeercidrs <span class="o">(</span><span class="m">27</span> of 76<span class="o">)</span>.
+  Download index ikepolicy_id of table ipsec_site_connections <span class="o">(</span><span class="m">28</span> of 76<span class="o">)</span>.
+  Download index ipsecpolicy_id of table ipsec_site_connections <span class="o">(</span><span class="m">29</span> of 76<span class="o">)</span>.
+  Download index vpnservice_id of table ipsec_site_connections <span class="o">(</span><span class="m">30</span> of 76<span class="o">)</span>.
+  Download index lsn_id of table lsn_port <span class="o">(</span><span class="m">31</span> of 76<span class="o">)</span>.
+  Download index mac_addr of table lsn_port <span class="o">(</span><span class="m">32</span> of 76<span class="o">)</span>.
+  Download index sub_id of table lsn_port <span class="o">(</span><span class="m">33</span> of 76<span class="o">)</span>.
+  Download index uniq_member0pool_id0address0port of table members <span class="o">(</span><span class="m">34</span> of 76<span class="o">)</span>.
+  Download index metering_label_id of table meteringlabelrules <span class="o">(</span><span class="m">35</span> of 76<span class="o">)</span>.
+  Download index network_id of table ml2_brocadeports <span class="o">(</span><span class="m">36</span> of 76<span class="o">)</span>.
+  Download index segment of table ml2_dvr_port_bindings <span class="o">(</span><span class="m">37</span> of 76<span class="o">)</span>.
+  Download index network_id of table ml2_network_segments <span class="o">(</span><span class="m">38</span> of 76<span class="o">)</span>.
+  Download index segment of table ml2_port_bindings <span class="o">(</span><span class="m">39</span> of 76<span class="o">)</span>.
+  Download index network_gateway_id of table networkconnections <span class="o">(</span><span class="m">40</span> of 76<span class="o">)</span>.
+  Download index network_id of table networkconnections <span class="o">(</span><span class="m">41</span> of 76<span class="o">)</span>.
+  Download index dhcp_agent_id of table networkdhcpagentbindings <span class="o">(</span><span class="m">42</span> of 76<span class="o">)</span>.
+  Download index network_gateway_id of table networkgatewaydevicereferences <span class="o">(</span><span class="m">43</span> of 76<span class="o">)</span>.
+  Download index queue_id of table networkqueuemappings <span class="o">(</span><span class="m">44</span> of 76<span class="o">)</span>.
+  Download index router_id of table nuage_net_partition_router_mapping <span class="o">(</span><span class="m">45</span> of 76<span class="o">)</span>.
+  Download index net_partition_id of table nuage_subnet_l2dom_mapping <span class="o">(</span><span class="m">46</span> of 76<span class="o">)</span>.
+  Download index ofc_id of table ofcfiltermappings <span class="o">(</span><span class="m">47</span> of 76<span class="o">)</span>.
+  Download index ofc_id of table ofcnetworkmappings <span class="o">(</span><span class="m">48</span> of 76<span class="o">)</span>.
+  Download index ofc_id of table ofcportmappings <span class="o">(</span><span class="m">49</span> of 76<span class="o">)</span>.
+  Download index ofc_id of table ofcroutermappings <span class="o">(</span><span class="m">50</span> of 76<span class="o">)</span>.
+  Download index ofc_id of table ofctenantmappings <span class="o">(</span><span class="m">51</span> of 76<span class="o">)</span>.
+  Download index uniq_ovs_tunnel_endpoints0id of table ovs_tunnel_endpoints <span class="o">(</span><span class="m">52</span> of 76<span class="o">)</span>.
+  Download index in_port of table packetfilters <span class="o">(</span><span class="m">53</span> of 76<span class="o">)</span>.
+  Download index network_id of table packetfilters <span class="o">(</span><span class="m">54</span> of 76<span class="o">)</span>.
+  Download index agent_id of table poolloadbalanceragentbindings <span class="o">(</span><span class="m">55</span> of 76<span class="o">)</span>.
+  Download index monitor_id of table poolmonitorassociations <span class="o">(</span><span class="m">56</span> of 76<span class="o">)</span>.
+  Download index vip_id of table pools <span class="o">(</span><span class="m">57</span> of 76<span class="o">)</span>.
+  Download index queue_id of table portqueuemappings <span class="o">(</span><span class="m">58</span> of 76<span class="o">)</span>.
+  Download index network_id of table ports <span class="o">(</span><span class="m">59</span> of 76<span class="o">)</span>.
+  Download index resource_id of table providerresourceassociations <span class="o">(</span><span class="m">60</span> of 76<span class="o">)</span>.
+  Download index ix_quotas_tenant_id of table quotas <span class="o">(</span><span class="m">61</span> of 76<span class="o">)</span>.
+  Download index port_id of table routerports <span class="o">(</span><span class="m">62</span> of 76<span class="o">)</span>.
+  Download index router_id of table routerroutes <span class="o">(</span><span class="m">63</span> of 76<span class="o">)</span>.
+  Download index router_id of table routerrules <span class="o">(</span><span class="m">64</span> of 76<span class="o">)</span>.
+  Download index gw_port_id of table routers <span class="o">(</span><span class="m">65</span> of 76<span class="o">)</span>.
+  Download index security_group_id of table securitygroupportbindings <span class="o">(</span><span class="m">66</span> of 76<span class="o">)</span>.
+  Download index remote_group_id of table securitygrouprules <span class="o">(</span><span class="m">67</span> of 76<span class="o">)</span>.
+  Download index security_group_id of table securitygrouprules <span class="o">(</span><span class="m">68</span> of 76<span class="o">)</span>.
+  Download index router_id of table servicerouterbindings <span class="o">(</span><span class="m">69</span> of 76<span class="o">)</span>.
+  Download index subnet_id of table subnetroutes <span class="o">(</span><span class="m">70</span> of 76<span class="o">)</span>.
+  Download index network_id of table subnets <span class="o">(</span><span class="m">71</span> of 76<span class="o">)</span>.
+  Download index network_id of table tunnelkeys <span class="o">(</span><span class="m">72</span> of 76<span class="o">)</span>.
+  Download index pool_id of table vips <span class="o">(</span><span class="m">73</span> of 76<span class="o">)</span>.
+  Download index port_id of table vips <span class="o">(</span><span class="m">74</span> of 76<span class="o">)</span>.
+  Download index router_id of table vpnservices <span class="o">(</span><span class="m">75</span> of 76<span class="o">)</span>.
+  Download index subnet_id of table vpnservices <span class="o">(</span><span class="m">76</span> of 76<span class="o">)</span>.
+  Download operation successfull.
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017, Geaaru.<br/>
+      Last updated on May 14, 2017.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

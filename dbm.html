@@ -32,7 +32,7 @@
     <script type="text/javascript" src="static/bootstrap-sphinx.js"></script>
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Logfile Module" href="logfile.html" />
-    <link rel="prev" title="&lt;no title&gt;" href="index.html" />
+    <link rel="prev" title="Database Release Manager" href="index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -70,6 +70,8 @@
       aria-labelledby="dLabelGlobalToc"><ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Dbm Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logfile.html">Logfile Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mariadb.html">MariaDB Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common.html">Commons API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mysql.html">Mysql API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sqlplus.html">Sqlplus API</a></li>
@@ -223,6 +225,24 @@
 <li><a class="reference internal" href="#dbm-exts-check-dbm">_dbm_exts_check_dbm</a></li>
 <li><a class="reference internal" href="#dbm-initenv-help">_dbm_initenv_help</a></li>
 <li><a class="reference internal" href="#dbm-check-initenv-args">_dbm_check_initenv_args</a></li>
+<li><a class="reference internal" href="#dbm-ins-rel-help">_dbm_ins_rel_help</a></li>
+<li><a class="reference internal" href="#dbm-check-ins-rel-args">_dbm_check_ins_rel_args</a></li>
+<li><a class="reference internal" href="#dbm-add-prof-help">_dbm_add_prof_help</a></li>
+<li><a class="reference internal" href="#dbm-prof-help">_dbm_prof_help</a></li>
+<li><a class="reference internal" href="#dbm-check-prof-args">_dbm_check_prof_args</a></li>
+<li><a class="reference internal" href="#dbm-check-add-prof-args">_dbm_check_add_prof_args</a></li>
+<li><a class="reference internal" href="#dbm-check-ins-bra-args">_dbm_check_ins_bra_args</a></li>
+<li><a class="reference internal" href="#dbm-check-ins-script-type-args">_dbm_check_ins_script_type_args</a></li>
+<li><a class="reference internal" href="#dbm-check-ins-script-args">_dbm_check_ins_script_args</a></li>
+<li><a class="reference internal" href="#dbm-check-rel-dep-args">_dbm_check_rel_dep_args</a></li>
+<li><a class="reference internal" href="#dbm-check-upd-script-args">_dbm_check_upd_script_args</a></li>
+<li><a class="reference internal" href="#dbm-check-rm-script-args">_dbm_check_rm_script_args</a></li>
+<li><a class="reference internal" href="#dbm-check-upd-release-args">_dbm_check_upd_release_args</a></li>
+<li><a class="reference internal" href="#dbm-check-move-release-args">_dbm_check_move_release_args</a></li>
+<li><a class="reference internal" href="#dbm-check-inhibit-script-args">_dbm_check_inhibit_script_args</a></li>
+<li><a class="reference internal" href="#dbm-check-move-script-args">_dbm_check_move_script_args</a></li>
+<li><a class="reference internal" href="#dbm-check-rem-rel-args">_dbm_check_rem_rel_args</a></li>
+<li><a class="reference internal" href="#dbm-check-show-rel-args">_dbm_check_show_rel_args</a></li>
 </ul>
 </li>
 </ul>
@@ -236,7 +256,7 @@
               
                 
   <li>
-    <a href="index.html" title="Previous Chapter: <no title>"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; <no title></span>
+    <a href="index.html" title="Previous Chapter: Database Release Manager"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Database Rele...</span>
     </a>
   </li>
   <li>
@@ -474,7 +494,7 @@ sqlite&gt;
 <li><code class="docutils literal"><span class="pre">1</span></code>: On error</li>
 <li><code class="docutils literal"><span class="pre">0</span></code>: On success</li>
 </ul>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm dbm show_scripts -h
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm dbm <span class="nv">show_scripts</span>
   <span class="o">===============================================================================================================</span>
   ID  TYPE           ACTIVE  DIRECTORY           ID_RELEASE  ID_ORDER  UPDATE_DATE             <span class="nv">FILENAME</span>
   <span class="o">===============================================================================================================</span>
@@ -1207,7 +1227,7 @@ Load all *.inc files of dbm module that contains help messages and command line 
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock112'))">(Show/Hide)</a><br /><div id="hiddencodeblock112" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_init<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock1'))">(Show/Hide)</a><br /><div id="hiddencodeblock1" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_init<span class="o">()</span> <span class="o">{</span>
 
   <span class="c1"># Load dbm module files</span>
   <span class="k">for</span> i in <span class="nv">$DBRM_CORE_FILES_DIR</span>/dbm/*.inc <span class="p">;</span> <span class="k">do</span>
@@ -1240,7 +1260,7 @@ If is not defined then $LOCAL_DIR/.dbm_history file is used.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock113'))">(Show/Hide)</a><br /><div id="hiddencodeblock113" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_post_init <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock2'))">(Show/Hide)</a><br /><div id="hiddencodeblock2" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_post_init <span class="o">()</span> <span class="o">{</span>
 
   <span class="c1"># Check if exists DRM_DB</span>
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&quot;(dbm_post_init: Check if is present sqlite internal db file: </span><span class="nv">$DRM_DB</span><span class="s2">)&quot;</span>
@@ -1305,7 +1325,7 @@ DBRM database file.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock114'))">(Show/Hide)</a><br /><div id="hiddencodeblock114" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_upgrade <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock3'))">(Show/Hide)</a><br /><div id="hiddencodeblock3" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_upgrade <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">i</span><span class="o">=</span>0
   <span class="nb">local</span> <span class="nv">tschema</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -1358,7 +1378,7 @@ DBRM database file.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock115'))">(Show/Hide)</a><br /><div id="hiddencodeblock115" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_how_many_profiles <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock4'))">(Show/Hide)</a><br /><div id="hiddencodeblock4" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_how_many_profiles <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">query</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
 
@@ -1393,7 +1413,7 @@ Check also if file exists.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock116'))">(Show/Hide)</a><br /><div id="hiddencodeblock116" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_get_profile_by_name <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock5'))">(Show/Hide)</a><br /><div id="hiddencodeblock5" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_get_profile_by_name <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">query</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
@@ -1446,7 +1466,7 @@ Check also if file exists.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock117'))">(Show/Hide)</a><br /><div id="hiddencodeblock117" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_get_default_profile_filepath <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock6'))">(Show/Hide)</a><br /><div id="hiddencodeblock6" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_get_default_profile_filepath <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">query</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
 
@@ -1498,7 +1518,7 @@ Check also if file exists.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock118'))">(Show/Hide)</a><br /><div id="hiddencodeblock118" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_prof_byid <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock7'))">(Show/Hide)</a><br /><div id="hiddencodeblock7" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_prof_byid <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_profile</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
@@ -1540,7 +1560,7 @@ Check also if file exists.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock119'))">(Show/Hide)</a><br /><div id="hiddencodeblock119" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_prof_byname <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock8'))">(Show/Hide)</a><br /><div id="hiddencodeblock8" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_prof_byname <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">profile_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
@@ -1583,7 +1603,7 @@ Check also if file exists.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock120'))">(Show/Hide)</a><br /><div id="hiddencodeblock120" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_rel <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock9'))">(Show/Hide)</a><br /><div id="hiddencodeblock9" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_rel <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">rel_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">rel_version</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1637,7 +1657,7 @@ If second parameter is valorized then are set these variables:</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock121'))">(Show/Hide)</a><br /><div id="hiddencodeblock121" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_script_data <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock10'))">(Show/Hide)</a><br /><div id="hiddencodeblock10" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_script_data <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_script</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">set_variables</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1707,7 +1727,7 @@ If release is present then are valorized these variables:</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock122'))">(Show/Hide)</a><br /><div id="hiddencodeblock122" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_first_release <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock11'))">(Show/Hide)</a><br /><div id="hiddencodeblock11" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_first_release <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
@@ -1758,7 +1778,7 @@ If release is present then are valorized these variables:</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock123'))">(Show/Hide)</a><br /><div id="hiddencodeblock123" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_id_script <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock12'))">(Show/Hide)</a><br /><div id="hiddencodeblock12" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_id_script <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_script</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">id_release</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1802,7 +1822,7 @@ If release is present then are valorized these variables:</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock124'))">(Show/Hide)</a><br /><div id="hiddencodeblock124" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_id_branch <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock13'))">(Show/Hide)</a><br /><div id="hiddencodeblock13" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_id_branch <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_branch</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">query</span><span class="o">=</span><span class="s2">&quot;SELECT COUNT(1) AS res FROM Branches WHERE id_branch = </span><span class="nv">$id_branch</span><span class="s2">&quot;</span>
@@ -1840,7 +1860,7 @@ If release is present then are valorized these variables:</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock125'))">(Show/Hide)</a><br /><div id="hiddencodeblock125" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_id_rel <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock14'))">(Show/Hide)</a><br /><div id="hiddencodeblock14" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_id_rel <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_release</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">query</span><span class="o">=</span><span class="s2">&quot;SELECT COUNT(1) AS res FROM Releases WHERE id_release = </span><span class="nv">$id_release</span><span class="s2">&quot;</span>
@@ -1881,7 +1901,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock126'))">(Show/Hide)</a><br /><div id="hiddencodeblock126" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_field_rel <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock15'))">(Show/Hide)</a><br /><div id="hiddencodeblock15" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_field_rel <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">field</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">rel_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1926,7 +1946,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock127'))">(Show/Hide)</a><br /><div id="hiddencodeblock127" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_field_rel_byid <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock16'))">(Show/Hide)</a><br /><div id="hiddencodeblock16" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_field_rel_byid <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">field</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">id_release</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1970,7 +1990,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock128'))">(Show/Hide)</a><br /><div id="hiddencodeblock128" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_field_script <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock17'))">(Show/Hide)</a><br /><div id="hiddencodeblock17" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_field_script <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">field</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">id_script</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -2012,7 +2032,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock129'))">(Show/Hide)</a><br /><div id="hiddencodeblock129" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_get_table_schema <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock18'))">(Show/Hide)</a><br /><div id="hiddencodeblock18" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_get_table_schema <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">table</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
@@ -2047,7 +2067,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock130'))">(Show/Hide)</a><br /><div id="hiddencodeblock130" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_remove_all_scripts_rel_inhib <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock19'))">(Show/Hide)</a><br /><div id="hiddencodeblock19" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_remove_all_scripts_rel_inhib <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_release</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
@@ -2147,7 +2167,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock131'))">(Show/Hide)</a><br /><div id="hiddencodeblock131" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_remove_release <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock20'))">(Show/Hide)</a><br /><div id="hiddencodeblock20" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_remove_release <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_release</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
@@ -2218,7 +2238,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock132'))">(Show/Hide)</a><br /><div id="hiddencodeblock132" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_update_idorder <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock21'))">(Show/Hide)</a><br /><div id="hiddencodeblock21" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_update_idorder <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_branch</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">idx</span><span class="o">=</span>0
@@ -2292,7 +2312,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock133'))">(Show/Hide)</a><br /><div id="hiddencodeblock133" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_remove_all_scripts_rel_ded <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock22'))">(Show/Hide)</a><br /><div id="hiddencodeblock22" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_remove_all_scripts_rel_ded <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_release</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
@@ -2392,7 +2412,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock134'))">(Show/Hide)</a><br /><div id="hiddencodeblock134" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_save2undo <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock23'))">(Show/Hide)</a><br /><div id="hiddencodeblock23" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_save2undo <span class="o">()</span> <span class="o">{</span>
     <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
     <span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$msg</span><span class="s2">&quot;</span> &gt;&gt; <span class="nv">$DBM_UNDO_SCRIPT</span>
@@ -2424,7 +2444,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock135'))">(Show/Hide)</a><br /><div id="hiddencodeblock135" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_save2history <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock24'))">(Show/Hide)</a><br /><div id="hiddencodeblock24" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_save2history <span class="o">()</span> <span class="o">{</span>
     <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
     <span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$msg</span><span class="s2">&quot;</span> &gt;&gt; <span class="nv">$DBM_HISTORY</span>
@@ -2458,7 +2478,7 @@ If there a new version of a module call module upgrade function if is present.</
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock136'))">(Show/Hide)</a><br /><div id="hiddencodeblock136" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_check_extensions <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock25'))">(Show/Hide)</a><br /><div id="hiddencodeblock25" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_check_extensions <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
   <span class="nb">local</span> <span class="nv">v</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -2533,7 +2553,7 @@ Save extension version to <code class="docutils literal"><span class="pre">_ext_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock137'))">(Show/Hide)</a><br /><div id="hiddencodeblock137" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_is_present <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock26'))">(Show/Hide)</a><br /><div id="hiddencodeblock26" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_is_present <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">ext</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
@@ -2580,7 +2600,7 @@ Save extension version to <code class="docutils literal"><span class="pre">_ext_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock138'))">(Show/Hide)</a><br /><div id="hiddencodeblock138" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_inst_extension <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock27'))">(Show/Hide)</a><br /><div id="hiddencodeblock27" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_inst_extension <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">ename</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">eversion</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -2634,7 +2654,7 @@ Save extension version to <code class="docutils literal"><span class="pre">_ext_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock139'))">(Show/Hide)</a><br /><div id="hiddencodeblock139" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_update_extension <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock28'))">(Show/Hide)</a><br /><div id="hiddencodeblock28" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_update_extension <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">ename</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">eversion</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -2681,7 +2701,7 @@ Save extension version to <code class="docutils literal"><span class="pre">_ext_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock140'))">(Show/Hide)</a><br /><div id="hiddencodeblock140" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_update_extension <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock29'))">(Show/Hide)</a><br /><div id="hiddencodeblock29" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_update_extension <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">ename</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">eversion</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -2723,7 +2743,7 @@ Save extension version to <code class="docutils literal"><span class="pre">_ext_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock141'))">(Show/Hide)</a><br /><div id="hiddencodeblock141" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_check_dbm <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock30'))">(Show/Hide)</a><br /><div id="hiddencodeblock30" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_check_dbm <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> _sqlite_exists_table -c <span class="s2">&quot;</span><span class="nv">$DRM_DB</span><span class="s2">&quot;</span> -t <span class="s2">&quot;Extensions&quot;</span> <span class="p">;</span> <span class="k">then</span>
     <span class="k">return</span> 1
@@ -2757,7 +2777,7 @@ Save extension version to <code class="docutils literal"><span class="pre">_ext_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock142'))">(Show/Hide)</a><br /><div id="hiddencodeblock142" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_initenv_help <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock31'))">(Show/Hide)</a><br /><div id="hiddencodeblock31" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_initenv_help <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">echo</span> -en <span class="s2">&quot;[--to-current-dir]      Initialize current directory [.].\n&quot;</span>
   <span class="nb">echo</span> -en <span class="s2">&quot;[--to-dir target]       Initialize target directory.\n&quot;</span>
@@ -2780,9 +2800,10 @@ _dbm_check_initenv_args <span class="o">()</span> <span class="o">{</span>
   <span class="k">$(</span><span class="nb">set</span> -- <span class="k">$(</span>getopt -u -q -a -o <span class="s2">&quot;</span><span class="nv">$short_options</span><span class="s2">&quot;</span> -l <span class="s2">&quot;</span><span class="nv">$long_options</span><span class="s2">&quot;</span> -- <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="k">))</span> <span class="o">||</span> <span class="se">\</span>
     error_handled <span class="s2">&quot;Invalid parameters&quot;</span>
 
-  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_initenv_args: Found </span><span class="nv">$#</span><span class="s2"> params)\n&quot;</span>
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_initenv_args: Found </span><span class="nv">$#</span><span class="s2"> params)\n&quot;</span>
 
-  <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -lt <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+  <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -le <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
     _dbm_initenv_help
     <span class="k">return</span> 1
   <span class="k">fi</span>
@@ -2838,6 +2859,7 @@ _dbm_check_initenv_args <span class="o">()</span> <span class="o">{</span>
 <span class="o">}</span>
 <span class="c1">#***</span>
 
+<span class="c1"># dbm__dbm_ins_rel_help</span>
 _dbm_ins_rel_help <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
@@ -2851,7 +2873,9 @@ _dbm_ins_rel_help <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">return</span> 0
 <span class="o">}</span>
+<span class="c1"># dbm__dbm_ins_rel_help_end</span>
 
+<span class="c1"># dbm__dbm_check_ins_rel_args</span>
 _dbm_check_ins_rel_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_rel_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
@@ -2920,11 +2944,9 @@ _dbm_check_ins_rel_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">return</span> 0
 <span class="o">}</span>
+<span class="c1"># dbm__dbm_check_ins_rel_args_end</span>
 
-<span class="c1">#****f* dbm/_dbm_add_prof_help</span>
-<span class="c1"># FUNCTION</span>
-<span class="c1">#   Print help message of add_profile command.</span>
-<span class="c1"># SOURCE</span>
+<span class="c1"># dbm__dbm_add_prof_help</span>
 _dbm_add_prof_help <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">echo</span> -en <span class="s2">&quot;[--name name]          Profile name to insert.\n&quot;</span>
@@ -2934,32 +2956,19 @@ _dbm_add_prof_help <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">return</span> 0
 <span class="o">}</span>
-<span class="c1">#***</span>
+<span class="c1"># dbm__dbm_add_prof_help_end</span>
 
-<span class="c1">#****f* dbm/_dbm_prof_help</span>
-<span class="c1"># FUNCTION</span>
-<span class="c1">#   Print help message of del_profile/set_profile command.</span>
-<span class="c1"># SOURCE</span>
+<span class="c1"># dbm__dbm_prof_help</span>
 _dbm_prof_help <span class="o">()</span> <span class="o">{</span>
-
   <span class="nb">echo</span> -en <span class="s2">&quot;[--name profile_name]  Name of the profile.\n&quot;</span>
   <span class="nb">echo</span> -en <span class="s2">&quot;[--id id_profile]      Id of the profile.\n&quot;</span>
   <span class="nb">echo</span> -en <span class="s2">&quot;[-h]                   Show this help message.\n&quot;</span>
 
   <span class="k">return</span> 0
 <span class="o">}</span>
-<span class="c1">#***</span>
+<span class="c1"># dbm__dbm_prof_help_end</span>
 
-
-<span class="c1">#****f* dbm/_dbm_check_prof_args</span>
-<span class="c1"># FUNCTION</span>
-<span class="c1">#   Internal function for parse command line arguments related to</span>
-<span class="c1">#   del_profile/set_profile command.</span>
-<span class="c1"># DESCRIPTION</span>
-<span class="c1">#   * --name profile_name  Name of the profile.</span>
-<span class="c1">#   * --id id_profile      Id of the profile.</span>
-<span class="c1">#   * -h                   Show help message.</span>
-<span class="c1"># SOURCE</span>
+<span class="c1"># dbm__dbm_check_prof_args</span>
 _dbm_check_prof_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_del_prof_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
@@ -2967,7 +2976,8 @@ _dbm_check_prof_args <span class="o">()</span> <span class="o">{</span>
   <span class="nb">local</span> <span class="nv">short_options</span><span class="o">=</span><span class="s2">&quot;h&quot;</span>
   <span class="nb">local</span> <span class="nv">long_options</span><span class="o">=</span><span class="s2">&quot;id: name:&quot;</span>
 
-  <span class="k">$(</span><span class="nb">set</span> -- <span class="k">$(</span>getopt -u -q -a -o <span class="s2">&quot;</span><span class="nv">$short_options</span><span class="s2">&quot;</span> -l <span class="s2">&quot;</span><span class="nv">$long_options</span><span class="s2">&quot;</span> -- <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="k">))</span> <span class="o">||</span> error_handled <span class="s2">&quot;Invalid parameters&quot;</span>
+  <span class="k">$(</span><span class="nb">set</span> -- <span class="k">$(</span>getopt -u -q -a -o <span class="s2">&quot;</span><span class="nv">$short_options</span><span class="s2">&quot;</span> -l <span class="s2">&quot;</span><span class="nv">$long_options</span><span class="s2">&quot;</span> -- <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="k">))</span> <span class="se">\</span>
+    <span class="o">||</span> error_handled <span class="s2">&quot;Invalid parameters&quot;</span>
 
   <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -lt <span class="m">2</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
     _dbm_prof_help
@@ -3017,17 +3027,9 @@ _dbm_check_prof_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">return</span> 0
 <span class="o">}</span>
-<span class="c1">#***</span>
+<span class="c1"># dbm__dbm_check_prof_args_end</span>
 
-<span class="c1">#****f* dbm/_dbm_check_add_prof_args</span>
-<span class="c1"># FUNCTION</span>
-<span class="c1">#   Internal function for parse command line arguments related to add_profile command.</span>
-<span class="c1"># DESCRIPTION</span>
-<span class="c1">#   * --default            Set profile as default.</span>
-<span class="c1">#   * --name               Set profile name.</span>
-<span class="c1">#   * --file               Set profile filename.</span>
-<span class="c1">#   * -h                   Show help message.</span>
-<span class="c1"># SOURCE</span>
+<span class="c1"># dbm__dbm_check_add_prof_args</span>
 _dbm_check_add_prof_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_add_prof_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
@@ -3084,13 +3086,19 @@ _dbm_check_add_prof_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">return</span> 0
 <span class="o">}</span>
-<span class="c1">#***</span>
+<span class="c1"># dbm__dbm_check_add_prof_args_end</span>
 
-
-<span class="c1"># Args for insert branch command</span>
+<span class="c1"># dbm__dbm_check_ins_bra_args</span>
 _dbm_check_ins_bra_args <span class="o">()</span> <span class="o">{</span>
 
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_bra_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  help_msg<span class="o">()</span> <span class="o">{</span>
+        <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Branch Name.\n&quot;</span>
+        <span class="nb">echo</span> -en <span class="s2">&quot;[-d YYYY-MM-DD]         Branch Date. (Use now if not available)\n&quot;</span>
+  <span class="o">}</span>
 
   <span class="c1"># Reinitialize opt index position</span>
   <span class="nv">OPTIND</span><span class="o">=</span>1
@@ -3100,8 +3108,7 @@ _dbm_check_ins_bra_args <span class="o">()</span> <span class="o">{</span>
       n<span class="o">)</span> <span class="nv">DBM_BRA_NAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
       d<span class="o">)</span> <span class="nv">DBM_BRA_DATE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
       h<span class="o">)</span>
-        <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Branch Name.\n&quot;</span>
-        <span class="nb">echo</span> -en <span class="s2">&quot;[-d YYYY-MM-DD]         Branch Date. (Use now if not available)\n&quot;</span>
+        help_msg
         <span class="k">return</span> 1
         <span class="p">;;</span>
 
@@ -3109,31 +3116,33 @@ _dbm_check_ins_bra_args <span class="o">()</span> <span class="o">{</span>
   <span class="k">done</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_BRA_NAME</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
-    <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Branch Name.\n&quot;</span>
-    <span class="nb">echo</span> -en <span class="s2">&quot;[-d YYYY-MM-DD]         Branch Date. (Use now if not available)\n&quot;</span>
-    <span class="k">return</span> 1
-  <span class="k">fi</span>
-
-  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_BRA_DATE</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
-    <span class="nv">DBM_BRA_DATE</span><span class="o">=</span><span class="s2">&quot;DATETIME(&#39;now&#39;)&quot;</span>
+    help_msg
+    <span class="nv">ans</span><span class="o">=</span>1
   <span class="k">else</span>
-    <span class="nv">DBM_BRA_DATE</span><span class="o">=</span><span class="s2">&quot;&#39;</span><span class="nv">$DBM_REL_DATE</span><span class="s2">&#39;&quot;</span>
+    <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_BRA_DATE</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+      <span class="nv">DBM_BRA_DATE</span><span class="o">=</span><span class="s2">&quot;DATETIME(&#39;now&#39;)&quot;</span>
+    <span class="k">else</span>
+      <span class="nv">DBM_BRA_DATE</span><span class="o">=</span><span class="s2">&quot;&#39;</span><span class="nv">$DBM_REL_DATE</span><span class="s2">&#39;&quot;</span>
+    <span class="k">fi</span>
   <span class="k">fi</span>
 
-  <span class="k">return</span> 0
+  <span class="nb">unset</span> -f help_msg
+
+  <span class="k">return</span> <span class="nv">$ans</span>
 <span class="o">}</span>
+<span class="c1"># dbm__dbm_check_ins_bra_args_end</span>
 
-_dbm_ins_script_type_help <span class="o">()</span> <span class="o">{</span>
-
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-c code]               Script Type Code.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-d description]        Script Type Description\n&quot;</span>
-
-  <span class="k">return</span> 0
-<span class="o">}</span>
-
+<span class="c1"># dbm__dbm_check_ins_script_type_args</span>
 _dbm_check_ins_script_type_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_script_type_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  _dbm_ins_script_type_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-c code]               Script Type Code.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-d description]        Script Type Description\n&quot;</span>
+
+    <span class="k">return</span> 0
+  <span class="o">}</span>
 
   <span class="c1"># Reinitialize opt index position</span>
   <span class="nv">OPTIND</span><span class="o">=</span>1
@@ -3165,27 +3174,31 @@ _dbm_check_ins_script_type_args <span class="o">()</span> <span class="o">{</spa
     <span class="k">return</span> 1
   <span class="k">fi</span>
 
-  <span class="k">return</span> 0
-<span class="o">}</span>
-
-_dbm_ins_script_help <span class="o">()</span> <span class="o">{</span>
-
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-f filename]           Script filename.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-v version]            Release Version\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-t script_type]        Script Type.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-a 0|1]                Set active flag. Default is 1 (active)\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-d directory]          Directory of the script.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-o id_order]           Script Id Order (optional). Default is used MAX(id) of the same id_release.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-r id_release]         Id_release of the script. Use this instead of release name and version.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-h]                    Show this message.\n&quot;</span>
+  <span class="nb">unset</span> -f _dbm_ins_script_type_help
 
   <span class="k">return</span> 0
 <span class="o">}</span>
+<span class="c1"># dbm__dbm_check_ins_script_type_args_end</span>
 
+<span class="c1"># dbm__dbm_check_ins_script_args</span>
 _dbm_check_ins_script_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_script_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  _dbm_ins_script_help <span class="o">()</span> <span class="o">{</span>
+
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-f filename]           Script filename.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-v version]            Release Version\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-t script_type]        Script Type.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-a 0|1]                Set active flag. Default is 1 (active)\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-d directory]          Directory of the script.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-o id_order]           Script Id Order (optional). Default is used MAX(id) of the same id_release.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-r id_release]         Id_release of the script. Use this instead of release name and version.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-h]                    Show this message.\n&quot;</span>
+
+    <span class="k">return</span> 0
+  <span class="o">}</span>
 
   <span class="nb">local</span> <span class="nv">short_options</span><span class="o">=</span><span class="s2">&quot;f:t:a:d:hr:n:v:o:&quot;</span>
 
@@ -3252,10 +3265,13 @@ _dbm_check_ins_script_args <span class="o">()</span> <span class="o">{</span>
     <span class="k">fi</span>
   <span class="k">fi</span>
 
+  <span class="nb">unset</span> -f _dbm_ins_script_help
+
   <span class="k">return</span> 0
 <span class="o">}</span>
+<span class="c1"># dbm__dbm_check_ins_script_args_end</span>
 
-
+<span class="c1"># dbm__dbm_check_rel_dep_args</span>
 _dbm_check_rel_dep_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_rel_dep_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
@@ -3300,10 +3316,25 @@ _dbm_check_rel_dep_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">return</span> 0
 <span class="o">}</span>
+<span class="c1"># dbm__dbm_check_rel_dep_args_end</span>
 
+<span class="c1"># dbm__dbm_check_upd_script_args</span>
 _dbm_check_upd_script_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_upd_script_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+
+  _dbm_check_upd_script_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-i id_script]          Id Script.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-f filename]           Script filename.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-v version]            Release Version\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-t script_type]        Script Type.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-a 0|1]                Set active flag.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-d directory]          Directory of the script.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-o id_order]           Script Id Order (optional). Default is used MAX(id) of the same id_release.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-r id_release]         Id_release of the script. Use this instead of release name and version.\n&quot;</span>
+  <span class="o">}</span>
 
   <span class="c1"># Reinitialize opt index position</span>
   <span class="nv">OPTIND</span><span class="o">=</span>1
@@ -3320,15 +3351,7 @@ _dbm_check_upd_script_args <span class="o">()</span> <span class="o">{</span>
       v<span class="o">)</span> <span class="nv">DBM_SCRIPT_REL_VERSION</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
       o<span class="o">)</span> <span class="nv">DBM_SCRIPT_ID_ORDER</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
       h<span class="o">)</span>
-        <span class="nb">echo</span> -en <span class="s2">&quot;[-i id_script]          Id Script.\n&quot;</span>
-        <span class="nb">echo</span> -en <span class="s2">&quot;[-f filename]           Script filename.\n&quot;</span>
-        <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
-        <span class="nb">echo</span> -en <span class="s2">&quot;[-v version]            Release Version\n&quot;</span>
-        <span class="nb">echo</span> -en <span class="s2">&quot;[-t script_type]        Script Type.\n&quot;</span>
-        <span class="nb">echo</span> -en <span class="s2">&quot;[-a 0|1]                Set active flag.\n&quot;</span>
-        <span class="nb">echo</span> -en <span class="s2">&quot;[-d directory]          Directory of the script.\n&quot;</span>
-        <span class="nb">echo</span> -en <span class="s2">&quot;[-o id_order]           Script Id Order (optional). Default is used MAX(id) of the same id_release.\n&quot;</span>
-        <span class="nb">echo</span> -en <span class="s2">&quot;[-r id_release]         Id_release of the script. Use this instead of release name and version.\n&quot;</span>
+        _dbm_check_upd_script_help
         <span class="k">return</span> 1
         <span class="p">;;</span>
 
@@ -3346,18 +3369,20 @@ _dbm_check_upd_script_args <span class="o">()</span> <span class="o">{</span>
     <span class="k">fi</span>
   <span class="k">fi</span>
 
-  <span class="k">return</span> 0
-<span class="o">}</span>
-
-_dbm_rm_script_help <span class="o">()</span> <span class="o">{</span>
-
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-i id_script]          Id Script of the script to remove.\n&quot;</span>
+  <span class="nb">unset</span> -f _dbm_check_upd_script_help
 
   <span class="k">return</span> 0
 <span class="o">}</span>
+<span class="c1"># dbm__dbm_check_upd_script_args_end</span>
 
-
+<span class="c1"># dbm__dbm_check_rm_script_args</span>
 _dbm_check_rm_script_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">show_help</span><span class="o">=</span><span class="nb">false</span>
+
+  _dbm_rm_script_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-i id_script]          Id Script of the script to remove.\n&quot;</span>
+  <span class="o">}</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_rm_script_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
 
@@ -3367,6 +3392,7 @@ _dbm_check_rm_script_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -lt <span class="m">2</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
     _dbm_rm_script_help
+    <span class="nb">unset</span> -f _dbm_rm_script_help
     <span class="k">return</span> 1
   <span class="k">fi</span>
 
@@ -3377,8 +3403,7 @@ _dbm_check_rm_script_args <span class="o">()</span> <span class="o">{</span>
 
       -i<span class="o">)</span> <span class="nv">DBM_SCRIPT_ID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span><span class="p">;</span>shift<span class="p">;;</span>
       -h<span class="o">)</span>
-        _dbm_rm_script_help
-        <span class="k">return</span> 1
+        <span class="nv">show_help</span><span class="o">=</span><span class="nb">true</span>
         <span class="p">;;</span>
       --<span class="o">)</span> <span class="p">;;</span>
       *<span class="o">)</span>
@@ -3389,31 +3414,38 @@ _dbm_check_rm_script_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">done</span>
 
-  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_ID</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
-    <span class="nb">echo</span> <span class="s2">&quot;Missing Script Id.&quot;</span>
-    <span class="k">return</span> 1
+  <span class="k">if</span> <span class="o">[</span> <span class="nv">$show_help</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    _dbm_rm_script_help
+    <span class="nv">ans</span> <span class="o">=</span> 1
+  <span class="k">else</span>
+    <span class="nv">ans</span> <span class="o">=</span> 0
+    <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_ID</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+      <span class="nb">echo</span> <span class="s2">&quot;Missing Script Id.&quot;</span>
+      <span class="nv">ans</span> <span class="o">=</span> 1
+    <span class="k">fi</span>
   <span class="k">fi</span>
 
-  <span class="k">return</span> 0
+  <span class="nb">unset</span> -f _dbm_rm_script_help
+
+  <span class="k">return</span> <span class="nv">$ans</span>
 <span class="o">}</span>
+<span class="c1"># dbm__dbm_check_rm_script_args_end</span>
 
-_dbm_upd_release_help <span class="o">()</span> <span class="o">{</span>
-
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-d YYYY-MM-DD]         Release Date.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-v version]            Release Version\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-a adapter]            Release Adapter.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-b id_branch]          Id Branch.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-i id_release]         Id Release to update.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[--dir directory]       Directory to update.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;\n&quot;</span>
-
-  <span class="k">return</span> 0
-<span class="o">}</span>
-
+<span class="c1"># dbm__dbm_check_upd_release_args</span>
 _dbm_check_upd_release_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_upd_release_args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  _dbm_upd_release_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-d YYYY-MM-DD]         Release Date.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-v version]            Release Version\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-a adapter]            Release Adapter.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-b id_branch]          Id Branch.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-i id_release]         Id Release to update.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[--dir directory]       Directory to update.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;\n&quot;</span>
+  <span class="o">}</span>
 
   <span class="nv">DBM_REL_NAME_UPD</span><span class="o">=</span>0
   <span class="nv">DBM_REL_DATE_UPD</span><span class="o">=</span>0
@@ -3493,29 +3525,30 @@ _dbm_check_upd_release_args <span class="o">()</span> <span class="o">{</span>
   <span class="k">if</span> <span class="o">[[</span> <span class="nv">$DBM_REL_NAME_UPD</span> -eq <span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="nv">$DBM_REL_DATE_UPD</span> -eq <span class="m">0</span> <span class="o">&amp;&amp;</span>
         <span class="nv">$DBM_REL_VERSION_UPD</span> -eq <span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="nv">$DBM_REL_ADAPTER_UPD</span> -eq <span class="m">0</span> <span class="o">&amp;&amp;</span>
         <span class="nv">$DBM_REL_BRANCH_UPD</span> -eq <span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="nv">$DBM_REL_DIR_UPD</span> -eq <span class="m">0</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
-
     <span class="nb">echo</span> -en <span class="s2">&quot;No fields to update.\n&quot;</span>
     <span class="k">return</span> 1
 
   <span class="k">fi</span>
 
-  <span class="k">return</span> 0
-<span class="o">}</span>
-
-_dbm_mv_release_help <span class="o">()</span> <span class="o">{</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-r version]            Release version.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-a version_to]         After release version_to.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-b version_to]         Before release version_to.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;Example: -n &#39;Project1&#39; -r &#39;0.1.1&#39; -a &#39;0.1.0&#39; (Release 0.1.1 after release 0.1.0)\n&quot;</span>
+  <span class="nb">unset</span> -f _dbm_upd_release_help
 
   <span class="k">return</span> 0
 <span class="o">}</span>
+<span class="c1"># dbm__dbm_check_upd_release_args_end</span>
 
+<span class="c1"># dbm__dbm_check_move_release_args</span>
 _dbm_check_move_release_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_inhibit_script_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  _dbm_mv_release_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-r version]            Release version.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-a version_to]         After release version_to.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-b version_to]         Before release version_to.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;Example: -n &#39;Project1&#39; -r &#39;0.1.1&#39; -a &#39;0.1.0&#39; (Release 0.1.1 after release 0.1.0)\n&quot;</span>
+  <span class="o">}</span>
 
   <span class="nv">DBM_BEFORE</span><span class="o">=</span>0
   <span class="nv">DBM_AFTER</span><span class="o">=</span>0
@@ -3560,10 +3593,14 @@ _dbm_check_move_release_args <span class="o">()</span> <span class="o">{</span>
     <span class="k">return</span> 1
   <span class="k">fi</span>
 
+  <span class="nb">unset</span> -f _dbm_mv_release_help
+
   <span class="k">return</span> 0
 
 <span class="o">}</span>
+<span class="c1"># dbm__dbm_check_move_release_args_end</span>
 
+<span class="c1"># dbm__dbm_check_inhibit_script_args</span>
 _dbm_check_inhibit_script_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_inhibit_script_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
@@ -3615,20 +3652,19 @@ _dbm_check_inhibit_script_args <span class="o">()</span> <span class="o">{</span
 
   <span class="k">return</span> 0
 <span class="o">}</span>
+<span class="c1"># dbm__dbm_check_inhibit_script_args_end</span>
 
-_dbm_move_script_help <span class="o">()</span> <span class="o">{</span>
-
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-i id_script]          Id script of the script to move.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-a x]                  After script with id x.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-b x]                  Before script with id x.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-r id_release]         Id Release of the script to move.\n&quot;</span>
-
-  <span class="k">return</span> 0
-<span class="o">}</span>
-
+<span class="c1"># dbm__dbm_check_move_script_args</span>
 _dbm_check_move_script_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_move_script_args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  _dbm_move_script_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-i id_script]          Id script of the script to move.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-a x]                  After script with id x.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-b x]                  Before script with id x.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-r id_release]         Id Release of the script to move.\n&quot;</span>
+  <span class="o">}</span>
 
   <span class="nv">DBM_BEFORE</span><span class="o">=</span>0
   <span class="nv">DBM_AFTER</span><span class="o">=</span>0
@@ -3672,31 +3708,34 @@ _dbm_check_move_script_args <span class="o">()</span> <span class="o">{</span>
     <span class="k">return</span> 1
   <span class="k">fi</span>
 
-  <span class="k">return</span> 0
-<span class="o">}</span>
-
-_dbm_rem_rel_help <span class="o">()</span> <span class="o">{</span>
-
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-r id_release]         Id Release of the script to remove.\n&quot;</span>
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-f]                    Force remove without confirmation question.\n&quot;</span>
+  <span class="nb">unset</span> -f _dbm_move_script_help
 
   <span class="k">return</span> 0
 <span class="o">}</span>
+<span class="c1"># dbm__dbm_check_move_script_args_end</span>
 
+<span class="c1"># dbm__dbm_check_rem_rel_args</span>
 _dbm_check_rem_rel_args <span class="o">()</span> <span class="o">{</span>
-
-  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_rem_rel_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
 
   <span class="nb">local</span> <span class="nv">short_options</span><span class="o">=</span><span class="s2">&quot;r:hf&quot;</span>
 
-  <span class="k">$(</span><span class="nb">set</span> -- <span class="k">$(</span>getopt -u -q -a -o <span class="s2">&quot;</span><span class="nv">$short_options</span><span class="s2">&quot;</span> -- <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="k">))</span> <span class="o">||</span> error_handled <span class="s2">&quot;Invalid parameters&quot;</span>
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_rem_rel_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  _dbm_rem_rel_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-r id_release]         Id Release of the script to remove.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-f]                    Force remove without confirmation question.\n&quot;</span>
+  <span class="o">}</span>
+
+  <span class="k">$(</span><span class="nb">set</span> -- <span class="k">$(</span>getopt -u -q -a -o <span class="s2">&quot;</span><span class="nv">$short_options</span><span class="s2">&quot;</span> -- <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="k">))</span> <span class="o">||</span> <span class="se">\</span>
+    error_handled <span class="s2">&quot;Invalid parameters&quot;</span>
 
   <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -lt <span class="m">2</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
     _dbm_rem_rel_help
     <span class="k">return</span> 1
   <span class="k">fi</span>
 
-  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_rem_rel_args: Found </span><span class="nv">$#</span><span class="s2"> params)\n&quot;</span>
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_rem_rel_args: Found </span><span class="nv">$#</span><span class="s2"> params)\n&quot;</span>
 
   <span class="nv">DBM_FORCE_RM</span><span class="o">=</span>0
 
@@ -3715,7 +3754,6 @@ _dbm_check_rem_rel_args <span class="o">()</span> <span class="o">{</span>
         <span class="p">;;</span>
     <span class="k">esac</span>
     <span class="nb">shift</span>
-
   <span class="k">done</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_REL_ID</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
@@ -3723,25 +3761,28 @@ _dbm_check_rem_rel_args <span class="o">()</span> <span class="o">{</span>
     <span class="k">return</span> 1
   <span class="k">fi</span>
 
-  <span class="k">return</span> 0
-<span class="o">}</span>
-
-_dbm_show_rel_help <span class="o">()</span> <span class="o">{</span>
-
-  <span class="nb">echo</span> -en <span class="s2">&quot;[-b id_branch]          Id branch to filter.\n&quot;</span>
+  <span class="nb">unset</span> -f _dbm_rem_rel_help
 
   <span class="k">return</span> 0
 <span class="o">}</span>
+<span class="c1"># dbm__dbm_check_rem_rel_args_end</span>
 
+<span class="c1"># dbm__dbm_show_rel_args</span>
 _dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
-
-  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_show_rel_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
 
   <span class="nb">local</span> <span class="nv">short_options</span><span class="o">=</span><span class="s2">&quot;b:h&quot;</span>
 
-  <span class="k">$(</span><span class="nb">set</span> -- <span class="k">$(</span>getopt -u -q -a -o <span class="s2">&quot;</span><span class="nv">$short_options</span><span class="s2">&quot;</span> -- <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="k">))</span> <span class="o">||</span> error_handled <span class="s2">&quot;Invalid parameters&quot;</span>
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_show_rel_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
 
-  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_show_rel_args: Found </span><span class="nv">$#</span><span class="s2"> params)\n&quot;</span>
+  _dbm_show_rel_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-b id_branch]          Id branch to filter.\n&quot;</span>
+  <span class="o">}</span>
+
+  <span class="k">$(</span><span class="nb">set</span> -- <span class="k">$(</span>getopt -u -q -a -o <span class="s2">&quot;</span><span class="nv">$short_options</span><span class="s2">&quot;</span> -- <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="k">))</span> <span class="o">||</span> <span class="se">\</span>
+    error_handled <span class="s2">&quot;Invalid parameters&quot;</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_show_rel_args: Found </span><span class="nv">$#</span><span class="s2"> params)\n&quot;</span>
 
   <span class="k">while</span> <span class="o">[</span> <span class="nv">$#</span> -gt <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">do</span>
     <span class="k">case</span> <span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span> in
@@ -3757,11 +3798,13 @@ _dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
         <span class="p">;;</span>
     <span class="k">esac</span>
     <span class="nb">shift</span>
-
   <span class="k">done</span>
+
+  <span class="nb">unset</span> -f _dbm_show_rel_help
 
   <span class="k">return</span> 0
 <span class="o">}</span>
+<span class="c1"># dbm__dbm_show_rel_args_end</span>
 
 
 <span class="c1"># vim: syn=sh filetype=sh</span>
@@ -3801,7 +3844,1483 @@ _dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock143'))">(Show/Hide)</a><br /><div id="hiddencodeblock143" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock32'))">(Show/Hide)</a><br /><div id="hiddencodeblock32" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-ins-rel-help">
+<span id="dbm-ins-rel-help"></span><h3>_dbm_ins_rel_help<a class="headerlink" href="#dbm-ins-rel-help" title="Permalink to this headline">¶</a></h3>
+<p>Print on stdout help message of command <code class="docutils literal"><span class="pre">insert_releas</span></code>.</p>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: always</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock33'))">(Show/Hide)</a><br /><div id="hiddencodeblock33" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_ins_rel_help <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
+  <span class="nb">echo</span> -en <span class="s2">&quot;[-d YYYY-MM-DD]         Release Date. (Use now if not available)\n&quot;</span>
+  <span class="nb">echo</span> -en <span class="s2">&quot;[-v version]            Release Version\n&quot;</span>
+  <span class="nb">echo</span> -en <span class="s2">&quot;[-a adapter]            Release Adapter (default is Oracle).\n&quot;</span>
+  <span class="nb">echo</span> -en <span class="s2">&quot;[-o id_order]           Release Id Order (optional).\n&quot;</span>
+  <span class="nb">echo</span> -en <span class="s2">&quot;[-b id_branch]          Release Id Branch (default master branch {1}).\n&quot;</span>
+  <span class="nb">echo</span> -en <span class="s2">&quot;[-dir directory]        Release directory (default is [.]).\n&quot;</span>
+  <span class="nb">echo</span> -en <span class="s2">&quot;\n&quot;</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-check-ins-rel-args">
+<span id="dbm-check-ins-rel-args"></span><h3>_dbm_check_ins_rel_args<a class="headerlink" href="#dbm-check-ins-rel-args" title="Permalink to this headline">¶</a></h3>
+<p>Internal function for parse command line arguments related to
+<code class="docutils literal"><span class="pre">insert_release</span></code> command.</p>
+<p><em>Command Arguments</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-n</span> <span class="pre">RELEASE_NAME</span></code>: Name of the release to add.</li>
+<li><code class="docutils literal"><span class="pre">-d</span> <span class="pre">YYYY-MM-DD</span></code>: Release date of the release to add.</li>
+<li><code class="docutils literal"><span class="pre">-v</span> <span class="pre">VERSION</span></code>: Version of the release to add.</li>
+<li><code class="docutils literal"><span class="pre">-a</span> <span class="pre">ADAPTER</span></code>: Adapter used by the release to add (default is oracle).</li>
+<li><code class="docutils literal"><span class="pre">-o</span> <span class="pre">ID_ORDER</span></code>: Id order of the release to add.</li>
+<li><code class="docutils literal"><span class="pre">-b</span> <span class="pre">BRANCH_ID</span></code>: Id of the branch connected to release to add.</li>
+<li><code class="docutils literal"><span class="pre">-dir</span> <span class="pre">DIRECTORY</span></code>: Directory of the release to add.</li>
+<li><code class="docutils literal"><span class="pre">-h</span></code>: Show insert_release command options.</li>
+</ul>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DBM_REL_NAME</span></code>: Release name</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_DATE</span></code>: Release date</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_VERSION</span></code>: Release version</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_ORDER</span></code>: Release order id.</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_ADAPTER</span></code>: Release adapter</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_BRANCH</span></code>: Release branch id.</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_DIR</span></code>: Release directory.</li>
+</ul>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock34'))">(Show/Hide)</a><br /><div id="hiddencodeblock34" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-add-prof-help">
+<span id="dbm-add-prof-help"></span><h3>_dbm_add_prof_help<a class="headerlink" href="#dbm-add-prof-help" title="Permalink to this headline">¶</a></h3>
+<p>Print on stdout help message of <code class="docutils literal"><span class="pre">add_profile</span></code> command.</p>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: always</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock35'))">(Show/Hide)</a><br /><div id="hiddencodeblock35" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_add_prof_help <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">echo</span> -en <span class="s2">&quot;[--name name]          Profile name to insert.\n&quot;</span>
+  <span class="nb">echo</span> -en <span class="s2">&quot;[--file file]          Filename of the profile. Example: prof1.conf.\n&quot;</span>
+  <span class="nb">echo</span> -en <span class="s2">&quot;[--default]            Set new profile as default.\n&quot;</span>
+  <span class="nb">echo</span> -en <span class="s2">&quot;[-h]                   Show this help message.\n&quot;</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-prof-help">
+<span id="dbm-prof-help"></span><h3>_dbm_prof_help<a class="headerlink" href="#dbm-prof-help" title="Permalink to this headline">¶</a></h3>
+<p>Print on stdout help message of <code class="docutils literal"><span class="pre">del_profile</span></code>/<code class="docutils literal"><span class="pre">set_profile</span></code> command.</p>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: always</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock36'))">(Show/Hide)</a><br /><div id="hiddencodeblock36" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_prof_help <span class="o">()</span> <span class="o">{</span>
+  <span class="nb">echo</span> -en <span class="s2">&quot;[--name profile_name]  Name of the profile.\n&quot;</span>
+  <span class="nb">echo</span> -en <span class="s2">&quot;[--id id_profile]      Id of the profile.\n&quot;</span>
+  <span class="nb">echo</span> -en <span class="s2">&quot;[-h]                   Show this help message.\n&quot;</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-check-prof-args">
+<span id="dbm-check-prof-args"></span><h3>_dbm_check_prof_args<a class="headerlink" href="#dbm-check-prof-args" title="Permalink to this headline">¶</a></h3>
+<p>Internal function for parse command line arguments related to
+<code class="docutils literal"><span class="pre">del_profile</span></code> and <code class="docutils literal"><span class="pre">set_profile</span></code> command.</p>
+<p><em>Command Arguments</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--name</span> <span class="pre">NAME</span></code>: Name of the profile.</li>
+<li><code class="docutils literal"><span class="pre">--id</span> <span class="pre">ID_PROFILE</span></code>: Id of the profile</li>
+<li><code class="docutils literal"><span class="pre">-h</span></code>: Show command options.</li>
+</ul>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DBM_PROFILE_BYNAME</span></code>: Set to 1 if is set profile id. Default value is 0.</li>
+<li><code class="docutils literal"><span class="pre">DBM_PROFILE_BYID</span></code>: Set to 1 if is set profile name. Default value is 0.</li>
+<li><code class="docutils literal"><span class="pre">DBM_PROFILE_NAME</span></code>: Name of the profile.</li>
+<li><code class="docutils literal"><span class="pre">DBM_PROFILE_ID</span></code>: Id of the profile.</li>
+</ul>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock37'))">(Show/Hide)</a><br /><div id="hiddencodeblock37" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_prof_help <span class="o">()</span> <span class="o">{</span>
+  <span class="nb">echo</span> -en <span class="s2">&quot;[--name profile_name]  Name of the profile.\n&quot;</span>
+  <span class="nb">echo</span> -en <span class="s2">&quot;[--id id_profile]      Id of the profile.\n&quot;</span>
+  <span class="nb">echo</span> -en <span class="s2">&quot;[-h]                   Show this help message.\n&quot;</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-check-add-prof-args">
+<span id="dbm-check-add-prof-args"></span><h3>_dbm_check_add_prof_args<a class="headerlink" href="#dbm-check-add-prof-args" title="Permalink to this headline">¶</a></h3>
+<p>Internal function for parse command line arguments related to <code class="docutils literal"><span class="pre">add_profile</span></code> command.</p>
+<p><em>Command Arguments</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--name</span> <span class="pre">NAME</span></code>: Name of the profile</li>
+<li><code class="docutils literal"><span class="pre">--file</span> <span class="pre">FILE</span></code>: Profile filename</li>
+<li><code class="docutils literal"><span class="pre">--default</span></code>: Set new profile as default/active.</li>
+<li><code class="docutils literal"><span class="pre">-h</span></code>: Show command options.</li>
+</ul>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DBM_PROFILE_DEFAULT</span></code>: Set new profile as default (value 1) or not (value 0).
+Default value is 0.</li>
+<li><code class="docutils literal"><span class="pre">DBM_PROFILE_FILENAME</span></code>: Filename of the profile.</li>
+<li><code class="docutils literal"><span class="pre">DBM_PROFILE_NAME</span></code>: Name of the profile.</li>
+</ul>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock38'))">(Show/Hide)</a><br /><div id="hiddencodeblock38" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_add_prof_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_add_prof_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  <span class="nb">local</span> <span class="nv">short_options</span><span class="o">=</span><span class="s2">&quot;h&quot;</span>
+  <span class="nb">local</span> <span class="nv">long_options</span><span class="o">=</span><span class="s2">&quot;default name: file:&quot;</span>
+
+  <span class="k">$(</span><span class="nb">set</span> -- <span class="k">$(</span>getopt -u -q -a -o <span class="s2">&quot;</span><span class="nv">$short_options</span><span class="s2">&quot;</span> -l <span class="s2">&quot;</span><span class="nv">$long_options</span><span class="s2">&quot;</span> -- <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="k">))</span> <span class="o">||</span> error_handled <span class="s2">&quot;Invalid parameters&quot;</span>
+
+  <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -lt <span class="m">2</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    _dbm_add_prof_help
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_add_prof_args: Found </span><span class="nv">$#</span><span class="s2"> params)\n&quot;</span>
+
+  <span class="nv">DBM_PROFILE_DEFAULT</span><span class="o">=</span>0
+
+  <span class="k">while</span> <span class="o">[</span> <span class="nv">$#</span> -gt <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span> in
+
+      --name<span class="o">)</span> <span class="nv">DBM_PROFILE_NAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+        <span class="nb">shift</span>
+        <span class="p">;;</span>
+      --file<span class="o">)</span>
+        <span class="nv">DBM_PROFILE_FILENAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+        <span class="nb">shift</span>
+        <span class="p">;;</span>
+      --default<span class="o">)</span>
+        <span class="nv">DBM_PROFILE_DEFAULT</span><span class="o">=</span>1
+        <span class="p">;;</span>
+      -h<span class="o">)</span>
+        _dbm_add_prof_help
+        <span class="k">return</span> 1
+        <span class="p">;;</span>
+      --<span class="o">)</span> <span class="p">;;</span>
+      *<span class="o">)</span>
+        error_generate <span class="s2">&quot;Invalid parameter </span><span class="nv">$1</span><span class="s2">.&quot;</span>
+        <span class="p">;;</span>
+    <span class="k">esac</span>
+    <span class="nb">shift</span>
+
+  <span class="k">done</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_PROFILE_NAME</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Profile Name&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_PROFILE_FILENAME</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Profile filename.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-check-ins-bra-args">
+<span id="dbm-check-ins-bra-args"></span><h3>_dbm_check_ins_bra_args<a class="headerlink" href="#dbm-check-ins-bra-args" title="Permalink to this headline">¶</a></h3>
+<p>Internal function for parse command line arguments related to <code class="docutils literal"><span class="pre">insert_branch</span></code> command.</p>
+<p><em>Command Arguments</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-n</span> <span class="pre">NAME</span></code>: Name of the branch to insert.</li>
+<li><code class="docutils literal"><span class="pre">-d</span> <span class="pre">YYYY-MM-DD</span></code>: Date of the branch (optional). Default valeu is now.</li>
+<li><code class="docutils literal"><span class="pre">-h</span></code>: Show command options.</li>
+</ul>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DBM_BRA_NAME</span></code>: Name of the branch.</li>
+<li><code class="docutils literal"><span class="pre">DBM_BRA_DATE</span></code>: Date of the branch.</li>
+</ul>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock39'))">(Show/Hide)</a><br /><div id="hiddencodeblock39" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_ins_bra_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_bra_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  help_msg<span class="o">()</span> <span class="o">{</span>
+        <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Branch Name.\n&quot;</span>
+        <span class="nb">echo</span> -en <span class="s2">&quot;[-d YYYY-MM-DD]         Branch Date. (Use now if not available)\n&quot;</span>
+  <span class="o">}</span>
+
+  <span class="c1"># Reinitialize opt index position</span>
+  <span class="nv">OPTIND</span><span class="o">=</span>1
+  <span class="k">while</span> <span class="nb">getopts</span> <span class="s2">&quot;n:d:v:o:a:b:h&quot;</span> opts <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="nv">$opts</span> in
+
+      n<span class="o">)</span> <span class="nv">DBM_BRA_NAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      d<span class="o">)</span> <span class="nv">DBM_BRA_DATE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      h<span class="o">)</span>
+        help_msg
+        <span class="k">return</span> 1
+        <span class="p">;;</span>
+
+    <span class="k">esac</span>
+  <span class="k">done</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_BRA_NAME</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    help_msg
+    <span class="nv">ans</span><span class="o">=</span>1
+  <span class="k">else</span>
+    <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_BRA_DATE</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+      <span class="nv">DBM_BRA_DATE</span><span class="o">=</span><span class="s2">&quot;DATETIME(&#39;now&#39;)&quot;</span>
+    <span class="k">else</span>
+      <span class="nv">DBM_BRA_DATE</span><span class="o">=</span><span class="s2">&quot;&#39;</span><span class="nv">$DBM_REL_DATE</span><span class="s2">&#39;&quot;</span>
+    <span class="k">fi</span>
+  <span class="k">fi</span>
+
+  <span class="nb">unset</span> -f help_msg
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-check-ins-script-type-args">
+<span id="dbm-check-ins-script-type-args"></span><h3>_dbm_check_ins_script_type_args<a class="headerlink" href="#dbm-check-ins-script-type-args" title="Permalink to this headline">¶</a></h3>
+<p>Internal function for parse command line arguments related to <code class="docutils literal"><span class="pre">insert_script_type</span></code> command.</p>
+<p><em>Command Arguments</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-c</span> <span class="pre">CODE</span></code>: String used as code of the script type.</li>
+<li><code class="docutils literal"><span class="pre">-d</span> <span class="pre">DESCRIPTION</span></code>: Description of the script type.</li>
+<li><code class="docutils literal"><span class="pre">-h</span></code>: Show command options.</li>
+</ul>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_TYPE_CODE</span></code>: Code of the script type.</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_TYPE_DESCR</span></code>: Description of the script type.</li>
+</ul>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock40'))">(Show/Hide)</a><br /><div id="hiddencodeblock40" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_ins_script_type_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_script_type_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  _dbm_ins_script_type_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-c code]               Script Type Code.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-d description]        Script Type Description\n&quot;</span>
+
+    <span class="k">return</span> 0
+  <span class="o">}</span>
+
+  <span class="c1"># Reinitialize opt index position</span>
+  <span class="nv">OPTIND</span><span class="o">=</span>1
+  <span class="k">while</span> <span class="nb">getopts</span> <span class="s2">&quot;c:d:h&quot;</span> opts <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="nv">$opts</span> in
+
+      c<span class="o">)</span> <span class="nv">DBM_SCRIPT_TYPE_CODE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      d<span class="o">)</span> <span class="nv">DBM_SCRIPT_TYPE_DESCR</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      h<span class="o">)</span>
+        _dbm_ins_script_type_help
+        <span class="k">return</span> 1
+        <span class="p">;;</span>
+
+    <span class="k">esac</span>
+  <span class="k">done</span>
+
+  <span class="k">if</span> <span class="o">[[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_TYPE_CODE</span><span class="s2">&quot;</span> <span class="o">&amp;&amp;</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_TYPE_DESCR</span><span class="s2">&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    _dbm_ins_script_type_help
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_TYPE_CODE</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Script Type Code.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_TYPE_DESCR</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Script Type Descr&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="nb">unset</span> -f _dbm_ins_script_type_help
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-check-ins-script-args">
+<span id="dbm-check-ins-script-args"></span><h3>_dbm_check_ins_script_args<a class="headerlink" href="#dbm-check-ins-script-args" title="Permalink to this headline">¶</a></h3>
+<p>Internal function for parse command line arguments related to <code class="docutils literal"><span class="pre">insert_script</span></code> command.</p>
+<p><em>Command Arguments</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-f</span> <span class="pre">FILENAME</span></code>: Script filename.</li>
+<li><code class="docutils literal"><span class="pre">-n</span> <span class="pre">NAME</span></code>: Name of the release of the script to insert.</li>
+<li><code class="docutils literal"><span class="pre">-v</span> <span class="pre">VERSION</span></code>: Version of the release of the script to insert.</li>
+<li><code class="docutils literal"><span class="pre">-t</span> <span class="pre">STYPE</span></code>: Type of the script to insert.</li>
+<li><code class="docutils literal"><span class="pre">-a</span> <span class="pre">FLAG</span></code>: Set active (1) or disable (0) flag of the script.</li>
+<li><code class="docutils literal"><span class="pre">-d</span> <span class="pre">DIRECTORY</span></code>: Directory of the script to insert.</li>
+<li><code class="docutils literal"><span class="pre">-o</span> <span class="pre">ID_ORDER</span></code>: Id order of the script to update (optional).
+Default is used MAX(id) of the same id_release.</li>
+<li><code class="docutils literal"><span class="pre">-r</span> <span class="pre">RELEASE_ID</span></code>: Id of the release of the script.
+If this option is present are not needed release name and release version.</li>
+<li><code class="docutils literal"><span class="pre">-h</span></code>: Show command options.</li>
+</ul>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_TYPE</span></code>: Code of the script type.</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_FILENAME</span></code>: Name of the script file.</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_ACTIVE</span></code>: Script status: active (1) or disable (0).</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_DIRECTORY</span></code>: Directory of the script. Relative path from <code class="docutils literal"><span class="pre">LOCAL_DIR</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_ID_RELEASE</span></code>: Id of the release related with script.</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_REL_NAME</span></code>: Release name.</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_REL_VERSION</span></code>: Release version.</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_ID_ORDER</span></code>: Id order of the release script.</li>
+</ul>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock41'))">(Show/Hide)</a><br /><div id="hiddencodeblock41" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_ins_script_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_script_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  _dbm_ins_script_help <span class="o">()</span> <span class="o">{</span>
+
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-f filename]           Script filename.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-v version]            Release Version\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-t script_type]        Script Type.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-a 0|1]                Set active flag. Default is 1 (active)\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-d directory]          Directory of the script.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-o id_order]           Script Id Order (optional). Default is used MAX(id) of the same id_release.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-r id_release]         Id_release of the script. Use this instead of release name and version.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-h]                    Show this message.\n&quot;</span>
+
+    <span class="k">return</span> 0
+  <span class="o">}</span>
+
+  <span class="nb">local</span> <span class="nv">short_options</span><span class="o">=</span><span class="s2">&quot;f:t:a:d:hr:n:v:o:&quot;</span>
+
+  <span class="k">$(</span><span class="nb">set</span> -- <span class="k">$(</span>getopt -u -q -a -o <span class="s2">&quot;</span><span class="nv">$short_options</span><span class="s2">&quot;</span> -- <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="k">))</span> <span class="o">||</span> error_handled <span class="s2">&quot;Invalid parameters&quot;</span>
+
+  <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -lt <span class="m">2</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    _dbm_ins_script_help
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_script_args: Found </span><span class="nv">$#</span><span class="s2"> params)\n&quot;</span>
+
+  <span class="k">while</span> <span class="o">[</span> <span class="nv">$#</span> -gt <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span> in
+
+      -f<span class="o">)</span> <span class="nv">DBM_SCRIPT_FILENAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span><span class="p">;</span>shift<span class="p">;;</span>
+      -t<span class="o">)</span> <span class="nv">DBM_SCRIPT_TYPE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span><span class="p">;</span>shift<span class="p">;;</span>
+      -a<span class="o">)</span> <span class="nv">DBM_SCRIPT_ACTIVE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span><span class="p">;</span>shift<span class="p">;;</span>
+      -d<span class="o">)</span> <span class="nv">DBM_SCRIPT_DIRECTORY</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span><span class="p">;</span>shift<span class="p">;;</span>
+      -r<span class="o">)</span> <span class="nv">DBM_SCRIPT_ID_RELEASE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span><span class="p">;</span>shift<span class="p">;;</span>
+      -n<span class="o">)</span> <span class="nv">DBM_SCRIPT_REL_NAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span><span class="p">;</span>shift<span class="p">;;</span>
+      -v<span class="o">)</span> <span class="nv">DBM_SCRIPT_REL_VERSION</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span><span class="p">;</span>shift<span class="p">;;</span>
+      -o<span class="o">)</span> <span class="nv">DBM_SCRIPT_ID_ORDER</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span><span class="p">;</span>shift<span class="p">;;</span>
+      -h<span class="o">)</span>
+        _dbm_ins_script_help
+        <span class="k">return</span> 1
+        <span class="p">;;</span>
+      --<span class="o">)</span> <span class="p">;;</span>
+      *<span class="o">)</span>
+        error_generate <span class="s2">&quot;Invalid parameter </span><span class="nv">$1</span><span class="s2">.&quot;</span>
+        <span class="p">;;</span>
+    <span class="k">esac</span>
+    <span class="nb">shift</span>
+
+  <span class="k">done</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_FILENAME</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Script Filename&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_TYPE</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Script Type&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_ID_RELEASE</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="k">if</span> <span class="o">[[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_REL_VERSION</span><span class="s2">&quot;</span> <span class="o">||</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_REL_NAME</span><span class="s2">&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+      <span class="nb">echo</span> <span class="s2">&quot;Missing Release Version or Release Name or Id Release.&quot;</span>
+      <span class="k">return</span> 1
+    <span class="k">fi</span>
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_DIRECTORY</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Script Directory.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_ACTIVE</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">DBM_SCRIPT_ACTIVE</span><span class="o">=</span><span class="s2">&quot;1&quot;</span>
+  <span class="k">else</span>
+    <span class="k">if</span> <span class="o">[[</span> x<span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_ACTIVE</span><span class="s2">&quot;</span> !<span class="o">=</span> x<span class="s2">&quot;1&quot;</span> <span class="o">&amp;&amp;</span> x<span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_ACTIVE</span><span class="s2">&quot;</span> !<span class="o">=</span> x<span class="s2">&quot;0&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+      <span class="nv">DBM_SCRIPT_ACTIVE</span><span class="o">=</span><span class="s2">&quot;1&quot;</span>
+    <span class="k">fi</span>
+  <span class="k">fi</span>
+
+  <span class="nb">unset</span> -f _dbm_ins_script_help
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-check-rel-dep-args">
+<span id="dbm-check-rel-dep-args"></span><h3>_dbm_check_rel_dep_args<a class="headerlink" href="#dbm-check-rel-dep-args" title="Permalink to this headline">¶</a></h3>
+<p>Internal function for parse command line arguments related to <code class="docutils literal"><span class="pre">insert_rel_dept</span></code> command.</p>
+<p><em>Command Arguments</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-n</span> <span class="pre">NAME</span></code>: Name of the release where add a new dependency.</li>
+<li><code class="docutils literal"><span class="pre">-t</span> <span class="pre">VERSION_TO</span></code>: Version of the release that has a dependency.</li>
+<li><code class="docutils literal"><span class="pre">-f</span> <span class="pre">VERSION_FROM</span></code>: Version of the release that is needed for VERSION_TO.</li>
+<li><code class="docutils literal"><span class="pre">-h</span></code>: Show command options.</li>
+</ul>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DBM_REL_NAME</span></code>: Name of the release.</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_VERSION_TO</span></code>: Release version target of the dependency.</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_VERSION_FROM</span></code>: Release version of the release source for the dependency.</li>
+</ul>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock42'))">(Show/Hide)</a><br /><div id="hiddencodeblock42" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_rel_dep_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_rel_dep_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  <span class="c1"># Reinitialize opt index position</span>
+  <span class="nv">OPTIND</span><span class="o">=</span>1
+  <span class="k">while</span> <span class="nb">getopts</span> <span class="s2">&quot;n:t:f:h&quot;</span> opts <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="nv">$opts</span> in
+
+      n<span class="o">)</span> <span class="nv">DBM_REL_NAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      t<span class="o">)</span> <span class="nv">DBM_REL_VERSION_TO</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      f<span class="o">)</span> <span class="nv">DBM_REL_VERSION_FROM</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      h<span class="o">)</span>
+        <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
+        <span class="nb">echo</span> -en <span class="s2">&quot;[-t version_to]         Release version that has a dependency.\n&quot;</span>
+        <span class="nb">echo</span> -en <span class="s2">&quot;[-f version_from]       Release version needed.\n&quot;</span>
+        <span class="k">return</span> 1
+        <span class="p">;;</span>
+
+    <span class="k">esac</span>
+  <span class="k">done</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_REL_NAME</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Release Name.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_REL_VERSION_TO</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Release version that has a dependency.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_REL_VERSION_FROM</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Release version needed on target.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$DBM_REL_VERSION_FROM</span><span class="s2">&quot;</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="nv">$DBM_REL_VERSION_TO</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Both version are equal. Error.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-check-upd-script-args">
+<span id="dbm-check-upd-script-args"></span><h3>_dbm_check_upd_script_args<a class="headerlink" href="#dbm-check-upd-script-args" title="Permalink to this headline">¶</a></h3>
+<p>Internal function for parse command line arguments related to <code class="docutils literal"><span class="pre">update_script</span></code> command.</p>
+<p><em>Command Arguments</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-i</span> <span class="pre">SCRIPT_ID</span></code>: Id of the script to update.</li>
+<li><code class="docutils literal"><span class="pre">-f</span> <span class="pre">FILENAME</span></code>: Script filename to update.</li>
+<li><code class="docutils literal"><span class="pre">-n</span> <span class="pre">NAME</span></code>: Name of the release of the script to update.</li>
+<li><code class="docutils literal"><span class="pre">-v</span> <span class="pre">VERSION</span></code>: Version of the release of the script to update.</li>
+<li><code class="docutils literal"><span class="pre">-t</span> <span class="pre">STYPE</span></code>: Type of the script to update</li>
+<li><code class="docutils literal"><span class="pre">-a</span> <span class="pre">FLAG</span></code>: Set active (1) or disable (0) flag of the script.</li>
+<li><code class="docutils literal"><span class="pre">-d</span> <span class="pre">DIRECTORY</span></code>: Directory of the script to update.</li>
+<li><code class="docutils literal"><span class="pre">-o</span> <span class="pre">ID_ORDER</span></code>: Id order of the script to update (optional).</li>
+<li><code class="docutils literal"><span class="pre">-r</span> <span class="pre">RELEASE_ID</span></code>: Id of the release of the script.
+If this option is present are not needed release name and release version.</li>
+<li><code class="docutils literal"><span class="pre">-h</span></code>: Show update_script command options.</li>
+</ul>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_ID</span></code>: Id of the script to update.</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_FILENAME</span></code>: Filename of the script.</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_TYPE</span></code>: Type of the script to update.</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_ACTIVE</span></code>: Status of the script.</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_DIRECTORY</span></code>: Directory of the script</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_ID_RELEASE</span></code>: Id release of the script</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_REL_NAME</span></code>: Release name related with script to update</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_REL_VERSION</span></code>: Release version related with script to update</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_ID_ORDER</span></code>: Order Id of the script</li>
+</ul>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock43'))">(Show/Hide)</a><br /><div id="hiddencodeblock43" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_upd_script_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_upd_script_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+
+  _dbm_check_upd_script_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-i id_script]          Id Script.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-f filename]           Script filename.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-v version]            Release Version\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-t script_type]        Script Type.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-a 0|1]                Set active flag.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-d directory]          Directory of the script.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-o id_order]           Script Id Order (optional). Default is used MAX(id) of the same id_release.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-r id_release]         Id_release of the script. Use this instead of release name and version.\n&quot;</span>
+  <span class="o">}</span>
+
+  <span class="c1"># Reinitialize opt index position</span>
+  <span class="nv">OPTIND</span><span class="o">=</span>1
+  <span class="k">while</span> <span class="nb">getopts</span> <span class="s2">&quot;i:f:t:a:d:hr:n:v:o:&quot;</span> opts <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="nv">$opts</span> in
+
+      i<span class="o">)</span> <span class="nv">DBM_SCRIPT_ID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      f<span class="o">)</span> <span class="nv">DBM_SCRIPT_FILENAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      t<span class="o">)</span> <span class="nv">DBM_SCRIPT_TYPE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      a<span class="o">)</span> <span class="nv">DBM_SCRIPT_ACTIVE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      d<span class="o">)</span> <span class="nv">DBM_SCRIPT_DIRECTORY</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      r<span class="o">)</span> <span class="nv">DBM_SCRIPT_ID_RELEASE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      n<span class="o">)</span> <span class="nv">DBM_SCRIPT_REL_NAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      v<span class="o">)</span> <span class="nv">DBM_SCRIPT_REL_VERSION</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      o<span class="o">)</span> <span class="nv">DBM_SCRIPT_ID_ORDER</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      h<span class="o">)</span>
+        _dbm_check_upd_script_help
+        <span class="k">return</span> 1
+        <span class="p">;;</span>
+
+    <span class="k">esac</span>
+  <span class="k">done</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_ID</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Script Id.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> ! -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_ACTIVE</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="k">if</span> <span class="o">[[</span> x<span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_ACTIVE</span><span class="s2">&quot;</span> !<span class="o">=</span> x<span class="s2">&quot;1&quot;</span> <span class="o">&amp;&amp;</span> x<span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_ACTIVE</span><span class="s2">&quot;</span> !<span class="o">=</span> x<span class="s2">&quot;0&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+      <span class="nv">DBM_SCRIPT_ACTIVE</span><span class="o">=</span><span class="s2">&quot;1&quot;</span>
+    <span class="k">fi</span>
+  <span class="k">fi</span>
+
+  <span class="nb">unset</span> -f _dbm_check_upd_script_help
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-check-rm-script-args">
+<span id="dbm-check-rm-script-args"></span><h3>_dbm_check_rm_script_args<a class="headerlink" href="#dbm-check-rm-script-args" title="Permalink to this headline">¶</a></h3>
+<p>Internal function for parse command line arguments related to <code class="docutils literal"><span class="pre">remove_script</span></code> command.</p>
+<p><em>Command Arguments</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-i</span> <span class="pre">SCRIPT_ID</span></code>: Id of the script to remove.</li>
+<li><code class="docutils literal"><span class="pre">-h</span></code>: Show command options.</li>
+</ul>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_ID</span></code>: Id of the script to remove.</li>
+</ul>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock44'))">(Show/Hide)</a><br /><div id="hiddencodeblock44" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_rm_script_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">show_help</span><span class="o">=</span><span class="nb">false</span>
+
+  _dbm_rm_script_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-i id_script]          Id Script of the script to remove.\n&quot;</span>
+  <span class="o">}</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_rm_script_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  <span class="nb">local</span> <span class="nv">short_options</span><span class="o">=</span><span class="s2">&quot;i:h&quot;</span>
+
+  <span class="k">$(</span><span class="nb">set</span> -- <span class="k">$(</span>getopt -u -q -a -o <span class="s2">&quot;</span><span class="nv">$short_options</span><span class="s2">&quot;</span> -- <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="k">))</span> <span class="o">||</span> error_handled <span class="s2">&quot;Invalid parameters&quot;</span>
+
+  <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -lt <span class="m">2</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    _dbm_rm_script_help
+    <span class="nb">unset</span> -f _dbm_rm_script_help
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_rm_script_args: Found </span><span class="nv">$#</span><span class="s2"> params)\n&quot;</span>
+
+  <span class="k">while</span> <span class="o">[</span> <span class="nv">$#</span> -gt <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span> in
+
+      -i<span class="o">)</span> <span class="nv">DBM_SCRIPT_ID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span><span class="p">;</span>shift<span class="p">;;</span>
+      -h<span class="o">)</span>
+        <span class="nv">show_help</span><span class="o">=</span><span class="nb">true</span>
+        <span class="p">;;</span>
+      --<span class="o">)</span> <span class="p">;;</span>
+      *<span class="o">)</span>
+        error_generate <span class="s2">&quot;Invalid parameter </span><span class="nv">$1</span><span class="s2">.&quot;</span>
+        <span class="p">;;</span>
+    <span class="k">esac</span>
+    <span class="nb">shift</span>
+
+  <span class="k">done</span>
+
+  <span class="k">if</span> <span class="o">[</span> <span class="nv">$show_help</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    _dbm_rm_script_help
+    <span class="nv">ans</span> <span class="o">=</span> 1
+  <span class="k">else</span>
+    <span class="nv">ans</span> <span class="o">=</span> 0
+    <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_ID</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+      <span class="nb">echo</span> <span class="s2">&quot;Missing Script Id.&quot;</span>
+      <span class="nv">ans</span> <span class="o">=</span> 1
+    <span class="k">fi</span>
+  <span class="k">fi</span>
+
+  <span class="nb">unset</span> -f _dbm_rm_script_help
+
+  <span class="k">return</span> <span class="nv">$ans</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-check-upd-release-args">
+<span id="dbm-check-upd-release-args"></span><h3>_dbm_check_upd_release_args<a class="headerlink" href="#dbm-check-upd-release-args" title="Permalink to this headline">¶</a></h3>
+<p>Internal function for parse command line arguments related to <code class="docutils literal"><span class="pre">update_release</span></code> command.</p>
+<p><em>Command Arguments</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-n</span> <span class="pre">NAME</span></code>: Name of the release to update.</li>
+<li><code class="docutils literal"><span class="pre">-v</span> <span class="pre">VERSION</span></code>: Version of the release to update.</li>
+<li><code class="docutils literal"><span class="pre">-d</span> <span class="pre">YYYY-MM-DD</span></code>: Date of the release to update.</li>
+<li><code class="docutils literal"><span class="pre">-a</span> <span class="pre">ADAPTER</span></code>: Adapter value to update on release.</li>
+<li><code class="docutils literal"><span class="pre">-b</span> <span class="pre">ID_BRANCH</span></code>: Branch Id value to update on release.</li>
+<li><code class="docutils literal"><span class="pre">-i</span> <span class="pre">ID_RELEASE</span></code>: Id of the release to update</li>
+<li><code class="docutils literal"><span class="pre">--dir</span> <span class="pre">DIR</span></code>: Directory of the release to update</li>
+<li><code class="docutils literal"><span class="pre">-h</span></code>: Show command options.</li>
+</ul>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DBM_REL_NAME_UPD</span></code>: Name of the release</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_DATE_UPD</span></code>: Date of the release</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_VERSION_UPD</span></code>: Version of the release</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_ADAPTER_UPD</span></code>: Adapter of the release</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_BRANCH_UPD</span></code>: Branch of the release</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_DIR_UPD</span></code>: Directory of the release.</li>
+</ul>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock45'))">(Show/Hide)</a><br /><div id="hiddencodeblock45" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_upd_release_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_upd_release_args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  _dbm_upd_release_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-d YYYY-MM-DD]         Release Date.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-v version]            Release Version\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-a adapter]            Release Adapter.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-b id_branch]          Id Branch.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-i id_release]         Id Release to update.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[--dir directory]       Directory to update.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;\n&quot;</span>
+  <span class="o">}</span>
+
+  <span class="nv">DBM_REL_NAME_UPD</span><span class="o">=</span>0
+  <span class="nv">DBM_REL_DATE_UPD</span><span class="o">=</span>0
+  <span class="nv">DBM_REL_VERSION_UPD</span><span class="o">=</span>0
+  <span class="nv">DBM_REL_ADAPTER_UPD</span><span class="o">=</span>0
+  <span class="nv">DBM_REL_BRANCH_UPD</span><span class="o">=</span>0
+  <span class="nv">DBM_REL_DIR_UPD</span><span class="o">=</span>0
+
+  <span class="nb">local</span> <span class="nv">short_options</span><span class="o">=</span><span class="s2">&quot;b:n:d:a:v:i:h&quot;</span>
+  <span class="nb">local</span> <span class="nv">long_options</span><span class="o">=</span><span class="s2">&quot;dir:&quot;</span>
+
+  <span class="k">$(</span><span class="nb">set</span> -- <span class="k">$(</span>getopt -u -q -a -o <span class="s2">&quot;</span><span class="nv">$short_options</span><span class="s2">&quot;</span> -l <span class="s2">&quot;</span><span class="nv">$long_options</span><span class="s2">&quot;</span> -- <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="k">))</span> <span class="o">||</span> error_handled <span class="s2">&quot;Invalid parameters&quot;</span>
+
+  <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -lt <span class="m">2</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    _dbm_upd_release_help
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_upd_release_args: Found </span><span class="nv">$#</span><span class="s2"> params)\n&quot;</span>
+
+  <span class="k">while</span> <span class="o">[</span> <span class="nv">$#</span> -gt <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="nv">$1</span> in
+
+      -n<span class="o">)</span>
+        <span class="nv">DBM_REL_NAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+        <span class="nv">DBM_REL_NAME_UPD</span><span class="o">=</span>1
+        <span class="nb">shift</span>
+        <span class="p">;;</span>
+      -d<span class="o">)</span>
+        <span class="nv">DBM_REL_DATE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+        <span class="nv">DBM_REL_DATE_UPD</span><span class="o">=</span>1
+        <span class="nb">shift</span>
+        <span class="p">;;</span>
+      -v<span class="o">)</span>
+        <span class="nv">DBM_REL_VERSION</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+        <span class="nv">DBM_REL_VERSION_UPD</span><span class="o">=</span>1
+        <span class="nb">shift</span>
+        <span class="p">;;</span>
+      -a<span class="o">)</span>
+        <span class="nv">DBM_REL_ADAPTER</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+        <span class="nv">DBM_REL_ADAPTER_UPD</span><span class="o">=</span>1
+        <span class="nb">shift</span>
+        <span class="p">;;</span>
+      -b<span class="o">)</span>
+        <span class="nv">DBM_REL_BRANCH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+        <span class="nv">DBM_REL_BRANCH_UPD</span><span class="o">=</span>1
+        <span class="nb">shift</span>
+        <span class="p">;;</span>
+      -i<span class="o">)</span>
+        <span class="nv">DBM_REL_ID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+        <span class="nb">shift</span>
+        <span class="p">;;</span>
+      -h<span class="o">)</span>
+        _dbm_upd_release_help
+        <span class="k">return</span> 1
+        <span class="p">;;</span>
+      --<span class="o">)</span>
+        <span class="nv">DBM_REL_DIR</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+        <span class="nv">DBM_REL_DIR_UPD</span><span class="o">=</span>1
+        <span class="nb">shift</span>
+        <span class="p">;;</span>
+      *<span class="o">)</span>
+        error_generate <span class="s2">&quot;Invalid parameter </span><span class="nv">$1</span><span class="s2">.&quot;</span>
+        <span class="p">;;</span>
+
+    <span class="k">esac</span>
+
+    <span class="nb">shift</span>
+
+  <span class="k">done</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_REL_ID</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Release Id.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[[</span> <span class="nv">$DBM_REL_NAME_UPD</span> -eq <span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="nv">$DBM_REL_DATE_UPD</span> -eq <span class="m">0</span> <span class="o">&amp;&amp;</span>
+        <span class="nv">$DBM_REL_VERSION_UPD</span> -eq <span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="nv">$DBM_REL_ADAPTER_UPD</span> -eq <span class="m">0</span> <span class="o">&amp;&amp;</span>
+        <span class="nv">$DBM_REL_BRANCH_UPD</span> -eq <span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="nv">$DBM_REL_DIR_UPD</span> -eq <span class="m">0</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;No fields to update.\n&quot;</span>
+    <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="nb">unset</span> -f _dbm_upd_release_help
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-check-move-release-args">
+<span id="dbm-check-move-release-args"></span><h3>_dbm_check_move_release_args<a class="headerlink" href="#dbm-check-move-release-args" title="Permalink to this headline">¶</a></h3>
+<p>Internal function for parse command line arguments related to <code class="docutils literal"><span class="pre">move_release</span></code> command.</p>
+<p><em>Command Arguments</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-r</span> <span class="pre">RELEASE_ID</span></code>: Id of the release to remove.</li>
+<li><code class="docutils literal"><span class="pre">-f</span></code>: For remove of the selected release without confirmation question.</li>
+<li><code class="docutils literal"><span class="pre">-h</span></code>: Show command options.</li>
+</ul>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DBM_BEFORE</span></code>: Set to 1 when move require that a version is moved before another. Default 0.</li>
+<li><code class="docutils literal"><span class="pre">DBM_AFTER</span></code>: Set to 1 when move require that a version is moved after another. Default 0.</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_NAME</span></code>: Name of the release</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_VERSION_TO</span></code>: Version to use for move</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_VERSION_FROM</span></code>: Version to move.</li>
+</ul>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock46'))">(Show/Hide)</a><br /><div id="hiddencodeblock46" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_move_release_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_inhibit_script_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  _dbm_mv_release_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-r version]            Release version.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-a version_to]         After release version_to.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-b version_to]         Before release version_to.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;Example: -n &#39;Project1&#39; -r &#39;0.1.1&#39; -a &#39;0.1.0&#39; (Release 0.1.1 after release 0.1.0)\n&quot;</span>
+  <span class="o">}</span>
+
+  <span class="nv">DBM_BEFORE</span><span class="o">=</span>0
+  <span class="nv">DBM_AFTER</span><span class="o">=</span>0
+
+  <span class="c1"># Reinitialize opt index position</span>
+  <span class="nv">OPTIND</span><span class="o">=</span>1
+  <span class="k">while</span> <span class="nb">getopts</span> <span class="s2">&quot;b:n:a:r:h&quot;</span> opts <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="nv">$opts</span> in
+
+      n<span class="o">)</span> <span class="nv">DBM_REL_NAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      b<span class="o">)</span> <span class="nv">DBM_BEFORE</span><span class="o">=</span>1
+         <span class="nv">DBM_REL_VERSION_TO</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      a<span class="o">)</span> <span class="nv">DBM_AFTER</span><span class="o">=</span>1
+         <span class="nv">DBM_REL_VERSION_TO</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      r<span class="o">)</span> <span class="nv">DBM_REL_VERSION_FROM</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      h<span class="o">)</span>
+        _dbm_mv_release_help
+        <span class="k">return</span> 1
+        <span class="p">;;</span>
+
+    <span class="k">esac</span>
+  <span class="k">done</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_REL_NAME</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    _dbm_mv_release_help
+    <span class="c1">#echo &quot;Missing Release Name.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_REL_VERSION_FROM</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Release version.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[[</span> <span class="nv">$DBM_BEFORE</span> <span class="o">==</span> <span class="m">1</span> <span class="o">&amp;&amp;</span> <span class="nv">$DBM_AFTER</span> <span class="o">==</span> <span class="m">1</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Both after and before are used. Error.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[[</span> <span class="nv">$DBM_BEFORE</span> <span class="o">==</span> <span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="nv">$DBM_AFTER</span> <span class="o">==</span> <span class="m">0</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing -a or -b parameter.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="nb">unset</span> -f _dbm_mv_release_help
+
+  <span class="k">return</span> 0
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-check-inhibit-script-args">
+<span id="dbm-check-inhibit-script-args"></span><h3>_dbm_check_inhibit_script_args<a class="headerlink" href="#dbm-check-inhibit-script-args" title="Permalink to this headline">¶</a></h3>
+<p>Internal function for parse command line arguments related to <code class="docutils literal"><span class="pre">insert_inhibit_script</span></code> command.</p>
+<p><em>Command Arguments</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-n</span> <span class="pre">NAME</span></code>: Name of the release where add an inhibited script between two version.</li>
+<li><code class="docutils literal"><span class="pre">-i</span> <span class="pre">SCRIPT_ID</span></code>: Id of the script to inhibit.</li>
+<li><code class="docutils literal"><span class="pre">-t</span> <span class="pre">VERSION_TO</span></code>: Version of the release target of the installation.</li>
+<li><code class="docutils literal"><span class="pre">-f</span> <span class="pre">VERSION_FROM</span></code>: Version of the release source of the installation.</li>
+<li><code class="docutils literal"><span class="pre">-h</span></code>: Show command options.</li>
+</ul>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_ID</span></code>: Script Id</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_NAME</span></code>: Name of the release</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_VERSION_TO</span></code>: Version to use for inhibition as source.</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_VERSION_FROM</span></code>: Version to for inhibition as target.</li>
+</ul>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock47'))">(Show/Hide)</a><br /><div id="hiddencodeblock47" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_inhibit_script_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_inhibit_script_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  <span class="c1"># Reinitialize opt index position</span>
+  <span class="nv">OPTIND</span><span class="o">=</span>1
+  <span class="k">while</span> <span class="nb">getopts</span> <span class="s2">&quot;i:n:t:f:h&quot;</span> opts <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="nv">$opts</span> in
+
+      i<span class="o">)</span> <span class="nv">DBM_SCRIPT_ID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      n<span class="o">)</span> <span class="nv">DBM_REL_NAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      t<span class="o">)</span> <span class="nv">DBM_REL_VERSION_TO</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      f<span class="o">)</span> <span class="nv">DBM_REL_VERSION_FROM</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      h<span class="o">)</span>
+        <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
+        <span class="nb">echo</span> -en <span class="s2">&quot;[-i id_script]          Script Id.\n&quot;</span>
+        <span class="nb">echo</span> -en <span class="s2">&quot;[-t version_to]         Release version target of the installation.\n&quot;</span>
+        <span class="nb">echo</span> -en <span class="s2">&quot;[-f version_from]       Release version source of the installation.\n&quot;</span>
+        <span class="k">return</span> 1
+        <span class="p">;;</span>
+
+    <span class="k">esac</span>
+  <span class="k">done</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_ID</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Script Id.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_REL_NAME</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Release Name.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_REL_VERSION_TO</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Release version that has a dependency.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_REL_VERSION_FROM</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Release version needed on target.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$DBM_REL_VERSION_FROM</span><span class="s2">&quot;</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="nv">$DBM_REL_VERSION_TO</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Both version are equal. Error.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-check-move-script-args">
+<span id="dbm-check-move-script-args"></span><h3>_dbm_check_move_script_args<a class="headerlink" href="#dbm-check-move-script-args" title="Permalink to this headline">¶</a></h3>
+<p>Internal function for parse command line arguments related to <code class="docutils literal"><span class="pre">move_script</span></code> command.</p>
+<p><em>Command Arguments</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-i</span> <span class="pre">SCRIPT_ID</span></code>: Id of the script to move.</li>
+<li><code class="docutils literal"><span class="pre">-a</span> <span class="pre">SCRIPT_ID_X</span></code>: Move script <em>after</em> script with id SCRIPT_ID_X.</li>
+<li><code class="docutils literal"><span class="pre">-b</span> <span class="pre">SCRIPT_ID_X</span></code>: Move script <em>before</em> script with id SCRIPT_ID_X.</li>
+<li><code class="docutils literal"><span class="pre">-r</span> <span class="pre">ID_RELEASE</span></code>: Release id of the script to move.</li>
+<li><code class="docutils literal"><span class="pre">-h</span></code>: Show command options.</li>
+</ul>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DBM_REL_ID</span></code>: Release id of the script.</li>
+<li><code class="docutils literal"><span class="pre">DBM_BEFORE</span></code>: Set to 1 when script must be move before another. Default 0.</li>
+<li><code class="docutils literal"><span class="pre">DBM_AFTER</span></code>: Set to 1 when script must be move after another. Default 0.</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_ID_TO</span></code>: Version to use for move as target</li>
+<li><code class="docutils literal"><span class="pre">DBM_SCRIPT_ID_FROM</span></code>: Version to use for move as source</li>
+</ul>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock48'))">(Show/Hide)</a><br /><div id="hiddencodeblock48" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_move_script_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_move_script_args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  _dbm_move_script_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-i id_script]          Id script of the script to move.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-a x]                  After script with id x.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-b x]                  Before script with id x.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-r id_release]         Id Release of the script to move.\n&quot;</span>
+  <span class="o">}</span>
+
+  <span class="nv">DBM_BEFORE</span><span class="o">=</span>0
+  <span class="nv">DBM_AFTER</span><span class="o">=</span>0
+
+  <span class="c1"># Reinitialize opt index position</span>
+  <span class="nv">OPTIND</span><span class="o">=</span>1
+  <span class="k">while</span> <span class="nb">getopts</span> <span class="s2">&quot;b:i:a:r:h&quot;</span> opts <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="nv">$opts</span> in
+
+      r<span class="o">)</span> <span class="nv">DBM_REL_ID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      b<span class="o">)</span> <span class="nv">DBM_BEFORE</span><span class="o">=</span>1
+         <span class="nv">DBM_SCRIPT_ID_TO</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      a<span class="o">)</span> <span class="nv">DBM_AFTER</span><span class="o">=</span>1
+         <span class="nv">DBM_SCRIPT_ID_TO</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      i<span class="o">)</span> <span class="nv">DBM_SCRIPT_ID_FROM</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      h<span class="o">)</span>
+        _dbm_move_script_help
+        <span class="k">return</span> 1
+        <span class="p">;;</span>
+
+    <span class="k">esac</span>
+  <span class="k">done</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_REL_ID</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Release Id.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_SCRIPT_ID_FROM</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Script Id.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[[</span> <span class="nv">$DBM_BEFORE</span> <span class="o">==</span> <span class="m">1</span> <span class="o">&amp;&amp;</span> <span class="nv">$DBM_AFTER</span> <span class="o">==</span> <span class="m">1</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Both after and before are used. Error.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[[</span> <span class="nv">$DBM_BEFORE</span> <span class="o">==</span> <span class="m">0</span> <span class="o">&amp;&amp;</span> <span class="nv">$DBM_AFTER</span> <span class="o">==</span> <span class="m">0</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing -a or -b parameter.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="nb">unset</span> -f _dbm_move_script_help
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+<span class="c1"># dbm__dbm_check_move_script_args_end</span>
+
+<span class="c1"># dbm__dbm_check_rem_rel_args</span>
+_dbm_check_rem_rel_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">short_options</span><span class="o">=</span><span class="s2">&quot;r:hf&quot;</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_rem_rel_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  _dbm_rem_rel_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-r id_release]         Id Release of the script to remove.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-f]                    Force remove without confirmation question.\n&quot;</span>
+  <span class="o">}</span>
+
+  <span class="k">$(</span><span class="nb">set</span> -- <span class="k">$(</span>getopt -u -q -a -o <span class="s2">&quot;</span><span class="nv">$short_options</span><span class="s2">&quot;</span> -- <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="k">))</span> <span class="o">||</span> <span class="se">\</span>
+    error_handled <span class="s2">&quot;Invalid parameters&quot;</span>
+
+  <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -lt <span class="m">2</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    _dbm_rem_rel_help
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_rem_rel_args: Found </span><span class="nv">$#</span><span class="s2"> params)\n&quot;</span>
+
+  <span class="nv">DBM_FORCE_RM</span><span class="o">=</span>0
+
+  <span class="k">while</span> <span class="o">[</span> <span class="nv">$#</span> -gt <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span> in
+
+      -r<span class="o">)</span> <span class="nv">DBM_REL_ID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>    <span class="p">;</span>shift<span class="p">;;</span>
+      -f<span class="o">)</span> <span class="nv">DBM_FORCE_RM</span><span class="o">=</span><span class="s2">&quot;1&quot;</span> <span class="p">;;</span>
+      -h<span class="o">)</span>
+        _dbm_rem_rel_help
+        <span class="k">return</span> 1
+        <span class="p">;;</span>
+      --<span class="o">)</span> <span class="p">;;</span>
+      *<span class="o">)</span>
+        error_generate <span class="s2">&quot;Invalid parameter </span><span class="nv">$1</span><span class="s2">.&quot;</span>
+        <span class="p">;;</span>
+    <span class="k">esac</span>
+    <span class="nb">shift</span>
+  <span class="k">done</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_REL_ID</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Release Id.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="nb">unset</span> -f _dbm_rem_rel_help
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+<span class="c1"># dbm__dbm_check_rem_rel_args_end</span>
+
+<span class="c1"># dbm__dbm_show_rel_args</span>
+_dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">short_options</span><span class="o">=</span><span class="s2">&quot;b:h&quot;</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_show_rel_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  _dbm_show_rel_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-b id_branch]          Id branch to filter.\n&quot;</span>
+  <span class="o">}</span>
+
+  <span class="k">$(</span><span class="nb">set</span> -- <span class="k">$(</span>getopt -u -q -a -o <span class="s2">&quot;</span><span class="nv">$short_options</span><span class="s2">&quot;</span> -- <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="k">))</span> <span class="o">||</span> <span class="se">\</span>
+    error_handled <span class="s2">&quot;Invalid parameters&quot;</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_show_rel_args: Found </span><span class="nv">$#</span><span class="s2"> params)\n&quot;</span>
+
+  <span class="k">while</span> <span class="o">[</span> <span class="nv">$#</span> -gt <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span> in
+
+      -b<span class="o">)</span> <span class="nv">DBM_BRANCH_ID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>    <span class="p">;</span>shift<span class="p">;;</span>
+      -h<span class="o">)</span>
+        _dbm_show_rel_help
+        <span class="k">return</span> 1
+        <span class="p">;;</span>
+      --<span class="o">)</span> <span class="p">;;</span>
+      *<span class="o">)</span>
+        error_generate <span class="s2">&quot;Invalid parameter </span><span class="nv">$1</span><span class="s2">.&quot;</span>
+        <span class="p">;;</span>
+    <span class="k">esac</span>
+    <span class="nb">shift</span>
+  <span class="k">done</span>
+
+  <span class="nb">unset</span> -f _dbm_show_rel_help
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+<span class="c1"># dbm__dbm_show_rel_args_end</span>
+
+
+<span class="c1"># vim: syn=sh filetype=sh</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-check-rem-rel-args">
+<span id="dbm-check-rem-rel-args"></span><h3>_dbm_check_rem_rel_args<a class="headerlink" href="#dbm-check-rem-rel-args" title="Permalink to this headline">¶</a></h3>
+<p>Internal function for parse command line arguments related to <code class="docutils literal"><span class="pre">remove_release</span></code> command.</p>
+<p><em>Command Arguments</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-r</span> <span class="pre">RELEASE_ID</span></code>: Id of the release to remove.</li>
+<li><code class="docutils literal"><span class="pre">-f</span></code>: For remove of the selected release without confirmation question.</li>
+<li><code class="docutils literal"><span class="pre">-h</span></code>: Show command options.</li>
+</ul>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DBM_FORCE_RM</span></code>: Set to 1 when is not ask configuration question before remove release.</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_ID</span></code>: Id of the release to remove</li>
+</ul>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock49'))">(Show/Hide)</a><br /><div id="hiddencodeblock49" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_rem_rel_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">short_options</span><span class="o">=</span><span class="s2">&quot;r:hf&quot;</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_rem_rel_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  _dbm_rem_rel_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-r id_release]         Id Release of the script to remove.\n&quot;</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-f]                    Force remove without confirmation question.\n&quot;</span>
+  <span class="o">}</span>
+
+  <span class="k">$(</span><span class="nb">set</span> -- <span class="k">$(</span>getopt -u -q -a -o <span class="s2">&quot;</span><span class="nv">$short_options</span><span class="s2">&quot;</span> -- <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="k">))</span> <span class="o">||</span> <span class="se">\</span>
+    error_handled <span class="s2">&quot;Invalid parameters&quot;</span>
+
+  <span class="k">if</span> <span class="o">[</span> <span class="nv">$#</span> -lt <span class="m">2</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    _dbm_rem_rel_help
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_rem_rel_args: Found </span><span class="nv">$#</span><span class="s2"> params)\n&quot;</span>
+
+  <span class="nv">DBM_FORCE_RM</span><span class="o">=</span>0
+
+  <span class="k">while</span> <span class="o">[</span> <span class="nv">$#</span> -gt <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span> in
+
+      -r<span class="o">)</span> <span class="nv">DBM_REL_ID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>    <span class="p">;</span>shift<span class="p">;;</span>
+      -f<span class="o">)</span> <span class="nv">DBM_FORCE_RM</span><span class="o">=</span><span class="s2">&quot;1&quot;</span> <span class="p">;;</span>
+      -h<span class="o">)</span>
+        _dbm_rem_rel_help
+        <span class="k">return</span> 1
+        <span class="p">;;</span>
+      --<span class="o">)</span> <span class="p">;;</span>
+      *<span class="o">)</span>
+        error_generate <span class="s2">&quot;Invalid parameter </span><span class="nv">$1</span><span class="s2">.&quot;</span>
+        <span class="p">;;</span>
+    <span class="k">esac</span>
+    <span class="nb">shift</span>
+  <span class="k">done</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_REL_ID</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Release Id.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="nb">unset</span> -f _dbm_rem_rel_help
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="dbm-check-show-rel-args">
+<span id="dbm-check-show-rel-args"></span><h3>_dbm_check_show_rel_args<a class="headerlink" href="#dbm-check-show-rel-args" title="Permalink to this headline">¶</a></h3>
+<p>Internal function for parse command line arguments related to <code class="docutils literal"><span class="pre">show_releases</span></code> command.</p>
+<p><em>Command Arguments</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-b</span> <span class="pre">ID_BRANCH</span></code>: Filter list for a particular Branch Id.</li>
+<li><code class="docutils literal"><span class="pre">-h</span></code>: Show command options.</li>
+</ul>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DBM_BRANCH_ID</span></code>: Id of the branch to use as filter.</li>
+</ul>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock50'))">(Show/Hide)</a><br /><div id="hiddencodeblock50" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">short_options</span><span class="o">=</span><span class="s2">&quot;b:h&quot;</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_show_rel_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  _dbm_show_rel_help <span class="o">()</span> <span class="o">{</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;[-b id_branch]          Id branch to filter.\n&quot;</span>
+  <span class="o">}</span>
+
+  <span class="k">$(</span><span class="nb">set</span> -- <span class="k">$(</span>getopt -u -q -a -o <span class="s2">&quot;</span><span class="nv">$short_options</span><span class="s2">&quot;</span> -- <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="k">))</span> <span class="o">||</span> <span class="se">\</span>
+    error_handled <span class="s2">&quot;Invalid parameters&quot;</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_show_rel_args: Found </span><span class="nv">$#</span><span class="s2"> params)\n&quot;</span>
+
+  <span class="k">while</span> <span class="o">[</span> <span class="nv">$#</span> -gt <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span> in
+
+      -b<span class="o">)</span> <span class="nv">DBM_BRANCH_ID</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>    <span class="p">;</span>shift<span class="p">;;</span>
+      -h<span class="o">)</span>
+        _dbm_show_rel_help
+        <span class="k">return</span> 1
+        <span class="p">;;</span>
+      --<span class="o">)</span> <span class="p">;;</span>
+      *<span class="o">)</span>
+        error_generate <span class="s2">&quot;Invalid parameter </span><span class="nv">$1</span><span class="s2">.&quot;</span>
+        <span class="p">;;</span>
+    <span class="k">esac</span>
+    <span class="nb">shift</span>
+  <span class="k">done</span>
+
+  <span class="nb">unset</span> -f _dbm_show_rel_help
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
 </pre></div>
 </div>
 </div></div>
@@ -3820,9 +5339,8 @@ _dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
       
     </p>
     <p>
-      dbrm
         &copy; Copyright 2017, Geaaru.<br/>
-      Last updated on May 01, 2017.<br/>
+      Last updated on May 14, 2017.<br/>
     </p>
   </div>
 </footer>

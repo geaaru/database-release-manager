@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Install Module &#8212; Database Release Manager</title>
+    
+    <link rel="stylesheet" href="static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="static/dbrm.css" type="text/css" />
+    <link rel="stylesheet" href="static/bootswatch-3.3.6/superhero/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <script type="text/javascript" src="static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="static/bootstrap-sphinx.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Commons API" href="common.html" />
+    <link rel="prev" title="Logfile Module" href="logfile.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          Database Release Manager</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="dbm.html">Dbm Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logfile.html">Logfile Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Install Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common.html">Commons API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mysql.html">Mysql API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sqlplus.html">Sqlplus API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="psql.html">Psql API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commons_mariadb.html">Commons Mariadb API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commons_oracle.html">Commons Oracle API</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Install Module</a><ul>
+<li><a class="reference internal" href="#commands">Commands</a><ul>
+<li><a class="reference internal" href="#install-version">install version</a></li>
+<li><a class="reference internal" href="#install-show-installable">install show_installable</a></li>
+<li><a class="reference internal" href="#install-install">install install</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api">API</a><ul>
+<li><a class="reference internal" href="#install-check-show-installable-args">_install_check_show_installable_args</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="logfile.html" title="Previous Chapter: Logfile Module"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Logfile Module</span>
+    </a>
+  </li>
+  <li>
+    <a href="common.html" title="Next Chapter: Commons API"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Commons API &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row" >
+    <div class="col-md-12 content">
+      
+  <div class="section" id="install-module">
+<span id="install-module"></span><h1>Install Module<a class="headerlink" href="#install-module" title="Permalink to this headline">¶</a></h1>
+<p>Target of this module is manage installation of the projects under <code class="docutils literal"><span class="pre">dbrm</span></code>.
+Currently this module is <em>not completed and is under heavy development</em>.</p>
+<div class="section" id="commands">
+<span id="commands"></span><h2>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="install-version">
+<span id="install-version"></span><h3>install version<a class="headerlink" href="#install-version" title="Permalink to this headline">¶</a></h3>
+<p>Show version of install module.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm install version
+  Version: 0.1.0
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-show-installable">
+<span id="install-show-installable"></span><h3>install show_installable<a class="headerlink" href="#install-show-installable" title="Permalink to this headline">¶</a></h3>
+<p>Show list of actions to execute on installation between two releases or to a particular release.
+Method is currently not completed.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm install show_installable -h
+  <span class="o">[</span>-n name<span class="o">]</span>               Release Name.
+  <span class="o">[</span>-t version_to<span class="o">]</span>         Release version target of the installation.
+  <span class="o">[</span>-f version_from<span class="o">]</span>       Release version <span class="nb">source</span> of the installation.
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-install">
+<span id="install-install"></span><h3>install install<a class="headerlink" href="#install-install" title="Permalink to this headline">¶</a></h3>
+<p>Install or upgrade a project to a particular release.
+METHOD NOT COMPLETED.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm install install -h
+  <span class="o">[</span>-n name<span class="o">]</span>               Release Name.
+  <span class="o">[</span>-t version_to<span class="o">]</span>         Release version target of the installation.
+  <span class="o">[</span>-f version_from<span class="o">]</span>       Release version <span class="nb">source</span> of the installation.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="api">
+<span id="api"></span><h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="install-check-show-installable-args">
+<span id="install-check-show-installable-args"></span><h3>_install_check_show_installable_args<a class="headerlink" href="#install-check-show-installable-args" title="Permalink to this headline">¶</a></h3>
+<p>Internal function for read and parse command line arguments.</p>
+<p><em>Command Arguments</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-n</span> <span class="pre">[rel_name]</span></code>: Release name. Mandatary argument.</li>
+<li><code class="docutils literal"><span class="pre">-f</span> <span class="pre">[version_from]</span></code>: Release version from. Mandatary argument.</li>
+<li><code class="docutils literal"><span class="pre">-t</span> <span class="pre">[version_to]</span></code>: Release version to. Mandatary argument.</li>
+<li>`-h: Show command options</li>
+</ul>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DBM_REL_NAME</span></code>: for release name.</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_VERSION_TO</span></code>: for release version to.</li>
+<li><code class="docutils literal"><span class="pre">DBM_REL_VERSION_FROM</span></code>: for release version from.</li>
+</ul>
+<p><em>Return</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock1'))">(Show/Hide)</a><br /><div id="hiddencodeblock1" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_install_check_show_installable_args <span class="o">()</span> <span class="o">{</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_install_check_show_installable_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
+
+  <span class="c1"># Reinitialize opt index position</span>
+  <span class="nv">OPTIND</span><span class="o">=</span>1
+  <span class="k">while</span> <span class="nb">getopts</span> <span class="s2">&quot;n:t:f:h&quot;</span> opts <span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span> <span class="p">;</span> <span class="k">do</span>
+    <span class="k">case</span> <span class="nv">$opts</span> in
+
+      n<span class="o">)</span> <span class="nv">DBM_REL_NAME</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      t<span class="o">)</span> <span class="nv">DBM_REL_VERSION_TO</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      f<span class="o">)</span> <span class="nv">DBM_REL_VERSION_FROM</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$OPTARG</span><span class="s2">&quot;</span><span class="p">;;</span>
+      h<span class="o">)</span>
+        <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
+        <span class="nb">echo</span> -en <span class="s2">&quot;[-t version_to]         Release version target of the installation.\n&quot;</span>
+        <span class="nb">echo</span> -en <span class="s2">&quot;[-f version_from]       Release version source of the installation.\n&quot;</span>
+        <span class="k">return</span> 1
+        <span class="p">;;</span>
+
+    <span class="k">esac</span>
+  <span class="k">done</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_REL_NAME</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Release Name.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_REL_VERSION_TO</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Release version that has a dependency.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$DBM_REL_VERSION_FROM</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&quot;Missing Release version needed on target.&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017, Geaaru.<br/>
+      Last updated on May 07, 2017.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
