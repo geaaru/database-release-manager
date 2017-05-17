@@ -88,7 +88,7 @@ commons_mongo_check_connection () {
   [[ $DEBUG && $DEBUG == true ]] && \
     echo -en "(commons_mongo_check_connection) Try connection with $MONGO_CLIENT $mongo_auth $MONGO_EXTRA_OPTIONS $opts.\n"
 
-  $MONGO_CLIENT $mongo_auth $MONGO_EXTRA_OPTIONS $opts $2>&1 <<EOF
+  eval $MONGO_CLIENT $mongo_auth $MONGO_EXTRA_OPTIONS $opts $2>&1 <<EOF
 exit
 EOF
 
@@ -122,7 +122,7 @@ commons_mongo_shell () {
   [[ $DEBUG && $DEBUG == true ]] && \
     echo -en "(commons_mongo_shell) Try connection with $opts $MONGO_EXTRA_OPTIONS $mongo_auth.\n"
 
-  $MONGO_CLIENT $opts $MONGO_EXTRA_OPTIONS $mongo_auth
+  eval $MONGO_CLIENT $opts $MONGO_EXTRA_OPTIONS $mongo_auth
 
   errorCode=$?
   if [ ${errorCode} -ne 0 ] ; then

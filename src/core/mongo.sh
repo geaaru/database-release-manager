@@ -22,7 +22,7 @@ mongo_set_auth_var () {
   fi
 
   # TODO: Check of pass username and password with single quote
-  mongo_auth="${host}/${db} --username $user --password ${pwd} ${mongo_auth}"
+  mongo_auth="${host}/${db} --username=$user --password=${pwd} ${mongo_auth}"
 
   [[ $DEBUG && $DEBUG == true ]] && echo "Use ${mongo_auth}"
 

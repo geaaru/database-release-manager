@@ -89,7 +89,8 @@ mongo_shell () {
 
   mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
 
-  commons_mongo_check_connection || error_handled "mongo client was unable to connect to DB with supplied credentials."
+  commons_mongo_check_connection || \
+    error_handled "mongo client was unable to connect to DB with supplied credentials."
 
   commons_mongo_shell || error_handled "Error on enter on command line shell."
 
