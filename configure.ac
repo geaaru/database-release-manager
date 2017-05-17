@@ -93,6 +93,7 @@ AC_CONFIG_FILES([
                  modules/package.mod
                  modules/ssl.mod
                  modules/psql.mod
+                 modules/mongo.mod
                  modules/sweeper.mod
                  src/Makefile
                  src/dbrm

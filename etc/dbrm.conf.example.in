@@ -20,7 +20,7 @@ LOCAL_CONFIG_FILE=$LOCAL_DIR/dbrm.conf
 DRM_DB=$LOCAL_DIR/dbrm.db
 
 # SQL Connector Adapter:
-# Supported adapter are: sqlite|mariadb|oracle|psql
+# Supported adapter are: sqlite|mariadb|oracle|psql|mongo
 #SQLCA="oracle|mariadb"
 #SQLCA="mariadb|oracle"
 #SQLCA="sqlite"
@@ -67,6 +67,14 @@ DRM_DB=$LOCAL_DIR/dbrm.db
 # Add -v to see executed statement on log.
 # POSTGRESQL_EXTRA_OPTIONS=""
 
+# For mongo authentication set thes variables
+# MONGO_USER="user"
+# MONOG_PWD="pwd"
+# MONGO_DB="database"
+# MONGO_AUTHDB="authdb"
+# MONGO_HOST="host"
+# MONGO_DIR="/dir_mariadb_files
+# MONGO_EXTRA_OPTIONS=""
 
 # Path of SQLITE3 database
 #SQLITEDB=@SQLITEDB@

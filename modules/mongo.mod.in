@@ -1,0 +1,303 @@
+#!/bin/bash
+#------------------------------------------------
+# Author(s): Geaaru, geaaru@gmail.com
+# $Id$
+# License: GPL 2.0
+#------------------------------------------------
+
+name="mongo"
+mongo_authors="Geaaru"
+mongo_creation_date="June 24, 2016"
+mongo_version="@PACKAGE_VERSION@"
+mongo_status="0"
+
+
+#****f* mongo/mongo_version
+# FUNCTION
+#  Show version of mongo module.
+# SOURCE
+mongo_version() {
+  echo -en "Version: ${mongo_version}\n"
+  return 0
+}
+#***
+
+#****f* mongo/mongo_long_help
+# FUNCTION
+#   Show long help message.
+# SOURCE
+mongo_long_help () {
+
+   echo -en "===========================================================================\n"
+   echo -en "Module [mongo]:\n"
+   echo -en "Author(s): ${mongo_authors}\n"
+   echo -en "Created: ${mongo_creation_date}\n"
+   echo -en "Version: ${mongo_version}\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "\tlong_help               Show long help informations\n"
+   echo -en "\tshow_help               Show command list.\n"
+   echo -en "\tversion                 Show module version.\n"
+   echo -en "\ttest_connection         Test connection versus database.\n"
+   echo -en "\tshell                   Enter on command line shell of database.\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "===========================================================================\n"
+
+   return 0
+}
+#***
+
+#****f* mongo/mongo_show_help
+# FUNCTION
+#   Show help message.
+# SOURCE
+mongo_show_help () {
+   echo -en "===========================================================================\n"
+   echo -en "Module [mongo]:\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "\tlong_help               Show long help informations\n"
+   echo -en "\tshow_help               Show command list.\n"
+   echo -en "\tversion                 Show module version.\n"
+   echo -en "\ttest_connection         Test connection versus database.\n"
+   echo -en "\tshell                   Enter on command line shell of database.\n"
+   echo -en "---------------------------------------------------------------------------\n"
+   echo -en "===========================================================================\n"
+
+   return 0
+}
+#***
+
+#****f* mongo/mongo_shell
+# FUNCTION
+#   Enter on command line shell of Mysql/MariaDB server
+# SEE ALSO
+#   _mongo_connections_args for list of available arguments.
+# SOURCE
+mongo_shell () {
+
+  local result=1
+
+  # Shift first two input param
+  shift 2
+
+  _mongo_check_status
+
+  _mongo_help_message="print_help"
+
+  _mongo_connections_args "$@" || error_handled ""
+
+  commons_mongo_check_vars || error_handled ""
+
+  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
+
+  commons_mongo_check_connection || error_handled "mongo client was unable to connect to DB with supplied credentials."
+
+  commons_mongo_shell || error_handled "Error on enter on command line shell."
+
+  return 0
+}
+#***
+
+#****f* mongo/mongo_test_connection
+# FUNCTION
+#   Test connection to PostgreSQL server.
+# SEE ALSO
+#   _mongo_connections_args for list of available arguments.
+# SOURCE
+mongo_test_connection () {
+
+  local result=1
+
+  # Shift first two input param
+  shift 2
+
+  _mongo_check_status
+
+  _mongo_help_message="print_help"
+
+  _mongo_connections_args "$@" || error_handled ""
+
+  commons_mongo_check_vars || error_handled ""
+
+  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
+
+  commons_mongo_check_connection || \
+    error_handled "mongo client was unable to connect to DB with supplied credentials."
+
+  out_handler_print "Connected to $MONGO_DB with user $MONGO_USER correctly."
+
+  out_handler_clean
+
+  return 0
+}
+#***
+
+
+##################################################################
+# Internal functions
+##################################################################
+
+#****f* mongo/_mongo_init
+# FUNCTION
+#   Internal function called on initialization of the mongo module.
+# DESCRIPTION
+#   Mariadb module is usable when SQLCA variable contains mongo string.
+#   So, if mongo module is enabled then these check are done:
+#   * verify presence of mysql client program
+#   * check if MONGO_USER variable is set. This variable define user to use
+#     on connection to database.
+#   * check if MONGO_PWD variable is set. This variable define password to use
+#     on connection to database.
+#   * check if defined MONGO_DB variable. This variable define name of the
+#     schema to use on connection.
+#   * check if defined MONGO_DIR variable. This variable define path where
+#     save/retrieve files to compile.
+#   * if defined MONGO_TMZ then default UTC value is overrided. This variable
+#     is used to set TMZ on active connection to database.
+# SOURCE
+_mongo_init () {
+
+  if [[ ! -z "$SQLCA"  && "$SQLCA" =~ .*mongo.* ]] ; then
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mongo_init: Check requirements of the mongo module.)\n"
+
+    commons_mongo_check_client || error_handled ""
+
+    if [ -z $MONGO_TMZ ] ; then
+      MONGO_TMZ='UTC'
+    fi
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mongo_init: All requirements are present. Continue my work.)\n"
+
+    mongo_status="1"
+
+  else
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mongo_init: Nothing to do.)\n"
+
+  fi
+
+  return 0
+}
+#***
+
+#****f* mongo/_mongo_check_status
+# FUNCTION
+#   Check status of the mongo module.
+# RETURN VALUE
+#   0 if module is enable.
+#   exit if not enabled.
+# SOURCE
+_mongo_check_status () {
+
+  if [ x"$mongo_status" = x"0" ] ; then
+    error_generate "mongo is not enable. Enable it with SQLCA variable"
+  fi
+
+  return 0
+}
+#***
+
+#****f* mongo/_mongo_connections_args
+# FUNCTION
+#   Parse command line and define environment variables.
+# DESCRIPTION
+#   Available commands line are:
+#   * -U [user]           Override username variable used on connection. If not present it is used
+#                         MONGO_USER variable from configuration file.
+#   * -P [pwd]            Override password variable used on connection. If not present it is used
+#                         MONGO_PWD variable from configuration file.
+#   * -D [dir path]       To define path where save/retrieve files to download/compile. This option
+#                         override MONGO_DIR variable of configuration file.
+#   * -H                  Override database host. If not present it is used MONGO_HOST variable
+#                         from configuration file.
+#   * --database [db]     Override database name variable used on connection. If not present it is used
+#                         MONGO_DB variable from configuration file.
+#   * --authdb [db]       Override authentication database variable used on connection initialization.
+#                         If not present it is used MONGO_AUTHDB variable from configuration file.
+#   * --conn-options [option]
+#                         Permit to configure extra connection parameters. This option could be used
+#                         more of one time.
+#   * -h                  Show help message
+# SOURCE
+_mongo_connections_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mongo_connections_args args: $@)\n"
+
+  local short_options="U:P:hH:D:t:S:"
+  local long_options="database: authdb: conn-options:  help"
+
+  $(set -- $(getopt -u -q -o "$short_options" -l "$long_options" -- "$@")) || \
+    error_handled "Invalid parameters"
+
+  [ $# -lt 1 ] && return 0 # is there at least one param (--)
+
+  local MONGO_EXTRAS_ENABLE=0
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -U) MONGO_USER="$2";shift;;
+      -P) MONGO_PWD="$2";shift;;
+      -D) MONGO_DIR="$2";shift;;
+      -H) MONGO_HOST="$2";shift;;
+      --database)
+        MONGO_DB="$2"
+        shift
+        ;;
+      --authdb)
+        MONGO_AUTHDB="$2"
+        shift
+        ;;
+      --conn-options)
+        if [ $MONGO_EXTRAS_ENABLE -eq 0 ] ; then
+          MONGO_EXTRAS_ENABLE=1
+          MONGO_EXTRA_OPTIONS="$2"
+        else
+          MONGO_EXTRA_OPTIONS="$MONGO_EXTRA_OPTIONS $2"
+        fi
+        shift
+        ;;
+      --help|-h)
+        if [ -n "$_mongo_help_message" ] ; then
+          _mongo_connection_help
+          return 0
+        fi
+        return 1
+        ;;
+      *|--)
+        ;;
+
+    esac
+
+    shift
+
+  done
+
+  return 0
+}
+#***
+
+
+#****f* mongo/_mongo_connection_help
+# FUNCTION
+#   Internal function that print help message of connection options.
+# SOURCE
+_mongo_connection_help () {
+
+  echo "
+[-P mongo_pwd]            Override MONGO_PWD variable.
+[-U mongo_user]           Override MONGO_USER with username of the connection.
+[-H mongo_host]           Override MONGO_HOST with host of the database.
+[-D mongo_dir]            Override MONGO_DIR directory where save/retrieve script/functions, etc.
+[--database db]           Override MONGO_DB variable for database name.
+[--conn-options opts]     Override MONGO_EXTRA_OPTIONS variable for enable extra connection options.
+[--authdb db]             Override MONGO_AUTHDB variable for set authentication database.
+"
+
+  return 0
+}
+#***
+
+
+
+# vim: syn=sh filetype=sh

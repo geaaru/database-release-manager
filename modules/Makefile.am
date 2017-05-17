@@ -16,6 +16,7 @@ EXTRA_DIST = \
 				 ssl.mod.in \
 				 package.mod.in \
 				 psql.mod.in \
+				 mongo.mod.in \
 				 sweeper.mod.in
 
 modules = \
@@ -31,6 +32,7 @@ modules = \
 			 ssl.mod \
 			 package.mod \
 			 psql.mod \
+			 mongo.mod \
 			 sweeper.mod
 
 DISTCLEANFILES = $(modules)

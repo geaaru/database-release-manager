@@ -431,12 +431,12 @@ Download procedures, trigger, functions, foreign keys, indexes, views, events an
   * `--all-indexes`: Download all indexes SQL statements from database and save every
                      index creation command under *indexes* directory where name of the
                      file is equal to <TABLE_NAME>-<INDEX_NAME> with .sql extension.
-
    * `--all-views`: Download all views from database and save every view under *views*
                     directory
-   * `--all-events`: Download all events/schedulers.
-   * `--all`: Download all (no tables schemas).
-   * `--procedure name`: Download a particular procedure.
+   * `--all-events`: Download all events/schedulers present on database and every event
+                     under *schedulers* directory
+   * `--all`: Download all (except tables schema)
+   * `--procedure name`: Download a particular procedure with name 
    * `--trigger name`: Download a particular trigger.
    * `--function name`: Download a particular function.
    * `--view name`: Download a particular view.
