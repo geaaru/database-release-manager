@@ -1,4 +1,4 @@
-## Mongo API
+## Mongo Module
 
 A series of functions used for interact directly with `mongo` client program.
 
@@ -26,6 +26,52 @@ A series of functions used for interact directly with `mongo` client program.
    * - ``MONGO_AUTHDB``
      - Contains authentication database to use on connection.
 ```
+
+### Commands
+
+#### mongo version
+
+Show version of mongo module
+
+```shell
+  $# dbrm mongo version
+  Version: 0.1.0
+```
+
+#### mongo test_connection
+
+Test connection to database of the active profile or active configuration.
+
+##### test_connection options:
+
+This options are generic option for handle connection and are avilable on different
+commands.
+
+  * `-P MONGO_PWD`: Override MONGO_PWD variable.
+  * `-U MONGO_USER`: Override MONGO_USER with username of the connection.
+  * `-H MONGO_HOST`: Override MONGO_HOST with host of the database.
+  * `-D MONGO_DIR`: Override MONGO_DIR directory where save/retrieve script/functions, etc.
+  * `--database db`: Override MONGO_DB variable for database name.
+  * `--conn-options opts`: Override MONGO_EXTRA_OPTIONS variable for enable extra
+                           connection options.
+  * `--authdb db`: Override MONGO_AUTHDB variable for set authentication database.
+
+#### mongo shell
+
+Enter on mongo shell of the active profile or active configuration.
+
+##### shell options:
+
+  * `-P MONGO_PWD`: Override MONGO_PWD variable.
+  * `-U MONGO_USER`: Override MONGO_USER with username of the connection.
+  * `-H MONGO_HOST`: Override MONGO_HOST with host of the database.
+  * `-D MONGO_DIR`: Override MONGO_DIR directory where save/retrieve script/functions, etc.
+  * `--database db`: Override MONGO_DB variable for database name.
+  * `--conn-options opts`: Override MONGO_EXTRA_OPTIONS variable for enable extra
+                           connection options.
+  * `--authdb db`: Override MONGO_AUTHDB variable for set authentication database.
+
+
 ### API
 
 #### mongo_set_auth_var
