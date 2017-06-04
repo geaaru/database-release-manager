@@ -11,7 +11,7 @@ Main features are:
   * display a list of information of an existing database (list of tables, foreign keys between tables, table size, etc.)
   * drop procedure, functions, index, etc.
   * simplify access to database between developers.
-q
+
 Mission of `dbrm` is NOT create a new IDE for SQL, every users can use any IDE for create tables, functions, etc. but with `dbrm` is it possible unify process for trace database informations and store to a repository in an ordered mode.
 
 ### Project Folder Structure
@@ -170,6 +170,7 @@ or from my.cnf configuration file.
 To check if event_scheduler is enable could be used `show` command:
 
 ```shell
+
   $# dbrm mariadb show  --global-vars --vars-filter "scheduler"
   ===============================================================================================================
   GLOBAL VARIABLES
@@ -177,11 +178,24 @@ To check if event_scheduler is enable could be used `show` command:
   VARIABLE_NAME       VARIABLE_VALUE      
   ===============================================================================================================
   event_scheduler     OFF
+
 ```
 
 On cluster configuration *Event Scheduler* doesn't manage automatically activation on single node, so we
 can manage concurrent execution through an application mutex or with activation of *event scheduler*
 service only on single node.
+
+### Notes about Foreign Keys
+
+On use auto-naming option on foreign keys creation command could be visible on compilation an error like this:
+
+```
+  20170528-11:31:43 - 
+  ERROR 1005 (HY000) at line 5: Can't create table `table1`.`#sql-4882_26d` (errno: 121 "Duplicate key on write or update")
+```
+
+This means that probably there is a conflict name between two foreign keys. In this case, manually fix name of foreign key
+creation script.
 
 ### Variables
 
@@ -432,34 +446,47 @@ Download procedures, trigger, functions, foreign keys, indexes, views, events an
                      index creation command under *indexes* directory where name of the
                      file is equal to <TABLE_NAME>-<INDEX_NAME> with .sql extension.
    * `--all-views`: Download all views from database and save every view under *views*
-                    directory
+                    directory where name of the file is equal to <VIEW_NAME> with .sql
+                    extension.
    * `--all-events`: Download all events/schedulers present on database and every event
-                     under *schedulers* directory
+                     under *schedulers* directory and save every evetn with a filename
+                     equal to event name and with .sql extension.
    * `--all`: Download all (except tables schema)
-   * `--procedure name`: Download a particular procedure with name 
-   * `--trigger name`: Download a particular trigger.
-   * `--function name`: Download a particular function.
-   * `--view name`: Download a particular view.
-   * `--foreign-key name`: Download a particular foreign key.
-   * `--event name`: Download a particular event.
-   * `--index name`: Download a particular index (Require --index-table)
-                     Only one index a time.
+   * `--procedure PNAME`: Download a particular procedure with name PNAME and save it
+                          under directory *procedures* with a name equal to PNAME with
+                          .sql extension.
+   * `--trigger TNAME`: Download a particular trigger and save it under *triggers*
+                       directory.
+   * `--function FNAME`: Download a particular function and save it under *functions*
+                        directory and save it with name <FNAME> and .sql extension.
+   * `--view VNAME`: Download a particular view under *views* directory and save
+                     it with name <VNAME> and .sql extension.
+   * `--foreign-key FKNAME`: Download a particular foreign key under directory
+                             *foreign_keys* and save it with name <TABLE_NAME>-<FKNAME>
+                             and .sql extension.
+   * `--event ENAME`: Download a particular event under directory *schedulers* and
+                      save it with name <ENAME> and .sql extension.
+   * `--index IDXNAME`: Download a particular index (Require --index-table) and save it
+                        under directory *indexes* with name <TABLE_NAME>-<IDXNAME> and
+                        .sql extension. Only one index a time can be specified.
    * `--index-table tname`: Name of table of index to download. (To use with --index).
    * `--with-pk-indexes`: Download also primary key indexes.
                            (To use with --all|--index|--all-indexes)
    * `--all-tables`: Download all tables definitions that aren't present on target
                      file. This option could be used with --file.
-   * `--table name`: Download schema of a particular table
+                     Default path where save tables definitions is
+                     `creation_scripts/initial_ddl.sql`.
+                     Could be used also for append new tables to an existing file.
+   * `--table TNAME`: Download schema of a particular table
                      This option could be used with --file.
-   * `--file file`: (optional) File where write tables definitions.
+   * `--file FILE`: (optional) File where write tables definitions.
                     Default is creation_scripts/initial_ddl.sql
-   * `--fk-table tname`: Table name of foreign key to download. To use with --foreign-key.
+   * `--fk-table TNAME`: Table name of foreign key to download. To use with --foreign-key.
                          If this param is missing dbrm try to identify table
                          name. If there are more or one fkey with same name
                          then elaboration is blocked.
 
-
-There are many options with `show` command so I propose only few examples here related
+There are many options with `downlaod` command so I propose only few examples here related
 with Openstack Juno database.
 
 *Download all indexes (not primary keys)*
@@ -544,6 +571,432 @@ with Openstack Juno database.
   Download index subnet_id of table vpnservices (76 of 76).
   Download operation successfull.
 
+```
+
+* Download all tables definition*
+
+```shell
+  $# dbrm mariadb download  --all-tables 
+  Download operation successfull.
+
+  $# head -n 20 creation_scripts/initial_ddl.sql 
+
+  -- $Id$ --
+
+  CREATE TABLE IF NOT EXISTS `agents` (
+      id                   VARCHAR(36) NOT NULL,
+      agent_type           VARCHAR(255) NOT NULL,
+      binary               VARCHAR(255) NOT NULL,
+      topic                VARCHAR(255) NOT NULL,
+      host                 VARCHAR(255) NOT NULL,
+      admin_state_up       TINYINT(1) NOT NULL DEFAULT '1',
+      created_at           DATETIME NOT NULL,
+      started_at           DATETIME NOT NULL,
+      heartbeat_timestamp  DATETIME NOT NULL,
+      description          VARCHAR(255),
+      configurations       VARCHAR(4095) NOT NULL,
+      PRIMARY KEY(id)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+  CREATE TABLE IF NOT EXISTS `alembic_version` (
+      version_num         VARCHAR(32) NOT NULL
+
+  $# 
+```
+
+#### mariadb compile
+
+Compile procedures, trigger, functions, foreign keys, indexes, views, events and database schema to an active database.
+
+From command line is visible result of compilation but a more detailed trace is save on logfile defined on `LOGFILE` variable
+(default `dbrm.log`).
+
+##### compile options:
+
+ * `--all-procedures`: Compile all procedures present under `MARIADB_DIR/procedures` subdirectories.
+ * `--all-triggers`: Compile all triggers present under `MARIADB_DIR/triggers` subdirectories.
+ * `--all-functions`: Compile all functions present under MARIADB_DIR/functions subdirectories.
+ * `--all-views`: Compile all views present on `MARIADB_DIR/views` subdirectories.
+ * `--all-foreign-keys`: Compile all foreign keys present on `MARIADB_DIR/foreign_keys` subdirectories
+                         if not present on database. (Use --force to drop and compile again fkey).
+ * `--all-indexes`: Compile all indexes present on `MARIADB_DIR/indexes` subdirectories
+                    if not present on database. (Use --force to drop and compile again index).
+                    If an index is connected to a foreign keys then is needed drop foreign key
+                    before drop and recompile index.
+ * `--all-events`: Compile all events present on MARIADB_DIR/schedulers subdirectories.
+ * `--all`: Compile all procedures, triggers, functions, views, events/schedulers present
+            under MARIADB_DIR subdirectories.
+ * `--procedure PNAME`: Compile a particular procedure under MARIADB_DIR/procedures directory with
+                        name PNAME.
+ * `--trigger TNAME`: Compile a particular trigger under MARIADB_DIR/triggers directory.
+ * `--function FNAME`: Compile a particular function under MARIADB_DIR/functions directory.
+ * `--view VNAME`: Compile a particular view under MARIADB_DIR/views directory.
+ * `--fkey FKEY`: Compile a particular foreign key under MARIADB_DIR/foreign_keys directory.
+ * `--exclude FILE`: Exclude a particular file from compilation.
+                     (This option can be repeat and override MARIADB_COMPILE_FILES_EXCLUDED
+                      configuration variable).
+ * `--id-script SCRIPT_ID`: Compile a particular script registered under MARIADB_DIR/<directory>/.
+ * `--file FILE`: Compile a particular file. (Use ABS Path or relative path from current dir.)
+                  For dump file use --dumpfile option.
+ * `--dumpfile FILE`: Compile a dump file. (Use ABS Path or relative path from current dir.)
+                      Currently, this option doesn't replace schema reference automatically.
+ * `--force`: For foreign keys it means that fkey/index is dropped and add again also if
+              already present.
+ * `--fk-table TNAME`: Table name of foreign key to compile. To use with --fkey.
+                       If this param is missing dbrm try to identify table
+                       name. If there are more or one fkey with same name
+                       then elaboration is blocked.
+ * `--event ENAME`: Compile a particular event/scheduler under MARIADB_DIR/schedulers directory.
+
+For argument with value if it isn't passed value argument is ignored.
+
+*Compile all foreign keys of Openstack Juno project*
+
+```shell
+  $# dbrm mariadb compile --all-foreign-keys
+  (mariadb) Start compilation (file allowedaddresspairs-allowedaddresspairs_ibfk_1.sql): 
+  (mariadb) End compilation (file allowedaddresspairs-allowedaddresspairs_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file brocadeports-brocadeports_ibfk_1.sql): 
+  (mariadb) End compilation (file brocadeports-brocadeports_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_csr_identifier_map-cisco_csr_identifier_map_ibfk_1.sql): 
+  (mariadb) End compilation (file cisco_csr_identifier_map-cisco_csr_identifier_map_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_hosting_devices-cisco_hosting_devices_ibfk_1.sql): 
+  (mariadb) End compilation (file cisco_hosting_devices-cisco_hosting_devices_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_hosting_devices-cisco_hosting_devices_ibfk_2.sql): 
+  (mariadb) End compilation (file cisco_hosting_devices-cisco_hosting_devices_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_ml2_apic_contracts-cisco_ml2_apic_contracts_ibfk_1.sql): 
+  (mariadb) End compilation (file cisco_ml2_apic_contracts-cisco_ml2_apic_contracts_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_n1kv_multi_segments-cisco_n1kv_multi_segments_ibfk_1.sql): 
+  (mariadb) End compilation (file cisco_n1kv_multi_segments-cisco_n1kv_multi_segments_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_n1kv_network_bindings-cisco_n1kv_network_bindings_ibfk_1.sql): 
+  (mariadb) End compilation (file cisco_n1kv_network_bindings-cisco_n1kv_network_bindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_n1kv_network_bindings-cisco_n1kv_network_bindings_ibfk_2.sql): 
+  (mariadb) End compilation (file cisco_n1kv_network_bindings-cisco_n1kv_network_bindings_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_n1kv_port_bindings-cisco_n1kv_port_bindings_ibfk_1.sql): 
+  (mariadb) End compilation (file cisco_n1kv_port_bindings-cisco_n1kv_port_bindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_n1kv_port_bindings-cisco_n1kv_port_bindings_ibfk_2.sql): 
+  (mariadb) End compilation (file cisco_n1kv_port_bindings-cisco_n1kv_port_bindings_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_n1kv_trunk_segments-cisco_n1kv_trunk_segments_ibfk_1.sql): 
+  (mariadb) End compilation (file cisco_n1kv_trunk_segments-cisco_n1kv_trunk_segments_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_n1kv_vlan_allocations-cisco_n1kv_vlan_allocations_ibfk_1.sql): 
+  (mariadb) End compilation (file cisco_n1kv_vlan_allocations-cisco_n1kv_vlan_allocations_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_n1kv_vmnetworks-cisco_n1kv_vmnetworks_ibfk_1.sql): 
+  (mariadb) End compilation (file cisco_n1kv_vmnetworks-cisco_n1kv_vmnetworks_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_n1kv_vxlan_allocations-cisco_n1kv_vxlan_allocations_ibfk_1.sql): 
+  (mariadb) End compilation (file cisco_n1kv_vxlan_allocations-cisco_n1kv_vxlan_allocations_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_port_mappings-cisco_port_mappings_ibfk_1.sql): 
+  (mariadb) End compilation (file cisco_port_mappings-cisco_port_mappings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_port_mappings-cisco_port_mappings_ibfk_2.sql): 
+  (mariadb) End compilation (file cisco_port_mappings-cisco_port_mappings_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_provider_networks-cisco_provider_networks_ibfk_1.sql): 
+  (mariadb) End compilation (file cisco_provider_networks-cisco_provider_networks_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_router_mappings-cisco_router_mappings_ibfk_1.sql): 
+  (mariadb) End compilation (file cisco_router_mappings-cisco_router_mappings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file cisco_router_mappings-cisco_router_mappings_ibfk_2.sql): 
+  (mariadb) End compilation (file cisco_router_mappings-cisco_router_mappings_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file csnat_l3_agent_bindings-csnat_l3_agent_bindings_ibfk_1.sql): 
+  (mariadb) End compilation (file csnat_l3_agent_bindings-csnat_l3_agent_bindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file csnat_l3_agent_bindings-csnat_l3_agent_bindings_ibfk_2.sql): 
+  (mariadb) End compilation (file csnat_l3_agent_bindings-csnat_l3_agent_bindings_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file csnat_l3_agent_bindings-csnat_l3_agent_bindings_ibfk_3.sql): 
+  (mariadb) End compilation (file csnat_l3_agent_bindings-csnat_l3_agent_bindings_ibfk_3.sql, result => 0): 
+  (mariadb) Start compilation (file dnsnameservers-dnsnameservers_ibfk_1.sql): 
+  (mariadb) End compilation (file dnsnameservers-dnsnameservers_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file embrane_pool_port-embrane_pool_port_ibfk_1.sql): 
+  (mariadb) End compilation (file embrane_pool_port-embrane_pool_port_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file embrane_pool_port-embrane_pool_port_ibfk_2.sql): 
+  (mariadb) End compilation (file embrane_pool_port-embrane_pool_port_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file externalnetworks-externalnetworks_ibfk_1.sql): 
+  (mariadb) End compilation (file externalnetworks-externalnetworks_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file extradhcpopts-extradhcpopts_ibfk_1.sql): 
+  (mariadb) End compilation (file extradhcpopts-extradhcpopts_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file firewall_rules-firewall_rules_ibfk_1.sql): 
+  (mariadb) End compilation (file firewall_rules-firewall_rules_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file firewalls-firewalls_ibfk_1.sql): 
+  (mariadb) End compilation (file firewalls-firewalls_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file floatingips-floatingips_ibfk_1.sql): 
+  (mariadb) End compilation (file floatingips-floatingips_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file floatingips-floatingips_ibfk_2.sql): 
+  (mariadb) End compilation (file floatingips-floatingips_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file floatingips-floatingips_ibfk_3.sql): 
+  (mariadb) End compilation (file floatingips-floatingips_ibfk_3.sql, result => 0): 
+  (mariadb) Start compilation (file ha_router_agent_port_bindings-ha_router_agent_port_bindings_ibfk_1.sql): 
+  (mariadb) End compilation (file ha_router_agent_port_bindings-ha_router_agent_port_bindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file ha_router_agent_port_bindings-ha_router_agent_port_bindings_ibfk_2.sql): 
+  (mariadb) End compilation (file ha_router_agent_port_bindings-ha_router_agent_port_bindings_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file ha_router_agent_port_bindings-ha_router_agent_port_bindings_ibfk_3.sql): 
+  (mariadb) End compilation (file ha_router_agent_port_bindings-ha_router_agent_port_bindings_ibfk_3.sql, result => 0): 
+  (mariadb) Start compilation (file ha_router_networks-ha_router_networks_ibfk_1.sql): 
+  (mariadb) End compilation (file ha_router_networks-ha_router_networks_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file ha_router_vrid_allocations-ha_router_vrid_allocations_ibfk_1.sql): 
+  (mariadb) End compilation (file ha_router_vrid_allocations-ha_router_vrid_allocations_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file hyperv_network_bindings-hyperv_network_bindings_ibfk_1.sql): 
+  (mariadb) End compilation (file hyperv_network_bindings-hyperv_network_bindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file ipallocationpools-ipallocationpools_ibfk_1.sql): 
+  (mariadb) End compilation (file ipallocationpools-ipallocationpools_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file ipallocations-ipallocations_ibfk_1.sql): 
+  (mariadb) End compilation (file ipallocations-ipallocations_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file ipallocations-ipallocations_ibfk_2.sql): 
+  (mariadb) End compilation (file ipallocations-ipallocations_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file ipallocations-ipallocations_ibfk_3.sql): 
+  (mariadb) End compilation (file ipallocations-ipallocations_ibfk_3.sql, result => 0): 
+  (mariadb) Start compilation (file ipavailabilityranges-ipavailabilityranges_ibfk_1.sql): 
+  (mariadb) End compilation (file ipavailabilityranges-ipavailabilityranges_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file ipsecpeercidrs-ipsecpeercidrs_ibfk_1.sql): 
+  (mariadb) End compilation (file ipsecpeercidrs-ipsecpeercidrs_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file ipsec_site_connections-ipsec_site_connections_ibfk_1.sql): 
+  (mariadb) End compilation (file ipsec_site_connections-ipsec_site_connections_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file ipsec_site_connections-ipsec_site_connections_ibfk_2.sql): 
+  (mariadb) End compilation (file ipsec_site_connections-ipsec_site_connections_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file ipsec_site_connections-ipsec_site_connections_ibfk_3.sql): 
+  (mariadb) End compilation (file ipsec_site_connections-ipsec_site_connections_ibfk_3.sql, result => 0): 
+  (mariadb) Start compilation (file lsn_port-lsn_port_ibfk_1.sql): 
+  (mariadb) End compilation (file lsn_port-lsn_port_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file maclearningstates-maclearningstates_ibfk_1.sql): 
+  (mariadb) End compilation (file maclearningstates-maclearningstates_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file members-members_ibfk_1.sql): 
+  (mariadb) End compilation (file members-members_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file meteringlabelrules-meteringlabelrules_ibfk_1.sql): 
+  (mariadb) End compilation (file meteringlabelrules-meteringlabelrules_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file ml2_brocadeports-ml2_brocadeports_ibfk_1.sql): 
+  (mariadb) End compilation (file ml2_brocadeports-ml2_brocadeports_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file ml2_dvr_port_bindings-ml2_dvr_port_bindings_ibfk_1.sql): 
+  (mariadb) End compilation (file ml2_dvr_port_bindings-ml2_dvr_port_bindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file ml2_dvr_port_bindings-ml2_dvr_port_bindings_ibfk_2.sql): 
+  (mariadb) End compilation (file ml2_dvr_port_bindings-ml2_dvr_port_bindings_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file ml2_network_segments-ml2_network_segments_ibfk_1.sql): 
+  (mariadb) End compilation (file ml2_network_segments-ml2_network_segments_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file ml2_port_bindings-ml2_port_bindings_ibfk_1.sql): 
+  (mariadb) End compilation (file ml2_port_bindings-ml2_port_bindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file ml2_port_bindings-ml2_port_bindings_ibfk_2.sql): 
+  (mariadb) End compilation (file ml2_port_bindings-ml2_port_bindings_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file mlnx_network_bindings-mlnx_network_bindings_ibfk_1.sql): 
+  (mariadb) End compilation (file mlnx_network_bindings-mlnx_network_bindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file multi_provider_networks-multi_provider_networks_ibfk_1.sql): 
+  (mariadb) End compilation (file multi_provider_networks-multi_provider_networks_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file network_bindings-network_bindings_ibfk_1.sql): 
+  (mariadb) End compilation (file network_bindings-network_bindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file networkconnections-networkconnections_ibfk_1.sql): 
+  (mariadb) End compilation (file networkconnections-networkconnections_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file networkconnections-networkconnections_ibfk_2.sql): 
+  (mariadb) End compilation (file networkconnections-networkconnections_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file networkconnections-networkconnections_ibfk_3.sql): 
+  (mariadb) End compilation (file networkconnections-networkconnections_ibfk_3.sql, result => 0): 
+  (mariadb) Start compilation (file networkdhcpagentbindings-networkdhcpagentbindings_ibfk_1.sql): 
+  (mariadb) End compilation (file networkdhcpagentbindings-networkdhcpagentbindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file networkdhcpagentbindings-networkdhcpagentbindings_ibfk_2.sql): 
+  (mariadb) End compilation (file networkdhcpagentbindings-networkdhcpagentbindings_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file networkflavors-networkflavors_ibfk_1.sql): 
+  (mariadb) End compilation (file networkflavors-networkflavors_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file networkgatewaydevicereferences-networkgatewaydevicereferences_ibfk_1.sql): 
+  (mariadb) End compilation (file networkgatewaydevicereferences-networkgatewaydevicereferences_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file networkqueuemappings-networkqueuemappings_ibfk_1.sql): 
+  (mariadb) End compilation (file networkqueuemappings-networkqueuemappings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file networkqueuemappings-networkqueuemappings_ibfk_2.sql): 
+  (mariadb) End compilation (file networkqueuemappings-networkqueuemappings_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file networksecuritybindings-networksecuritybindings_ibfk_1.sql): 
+  (mariadb) End compilation (file networksecuritybindings-networksecuritybindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file neutron_nsx_network_mappings-neutron_nsx_network_mappings_ibfk_1.sql): 
+  (mariadb) End compilation (file neutron_nsx_network_mappings-neutron_nsx_network_mappings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file neutron_nsx_port_mappings-neutron_nsx_port_mappings_ibfk_1.sql): 
+  (mariadb) End compilation (file neutron_nsx_port_mappings-neutron_nsx_port_mappings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file neutron_nsx_router_mappings-neutron_nsx_router_mappings_ibfk_1.sql): 
+  (mariadb) End compilation (file neutron_nsx_router_mappings-neutron_nsx_router_mappings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file neutron_nsx_security_group_mappings-neutron_nsx_security_group_mappings_ibfk_1.sql): 
+  (mariadb) End compilation (file neutron_nsx_security_group_mappings-neutron_nsx_security_group_mappings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file nexthops-nexthops_ibfk_1.sql): 
+  (mariadb) End compilation (file nexthops-nexthops_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file nuage_net_partition_router_mapping-nuage_net_partition_router_mapping_ibfk_1.sql): 
+  (mariadb) End compilation (file nuage_net_partition_router_mapping-nuage_net_partition_router_mapping_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file nuage_net_partition_router_mapping-nuage_net_partition_router_mapping_ibfk_2.sql): 
+  (mariadb) End compilation (file nuage_net_partition_router_mapping-nuage_net_partition_router_mapping_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file nuage_provider_net_bindings-nuage_provider_net_bindings_ibfk_1.sql): 
+  (mariadb) End compilation (file nuage_provider_net_bindings-nuage_provider_net_bindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file nuage_subnet_l2dom_mapping-nuage_subnet_l2dom_mapping_ibfk_1.sql): 
+  (mariadb) End compilation (file nuage_subnet_l2dom_mapping-nuage_subnet_l2dom_mapping_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file nuage_subnet_l2dom_mapping-nuage_subnet_l2dom_mapping_ibfk_2.sql): 
+  (mariadb) End compilation (file nuage_subnet_l2dom_mapping-nuage_subnet_l2dom_mapping_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file ovs_network_bindings-ovs_network_bindings_ibfk_1.sql): 
+  (mariadb) End compilation (file ovs_network_bindings-ovs_network_bindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file packetfilters-packetfilters_ibfk_1.sql): 
+  (mariadb) End compilation (file packetfilters-packetfilters_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file packetfilters-packetfilters_ibfk_2.sql): 
+  (mariadb) End compilation (file packetfilters-packetfilters_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file poolloadbalanceragentbindings-poolloadbalanceragentbindings_ibfk_1.sql): 
+  (mariadb) End compilation (file poolloadbalanceragentbindings-poolloadbalanceragentbindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file poolloadbalanceragentbindings-poolloadbalanceragentbindings_ibfk_2.sql): 
+  (mariadb) End compilation (file poolloadbalanceragentbindings-poolloadbalanceragentbindings_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file poolmonitorassociations-poolmonitorassociations_ibfk_1.sql): 
+  (mariadb) End compilation (file poolmonitorassociations-poolmonitorassociations_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file poolmonitorassociations-poolmonitorassociations_ibfk_2.sql): 
+  (mariadb) End compilation (file poolmonitorassociations-poolmonitorassociations_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file pools-pools_ibfk_1.sql): 
+  (mariadb) End compilation (file pools-pools_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file poolstatisticss-poolstatisticss_ibfk_1.sql): 
+  (mariadb) End compilation (file poolstatisticss-poolstatisticss_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file portbindingports-portbindingports_ibfk_1.sql): 
+  (mariadb) End compilation (file portbindingports-portbindingports_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file portinfos-portinfos_ibfk_1.sql): 
+  (mariadb) End compilation (file portinfos-portinfos_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file port_profile-port_profile_ibfk_1.sql): 
+  (mariadb) End compilation (file port_profile-port_profile_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file portqueuemappings-portqueuemappings_ibfk_1.sql): 
+  (mariadb) End compilation (file portqueuemappings-portqueuemappings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file portqueuemappings-portqueuemappings_ibfk_2.sql): 
+  (mariadb) End compilation (file portqueuemappings-portqueuemappings_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file portsecuritybindings-portsecuritybindings_ibfk_1.sql): 
+  (mariadb) End compilation (file portsecuritybindings-portsecuritybindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file ports-ports_ibfk_1.sql): 
+  (mariadb) End compilation (file ports-ports_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file router_extra_attributes-router_extra_attributes_ibfk_1.sql): 
+  (mariadb) End compilation (file router_extra_attributes-router_extra_attributes_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file routerflavors-routerflavors_ibfk_1.sql): 
+  (mariadb) End compilation (file routerflavors-routerflavors_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file routerl3agentbindings-routerl3agentbindings_ibfk_1.sql): 
+  (mariadb) End compilation (file routerl3agentbindings-routerl3agentbindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file routerl3agentbindings-routerl3agentbindings_ibfk_2.sql): 
+  (mariadb) End compilation (file routerl3agentbindings-routerl3agentbindings_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file routerports-routerports_ibfk_1.sql): 
+  (mariadb) End compilation (file routerports-routerports_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file routerports-routerports_ibfk_2.sql): 
+  (mariadb) End compilation (file routerports-routerports_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file routerproviders-routerproviders_ibfk_1.sql): 
+  (mariadb) End compilation (file routerproviders-routerproviders_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file routerroutes-routerroutes_ibfk_1.sql): 
+  (mariadb) End compilation (file routerroutes-routerroutes_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file routerrules-routerrules_ibfk_1.sql): 
+  (mariadb) End compilation (file routerrules-routerrules_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file routerservicetypebindings-routerservicetypebindings_ibfk_1.sql): 
+  (mariadb) End compilation (file routerservicetypebindings-routerservicetypebindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file routers-routers_ibfk_1.sql): 
+  (mariadb) End compilation (file routers-routers_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file securitygroupportbindings-securitygroupportbindings_ibfk_1.sql): 
+  (mariadb) End compilation (file securitygroupportbindings-securitygroupportbindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file securitygroupportbindings-securitygroupportbindings_ibfk_2.sql): 
+  (mariadb) End compilation (file securitygroupportbindings-securitygroupportbindings_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file securitygrouprules-securitygrouprules_ibfk_1.sql): 
+  (mariadb) End compilation (file securitygrouprules-securitygrouprules_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file securitygrouprules-securitygrouprules_ibfk_2.sql): 
+  (mariadb) End compilation (file securitygrouprules-securitygrouprules_ibfk_2.sql, result => 0): 
+  (mariadb) Start compilation (file servicerouterbindings-servicerouterbindings_ibfk_1.sql): 
+  (mariadb) End compilation (file servicerouterbindings-servicerouterbindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file sessionpersistences-sessionpersistences_ibfk_1.sql): 
+  (mariadb) End compilation (file sessionpersistences-sessionpersistences_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file subnetroutes-subnetroutes_ibfk_1.sql): 
+  (mariadb) End compilation (file subnetroutes-subnetroutes_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file subnets-subnets_ibfk_1.sql): 
+  (mariadb) End compilation (file subnets-subnets_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file tunnelkeys-tunnelkeys_ibfk_1.sql): 
+  (mariadb) End compilation (file tunnelkeys-tunnelkeys_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file tz_network_bindings-tz_network_bindings_ibfk_1.sql): 
+  (mariadb) End compilation (file tz_network_bindings-tz_network_bindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file vcns_edge_monitor_bindings-vcns_edge_monitor_bindings_ibfk_1.sql): 
+  (mariadb) End compilation (file vcns_edge_monitor_bindings-vcns_edge_monitor_bindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file vcns_edge_pool_bindings-vcns_edge_pool_bindings_ibfk_1.sql): 
+  (mariadb) End compilation (file vcns_edge_pool_bindings-vcns_edge_pool_bindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file vcns_edge_vip_bindings-vcns_edge_vip_bindings_ibfk_1.sql): 
+  (mariadb) End compilation (file vcns_edge_vip_bindings-vcns_edge_vip_bindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file vcns_firewall_rule_bindings-vcns_firewall_rule_bindings_ibfk_1.sql): 
+  (mariadb) End compilation (file vcns_firewall_rule_bindings-vcns_firewall_rule_bindings_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file vips-vips_ibfk_1.sql): 
+  (mariadb) End compilation (file vips-vips_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file vpnservices-vpnservices_ibfk_1.sql): 
+  (mariadb) End compilation (file vpnservices-vpnservices_ibfk_1.sql, result => 0): 
+  (mariadb) Start compilation (file vpnservices-vpnservices_ibfk_2.sql): 
+  (mariadb) End compilation (file vpnservices-vpnservices_ibfk_2.sql, result => 0): 
+  Compile operation successfull.
+```
+
+And here an extract of dbrm.log file for this compilation:
+
+```shell
+  ------------------------------------------------------
+  20170521-14:01:33 - (mariadb) Start compilation (file vcns_edge_monitor_bindings-vcns_edge_monitor_bindings_ibfk_1.sql): 
+  ------------------------------------------------------
+  ------------------------------------------------------
+  20170521-14:01:33 - 
+
+  ------------------------------------------------------
+  ------------------------------------------------------
+  20170521-14:01:33 - (mariadb) End compilation (file vcns_edge_monitor_bindings-vcns_edge_monitor_bindings_ibfk_1.sql, result => 0): 
+  ------------------------------------------------------
+```
+
+#### mariadb drop
+
+Permit to manage drop of indexes, foreign keys and events.
+
+##### drop options:
+
+  * `--fkey FKEY_NAME`: Drop foreign key FKEY_NAME from database.
+                        This option could be repeated.
+  * `--index INDEX_NAME`: Drop index INDEX_NAME from database. To use with --index-table.
+                         This option could be use only one time.
+  * `--index-table NAME`: Table name of index to drop from database.
+                         To use with --index.
+  * `--fk-table NAME`: Table name of the foreign key/keys to drop.
+                       To use optional with --fkey.
+  * `--all-fkeys`: Drop all foreign keys from current database.
+  * `--all-indexes`: Drop all not primary indexes from current database.
+  * `--all-triggers`: Drop all trigger of the database.
+  * `--trigger TNAME`: Drop trigger TNAME from database.
+  * `--all-events`: Drop all events from current database.
+  * `--event ENAME`: Drop event [NAME] from database.
+
+*Drop foreign key subnet_ibfk_1 from table subnets of Openstack Juno project*
+
+```shell
+  $# dbrm mariadb drop --fkey subnets_ibfk_1
+  Foreign key subnets_ibfk_1 dropped.
+```
+
+#### mariadb create
+
+Permit to create script (that are then compilable) for indexes or foreign keys.
+
+##### create options:
+
+  * `--fkey FKEY_NAME`: Create foreign key *FKEY_NAME* file, ready for compilation.
+                        Others mandatary parameters: --on-table,--on-column,--ref-table
+                        --ref-column.
+  * `--index INAME`: Create index *INAME* file, ready for compilation.
+                     Others mandatary parameters: --on-table,--on-column.
+                     Others optional parameters: --itype.
+  * `--auto-naming`: Use automatic naming convention of foreign key
+                     and index used by dbrm.
+  * `--on-table TNAME`: Choice table where create database entity.
+  * `--on-column CNAME`: Choice column or columns (ex. col1,col2) related to db entity to.
+                         create.
+  * `--ref-table RTNAME`: Reference table related with db entity to create.
+  * `--ref-column RCOLS`: Reference columns related with db entity to create.
+  * `--itype TYPE`: To use with --index for define type of index.
+                    Possible values are UNIQUE|SPATIAL|FULLTEXT.
+
+NOTE: foreign key name is unique on database.
+
+*Example of command for Create a foreign key on table T1 on columns col1,col2 referenced by table T2*
+
+```shell
+  $# dbrm mariadb create --fkey fk1 --on-table T1 --on-column "col1,col2" \
+                         --ref-table T2 --ref-column "col1,col2"
+```
+*Example of command for reate an index on table T1 to columns col1,col2*
+
+```shell
+  $# dbrm mariadb create --index idx_test --on-table T1 --on-column "col1,col2"
+```
+
+*Example of command for create an index on table T1 to columns col1,col2 with automatic naming*
+
+```shell
+  $# dbrm mariadb create --index "-" --on-table T1 --on-column "col1,col2" --auto-naming
+```
+
+*Example of command for create a foreign key on table T1 on columns col1,col2 referenced by table T2 with automatic naming*
+
+```shell
+  $# dbrm mariadb create --fkey "-" --on-table T1 --on-column "col1,col2" \
+                         --ref-table T2 --ref-column "col1,col2" --auto-naming
 ```
 
 
