@@ -14,6 +14,7 @@ Database Release Manager
     Mysql API <mysql.md>
     Sqlplus API <sqlplus.md>
     Psql API <psql.md>
+    Mongo API <mongo.md>
     Commons Mariadb API <commons_mariadb.md>
     Commons Oracle API <commons_oracle.md>
 

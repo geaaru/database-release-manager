@@ -76,6 +76,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mysql.html">Mysql API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sqlplus.html">Sqlplus API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="psql.html">Psql API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongo.html">Mongo API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commons_mariadb.html">Commons Mariadb API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commons_oracle.html">Commons Oracle API</a></li>
 </ul>
@@ -102,6 +103,7 @@
 </li>
 </ul>
 </li>
+<li><a class="reference internal" href="#notes-about-foreign-keys">Notes about Foreign Keys</a></li>
 <li><a class="reference internal" href="#variables">Variables</a></li>
 <li><a class="reference internal" href="#commands">Commands</a><ul>
 <li><a class="reference internal" href="#mariadb-version">mariadb version</a></li>
@@ -119,6 +121,18 @@
 </li>
 <li><a class="reference internal" href="#mariadb-download">mariadb download</a><ul>
 <li><a class="reference internal" href="#download-options">download options:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mariadb-compile">mariadb compile</a><ul>
+<li><a class="reference internal" href="#compile-options">compile options:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mariadb-drop">mariadb drop</a><ul>
+<li><a class="reference internal" href="#drop-options">drop options:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mariadb-create">mariadb create</a><ul>
+<li><a class="reference internal" href="#create-options">create options:</a></li>
 </ul>
 </li>
 </ul>
@@ -179,10 +193,9 @@ sources organization.</p>
 <li>create initial DDL script with all tables of an existing database or simplify aligthnement of this file on development process</li>
 <li>display a list of information of an existing database (list of tables, foreign keys between tables, table size, etc.)</li>
 <li>drop procedure, functions, index, etc.</li>
-<li>simplify access to database between developers.
-q
-Mission of <code class="docutils literal"><span class="pre">dbrm</span></code> is NOT create a new IDE for SQL, every users can use any IDE for create tables, functions, etc. but with <code class="docutils literal"><span class="pre">dbrm</span></code> is it possible unify process for trace database informations and store to a repository in an ordered mode.</li>
+<li>simplify access to database between developers.</li>
 </ul>
+<p>Mission of <code class="docutils literal"><span class="pre">dbrm</span></code> is NOT create a new IDE for SQL, every users can use any IDE for create tables, functions, etc. but with <code class="docutils literal"><span class="pre">dbrm</span></code> is it possible unify process for trace database informations and store to a repository in an ordered mode.</p>
 <div class="section" id="project-folder-structure">
 <span id="project-folder-structure"></span><h2>Project Folder Structure<a class="headerlink" href="#project-folder-structure" title="Permalink to this headline">¶</a></h2>
 <p>An initialized project folder is composed by these directories:</p>
@@ -330,6 +343,16 @@ can manage concurrent execution through an application mutex or with activation 
 service only on single node.</p>
 </div>
 </div>
+</div>
+<div class="section" id="notes-about-foreign-keys">
+<span id="notes-about-foreign-keys"></span><h2>Notes about Foreign Keys<a class="headerlink" href="#notes-about-foreign-keys" title="Permalink to this headline">¶</a></h2>
+<p>On use auto-naming option on foreign keys creation command could be visible on compilation an error like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>  <span class="mi">20170528</span><span class="o">-</span><span class="mi">11</span><span class="p">:</span><span class="mi">31</span><span class="p">:</span><span class="mi">43</span> <span class="o">-</span> 
+  <span class="n">ERROR</span> <span class="mi">1005</span> <span class="p">(</span><span class="n">HY000</span><span class="p">)</span> <span class="n">at</span> <span class="n">line</span> <span class="mi">5</span><span class="p">:</span> <span class="n">Can</span><span class="s1">&#39;t create table `table1`.`#sql-4882_26d` (errno: 121 &quot;Duplicate key on write or update&quot;)</span>
+</pre></div>
+</div>
+<p>This means that probably there is a conflict name between two foreign keys. In this case, manually fix name of foreign key
+creation script.</p>
 </div>
 <div class="section" id="variables">
 <span id="variables"></span><h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h2>
@@ -591,32 +614,47 @@ extension.</li>
 index creation command under <em>indexes</em> directory where name of the
 file is equal to &lt;TABLE_NAME&gt;-&lt;INDEX_NAME&gt; with .sql extension.</li>
 <li><code class="docutils literal"><span class="pre">--all-views</span></code>: Download all views from database and save every view under <em>views</em>
-directory</li>
-<li><code class="docutils literal"><span class="pre">--all-events</span></code>: Download all events/schedulers.</li>
-<li><code class="docutils literal"><span class="pre">--all</span></code>: Download all (no tables schemas).</li>
-<li><code class="docutils literal"><span class="pre">--procedure</span> <span class="pre">name</span></code>: Download a particular procedure.</li>
-<li><code class="docutils literal"><span class="pre">--trigger</span> <span class="pre">name</span></code>: Download a particular trigger.</li>
-<li><code class="docutils literal"><span class="pre">--function</span> <span class="pre">name</span></code>: Download a particular function.</li>
-<li><code class="docutils literal"><span class="pre">--view</span> <span class="pre">name</span></code>: Download a particular view.</li>
-<li><code class="docutils literal"><span class="pre">--foreign-key</span> <span class="pre">name</span></code>: Download a particular foreign key.</li>
-<li><code class="docutils literal"><span class="pre">--event</span> <span class="pre">name</span></code>: Download a particular event.</li>
-<li><code class="docutils literal"><span class="pre">--index</span> <span class="pre">name</span></code>: Download a particular index (Require &#8211;index-table)
-Only one index a time.</li>
+directory where name of the file is equal to &lt;VIEW_NAME&gt; with .sql
+extension.</li>
+<li><code class="docutils literal"><span class="pre">--all-events</span></code>: Download all events/schedulers present on database and every event
+under <em>schedulers</em> directory and save every evetn with a filename
+equal to event name and with .sql extension.</li>
+<li><code class="docutils literal"><span class="pre">--all</span></code>: Download all (except tables schema)</li>
+<li><code class="docutils literal"><span class="pre">--procedure</span> <span class="pre">PNAME</span></code>: Download a particular procedure with name PNAME and save it
+under directory <em>procedures</em> with a name equal to PNAME with
+.sql extension.</li>
+<li><code class="docutils literal"><span class="pre">--trigger</span> <span class="pre">TNAME</span></code>: Download a particular trigger and save it under <em>triggers</em>
+directory.</li>
+<li><code class="docutils literal"><span class="pre">--function</span> <span class="pre">FNAME</span></code>: Download a particular function and save it under <em>functions</em>
+directory and save it with name <FNAME> and .sql extension.</li>
+<li><code class="docutils literal"><span class="pre">--view</span> <span class="pre">VNAME</span></code>: Download a particular view under <em>views</em> directory and save
+it with name <VNAME> and .sql extension.</li>
+<li><code class="docutils literal"><span class="pre">--foreign-key</span> <span class="pre">FKNAME</span></code>: Download a particular foreign key under directory
+<em>foreign_keys</em> and save it with name &lt;TABLE_NAME&gt;-<FKNAME>
+and .sql extension.</li>
+<li><code class="docutils literal"><span class="pre">--event</span> <span class="pre">ENAME</span></code>: Download a particular event under directory <em>schedulers</em> and
+save it with name <ENAME> and .sql extension.</li>
+<li><code class="docutils literal"><span class="pre">--index</span> <span class="pre">IDXNAME</span></code>: Download a particular index (Require &#8211;index-table) and save it
+under directory <em>indexes</em> with name &lt;TABLE_NAME&gt;-<IDXNAME> and
+.sql extension. Only one index a time can be specified.</li>
 <li><code class="docutils literal"><span class="pre">--index-table</span> <span class="pre">tname</span></code>: Name of table of index to download. (To use with &#8211;index).</li>
 <li><code class="docutils literal"><span class="pre">--with-pk-indexes</span></code>: Download also primary key indexes.
 (To use with &#8211;all|&#8211;index|&#8211;all-indexes)</li>
 <li><code class="docutils literal"><span class="pre">--all-tables</span></code>: Download all tables definitions that aren&#8217;t present on target
-file. This option could be used with &#8211;file.</li>
-<li><code class="docutils literal"><span class="pre">--table</span> <span class="pre">name</span></code>: Download schema of a particular table
+file. This option could be used with &#8211;file.
+Default path where save tables definitions is
+<code class="docutils literal"><span class="pre">creation_scripts/initial_ddl.sql</span></code>.
+Could be used also for append new tables to an existing file.</li>
+<li><code class="docutils literal"><span class="pre">--table</span> <span class="pre">TNAME</span></code>: Download schema of a particular table
 This option could be used with &#8211;file.</li>
-<li><code class="docutils literal"><span class="pre">--file</span> <span class="pre">file</span></code>: (optional) File where write tables definitions.
+<li><code class="docutils literal"><span class="pre">--file</span> <span class="pre">FILE</span></code>: (optional) File where write tables definitions.
 Default is creation_scripts/initial_ddl.sql</li>
-<li><code class="docutils literal"><span class="pre">--fk-table</span> <span class="pre">tname</span></code>: Table name of foreign key to download. To use with &#8211;foreign-key.
+<li><code class="docutils literal"><span class="pre">--fk-table</span> <span class="pre">TNAME</span></code>: Table name of foreign key to download. To use with &#8211;foreign-key.
 If this param is missing dbrm try to identify table
 name. If there are more or one fkey with same name
 then elaboration is blocked.</li>
 </ul>
-<p>There are many options with <code class="docutils literal"><span class="pre">show</span></code> command so I propose only few examples here related
+<p>There are many options with <code class="docutils literal"><span class="pre">downlaod</span></code> command so I propose only few examples here related
 with Openstack Juno database.</p>
 <p><em>Download all indexes (not primary keys)</em></p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb download --all-indexes
@@ -699,6 +737,422 @@ with Openstack Juno database.</p>
   Download operation successfull.
 </pre></div>
 </div>
+<ul class="simple">
+<li>Download all tables definition*</li>
+</ul>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb download  --all-tables 
+  Download operation successfull.
+
+  <span class="nv">$#</span> head -n <span class="m">20</span> creation_scripts/initial_ddl.sql 
+
+  -- <span class="nv">$Id</span>$ --
+
+  CREATE TABLE IF NOT EXISTS <span class="sb">`</span>agents<span class="sb">`</span> <span class="o">(</span>
+      id                   VARCHAR<span class="o">(</span>36<span class="o">)</span> NOT NULL,
+      agent_type           VARCHAR<span class="o">(</span>255<span class="o">)</span> NOT NULL,
+      binary               VARCHAR<span class="o">(</span>255<span class="o">)</span> NOT NULL,
+      topic                VARCHAR<span class="o">(</span>255<span class="o">)</span> NOT NULL,
+      host                 VARCHAR<span class="o">(</span>255<span class="o">)</span> NOT NULL,
+      admin_state_up       TINYINT<span class="o">(</span>1<span class="o">)</span> NOT NULL DEFAULT <span class="s1">&#39;1&#39;</span>,
+      created_at           DATETIME NOT NULL,
+      started_at           DATETIME NOT NULL,
+      heartbeat_timestamp  DATETIME NOT NULL,
+      description          VARCHAR<span class="o">(</span>255<span class="o">)</span>,
+      configurations       VARCHAR<span class="o">(</span>4095<span class="o">)</span> NOT NULL,
+      PRIMARY KEY<span class="o">(</span>id<span class="o">)</span>
+  <span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>InnoDB DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>utf8<span class="p">;</span>
+
+  CREATE TABLE IF NOT EXISTS <span class="sb">`</span>alembic_version<span class="sb">`</span> <span class="o">(</span>
+      version_num         VARCHAR<span class="o">(</span>32<span class="o">)</span> NOT NULL
+
+  <span class="nv">$#</span> 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="mariadb-compile">
+<span id="mariadb-compile"></span><h3>mariadb compile<a class="headerlink" href="#mariadb-compile" title="Permalink to this headline">¶</a></h3>
+<p>Compile procedures, trigger, functions, foreign keys, indexes, views, events and database schema to an active database.</p>
+<p>From command line is visible result of compilation but a more detailed trace is save on logfile defined on <code class="docutils literal"><span class="pre">LOGFILE</span></code> variable
+(default <code class="docutils literal"><span class="pre">dbrm.log</span></code>).</p>
+<div class="section" id="compile-options">
+<span id="compile-options"></span><h4>compile options:<a class="headerlink" href="#compile-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--all-procedures</span></code>: Compile all procedures present under <code class="docutils literal"><span class="pre">MARIADB_DIR/procedures</span></code> subdirectories.</li>
+<li><code class="docutils literal"><span class="pre">--all-triggers</span></code>: Compile all triggers present under <code class="docutils literal"><span class="pre">MARIADB_DIR/triggers</span></code> subdirectories.</li>
+<li><code class="docutils literal"><span class="pre">--all-functions</span></code>: Compile all functions present under MARIADB_DIR/functions subdirectories.</li>
+<li><code class="docutils literal"><span class="pre">--all-views</span></code>: Compile all views present on <code class="docutils literal"><span class="pre">MARIADB_DIR/views</span></code> subdirectories.</li>
+<li><code class="docutils literal"><span class="pre">--all-foreign-keys</span></code>: Compile all foreign keys present on <code class="docutils literal"><span class="pre">MARIADB_DIR/foreign_keys</span></code> subdirectories
+if not present on database. (Use &#8211;force to drop and compile again fkey).</li>
+<li><code class="docutils literal"><span class="pre">--all-indexes</span></code>: Compile all indexes present on <code class="docutils literal"><span class="pre">MARIADB_DIR/indexes</span></code> subdirectories
+if not present on database. (Use &#8211;force to drop and compile again index).
+If an index is connected to a foreign keys then is needed drop foreign key
+before drop and recompile index.</li>
+<li><code class="docutils literal"><span class="pre">--all-events</span></code>: Compile all events present on MARIADB_DIR/schedulers subdirectories.</li>
+<li><code class="docutils literal"><span class="pre">--all</span></code>: Compile all procedures, triggers, functions, views, events/schedulers present
+under MARIADB_DIR subdirectories.</li>
+<li><code class="docutils literal"><span class="pre">--procedure</span> <span class="pre">PNAME</span></code>: Compile a particular procedure under MARIADB_DIR/procedures directory with
+name PNAME.</li>
+<li><code class="docutils literal"><span class="pre">--trigger</span> <span class="pre">TNAME</span></code>: Compile a particular trigger under MARIADB_DIR/triggers directory.</li>
+<li><code class="docutils literal"><span class="pre">--function</span> <span class="pre">FNAME</span></code>: Compile a particular function under MARIADB_DIR/functions directory.</li>
+<li><code class="docutils literal"><span class="pre">--view</span> <span class="pre">VNAME</span></code>: Compile a particular view under MARIADB_DIR/views directory.</li>
+<li><code class="docutils literal"><span class="pre">--fkey</span> <span class="pre">FKEY</span></code>: Compile a particular foreign key under MARIADB_DIR/foreign_keys directory.</li>
+<li><code class="docutils literal"><span class="pre">--exclude</span> <span class="pre">FILE</span></code>: Exclude a particular file from compilation.
+(This option can be repeat and override MARIADB_COMPILE_FILES_EXCLUDED
+configuration variable).</li>
+<li><code class="docutils literal"><span class="pre">--id-script</span> <span class="pre">SCRIPT_ID</span></code>: Compile a particular script registered under MARIADB_DIR/<directory>/.</li>
+<li><code class="docutils literal"><span class="pre">--file</span> <span class="pre">FILE</span></code>: Compile a particular file. (Use ABS Path or relative path from current dir.)
+For dump file use &#8211;dumpfile option.</li>
+<li><code class="docutils literal"><span class="pre">--dumpfile</span> <span class="pre">FILE</span></code>: Compile a dump file. (Use ABS Path or relative path from current dir.)
+Currently, this option doesn&#8217;t replace schema reference automatically.</li>
+<li><code class="docutils literal"><span class="pre">--force</span></code>: For foreign keys it means that fkey/index is dropped and add again also if
+already present.</li>
+<li><code class="docutils literal"><span class="pre">--fk-table</span> <span class="pre">TNAME</span></code>: Table name of foreign key to compile. To use with &#8211;fkey.
+If this param is missing dbrm try to identify table
+name. If there are more or one fkey with same name
+then elaboration is blocked.</li>
+<li><code class="docutils literal"><span class="pre">--event</span> <span class="pre">ENAME</span></code>: Compile a particular event/scheduler under MARIADB_DIR/schedulers directory.</li>
+</ul>
+<p>For argument with value if it isn&#8217;t passed value argument is ignored.</p>
+<p><em>Compile all foreign keys of Openstack Juno project</em></p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb compile --all-foreign-keys
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file allowedaddresspairs-allowedaddresspairs_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file allowedaddresspairs-allowedaddresspairs_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file brocadeports-brocadeports_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file brocadeports-brocadeports_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_csr_identifier_map-cisco_csr_identifier_map_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_csr_identifier_map-cisco_csr_identifier_map_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_hosting_devices-cisco_hosting_devices_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_hosting_devices-cisco_hosting_devices_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_hosting_devices-cisco_hosting_devices_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_hosting_devices-cisco_hosting_devices_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_ml2_apic_contracts-cisco_ml2_apic_contracts_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_ml2_apic_contracts-cisco_ml2_apic_contracts_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_n1kv_multi_segments-cisco_n1kv_multi_segments_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_n1kv_multi_segments-cisco_n1kv_multi_segments_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_n1kv_network_bindings-cisco_n1kv_network_bindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_n1kv_network_bindings-cisco_n1kv_network_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_n1kv_network_bindings-cisco_n1kv_network_bindings_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_n1kv_network_bindings-cisco_n1kv_network_bindings_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_n1kv_port_bindings-cisco_n1kv_port_bindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_n1kv_port_bindings-cisco_n1kv_port_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_n1kv_port_bindings-cisco_n1kv_port_bindings_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_n1kv_port_bindings-cisco_n1kv_port_bindings_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_n1kv_trunk_segments-cisco_n1kv_trunk_segments_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_n1kv_trunk_segments-cisco_n1kv_trunk_segments_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_n1kv_vlan_allocations-cisco_n1kv_vlan_allocations_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_n1kv_vlan_allocations-cisco_n1kv_vlan_allocations_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_n1kv_vmnetworks-cisco_n1kv_vmnetworks_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_n1kv_vmnetworks-cisco_n1kv_vmnetworks_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_n1kv_vxlan_allocations-cisco_n1kv_vxlan_allocations_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_n1kv_vxlan_allocations-cisco_n1kv_vxlan_allocations_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_port_mappings-cisco_port_mappings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_port_mappings-cisco_port_mappings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_port_mappings-cisco_port_mappings_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_port_mappings-cisco_port_mappings_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_provider_networks-cisco_provider_networks_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_provider_networks-cisco_provider_networks_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_router_mappings-cisco_router_mappings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_router_mappings-cisco_router_mappings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file cisco_router_mappings-cisco_router_mappings_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file cisco_router_mappings-cisco_router_mappings_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file csnat_l3_agent_bindings-csnat_l3_agent_bindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file csnat_l3_agent_bindings-csnat_l3_agent_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file csnat_l3_agent_bindings-csnat_l3_agent_bindings_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file csnat_l3_agent_bindings-csnat_l3_agent_bindings_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file csnat_l3_agent_bindings-csnat_l3_agent_bindings_ibfk_3.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file csnat_l3_agent_bindings-csnat_l3_agent_bindings_ibfk_3.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file dnsnameservers-dnsnameservers_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file dnsnameservers-dnsnameservers_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file embrane_pool_port-embrane_pool_port_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file embrane_pool_port-embrane_pool_port_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file embrane_pool_port-embrane_pool_port_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file embrane_pool_port-embrane_pool_port_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file externalnetworks-externalnetworks_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file externalnetworks-externalnetworks_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file extradhcpopts-extradhcpopts_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file extradhcpopts-extradhcpopts_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file firewall_rules-firewall_rules_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file firewall_rules-firewall_rules_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file firewalls-firewalls_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file firewalls-firewalls_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file floatingips-floatingips_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file floatingips-floatingips_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file floatingips-floatingips_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file floatingips-floatingips_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file floatingips-floatingips_ibfk_3.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file floatingips-floatingips_ibfk_3.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ha_router_agent_port_bindings-ha_router_agent_port_bindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ha_router_agent_port_bindings-ha_router_agent_port_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ha_router_agent_port_bindings-ha_router_agent_port_bindings_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ha_router_agent_port_bindings-ha_router_agent_port_bindings_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ha_router_agent_port_bindings-ha_router_agent_port_bindings_ibfk_3.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ha_router_agent_port_bindings-ha_router_agent_port_bindings_ibfk_3.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ha_router_networks-ha_router_networks_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ha_router_networks-ha_router_networks_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ha_router_vrid_allocations-ha_router_vrid_allocations_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ha_router_vrid_allocations-ha_router_vrid_allocations_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file hyperv_network_bindings-hyperv_network_bindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file hyperv_network_bindings-hyperv_network_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ipallocationpools-ipallocationpools_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ipallocationpools-ipallocationpools_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ipallocations-ipallocations_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ipallocations-ipallocations_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ipallocations-ipallocations_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ipallocations-ipallocations_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ipallocations-ipallocations_ibfk_3.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ipallocations-ipallocations_ibfk_3.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ipavailabilityranges-ipavailabilityranges_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ipavailabilityranges-ipavailabilityranges_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ipsecpeercidrs-ipsecpeercidrs_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ipsecpeercidrs-ipsecpeercidrs_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ipsec_site_connections-ipsec_site_connections_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ipsec_site_connections-ipsec_site_connections_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ipsec_site_connections-ipsec_site_connections_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ipsec_site_connections-ipsec_site_connections_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ipsec_site_connections-ipsec_site_connections_ibfk_3.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ipsec_site_connections-ipsec_site_connections_ibfk_3.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file lsn_port-lsn_port_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file lsn_port-lsn_port_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file maclearningstates-maclearningstates_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file maclearningstates-maclearningstates_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file members-members_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file members-members_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file meteringlabelrules-meteringlabelrules_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file meteringlabelrules-meteringlabelrules_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ml2_brocadeports-ml2_brocadeports_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ml2_brocadeports-ml2_brocadeports_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ml2_dvr_port_bindings-ml2_dvr_port_bindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ml2_dvr_port_bindings-ml2_dvr_port_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ml2_dvr_port_bindings-ml2_dvr_port_bindings_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ml2_dvr_port_bindings-ml2_dvr_port_bindings_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ml2_network_segments-ml2_network_segments_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ml2_network_segments-ml2_network_segments_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ml2_port_bindings-ml2_port_bindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ml2_port_bindings-ml2_port_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ml2_port_bindings-ml2_port_bindings_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ml2_port_bindings-ml2_port_bindings_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file mlnx_network_bindings-mlnx_network_bindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file mlnx_network_bindings-mlnx_network_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file multi_provider_networks-multi_provider_networks_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file multi_provider_networks-multi_provider_networks_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file network_bindings-network_bindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file network_bindings-network_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file networkconnections-networkconnections_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file networkconnections-networkconnections_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file networkconnections-networkconnections_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file networkconnections-networkconnections_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file networkconnections-networkconnections_ibfk_3.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file networkconnections-networkconnections_ibfk_3.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file networkdhcpagentbindings-networkdhcpagentbindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file networkdhcpagentbindings-networkdhcpagentbindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file networkdhcpagentbindings-networkdhcpagentbindings_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file networkdhcpagentbindings-networkdhcpagentbindings_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file networkflavors-networkflavors_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file networkflavors-networkflavors_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file networkgatewaydevicereferences-networkgatewaydevicereferences_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file networkgatewaydevicereferences-networkgatewaydevicereferences_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file networkqueuemappings-networkqueuemappings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file networkqueuemappings-networkqueuemappings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file networkqueuemappings-networkqueuemappings_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file networkqueuemappings-networkqueuemappings_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file networksecuritybindings-networksecuritybindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file networksecuritybindings-networksecuritybindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file neutron_nsx_network_mappings-neutron_nsx_network_mappings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file neutron_nsx_network_mappings-neutron_nsx_network_mappings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file neutron_nsx_port_mappings-neutron_nsx_port_mappings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file neutron_nsx_port_mappings-neutron_nsx_port_mappings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file neutron_nsx_router_mappings-neutron_nsx_router_mappings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file neutron_nsx_router_mappings-neutron_nsx_router_mappings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file neutron_nsx_security_group_mappings-neutron_nsx_security_group_mappings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file neutron_nsx_security_group_mappings-neutron_nsx_security_group_mappings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file nexthops-nexthops_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file nexthops-nexthops_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file nuage_net_partition_router_mapping-nuage_net_partition_router_mapping_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file nuage_net_partition_router_mapping-nuage_net_partition_router_mapping_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file nuage_net_partition_router_mapping-nuage_net_partition_router_mapping_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file nuage_net_partition_router_mapping-nuage_net_partition_router_mapping_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file nuage_provider_net_bindings-nuage_provider_net_bindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file nuage_provider_net_bindings-nuage_provider_net_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file nuage_subnet_l2dom_mapping-nuage_subnet_l2dom_mapping_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file nuage_subnet_l2dom_mapping-nuage_subnet_l2dom_mapping_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file nuage_subnet_l2dom_mapping-nuage_subnet_l2dom_mapping_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file nuage_subnet_l2dom_mapping-nuage_subnet_l2dom_mapping_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ovs_network_bindings-ovs_network_bindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ovs_network_bindings-ovs_network_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file packetfilters-packetfilters_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file packetfilters-packetfilters_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file packetfilters-packetfilters_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file packetfilters-packetfilters_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file poolloadbalanceragentbindings-poolloadbalanceragentbindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file poolloadbalanceragentbindings-poolloadbalanceragentbindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file poolloadbalanceragentbindings-poolloadbalanceragentbindings_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file poolloadbalanceragentbindings-poolloadbalanceragentbindings_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file poolmonitorassociations-poolmonitorassociations_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file poolmonitorassociations-poolmonitorassociations_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file poolmonitorassociations-poolmonitorassociations_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file poolmonitorassociations-poolmonitorassociations_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file pools-pools_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file pools-pools_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file poolstatisticss-poolstatisticss_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file poolstatisticss-poolstatisticss_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file portbindingports-portbindingports_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file portbindingports-portbindingports_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file portinfos-portinfos_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file portinfos-portinfos_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file port_profile-port_profile_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file port_profile-port_profile_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file portqueuemappings-portqueuemappings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file portqueuemappings-portqueuemappings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file portqueuemappings-portqueuemappings_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file portqueuemappings-portqueuemappings_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file portsecuritybindings-portsecuritybindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file portsecuritybindings-portsecuritybindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file ports-ports_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file ports-ports_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file router_extra_attributes-router_extra_attributes_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file router_extra_attributes-router_extra_attributes_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file routerflavors-routerflavors_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file routerflavors-routerflavors_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file routerl3agentbindings-routerl3agentbindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file routerl3agentbindings-routerl3agentbindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file routerl3agentbindings-routerl3agentbindings_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file routerl3agentbindings-routerl3agentbindings_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file routerports-routerports_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file routerports-routerports_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file routerports-routerports_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file routerports-routerports_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file routerproviders-routerproviders_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file routerproviders-routerproviders_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file routerroutes-routerroutes_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file routerroutes-routerroutes_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file routerrules-routerrules_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file routerrules-routerrules_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file routerservicetypebindings-routerservicetypebindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file routerservicetypebindings-routerservicetypebindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file routers-routers_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file routers-routers_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file securitygroupportbindings-securitygroupportbindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file securitygroupportbindings-securitygroupportbindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file securitygroupportbindings-securitygroupportbindings_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file securitygroupportbindings-securitygroupportbindings_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file securitygrouprules-securitygrouprules_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file securitygrouprules-securitygrouprules_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file securitygrouprules-securitygrouprules_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file securitygrouprules-securitygrouprules_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file servicerouterbindings-servicerouterbindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file servicerouterbindings-servicerouterbindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file sessionpersistences-sessionpersistences_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file sessionpersistences-sessionpersistences_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file subnetroutes-subnetroutes_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file subnetroutes-subnetroutes_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file subnets-subnets_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file subnets-subnets_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file tunnelkeys-tunnelkeys_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file tunnelkeys-tunnelkeys_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file tz_network_bindings-tz_network_bindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file tz_network_bindings-tz_network_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file vcns_edge_monitor_bindings-vcns_edge_monitor_bindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file vcns_edge_monitor_bindings-vcns_edge_monitor_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file vcns_edge_pool_bindings-vcns_edge_pool_bindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file vcns_edge_pool_bindings-vcns_edge_pool_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file vcns_edge_vip_bindings-vcns_edge_vip_bindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file vcns_edge_vip_bindings-vcns_edge_vip_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file vcns_firewall_rule_bindings-vcns_firewall_rule_bindings_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file vcns_firewall_rule_bindings-vcns_firewall_rule_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file vips-vips_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file vips-vips_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file vpnservices-vpnservices_ibfk_1.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file vpnservices-vpnservices_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file vpnservices-vpnservices_ibfk_2.sql<span class="o">)</span>: 
+  <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file vpnservices-vpnservices_ibfk_2.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  Compile operation successfull.
+</pre></div>
+</div>
+<p>And here an extract of dbrm.log file for this compilation:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  ------------------------------------------------------
+  20170521-14:01:33 - <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file vcns_edge_monitor_bindings-vcns_edge_monitor_bindings_ibfk_1.sql<span class="o">)</span>: 
+  ------------------------------------------------------
+  ------------------------------------------------------
+  20170521-14:01:33 - 
+
+  ------------------------------------------------------
+  ------------------------------------------------------
+  20170521-14:01:33 - <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file vcns_edge_monitor_bindings-vcns_edge_monitor_bindings_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
+  ------------------------------------------------------
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="mariadb-drop">
+<span id="mariadb-drop"></span><h3>mariadb drop<a class="headerlink" href="#mariadb-drop" title="Permalink to this headline">¶</a></h3>
+<p>Permit to manage drop of indexes, foreign keys and events.</p>
+<div class="section" id="drop-options">
+<span id="drop-options"></span><h4>drop options:<a class="headerlink" href="#drop-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--fkey</span> <span class="pre">FKEY_NAME</span></code>: Drop foreign key FKEY_NAME from database.
+This option could be repeated.</li>
+<li><code class="docutils literal"><span class="pre">--index</span> <span class="pre">INDEX_NAME</span></code>: Drop index INDEX_NAME from database. To use with &#8211;index-table.
+This option could be use only one time.</li>
+<li><code class="docutils literal"><span class="pre">--index-table</span> <span class="pre">NAME</span></code>: Table name of index to drop from database.
+To use with &#8211;index.</li>
+<li><code class="docutils literal"><span class="pre">--fk-table</span> <span class="pre">NAME</span></code>: Table name of the foreign key/keys to drop.
+To use optional with &#8211;fkey.</li>
+<li><code class="docutils literal"><span class="pre">--all-fkeys</span></code>: Drop all foreign keys from current database.</li>
+<li><code class="docutils literal"><span class="pre">--all-indexes</span></code>: Drop all not primary indexes from current database.</li>
+<li><code class="docutils literal"><span class="pre">--all-triggers</span></code>: Drop all trigger of the database.</li>
+<li><code class="docutils literal"><span class="pre">--trigger</span> <span class="pre">TNAME</span></code>: Drop trigger TNAME from database.</li>
+<li><code class="docutils literal"><span class="pre">--all-events</span></code>: Drop all events from current database.</li>
+<li><code class="docutils literal"><span class="pre">--event</span> <span class="pre">ENAME</span></code>: Drop event [NAME] from database.</li>
+</ul>
+<p><em>Drop foreign key subnet_ibfk_1 from table subnets of Openstack Juno project</em></p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb drop --fkey subnets_ibfk_1
+  Foreign key subnets_ibfk_1 dropped.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="mariadb-create">
+<span id="mariadb-create"></span><h3>mariadb create<a class="headerlink" href="#mariadb-create" title="Permalink to this headline">¶</a></h3>
+<p>Permit to create script (that are then compilable) for indexes or foreign keys.</p>
+<div class="section" id="create-options">
+<span id="create-options"></span><h4>create options:<a class="headerlink" href="#create-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--fkey</span> <span class="pre">FKEY_NAME</span></code>: Create foreign key <em>FKEY_NAME</em> file, ready for compilation.
+Others mandatary parameters: &#8211;on-table,&#8211;on-column,&#8211;ref-table
+&#8211;ref-column.</li>
+<li><code class="docutils literal"><span class="pre">--index</span> <span class="pre">INAME</span></code>: Create index <em>INAME</em> file, ready for compilation.
+Others mandatary parameters: &#8211;on-table,&#8211;on-column.
+Others optional parameters: &#8211;itype.</li>
+<li><code class="docutils literal"><span class="pre">--auto-naming</span></code>: Use automatic naming convention of foreign key
+and index used by dbrm.</li>
+<li><code class="docutils literal"><span class="pre">--on-table</span> <span class="pre">TNAME</span></code>: Choice table where create database entity.</li>
+<li><code class="docutils literal"><span class="pre">--on-column</span> <span class="pre">CNAME</span></code>: Choice column or columns (ex. col1,col2) related to db entity to.
+create.</li>
+<li><code class="docutils literal"><span class="pre">--ref-table</span> <span class="pre">RTNAME</span></code>: Reference table related with db entity to create.</li>
+<li><code class="docutils literal"><span class="pre">--ref-column</span> <span class="pre">RCOLS</span></code>: Reference columns related with db entity to create.</li>
+<li><code class="docutils literal"><span class="pre">--itype</span> <span class="pre">TYPE</span></code>: To use with &#8211;index for define type of index.
+Possible values are UNIQUE|SPATIAL|FULLTEXT.</li>
+</ul>
+<p>NOTE: foreign key name is unique on database.</p>
+<p><em>Example of command for Create a foreign key on table T1 on columns col1,col2 referenced by table T2</em></p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb create --fkey fk1 --on-table T1 --on-column <span class="s2">&quot;col1,col2&quot;</span> <span class="se">\</span>
+                         --ref-table T2 --ref-column <span class="s2">&quot;col1,col2&quot;</span>
+</pre></div>
+</div>
+<p><em>Example of command for reate an index on table T1 to columns col1,col2</em></p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb create --index idx_test --on-table T1 --on-column <span class="s2">&quot;col1,col2&quot;</span>
+</pre></div>
+</div>
+<p><em>Example of command for create an index on table T1 to columns col1,col2 with automatic naming</em></p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb create --index <span class="s2">&quot;-&quot;</span> --on-table T1 --on-column <span class="s2">&quot;col1,col2&quot;</span> --auto-naming
+</pre></div>
+</div>
+<p><em>Example of command for create a foreign key on table T1 on columns col1,col2 referenced by table T2 with automatic naming</em></p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb create --fkey <span class="s2">&quot;-&quot;</span> --on-table T1 --on-column <span class="s2">&quot;col1,col2&quot;</span> <span class="se">\</span>
+                         --ref-table T2 --ref-column <span class="s2">&quot;col1,col2&quot;</span> --auto-naming
+</pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -717,7 +1171,7 @@ with Openstack Juno database.</p>
     </p>
     <p>
         &copy; Copyright 2017, Geaaru.<br/>
-      Last updated on May 14, 2017.<br/>
+      Last updated on Jun 03, 2017.<br/>
     </p>
   </div>
 </footer>
