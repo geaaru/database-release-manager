@@ -31,7 +31,7 @@
     <script type="text/javascript" src="static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="static/bootstrap-sphinx.js"></script>
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Commons API" href="common.html" />
+    <link rel="next" title="Mongo Module" href="mongo.html" />
     <link rel="prev" title="Install Module" href="install.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -72,11 +72,11 @@
 <li class="toctree-l1"><a class="reference internal" href="logfile.html">Logfile Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Install Module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">MariaDB Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongo.html">Mongo Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common.html">Commons API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mysql.html">Mysql API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sqlplus.html">Sqlplus API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="psql.html">Psql API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mongo.html">Mongo API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commons_mariadb.html">Commons Mariadb API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commons_oracle.html">Commons Oracle API</a></li>
 </ul>
@@ -109,6 +109,10 @@
 <li><a class="reference internal" href="#mariadb-version">mariadb version</a></li>
 <li><a class="reference internal" href="#mariadb-test-connection">mariadb test_connection</a><ul>
 <li><a class="reference internal" href="#test-connection-options">test_connection options:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mariadb-shell">mariadb shell</a><ul>
+<li><a class="reference internal" href="#shell-options">shell options:</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#mariadb-initenv">mariadb initenv</a><ul>
@@ -152,7 +156,7 @@
     </a>
   </li>
   <li>
-    <a href="common.html" title="Next Chapter: Commons API"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Commons API &raquo;</span>
+    <a href="mongo.html" title="Next Chapter: Mongo Module"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Mongo Module &raquo;</span>
     </a>
   </li>
               
@@ -443,6 +447,41 @@ timezone settings.</li>
 </ul>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb test_connection
   Connected to openstack_neutron with user neutron correctly.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="mariadb-shell">
+<span id="mariadb-shell"></span><h3>mariadb shell<a class="headerlink" href="#mariadb-shell" title="Permalink to this headline">¶</a></h3>
+<p>Enter of database shell of the active profile or active configuration.</p>
+<div class="section" id="shell-options">
+<span id="shell-options"></span><h4>shell options:<a class="headerlink" href="#shell-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-P</span> <span class="pre">MARIADB_PWD</span></code>: Override MARIADB_PWD variable of the configuration file.</li>
+<li><code class="docutils literal"><span class="pre">-U</span> <span class="pre">MARIADB_USER</span></code>: Override MARIADB_USER with username of the connection.</li>
+<li><code class="docutils literal"><span class="pre">-H</span> <span class="pre">MARIADB_HOST</span></code>: Override MARIADB_HOST with host of the database.</li>
+<li><code class="docutils literal"><span class="pre">-D</span> <span class="pre">MARIADB_DIR</span></code>: Override MARIADB_DIR directory where save/retrieve
+script/functions, etc.</li>
+<li><code class="docutils literal"><span class="pre">--database</span> <span class="pre">db</span></code>: Override MARIADB_DB variable for database name.</li>
+<li><code class="docutils literal"><span class="pre">--timezone</span> <span class="pre">tmz</span></code>: Override MARIADB_TMZ variable for set timezone on connection session.</li>
+<li><code class="docutils literal"><span class="pre">--conn-options</span> <span class="pre">OPTS</span></code>: Override MARIADB_EXTRA_OPTIONS variable for enable
+extra connection options.</li>
+<li><code class="docutils literal"><span class="pre">--ignore-timezone</span></code>: Set MARIADB_IGNORE_TMZ variable to 1 for disable initial
+timezone settings.</li>
+</ul>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb shell
+  Reading table information <span class="k">for</span> completion of table and column names
+  You can turn off this feature to get a quicker startup with -A
+
+  Welcome to the MariaDB monitor.  Commands end with <span class="p">;</span> or <span class="se">\g</span>.
+  Your MariaDB connection id is 13
+  Server version: 10.0.28-MariaDB-wsrep Source distribution, wsrep_25.16.rc3fc46e
+
+  Copyright <span class="o">(</span>c<span class="o">)</span> 2000, 2016, Oracle, MariaDB Corporation Ab and others.
+
+  Type <span class="s1">&#39;help;&#39;</span> or <span class="s1">&#39;\h&#39;</span> <span class="k">for</span> help. Type <span class="s1">&#39;\c&#39;</span> to clear the current input statement.
+
+  MariaDB <span class="o">[</span>openstack_neutron<span class="o">]</span>&gt;
 </pre></div>
 </div>
 </div>
@@ -1171,7 +1210,7 @@ Possible values are UNIQUE|SPATIAL|FULLTEXT.</li>
     </p>
     <p>
         &copy; Copyright 2017, Geaaru.<br/>
-      Last updated on Jun 03, 2017.<br/>
+      Last updated on Jun 05, 2017.<br/>
     </p>
   </div>
 </footer>

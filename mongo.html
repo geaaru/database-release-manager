@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Mongo API &#8212; Database Release Manager</title>
+    <title>Mongo Module &#8212; Database Release Manager</title>
     
     <link rel="stylesheet" href="static/basic.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
@@ -31,8 +31,8 @@
     <script type="text/javascript" src="static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="static/bootstrap-sphinx.js"></script>
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Commons MariaDB API" href="commons_mariadb.html" />
-    <link rel="prev" title="Psql API" href="psql.html" />
+    <link rel="next" title="Commons API" href="common.html" />
+    <link rel="prev" title="MariadDB Module" href="mariadb.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -72,11 +72,11 @@
 <li class="toctree-l1"><a class="reference internal" href="logfile.html">Logfile Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Install Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mariadb.html">MariaDB Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Mongo Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common.html">Commons API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mysql.html">Mysql API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sqlplus.html">Sqlplus API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="psql.html">Psql API</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Mongo API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commons_mariadb.html">Commons Mariadb API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commons_oracle.html">Commons Oracle API</a></li>
 </ul>
@@ -92,8 +92,20 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Mongo API</a><ul>
+<li><a class="reference internal" href="#">Mongo Module</a><ul>
 <li><a class="reference internal" href="#variables">Variables</a></li>
+<li><a class="reference internal" href="#commands">Commands</a><ul>
+<li><a class="reference internal" href="#mongo-version">mongo version</a></li>
+<li><a class="reference internal" href="#mongo-test-connection">mongo test_connection</a><ul>
+<li><a class="reference internal" href="#test-connection-options">test_connection options:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mongo-shell">mongo shell</a><ul>
+<li><a class="reference internal" href="#shell-options">shell options:</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#api">API</a><ul>
 <li><a class="reference internal" href="#mongo-set-auth-var">mongo_set_auth_var</a></li>
 </ul>
@@ -116,11 +128,11 @@
               
                 
   <li>
-    <a href="psql.html" title="Previous Chapter: Psql API"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Psql API</span>
+    <a href="mariadb.html" title="Previous Chapter: MariadDB Module"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; MariadDB Module</span>
     </a>
   </li>
   <li>
-    <a href="commons_mariadb.html" title="Next Chapter: Commons MariaDB API"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Commons Maria... &raquo;</span>
+    <a href="common.html" title="Next Chapter: Commons API"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Commons API &raquo;</span>
     </a>
   </li>
               
@@ -150,8 +162,8 @@
   <div class="row" >
     <div class="col-md-12 content">
       
-  <div class="section" id="mongo-api">
-<span id="mongo-api"></span><h1>Mongo API<a class="headerlink" href="#mongo-api" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mongo-module">
+<span id="mongo-module"></span><h1>Mongo Module<a class="headerlink" href="#mongo-module" title="Permalink to this headline">¶</a></h1>
 <p>A series of functions used for interact directly with <code class="docutils literal"><span class="pre">mongo</span></code> client program.</p>
 <div class="section" id="variables">
 <span id="variables"></span><h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h2>
@@ -192,6 +204,65 @@
 </table>
 </div></blockquote>
 </div>
+<div class="section" id="commands">
+<span id="commands"></span><h2>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mongo-version">
+<span id="mongo-version"></span><h3>mongo version<a class="headerlink" href="#mongo-version" title="Permalink to this headline">¶</a></h3>
+<p>Show version of mongo module</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mongo version
+  Version: 0.1.0
+</pre></div>
+</div>
+</div>
+<div class="section" id="mongo-test-connection">
+<span id="mongo-test-connection"></span><h3>mongo test_connection<a class="headerlink" href="#mongo-test-connection" title="Permalink to this headline">¶</a></h3>
+<p>Test connection to database of the active profile or active configuration.</p>
+<div class="section" id="test-connection-options">
+<span id="test-connection-options"></span><h4>test_connection options:<a class="headerlink" href="#test-connection-options" title="Permalink to this headline">¶</a></h4>
+<p>This options are generic option for handle connection and are avilable on different
+commands.</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-P</span> <span class="pre">MONGO_PWD</span></code>: Override MONGO_PWD variable.</li>
+<li><code class="docutils literal"><span class="pre">-U</span> <span class="pre">MONGO_USER</span></code>: Override MONGO_USER with username of the connection.</li>
+<li><code class="docutils literal"><span class="pre">-H</span> <span class="pre">MONGO_HOST</span></code>: Override MONGO_HOST with host of the database.</li>
+<li><code class="docutils literal"><span class="pre">-D</span> <span class="pre">MONGO_DIR</span></code>: Override MONGO_DIR directory where save/retrieve script/functions, etc.</li>
+<li><code class="docutils literal"><span class="pre">--database</span> <span class="pre">db</span></code>: Override MONGO_DB variable for database name.</li>
+<li><code class="docutils literal"><span class="pre">--conn-options</span> <span class="pre">opts</span></code>: Override MONGO_EXTRA_OPTIONS variable for enable extra
+connection options.</li>
+<li><code class="docutils literal"><span class="pre">--authdb</span> <span class="pre">db</span></code>: Override MONGO_AUTHDB variable for set authentication database.</li>
+</ul>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mongo test_connection
+  Connected to database1 with user icon correctly.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="mongo-shell">
+<span id="mongo-shell"></span><h3>mongo shell<a class="headerlink" href="#mongo-shell" title="Permalink to this headline">¶</a></h3>
+<p>Enter on mongo shell of the active profile or active configuration.</p>
+<div class="section" id="shell-options">
+<span id="shell-options"></span><h4>shell options:<a class="headerlink" href="#shell-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">-P</span> <span class="pre">MONGO_PWD</span></code>: Override MONGO_PWD variable.</li>
+<li><code class="docutils literal"><span class="pre">-U</span> <span class="pre">MONGO_USER</span></code>: Override MONGO_USER with username of the connection.</li>
+<li><code class="docutils literal"><span class="pre">-H</span> <span class="pre">MONGO_HOST</span></code>: Override MONGO_HOST with host of the database.</li>
+<li><code class="docutils literal"><span class="pre">-D</span> <span class="pre">MONGO_DIR</span></code>: Override MONGO_DIR directory where save/retrieve script/functions, etc.</li>
+<li><code class="docutils literal"><span class="pre">--database</span> <span class="pre">db</span></code>: Override MONGO_DB variable for database name.</li>
+<li><code class="docutils literal"><span class="pre">--conn-options</span> <span class="pre">opts</span></code>: Override MONGO_EXTRA_OPTIONS variable for enable extra
+connection options.</li>
+<li><code class="docutils literal"><span class="pre">--authdb</span> <span class="pre">db</span></code>: Override MONGO_AUTHDB variable for set authentication database.</li>
+</ul>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mongo shell
+  MongoDB shell version v3.4.3
+  connecting to: mongodb://192.168.1.200:27018/database1
+  MongoDB server version: 3.2.11
+  WARNING: shell and server versions <span class="k">do</span> not match
+  mongos&gt;
+</pre></div>
+</div>
+</div>
+</div>
+</div>
 <div class="section" id="api">
 <span id="api"></span><h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="mongo-set-auth-var">
@@ -220,7 +291,7 @@ Valorize options like: -u username &#8211;password=pwd database.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock1'))">(Show/Hide)</a><br /><div id="hiddencodeblock1" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mongo_set_auth_var <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock165'))">(Show/Hide)</a><br /><div id="hiddencodeblock165" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mongo_set_auth_var <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">db</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">user</span><span class="o">=</span><span class="nv">$2</span>
@@ -272,7 +343,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mon
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock2'))">(Show/Hide)</a><br /><div id="hiddencodeblock2" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_client <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock166'))">(Show/Hide)</a><br /><div id="hiddencodeblock166" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_client <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$mongo</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
 
@@ -349,7 +420,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mon
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock3'))">(Show/Hide)</a><br /><div id="hiddencodeblock3" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_vars <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock167'))">(Show/Hide)</a><br /><div id="hiddencodeblock167" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_vars <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">commons_msg</span><span class="o">=</span><span class="s1">&#39;variable on configuration file, through arguments or on current profile.&#39;</span>
 
@@ -381,7 +452,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mon
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock4'))">(Show/Hide)</a><br /><div id="hiddencodeblock4" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_connection <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock168'))">(Show/Hide)</a><br /><div id="hiddencodeblock168" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_connection <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;--quiet&quot;</span>
 
@@ -432,7 +503,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mon
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock5'))">(Show/Hide)</a><br /><div id="hiddencodeblock5" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_shell <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock169'))">(Show/Hide)</a><br /><div id="hiddencodeblock169" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_shell <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
   <span class="nb">local</span> <span class="nv">errorCode</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -478,7 +549,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mon
     </p>
     <p>
         &copy; Copyright 2017, Geaaru.<br/>
-      Last updated on May 20, 2017.<br/>
+      Last updated on Jun 05, 2017.<br/>
     </p>
   </div>
 </footer>

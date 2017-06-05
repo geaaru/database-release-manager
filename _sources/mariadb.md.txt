@@ -274,6 +274,40 @@ commands.
   Connected to openstack_neutron with user neutron correctly.
 ```
 
+#### mariadb shell
+
+Enter of database shell of the active profile or active configuration.
+
+##### shell options:
+
+  * `-P MARIADB_PWD`: Override MARIADB_PWD variable of the configuration file.
+  * `-U MARIADB_USER`: Override MARIADB_USER with username of the connection.
+  * `-H MARIADB_HOST`: Override MARIADB_HOST with host of the database.
+  * `-D MARIADB_DIR`: Override MARIADB_DIR directory where save/retrieve
+                      script/functions, etc.
+  * `--database db`: Override MARIADB_DB variable for database name.
+  * `--timezone tmz`: Override MARIADB_TMZ variable for set timezone on connection session.
+  * `--conn-options OPTS`: Override MARIADB_EXTRA_OPTIONS variable for enable
+                           extra connection options.
+  * `--ignore-timezone`: Set MARIADB_IGNORE_TMZ variable to 1 for disable initial
+                         timezone settings.
+
+```shell
+  $# dbrm mariadb shell
+  Reading table information for completion of table and column names
+  You can turn off this feature to get a quicker startup with -A
+
+  Welcome to the MariaDB monitor.  Commands end with ; or \g.
+  Your MariaDB connection id is 13
+  Server version: 10.0.28-MariaDB-wsrep Source distribution, wsrep_25.16.rc3fc46e
+
+  Copyright (c) 2000, 2016, Oracle, MariaDB Corporation Ab and others.
+
+  Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+  MariaDB [openstack_neutron]>
+```
+
 #### mariadb initenv
 
 Initialize project directory that use MariaDB adapter.
