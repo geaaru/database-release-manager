@@ -56,6 +56,11 @@ commands.
                            connection options.
   * `--authdb db`: Override MONGO_AUTHDB variable for set authentication database.
 
+```shell
+  $# dbrm mongo test_connection
+  Connected to database1 with user icon correctly.
+```
+
 #### mongo shell
 
 Enter on mongo shell of the active profile or active configuration.
@@ -71,6 +76,14 @@ Enter on mongo shell of the active profile or active configuration.
                            connection options.
   * `--authdb db`: Override MONGO_AUTHDB variable for set authentication database.
 
+```shell
+  $# dbrm mongo shell
+  MongoDB shell version v3.4.3
+  connecting to: mongodb://192.168.1.200:27018/database1
+  MongoDB server version: 3.2.11
+  WARNING: shell and server versions do not match
+  mongos>
+```
 
 ### API
 
