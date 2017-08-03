@@ -25,6 +25,9 @@ A series of functions used for interact directly with `mongo` client program.
      - Contains path of directory where found project script.
    * - ``MONGO_AUTHDB``
      - Contains authentication database to use on connection.
+   * - ``MONGO_INITRC``
+     - Contains path of the file with content to execute before
+       target commands.
 ```
 
 ### Commands
@@ -85,6 +88,34 @@ Enter on mongo shell of the active profile or active configuration.
   mongos>
 ```
 
+#### mongo compile
+
+Compile files to active database.
+
+From command line is visible result of compilation but a more detailed trace is save on logfile defined on `LOGFILE` variable
+(default `dbrm.log`).
+
+##### compile options:
+
+  * `-P MONGO_PWD`: Override MONGO_PWD variable.
+  * `-U MONGO_USER`: Override MONGO_USER with username of the connection.
+  * `-H MONGO_HOST`: Override MONGO_HOST with host of the database.
+  * `-D MONGO_DIR`: Override MONGO_DIR directory where save/retrieve script/functions, etc.
+  * `--database db`: Override MONGO_DB variable for database name.
+  * `--conn-options opts`: Override MONGO_EXTRA_OPTIONS variable for enable extra
+                           connection options.
+  * `--authdb db`: Override MONGO_AUTHDB variable for set authentication database.
+ * `--file FILE`: Compile a particular file. (Use ABS Path or relative path from current dir.)
+
+For argument with value if it isn't passed value argument is ignored.
+
+```shell
+  $#  dbrm mongo compile --file test.js
+  (mongo) Start compilation (file test.js): File test.js
+  (mongo) End compilation (file test.js, result => 0): File test.js
+  Compile operation successfull.
+```
+
 ### API
 
 #### mongo_set_auth_var
@@ -109,8 +140,58 @@ _Returns_:
     :label: (Show/Hide)
     :language: bash
     :starthidden: True
-    :start-after: mongo_set_auth_var
-    :end-before: mongo_set_auth_var_end
+    :start-after: mongo_mongo_set_auth_var
+    :end-before: mongo_mongo_set_auth_var_end
+```
+
+#### mongo_file
+
+Compile a file and save ouput to input variable.
+
+_Parameters_:
+
+  * `$1`: (var) Name of the variable where is save output command.
+  * `$2`: (f) File to compile.
+
+_Returns_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/mongo.sh
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: mongo_mongo_file
+    :end-before: mongo_mongo_file_end
+```
+
+#### mongo_file_initrc
+
+Compile a file and save ouput to input variable.
+File is loaded on memory before execute content, so it isn't ideal
+for bigfile.
+
+_Parameters_:
+
+  * `$1`: (var) Name of the variable where is save output command.
+  * `$2`: (f) File to compile.
+  * `$3`: (initrc) Path of file with commons commands to execute before
+          compile file content. Is an alternative to .mongorc.js file.
+
+_Returns_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/mongo.sh
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: mongo_mongo_file_initrc
+    :end-before: mongo_mongo_file_initrc_end
 ```
 
 ### Commons Mongo API
@@ -193,5 +274,30 @@ _Returns_:
     :starthidden: True
     :start-after: commons_mongo_commons_mongo_shell
     :end-before: commons_mongo_commons_mongo_shell_end
+```
+
+#### commons_mongo_compile_file
+
+Compile a file to current mongodb database.
+
+_Parameters_:
+
+   * `$1`: (file) File to compile.
+   * `$2`: (msg) message to write on logfile before and after compilation.
+   * `$3`: (use_initrc) Optional argument to force use of mongo_file_initrc (default)
+           or mongo_file command if equal to 0.
+
+_Returns_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/commons_mongo.sh
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: commons_mongo_commons_mongo_compile_file
+    :end-before: commons_mongo_commons_mongo_compile_file_end
 ```
 

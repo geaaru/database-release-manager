@@ -30,4 +30,79 @@ mongo_set_auth_var () {
 }
 # mongo_mongo_set_auth_var_end
 
+# mongo_mongo_file
+mongo_file () {
+
+  local var=$1
+  local f=$2
+  local opts=""
+  local result=""
+
+  if [ -z "$MONGO_CLIENT" ] ; then
+    return 1
+  fi
+
+  if [ -z "$mongo_auth" ] ; then
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(mongo_file) Try compile file $f with options $opts $MONGO_EXTRA_OPTIONS $mongo_auth.\n"
+
+  v=$(eval $MONGO_CLIENT $opts $MONGO_EXTRA_OPTIONS $mongo_auth $f 2>&1)
+  result=$?
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(mongo_file) Compile $f => $v ($result).\n"
+
+  eval "$var=\$v"
+
+  return $result
+}
+# mongo_mongo_file_end
+
+# mongo_mongo_file_initrc
+mongo_file_initrc () {
+
+  local var=$1
+  local f=$2
+  local initrc=$3
+  local opts=""
+  local result=""
+  local init_commands=""
+  local commands=""
+
+  if [ -z "$MONGO_CLIENT" ] ; then
+    return 1
+  fi
+
+  if [ -z "$mongo_auth" ] ; then
+    return 1
+  fi
+
+  if [ -n "$initrc" ] ; then
+    init_commands="$(cat $initrc)"
+  fi
+
+  commands="$(cat $f)"
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(mongo_file) Try compile file $f with options $opts $MONGO_EXTRA_OPTIONS $mongo_auth.\n"
+
+  v=$($MONGO_CLIENT $opts $MONGO_EXTRA_OPTIONS $mongo_auth 2>&1 <<EOF
+$init_commands
+$commands
+EOF
+)
+  result=$?
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(mongo_file) Compile $f => $v ($result).\n"
+
+  eval "$var=\$v"
+
+  return $result
+}
+# mongo_mongo_file_initrc_end
+
 # vim: syn=sh filetype=sh

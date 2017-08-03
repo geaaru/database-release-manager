@@ -12,20 +12,14 @@ mongo_version="@PACKAGE_VERSION@"
 mongo_status="0"
 
 
-#****f* mongo/mongo_version
-# FUNCTION
-#  Show version of mongo module.
-# SOURCE
+# mongo_mongo_version
 mongo_version() {
   echo -en "Version: ${mongo_version}\n"
   return 0
 }
-#***
+# mongo_mongo_version_end
 
-#****f* mongo/mongo_long_help
-# FUNCTION
-#   Show long help message.
-# SOURCE
+# mongo_mongo_long_help
 mongo_long_help () {
 
    echo -en "===========================================================================\n"
@@ -39,17 +33,15 @@ mongo_long_help () {
    echo -en "\tversion                 Show module version.\n"
    echo -en "\ttest_connection         Test connection versus database.\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
+   echo -en "\tcompile                 Compile files/indexes/scripts.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
    return 0
 }
-#***
+# mongo_mongo_long_help_end
 
-#****f* mongo/mongo_show_help
-# FUNCTION
-#   Show help message.
-# SOURCE
+# mongo_mongo_show_help
 mongo_show_help () {
    echo -en "===========================================================================\n"
    echo -en "Module [mongo]:\n"
@@ -59,19 +51,15 @@ mongo_show_help () {
    echo -en "\tversion                 Show module version.\n"
    echo -en "\ttest_connection         Test connection versus database.\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
+   echo -en "\tcompile                 Compile files/indexes/scripts.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
    return 0
 }
-#***
+# mongo_mongo_show_help_end
 
-#****f* mongo/mongo_shell
-# FUNCTION
-#   Enter on command line shell of Mysql/MariaDB server
-# SEE ALSO
-#   _mongo_connections_args for list of available arguments.
-# SOURCE
+# mongo_mongo_shell
 mongo_shell () {
 
   local result=1
@@ -96,14 +84,9 @@ mongo_shell () {
 
   return 0
 }
-#***
+# mongo_mongo_shell_end
 
-#****f* mongo/mongo_test_connection
-# FUNCTION
-#   Test connection to PostgreSQL server.
-# SEE ALSO
-#   _mongo_connections_args for list of available arguments.
-# SOURCE
+# mongo_mongo_test_connection
 mongo_test_connection () {
 
   local result=1
@@ -130,18 +113,46 @@ mongo_test_connection () {
 
   return 0
 }
-#***
+# mongo_mongo_test_connection_end
+
+# mongo_mongo_compile
+mongo_compile () {
+
+  # Shift first two input param
+  shift 2
+
+  _mongo_check_status
+
+  _mongo_help_message="print_help"
+
+  _mongo_connections_args "$@" || error_handled ""
+
+  _mongo_compile_args "$@" || error_handled ""
+
+  commons_mongo_check_vars || error_handled ""
+
+  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
+
+  commons_mongo_check_connection || \
+    error_handled "mongo client was unable to connect to DB with supplied credentials."
+
+  _mongo_compile || error_handled ""
+
+  out_handler_print "Compile operation successfull."
+
+  return 0
+}
+# mongo_mongo_compile_end
 
 
 ##################################################################
 # Internal functions
 ##################################################################
 
-#****f* mongo/_mongo_init
-# FUNCTION
+# mongo__mongo_init
 #   Internal function called on initialization of the mongo module.
-# DESCRIPTION
-#   Mariadb module is usable when SQLCA variable contains mongo string.
+#
+#   Mongo module is usable when SQLCA variable contains mongo string.
 #   So, if mongo module is enabled then these check are done:
 #   * verify presence of mysql client program
 #   * check if MONGO_USER variable is set. This variable define user to use
@@ -152,9 +163,6 @@ mongo_test_connection () {
 #     schema to use on connection.
 #   * check if defined MONGO_DIR variable. This variable define path where
 #     save/retrieve files to compile.
-#   * if defined MONGO_TMZ then default UTC value is overrided. This variable
-#     is used to set TMZ on active connection to database.
-# SOURCE
 _mongo_init () {
 
   if [[ ! -z "$SQLCA"  && "$SQLCA" =~ .*mongo.* ]] ; then
@@ -179,15 +187,14 @@ _mongo_init () {
 
   return 0
 }
-#***
+# mongo__mongo_init_end
 
-#****f* mongo/_mongo_check_status
-# FUNCTION
+# mongo__mongo_check_status
+#
 #   Check status of the mongo module.
 # RETURN VALUE
 #   0 if module is enable.
 #   exit if not enabled.
-# SOURCE
 _mongo_check_status () {
 
   if [ x"$mongo_status" = x"0" ] ; then
@@ -196,7 +203,7 @@ _mongo_check_status () {
 
   return 0
 }
-#***
+# mongo__mongo_check_status_end
 
 #****f* mongo/_mongo_connections_args
 # FUNCTION
@@ -299,6 +306,89 @@ _mongo_connection_help () {
 }
 #***
 
+# mongo__mongo_compile_args
+_mongo_compile_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mongo_compile_args args: $@)\n"
+
+  local short_options="U:P:hH:D:t:S:"
+  local long_options="database: authdb: conn-options:  help"
+
+  # mongo__mongo_compile_help
+  _mongo_compile_help () {
+    echo -en "[--file file]            Compile a particular file. (Use ABS Path or relative path from current dir.)\n"
+
+    return 0
+  }
+  # mongo__mongo_compile_help_end
+
+  long_options="$long_options file:"
+
+  $(set -- $(getopt -u -q -o "$short_options" -l "$long_options" -- "$@")) || \
+    error_handled "Invalid parameters"
+
+  if [ $# -lt 2 ] ; then
+    _mongo_compile_help
+    return 1
+  fi
+
+  MONGO_COMPILE_FILE=""
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -U|-P|-D|-H|--database|--authdb)
+        # do nothing
+        shift
+        ;;
+      --conn-options)
+        # do nothing
+        shift
+        ;;
+      --file)
+        MONGO_COMPILE_FILE="$2"
+        shift
+        ;;
+      --help|-h)
+        if [ -n "$_mongo_help_message" ] ; then
+          _mongo_connection_help
+          return 0
+        fi
+        return 1
+        ;;
+      *|--)
+        ;;
+
+    esac
+
+    shift
+  done
+
+  unset -f _mongo_compile_help
+
+  return 0
+}
+# mongo__mongo_compile_args_end
+
+# mongo__mongo_compile
+_mongo_compile () {
+
+  local f=""
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mongo_compile args: $@)\n"
+
+  # Compile single file
+  if [ -n "${MONGO_COMPILE_FILE}" ] ; then
+
+    # TODO: Check when use MONGO_INITRC
+    commons_mongo_compile_file "$MONGO_COMPILE_FILE" "File $MONGO_COMPILE_FILE" "1" || \
+      error_handled "Error on compile file $MONGO_COMPILE_FILE."
+
+  fi
+
+  return 0
+}
+# mongo__mongo_compile_end
 
 
 # vim: syn=sh filetype=sh

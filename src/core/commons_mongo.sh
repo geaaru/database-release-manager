@@ -135,5 +135,41 @@ commons_mongo_shell () {
 }
 # commons_mongo_commons_mongo_shell_end
 
+# commons_mongo_commons_mongo_compile_file
+commons_mongo_compile_file () {
+
+  local f=$1
+  local msg=$2
+  local use_initrc=${3:-1}
+  local f_base=$(basename "$f")
+
+  if [ ! -e $f ] ; then
+    _logfile_write "(mongo) File $f not found." || return 1
+    return 1
+  fi
+
+  _logfile_write "(mongo) Start compilation (file $f_base): $msg" || return 1
+
+  echo "(mongo) Start compilation (file $f_base): $msg"
+
+  MONGO_OUTPUT=""
+
+  if [ $use_initrc -eq 0 ] ; then
+    mongo_file "MONGO_OUTPUT" "$f"
+  else
+    mongo_file_initrc "MONGO_OUTPUT" "$f" "${MONGO_INITRC}"
+  fi
+  local ans=$?
+
+  _logfile_write "\n$MONGO_OUTPUT" || return 1
+
+  _logfile_write "(mongo) End compilation (file $f_base, result => $ans): $msg" || return 1
+
+  echo -en "(mongo) End compilation (file $f_base, result => $ans): $msg\n"
+
+  return $ans
+}
+# commons_mongo_commons_mongo_compile_file_end
+
 # vim: syn=sh filetype=sh
 
