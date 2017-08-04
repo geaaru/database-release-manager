@@ -1,0 +1,30 @@
+@import url('default.css');
+
+code.docutils.literal {
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #1cd446;
+  background-color: #1c1c1d;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.highlight pre {
+  background-color: black;
+  color: #00ff18;
+}
+
+.highlight span {
+  font-weight: bold;
+  color: #00ff18;
+}
+
+
+.navbar {
+  height: 50px;
+  padding-top: 4px;
+}
+
+.footer {
+  margin-top: 3px;
+}
