@@ -34,6 +34,7 @@ mongo_long_help () {
    echo -en "\ttest_connection         Test connection versus database.\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
    echo -en "\tcompile                 Compile files/indexes/scripts.\n"
+   echo -en "\tshow                    Show collections, indexes, etc.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -52,6 +53,7 @@ mongo_show_help () {
    echo -en "\ttest_connection         Test connection versus database.\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
    echo -en "\tcompile                 Compile files/indexes/scripts.\n"
+   echo -en "\tshow                    Show collections, indexes, etc.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -144,6 +146,114 @@ mongo_compile () {
 }
 # mongo_mongo_compile_end
 
+# mongo_mongo_show
+mongo_show () {
+
+  # Shift first two input param
+  shift 2
+
+  _mongo_show_help () {
+
+    echo -en "[--indexes]              Show list of indexes present on database.\n"
+    echo -en "[--all]                  Show list of all indexes, collections on database.\n"
+    echo -en "[--collection NAME]      Show detail of a collection. This option could be repeated.\n"
+    echo -en "[--index NAME]           Show detail of a index. This option could be repeated.\n"
+
+    return 0
+  }
+
+  _mongo_show_args () {
+
+    [[ $DEBUG && $DEBUG == true ]] && \
+      echo -en "(_mongo_show_args args: $@)\n"
+
+    local short_options="U:P:hH:D:t:S:"
+    local long_options="database: authdb: conn-options: help" # connection long options
+    long_options="$long_options all indexes index: collection:"
+
+    set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || \
+      error_handled "Invalid parameters"
+
+    if [ $# -lt 2 ] ; then # is there at least one param (--)
+      _mongo_show_help
+      return 1
+    fi
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mongo_show_args: Found $# params)\n"
+
+    MONGO_SHOW_ALL=0
+    MONGO_SHOW_ALL_COLLECTIONS=0
+    MONGO_SHOW_ALL_INDEXES=0
+    MONGO_SHOW_COLL_DESCR=0
+    MONGO_SHOW_INDEX_DESCR=0
+    MONGO_SHOW_COLLS=""
+    MONGO_SHOW_INDEXES=""
+
+    while [ $# -gt 0 ] ; do
+      case "$1" in
+
+        -U|-P|-D|-H|--database|--authdb|--conn-options)
+          shift
+          # do nothing
+          ;;
+
+        --indexes)
+          MONGO_SHOW_ALL_INDEXES=1
+          ;;
+        --collections)
+          MONGO_SHOW_ALL_COLLECTIONS=1
+          ;;
+        --all)
+          MONGO_SHOW_ALL=1
+          ;;
+        --index)
+          MONGO_SHOW_INDEX[$MONGO_SHOW_INDEX_DESCR]="$2"
+          let MONGO_SHOW_INDEX_DESCR++
+          shift
+          ;;
+        --collection)
+          MONGO_SHOW_COLLS[$MONGO_SHOW_COLL_DESCR]="$2"
+          let MONGO_SHOW_COLL_DESCR++
+          shift
+          ;;
+        -h|--help)
+          _mongo_show_help
+          return 1
+          ;;
+        --)
+          ;;
+        *)
+          error_generate "Invalid parameter $1."
+          ;;
+
+      esac
+
+      shift
+    done
+
+    return 0
+  }
+
+  _mongo_check_status
+
+  _mongo_connections_args "$@" || error_handled ""
+
+  _mongo_show_args "$@" || error_handled ""
+
+  unset -f _mongo_show_args
+  unset -f _mongo_show_help
+
+  commons_mongo_check_vars || error_handled ""
+
+  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
+
+  commons_mongo_check_connection || \
+    error_handled "Mongo client was unable to connecto to DB with supplied credentials."
+
+  _mongo_show || error_handled "Error"
+
+  return 0
+}
 
 ##################################################################
 # Internal functions
@@ -389,6 +499,153 @@ _mongo_compile () {
   return 0
 }
 # mongo__mongo_compile_end
+
+# mongo__mongo_show
+_mongo_show () {
+
+  if [ $MONGO_SHOW_ALL -eq 1 ] ; then
+
+    _mongo_show_indexes
+
+  fi
+
+  if [ $MONGO_SHOW_ALL_INDEXES -eq 1 ] ; then
+
+    _mongo_show_indexes
+
+  fi
+
+  # Show single collection data
+  if [ $MONGO_SHOW_COLL_DESCR -gt 0 ] ; then
+
+    for i in ${!MONGO_SHOW_COLLS[@]}
+    do
+
+      # TODO
+      #_mongo_show_collection ${MONGO_SHOW_COLLS[$i]}
+
+      out_handler_print "\n"
+
+    done
+
+  fi
+
+  # Show single index data
+  if [ $MONGO_SHOW_INDEX_DESCR -gt 0 ] ; then
+
+    for i in ${!MONGO_SHOW_INDEX[@]}
+    do
+
+      _mongo_show_indexes ${MONGO_SHOW_INDEX[$i]} 1
+
+      out_handler_print "\n"
+
+    done
+
+  fi
+
+  return 0
+}
+# mongo__mongo_show_end
+
+# mongo__mongo_show_indexes
+_mongo_show_indexes () {
+
+  local collection="$1"
+  local detail="$2"
+  local i=0
+  local coll_name=25
+  local key_name=25
+  local keys_name=30
+
+  commons_mongo_get_indexes_list "$1" || \
+    error_handled "Error on retrieve indexes list."
+
+  local n_indexes=${#mongo_indexes[@]}
+
+  if [ $n_indexes -eq 0 ] ; then
+
+    out_handler_print "No indexes available."
+
+  else
+
+    # Number of indexes must be divided by 5,
+    # number of entries data for index.
+    n_indexes=$((n_indexes/5))
+
+    if [[ -n ${detail} ]] ; then
+
+      # POST: show detail of single collection
+      #       with a vertical table.
+      local todo=""
+
+      echo ${detail}
+
+    else
+
+      out_hsep=1
+      out_prepost_mode="any"
+      out_htabs_mode="tabs"
+
+      out_headers[0]="COLLECTION"
+      out_headers[1]="KEY NAME"
+      out_headers[2]="# KEYS"
+      out_headers[3]="KEYS"
+
+      out_el_pre[0]="\e[1;33m"
+      out_el_pre[1]="\e[1;32m"
+      out_el_pre[2]="\e[1;31m"
+      out_el_pre[3]="\e[1;34m"
+
+      out_el_post[0]="\e[m"
+
+      local counter=0
+
+      for ((i=0; i<${n_indexes}; i++)) ; do
+
+        local kcoll=${mongo_indexes[$i, 0]}
+        local kname=${mongo_indexes[$i, 1]}
+        local keys=${mongo_indexes[$i, 2]}
+        local n_keys=${mongo_indexes[$i, 3]}
+
+        out_rows[$counter]="row"${counter}
+
+        eval "row${counter}[0]=\"${kcoll}\""
+        eval "row${counter}[1]=\"${kname}\""
+        eval "row${counter}[2]=\"${n_keys}\""
+        eval "row${counter}[3]=\"${keys}\""
+
+        # Check if needed enlarge size of first column
+        if [ ${#kcoll} -ge $coll_name ] ; then
+          coll_name=$((${#kcoll}+1))
+        fi
+        if [ ${#kname} -ge $key_name ] ; then
+          key_name=$((${#kname}+1))
+        fi
+
+        if [ ${#keys} -ge $keys_name ] ; then
+          keys_name=$((${#keys}+1))
+        fi
+
+        let counter++
+
+      done
+
+      out_tabs[0]="$coll_name"
+      out_tabs[1]="$key_name"
+      out_tabs[2]="8"
+      out_tabs[3]="$keys_name"
+
+      out_handler_print_arr
+      out_handler_print "\nFound ${n_indexes} indexes."
+
+    fi
+
+  fi
+
+  return 0
+}
+# mongo__mongo_show_indexes_end
 
 
 # vim: syn=sh filetype=sh

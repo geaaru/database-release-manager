@@ -171,5 +171,78 @@ commons_mongo_compile_file () {
 }
 # commons_mongo_commons_mongo_compile_file_end
 
+# commons_mongo_commons_mongo_get_indexes_list
+commons_mongo_get_indexes_list () {
+
+  local single_collection="$1"
+  local pos=0
+  local cmd=""
+
+  if [ -z "${single_collection}" ] ; then
+    cmd="
+db.getCollectionNames().forEach(function(n){
+  print( JSON.stringify(db[n].getIndexSpecs()));
+})"
+
+  else
+
+    cmd="JSON.stringify(db['${single_collection}'].getIndexSpecs());"
+
+  fi
+
+  mongo_cmd_4var "_mongo_ans" "$cmd" || return 1
+
+  # Create array as result with an array for every entry
+  # with column:
+  # - collection
+  # - key name
+  # - keys
+  # - n_keys
+  # - keys_complete
+
+  declare -g -A mongo_indexes
+
+  # Reset array and declare it
+  mongo_indexes=()
+
+  IFS=$'\n'
+  for row in $_mongo_ans ; do
+
+    local n_indexes=$(echo $row | jq 'length')
+    local i=0
+
+    for ((i=0; i<${n_indexes};i++)) ; do
+
+      local kname=$(echo $row | jq -r -M .[$i].name )
+      local kcoll=$(echo $row | jq -r -M .[$i].ns | cut -d'.' -f 2)
+      local n_keys=$(echo $row | jq ".[$i].key | keys | length")
+      local keys=($(echo $row | jq -r -M ".[$i].key | keys | .[]"))
+      keys=$(echo ${keys[@]} | tr " " \,)
+
+      local keys_complete=$(echo $row | jq -r -M -c ".[$i].key")
+
+      [[ $DEBUG && $DEBUG == true ]] && echo -en \
+        "(commons_mongo_get_indexes_list) kname = $kname, kcoll =$kcoll, n_keys=$n_keys, keys=$keys_complete.\n"
+
+      mongo_indexes[$pos, 0]=${kcoll}
+      mongo_indexes[$pos, 1]=${kname}
+      mongo_indexes[$pos, 2]=${keys}
+      mongo_indexes[$pos, 3]=${n_keys}
+      mongo_indexes[$pos, 4]=${keys_complete}
+
+      let pos++
+
+    done
+
+  done
+  unset IFS
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en \
+    "(commons_mongo_get_indexes_list) Found ${#mongo_indexes[@]} ($pos) indexes.\n"
+
+  return 0
+}
+# commons_mongo_commons_mongo_get_indexes_list_end
+
 # vim: syn=sh filetype=sh
 

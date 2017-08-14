@@ -194,6 +194,33 @@ _Returns_:
     :end-before: mongo_mongo_file_initrc_end
 ```
 
+#### mongo_cmd_4var
+
+Execute an input statement on configured schema.
+
+_Variables Used_:
+  * `MARIADB_CLIENT`: Path of mongo client.
+
+_Parameters_:
+
+  * `$1`: (var) Name of the variable where is save output command.
+  * `$2`: (cmd) Command to execute.
+  * `$3`: (rm_lf) If string length is not zero than from output command are remove LF.
+
+_Returns_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/mongo.sh
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: mongo_mongo_cmd_4var
+    :end-before: mongo_mongo_cmd_4var_end
+```
+
 ### Commons Mongo API
 
 #### commons_mongo_check_client

@@ -105,4 +105,61 @@ EOF
 }
 # mongo_mongo_file_initrc_end
 
+# mongo_mongo_cmd_4var
+mongo_cmd_4var () {
+
+  set -f
+  local var=$1
+  local cmd="$2"
+  local initrc=$3
+  local rm_lf=$4
+  local v=""
+  local opts="--quiet"
+  local result=""
+  local init_commands=""
+  local commands=""
+
+  if [ -z "$MONGO_CLIENT" ] ; then
+    return 1
+  fi
+
+  if [ -z "$mongo_auth" ] ; then
+    return 1
+  fi
+
+  if [ -n "$initrc" ] ; then
+    init_commands="$(cat $initrc)"
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(mongo_cmd_4var) Connection options $opts $MONGO_EXTRA_OPTIONS $mongo_auth.\n"
+
+
+  v=$($MONGO_CLIENT $opts $MONGO_EXTRA_OPTIONS $mongo_auth 2>&1 <<EOF
+$init_commands
+$cmd
+EOF
+)
+  result=$?
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "$cmd ==> $v ($result)\n"
+
+  if [[ $result -eq 0 && -n "$v" ]] ; then
+
+    if [[ -n $rm_lf ]] ; then
+
+      v=`echo $v | sed 's/\n//g'`
+
+    fi
+
+  fi
+
+  eval "$var=\$v"
+
+  set +f
+
+  return $result
+}
+# mongo_mongo_cmd_4var_end
+
 # vim: syn=sh filetype=sh
