@@ -388,13 +388,13 @@ out_stdout_clean () {
 
   if [ "${#out_rows[@]}" -gt 0 ] ; then
     for i in ${!out_rows[@]} ; do
-      unset ${out_rows[$i]}
+      unset out_rows[$i]
     done
   fi
 
   if [ "${#out_headers[@]}" -gt 0 ] ; then
     for i in ${!out_headers[@]} ; do
-      unset ${out_headers[$i]}
+      unset out_headers[$i]
     done
   fi
 
