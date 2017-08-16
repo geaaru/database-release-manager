@@ -175,8 +175,12 @@ commons_mongo_compile_file () {
 commons_mongo_get_indexes_list () {
 
   local single_collection="$1"
+  local filter_keyname="$2"
   local pos=0
   local cmd=""
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en \
+    "(commons_mongo_get_indexes_list) args: collection '${single_collection}', filter = '${filter_keyname}'\n"
 
   if [ -z "${single_collection}" ] ; then
     cmd="
@@ -186,20 +190,26 @@ db.getCollectionNames().forEach(function(n){
 
   else
 
-    cmd="JSON.stringify(db['${single_collection}'].getIndexSpecs());"
+    cmd="JSON.stringify(db['${single_collection}'].getIndexSpecs())"
 
   fi
 
+
+  # Retrieve stats data for index
+  commons_mongo_stats "${single_collection}" "index" || return 1
+
   mongo_cmd_4var "_mongo_ans" "$cmd" || return 1
 
-  # Create array as result with an array for every entry
+  # Create associative array for every entry
   # with column:
   # - collection
   # - key name
   # - keys
   # - n_keys
   # - keys_complete
+  # - index size
 
+  unset mongo_indexes
   declare -g -A mongo_indexes
 
   # Reset array and declare it
@@ -218,17 +228,23 @@ db.getCollectionNames().forEach(function(n){
       local n_keys=$(echo $row | jq ".[$i].key | keys | length")
       local keys=($(echo $row | jq -r -M ".[$i].key | keys | .[]"))
       keys=$(echo ${keys[@]} | tr " " \,)
+      local index_size=${mongo_stats[${kcoll}, ${kname}]}
 
       local keys_complete=$(echo $row | jq -r -M -c ".[$i].key")
 
       [[ $DEBUG && $DEBUG == true ]] && echo -en \
         "(commons_mongo_get_indexes_list) kname = $kname, kcoll =$kcoll, n_keys=$n_keys, keys=$keys_complete.\n"
 
+      if [[ -n "${filter_keyname}" && "${kname}" != ${filter_keyname} ]] ; then
+        continue
+      fi
+
       mongo_indexes[$pos, 0]=${kcoll}
       mongo_indexes[$pos, 1]=${kname}
       mongo_indexes[$pos, 2]=${keys}
       mongo_indexes[$pos, 3]=${n_keys}
       mongo_indexes[$pos, 4]=${keys_complete}
+      mongo_indexes[$pos, 5]=${index_size:-"N.A"}
 
       let pos++
 
@@ -243,6 +259,153 @@ db.getCollectionNames().forEach(function(n){
   return 0
 }
 # commons_mongo_commons_mongo_get_indexes_list_end
+
+# commons_mongo_commons_mongo_stats
+commons_mongo_stats () {
+
+  local scale=1024
+  local cmd=""
+  local pos=0
+  local i=0
+  # Contains collection name.
+  local single_collection="$1"
+  # target values are: collection | index | custom
+  local target="$2"
+  # Custom content permit to customize filter for
+  # jq parser and return JSON to process.
+  local custom_content="$3"
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en \
+    "(commons_mongo_mongo_stats) args: $@.\n"
+
+  if [ -z "${single_collection}" ] ; then
+    cmd="
+db.getCollectionNames().forEach(function(n) {
+  print( JSON.stringify(db[n].stats({scale: ${scale}})) );
+})"
+  else
+    cmd="JSON.stringify(db['${single_collection}'].stats({scale: ${scale}}))"
+  fi
+
+  mongo_cmd_4var "_mongo_stats" "$cmd" || return 1
+
+  unset mongo_stats
+  declare -g -A mongo_stats
+  mongo_stats=()
+
+  IFS=$'\n'
+  for row in $_mongo_stats ; do
+
+    local row_coll=$(echo $row | jq -r -M .ns | cut -d'.' -f 2)
+
+    case "${target}" in
+      collection)
+
+        # Create associative array with columns (number index):
+        # - collection
+        # - storageSize
+        # - shared
+        # - primary
+        # - count
+        # - nindexes
+        # - totalIndexSize
+        # - capped
+        # - average object size
+        # - size
+        # - sharded nodes
+        local storageSize=""
+        local sharded=""
+        local primary=""
+        local count=""
+        local nindexes=""
+        local totalIndexSize=""
+        local capped=""
+        local avgObjSize=""
+        local size=""
+        local shardedNodes=""
+
+        storageSize=$(echo $row | jq -r -M .storageSize)
+        sharded=$(echo $row | jq -r -M .sharded)
+
+        count=$(echo $row | jq -r -M .count)
+        nindexes=$(echo $row | jq -r -M .nindexes)
+        totalIndexSize=$(echo $row | jq -r -M .totalIndexSize)
+        capped=$(echo $row | jq -r -M .capped)
+        avgObjSize=$(echo $row | jq -r -M .avgObjSize)
+        size=$(echo $row | jq -r -M .size)
+
+        mongo_stats[$pos, 0]=${row_coll}
+        mongo_stats[$pos, 1]=${storageSize}
+
+        if [ "${sharded}" = "false" ] ; then
+          mongo_stats[$pos, 2]=0
+          primary=$(echo $row | jq -r -M .primary)
+          shardedNodes="-"
+        else
+          mongo_stats[$pos, 2]=1
+          primary="-"
+          shardedNodes=($(echo $row | jq -r -M ".shards | keys | .[]"))
+          shardedNodes=$(echo ${shardedNodes[@]} | tr " " \,)
+        fi
+        mongo_stats[$pos, 3]=${primary}
+        mongo_stats[$pos, 4]=${count}
+        mongo_stats[$pos, 5]=${nindexes}
+        mongo_stats[$pos, 6]=${totalIndexSize}
+        if [ "${capped}" = "false" ] ; then
+          mongo_stats[$pos, 7]=0
+        else
+          mongo_stats[$pos, 7]=1
+        fi
+        mongo_stats[$pos, 8]=${avgObjSize}
+        mongo_stats[$pos, 9]=${size}
+        mongo_stats[$pos, 10]=${shardedNodes}
+        ;;
+
+      index)
+
+        # Create associative array with columns (key is collection, index name):
+        # - index size
+        local indexSize=""
+        local nkeys=$(echo $row | jq -r -M ".indexSizes | length")
+
+        if [ ${nkeys} -gt 0 ] ; then
+
+          local keys=($(echo $row | jq -r -M ".indexSizes | keys | .[]"))
+
+          for key in ${keys[@]} ; do
+
+            indexSizes=$(echo $row | jq -r -M ".indexSizes.${key}")
+            mongo_stats[${row_coll}, ${key}]=${indexSizes}
+
+          done # end for key
+
+        fi
+
+        ;;
+
+      *)
+        # Create associative array with columns for collection (number index):
+        # - collection
+        # - custom json
+        local custom_json=$(echo $row | jq -r -M "${custom_content}")
+
+        mongo_stats[$pos, 0]=${row_coll}
+        mongo_stats[$pos, 1]=${custom_json}
+
+        ;;
+    esac
+
+    let pos++
+
+  done # end for
+  unset IFS
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en \
+    "(commons_mongo_stats) Found ${#mongo_stats[@]} ($pos) data.\n"
+
+  return 0
+}
+# commons_mongo_commons_mongo_stats_end
 
 # vim: syn=sh filetype=sh
 

@@ -155,9 +155,14 @@ mongo_show () {
   _mongo_show_help () {
 
     echo -en "[--indexes]              Show list of indexes present on database.\n"
+    echo -en "[--collections]          Show list of collections present on database.\n"
     echo -en "[--all]                  Show list of all indexes, collections on database.\n"
-    echo -en "[--collection NAME]      Show detail of a collection. This option could be repeated.\n"
-    echo -en "[--index NAME]           Show detail of a index. This option could be repeated.\n"
+    echo -en "[--collection CNAME]     Show detail of a collection. This option could be repeated.\n"
+    echo -en "[--index INAME]          Show detail of a index. This option could be repeated.\n"
+    echo -en "                         INAME contains name of the collection for retrieve all\n"
+    echo -en "                         indexes of a specific collection or name of the collection \n"
+    echo -en "                         with key name separated with a point.\n"
+    echo -en "\n"
 
     return 0
   }
@@ -169,7 +174,7 @@ mongo_show () {
 
     local short_options="U:P:hH:D:t:S:"
     local long_options="database: authdb: conn-options: help" # connection long options
-    long_options="$long_options all indexes index: collection:"
+    long_options="$long_options all indexes collections index: collection:"
 
     set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || \
       error_handled "Invalid parameters"
@@ -507,11 +512,19 @@ _mongo_show () {
 
     _mongo_show_indexes
 
+    _mongo_show_collections
+
   fi
 
   if [ $MONGO_SHOW_ALL_INDEXES -eq 1 ] ; then
 
     _mongo_show_indexes
+
+  fi
+
+  if [ $MONGO_SHOW_ALL_COLLECTIONS -eq 1 ] ; then
+
+    _mongo_show_collections
 
   fi
 
@@ -521,8 +534,7 @@ _mongo_show () {
     for i in ${!MONGO_SHOW_COLLS[@]}
     do
 
-      # TODO
-      #_mongo_show_collection ${MONGO_SHOW_COLLS[$i]}
+      _mongo_show_collections ${MONGO_SHOW_COLLS[$i]}
 
       out_handler_print "\n"
 
@@ -533,10 +545,26 @@ _mongo_show () {
   # Show single index data
   if [ $MONGO_SHOW_INDEX_DESCR -gt 0 ] ; then
 
+    local coll=""
+    local key=""
+    local show_detail=1
     for i in ${!MONGO_SHOW_INDEX[@]}
     do
 
-      _mongo_show_indexes ${MONGO_SHOW_INDEX[$i]} 1
+      coll=""
+      key=""
+      show_detail=1
+
+      coll=$(echo ${MONGO_SHOW_INDEX[$i]} | cut -d'.' -f 1)
+      key=$(echo ${MONGO_SHOW_INDEX[$i]} | cut -d'.' -f 2)
+
+      if [ $coll = $key ] ; then
+        # POST: not . on string.
+        key=""
+        show_detail=0
+      fi
+
+      _mongo_show_indexes "${coll}" "${key}" ${show_detail}
 
       out_handler_print "\n"
 
@@ -548,17 +576,196 @@ _mongo_show () {
 }
 # mongo__mongo_show_end
 
+# mongo__mongo_show_collections
+_mongo_show_collections () {
+
+  local collection="$1"
+  local i=0
+  local coll_name=25
+  local stosize_name=20
+  local counter=0
+  local count_name=20
+
+  commons_mongo_stats "${collection}" "collection" || \
+    error_handled "Error on retrieve collections list."
+
+  local n_colls=${#mongo_stats[@]}
+
+  if [ $n_colls -eq 0 ] ; then
+
+    out_handler_print "No collections available."
+
+  else
+
+    # Number of indexes must be divided by 11
+    # number of entries data for collection
+    # because I use an associative array.
+    n_colls=$((n_colls/11))
+
+    if [[ -n "${collection}" ]] ; then
+
+      # POST: show detail of single collection
+      #       with a vertical table.
+      out_ttitle="Detail of collection ${collection}"
+
+      out_headers[0]="COLLECTION"
+      out_headers[1]="SHARDED"
+      out_headers[2]="CAPPED"
+      out_headers[3]="N. INDEX"
+      out_headers[4]="STORAGE SIZE (KB)"
+      out_headers[5]="PRIMARY"
+      out_headers[6]="N. DOCS"
+      out_headers[7]="TOTAL INDEX SIZE (KB)"
+      out_headers[8]="AVERAGE OBJ SIZE (KB)"
+      out_headers[9]="SIZE (KB)"
+      out_headers[10]="SHARDED NODES"
+
+      out_el_pre[0]="\e[1;33m"
+      out_el_pre[1]="\e[1;32m"
+      out_el_pre[2]="\e[1;31m"
+      out_el_pre[3]="\e[1;34m"
+      out_el_pre[4]="\e[1;35m"
+      out_el_pre[5]="\e[1;30m"
+      out_el_pre[6]="\e[1;29m"
+      out_el_pre[7]="\e[1;36m"
+      out_el_pre[8]="\e[1;37m"
+      out_el_pre[9]="\e[1;34m"
+      out_el_pre[10]="\e[1;33m"
+
+      out_el_post[0]="\e[m"
+
+      out_htabs_mode="htabs"
+      out_prepost_mode="any"
+      out_vertical=1
+      out_vert_sep="=============================================================================================================================="
+
+      local coll=${mongo_stats[$i, 0]}
+      local storsize=${mongo_stats[$i, 1]}
+      local sharded=${mongo_stats[$i, 2]}
+      local primary=${mongo_stats[$i, 3]}
+      local count=${mongo_stats[$i, 4]}
+      local n_idx=${mongo_stats[$i, 5]}
+      local totIdx=${mongo_stats[$i, 6]}
+      local capped=${mongo_stats[$i, 7]}
+      local avgObjSize=${mongo_stats[$i, 8]}
+      local size=${mongo_stats[$i, 9]}
+      local shardedNodes=${mongo_stats[$i, 10]}
+
+      eval "unset row${counter}"
+      out_rows[$counter]="row${counter}"
+
+      eval "row${counter}[0]=\"${coll}\""
+      eval "row${counter}[1]=\"${sharded}\""
+      eval "row${counter}[2]=\"${capped}\""
+      eval "row${counter}[3]=\"${n_idx}\""
+      eval "row${counter}[4]=\"${storsize}\""
+      eval "row${counter}[5]=\"${primary}\""
+      eval "row${counter}[6]=\"${count}\""
+      eval "row${counter}[7]=\"${totIdx}\""
+      eval "row${counter}[8]=\"${avgObjSize}\""
+      eval "row${counter}[9]=\"${size}\""
+      eval "row${counter}[10]=\"${shardedNodes}\""
+
+      out_tabs[0]="30"
+      out_htabs[0]="30"
+
+      out_handler_print_arr
+
+    else # else of if -n detail
+
+      out_hsep=1
+      out_prepost_mode="any"
+      out_htabs_mode="tabs"
+
+      if [ -n "${collection}" ] ; then
+        out_ttitle="Collection ${collection}"
+      else
+        out_ttitle="Collections"
+      fi
+
+      out_headers[0]="COLLECTION"
+      out_headers[1]="SHARDED"
+      out_headers[2]="N. INDEX"
+      out_headers[3]="STORAGE SIZE (KB)"
+      out_headers[4]="PRIMARY"
+      out_headers[5]="N. DOCS"
+
+      out_el_pre[0]="\e[1;33m"
+      out_el_pre[1]="\e[1;32m"
+      out_el_pre[2]="\e[1;31m"
+      out_el_pre[3]="\e[1;34m"
+      out_el_pre[4]="\e[1;35m"
+      out_el_pre[5]="\e[1;29m"
+
+      out_el_post[0]="\e[m"
+
+      for ((i=0; i<${n_colls}; i++)) ; do
+
+        local coll=${mongo_stats[$i, 0]}
+        local storsize=${mongo_stats[$i, 1]}
+        local sharded=${mongo_stats[$i, 2]}
+        local primary=${mongo_stats[$i, 3]}
+        local count=${mongo_stats[$i, 4]}
+        local n_idx=${mongo_stats[$i, 5]}
+
+        # Clean previous row array
+        eval "unset row${counter}"
+        out_rows[$counter]="row"${counter}
+
+        eval "row${counter}[0]=\"${coll}\""
+        eval "row${counter}[1]=\"${sharded}\""
+        eval "row${counter}[2]=\"${n_idx}\""
+        eval "row${counter}[3]=\"${storsize}\""
+        eval "row${counter}[4]=\"${primary}\""
+        eval "row${counter}[5]=\"${count}\""
+
+        # Check if needed enlarge size of first column
+        if [ ${#coll} -ge $coll_name ] ; then
+          coll_name=$((${#coll}+1))
+        fi
+        if [ ${#storsize} -ge $stosize_name ] ; then
+          stosize_name=$((${#stosize}+1))
+        fi
+        if [ ${#count} -ge $count_name ] ; then
+          count_name=$((${#count}+1))
+        fi
+
+        let counter++
+
+      done
+
+      out_tabs[0]="$coll_name"
+      out_tabs[1]="9"
+      out_tabs[2]="9"
+      out_tabs[3]="$stosize_name"
+      out_tabs[4]="10"
+      out_tabs[5]="$count_name"
+
+      out_handler_print_arr
+      out_handler_print "\nFound ${n_colls} collections."
+
+    fi # end if detail
+
+  fi
+
+  out_handler_clean
+
+  return 0
+}
+# mongo__mongo_show_collections_end
+
 # mongo__mongo_show_indexes
 _mongo_show_indexes () {
 
   local collection="$1"
-  local detail="$2"
+  local keyname="$2"
+  local detail="$3"
   local i=0
   local coll_name=25
   local key_name=25
   local keys_name=30
 
-  commons_mongo_get_indexes_list "$1" || \
+  commons_mongo_get_indexes_list "${collection}" "${keyname}" || \
     error_handled "Error on retrieve indexes list."
 
   local n_indexes=${#mongo_indexes[@]}
@@ -569,33 +776,87 @@ _mongo_show_indexes () {
 
   else
 
-    # Number of indexes must be divided by 5,
-    # number of entries data for index.
-    n_indexes=$((n_indexes/5))
+    # Number of indexes must be divided by 6.
+    # number of entries data for index
+    # because I use an associative array.
+    n_indexes=$((n_indexes/6))
 
     if [[ -n ${detail} ]] ; then
 
       # POST: show detail of single collection
       #       with a vertical table.
-      local todo=""
-
-      echo ${detail}
-
-    else
-
-      out_hsep=1
-      out_prepost_mode="any"
-      out_htabs_mode="tabs"
-
-      out_headers[0]="COLLECTION"
-      out_headers[1]="KEY NAME"
-      out_headers[2]="# KEYS"
-      out_headers[3]="KEYS"
+      out_ttitle="Index detail for collection ${collection}"
+      [[ -n "${keyname}" ]] && out_ttitle="${out_ttitle} and key ${keyname}"
 
       out_el_pre[0]="\e[1;33m"
       out_el_pre[1]="\e[1;32m"
       out_el_pre[2]="\e[1;31m"
       out_el_pre[3]="\e[1;34m"
+      out_el_pre[4]="\e[1;35m"
+      out_el_post[0]="\e[m"
+
+      out_headers[0]="COLLECTION"
+      out_headers[1]="KEY NAME"
+      out_headers[2]="NUM. KEYS"
+      out_headers[3]="KEYS"
+      out_headers[4]="INDEX SIZE (KB)"
+
+      out_htabs_mode="htabs"
+      out_prepost_mode="any"
+      out_vertical=1
+      out_vert_sep="=============================================================================================================================="
+
+      local counter=0
+
+      for ((i=0; i<${n_indexes}; i++)) ; do
+
+        local kcoll=${mongo_indexes[$i, 0]}
+        local kname=${mongo_indexes[$i, 1]}
+        local n_keys=${mongo_indexes[$i, 3]}
+        local keys=${mongo_indexes[$i, 4]}
+        local idxsize=${mongo_indexes[$i, 5]}
+
+        # Clean previous row array
+        eval "unset row${counter}"
+        out_rows[$counter]="row"${counter}
+
+        eval "row${counter}[0]=\"${kcoll}\""
+        eval "row${counter}[1]=\"${kname}\""
+        eval "row${counter}[2]=\"${n_keys}\""
+        eval "row${counter}[3]=\"${keys}\""
+        eval "row${counter}[4]=\"${idxsize}\""
+
+        let counter++
+
+      done
+
+      out_tabs[0]="30"
+      out_htabs[0]="30"
+
+      out_handler_print_arr
+
+    else # else of if -n detail
+
+      out_hsep=1
+      out_prepost_mode="any"
+      out_htabs_mode="tabs"
+
+      if [ -n "${collection}" ] ; then
+        out_ttitle="Index detail for collection ${collection}"
+      else
+        out_ttitle="Indexes"
+      fi
+      out_headers[0]="COLLECTION"
+      out_headers[1]="KEY NAME"
+      out_headers[2]="# KEYS"
+      out_headers[3]="KEYS"
+      out_headers[4]="INDEX SIZE (KB)"
+
+      out_el_pre[0]="\e[1;33m"
+      out_el_pre[1]="\e[1;32m"
+      out_el_pre[2]="\e[1;31m"
+      out_el_pre[3]="\e[1;34m"
+      out_el_pre[4]="\e[1;35m"
 
       out_el_post[0]="\e[m"
 
@@ -607,13 +868,17 @@ _mongo_show_indexes () {
         local kname=${mongo_indexes[$i, 1]}
         local keys=${mongo_indexes[$i, 2]}
         local n_keys=${mongo_indexes[$i, 3]}
+        local idxsize=${mongo_indexes[$i, 5]}
 
+        # Clean previous row array
+        eval "unset row${counter}"
         out_rows[$counter]="row"${counter}
 
         eval "row${counter}[0]=\"${kcoll}\""
         eval "row${counter}[1]=\"${kname}\""
         eval "row${counter}[2]=\"${n_keys}\""
         eval "row${counter}[3]=\"${keys}\""
+        eval "row${counter}[4]=\"${idxsize}\""
 
         # Check if needed enlarge size of first column
         if [ ${#kcoll} -ge $coll_name ] ; then
@@ -635,11 +900,14 @@ _mongo_show_indexes () {
       out_tabs[1]="$key_name"
       out_tabs[2]="8"
       out_tabs[3]="$keys_name"
+      out_tabs[4]="20"
 
       out_handler_print_arr
       out_handler_print "\nFound ${n_indexes} indexes."
 
     fi
+
+    out_stdout_clean
 
   fi
 
