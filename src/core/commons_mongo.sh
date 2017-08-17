@@ -208,6 +208,7 @@ db.getCollectionNames().forEach(function(n){
   # - n_keys
   # - keys_complete
   # - index size
+  # - index options
 
   unset mongo_indexes
   declare -g -A mongo_indexes
@@ -224,20 +225,51 @@ db.getCollectionNames().forEach(function(n){
     for ((i=0; i<${n_indexes};i++)) ; do
 
       local kname=$(echo $row | jq -r -M .[$i].name )
+
+      if [[ -n "${filter_keyname}" && "${kname}" != ${filter_keyname} ]] ; then
+        continue
+      fi
+
       local kcoll=$(echo $row | jq -r -M .[$i].ns | cut -d'.' -f 2)
       local n_keys=$(echo $row | jq ".[$i].key | keys | length")
       local keys=($(echo $row | jq -r -M ".[$i].key | keys | .[]"))
       keys=$(echo ${keys[@]} | tr " " \,)
       local index_size=${mongo_stats[${kcoll}, ${kname}]}
 
-      local keys_complete=$(echo $row | jq -r -M -c ".[$i].key")
+      local keys_complete=$(echo $row | jq -M -c ".[$i].key")
 
+      local key_options=($(echo $row | jq -r -M ".[$i] | keys | .[]"))
+      local opts_json="{"
+
+      local opt=""
+      for opt in ${key_options[@]} ; do
+
+        local opt_val=""
+        case $opt in
+          v|key|ns|name)
+            ;;
+          *)
+            opt_val=$(echo $row | jq -M ".[$i].$opt")
+
+            if [ ${#opts_json} -eq 1 ] ; then
+              opts_json="${opts_json} \"${opt}\" : ${opt_val}"
+            else
+              opts_json="${opts_json}, \"${opt}\" : ${opt_val}"
+            fi
+            ;;
+        esac
+
+      done
+
+      if [ ${#opts_json} -eq 1 ] ; then
+        opts_json=""
+      else
+        opts_json="${opts_json} }"
+      fi
+
+      # echo -e $(printf '%q' $opts_json) | jq
       [[ $DEBUG && $DEBUG == true ]] && echo -en \
         "(commons_mongo_get_indexes_list) kname = $kname, kcoll =$kcoll, n_keys=$n_keys, keys=$keys_complete.\n"
-
-      if [[ -n "${filter_keyname}" && "${kname}" != ${filter_keyname} ]] ; then
-        continue
-      fi
 
       mongo_indexes[$pos, 0]=${kcoll}
       mongo_indexes[$pos, 1]=${kname}
@@ -245,6 +277,7 @@ db.getCollectionNames().forEach(function(n){
       mongo_indexes[$pos, 3]=${n_keys}
       mongo_indexes[$pos, 4]=${keys_complete}
       mongo_indexes[$pos, 5]=${index_size:-"N.A"}
+      mongo_indexes[$pos, 6]=${opts_json}
 
       let pos++
 
@@ -387,7 +420,7 @@ db.getCollectionNames().forEach(function(n) {
         # Create associative array with columns for collection (number index):
         # - collection
         # - custom json
-        local custom_json=$(echo $row | jq -r -M "${custom_content}")
+        local custom_json=$(echo $row | jq -M "${custom_content}")
 
         mongo_stats[$pos, 0]=${row_coll}
         mongo_stats[$pos, 1]=${custom_json}
@@ -406,6 +439,150 @@ db.getCollectionNames().forEach(function(n) {
   return 0
 }
 # commons_mongo_commons_mongo_stats_end
+
+# commons_mongo_commons_mongo_create_index_file
+commons_mongo_create_index_file () {
+
+  local coll="$1"
+  local name="$2"
+  local keys="$3"
+  local opts="$4"
+
+  local indexesdir="${MONGO_DIR}/indexes"
+  local f="${indexesdir}/${coll}.${name}.js"
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en \
+    "(commons_mongo_create_index_file): coll='${coll}' name='${name}' keys='${keys}' opts='${opts}, f=${f}'.\n"
+
+
+  # Check if exists indexes or create it
+  if [[ ! -d ${indexesdir} ]] ; then
+    mkdir -p ${indexesdir} || error_generate "Error on create directory ${indexesdir}."
+  fi
+
+  # TODO: check if key is already present on database.
+  # TODO: add header to index file as comment (through MONGO_HEADER variable)
+
+  [ -z "${opts}" ] && opts="{}"
+
+  opts=$(echo -e $(printf '%s' $opts) | jq --arg name $name '. + { name: $name}')
+
+  #echo -e '{ }' | jq --arg name prova '. + { name: $name}'
+  content="
+db.${coll}.createIndex(${keys} ,
+${opts} );
+
+"
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en \
+    "(commons_mongo_create_index_file) content =\n$content\n"
+
+  echo -en "$content" > $f || error_generate "Error on write file $f."
+
+  _logfile_write "(mongo) Created index ${name} for collection ${coll} (file ${f})" || \
+    return 1
+
+  return 0
+
+}
+# commons_mongo_commons_mongo_create_index_file_end
+
+# commons_mongo_commons_mongo_download_index
+commons_mongo_download_index () {
+
+  local coll="$1"
+  local kname="$2"
+  # optional: set with position of mongo_indexes array if already
+  #           initialized.
+  local arr_pos=$3
+  local keys=""
+  local opts=""
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en \
+    "(commons_mongo_download_index): coll='${coll}' kname='${kname}' pos=${arr_pos}.\n"
+
+  if [ -z "${arr_pos}" ] ; then
+
+    commons_mongo_get_indexes_list "${coll}" "${kname}" || \
+      error_generate "Error retrieve index data"
+
+    [ ${#mongo_indexes[@]} -eq 0 ] && \
+      error_generate "No index ${kname} for collection ${coll} found."
+
+    arr_pos=0
+
+  fi
+
+  keys=${mongo_indexes[$arr_pos, 4]}
+  opts=${mongo_indexes[$arr_pos, 6]}
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(commons_mongo_download_index): Found keys='${keys}', opts='${opts}'.\n"
+
+  commons_mongo_create_index_file "${coll}" "${kname}" "${keys}" "${opts}" || \
+    error_generate "Error on create index file."
+
+  return 0
+}
+# commons_mongo_commons_mongo_download_index_end
+
+# commons_mongo_commons_mongo_download_all_indexes
+commons_mongo_download_all_indexes () {
+
+  local i=0
+  local n_indexes=0
+  local collection="$1"
+  local include_id_=${2:-0}
+  local counter=0
+  local kcoll=""
+  local kname=""
+
+  commons_mongo_get_indexes_list "${collection}" "" || \
+    error_handled "Error on retrieve indexes list."
+
+  n_indexes=${#mongo_indexes[@]}
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(commons_mongo_download_all_indexes): Found ${n_indexes} indexes.\n"
+
+  if [ ${n_indexes} -gt 0 ] ; then
+
+    n_indexes=$((n_indexes/7))
+
+    for ((i=0; i<${n_indexes}; i++)) ; do
+
+      kcoll=${mongo_indexes[$i, 0]}
+      kname=${mongo_indexes[$i, 1]}
+
+      local idx=$((i+1))
+
+      # TODO: show if use out_handler_print instead of echo
+
+      if [[ ${include_id_} -gt 0 && "${kname}" == "_id_" ]] ; then
+        echo -en "Ignored index ${kname} of collection ${kcoll} ($idx of ${n_indexes}).\n"
+        continue
+      fi
+
+      commons_mongo_download_index "${kcoll}" "${kname}" $i
+
+      if [ $? -ne 0 ] ; then
+        echo -en \
+          "Error on download index data for collection ${kcoll} and index ${kname} ($idx of ${n_indexes}).\n"
+      else
+        echo -en "Downloaded index ${kname} of collection ${kcoll} ($idx of ${n_indexes}).\n"
+      fi
+
+    done # end for i
+
+  else
+
+    out_handler_print "No indexes found."
+
+  fi
+
+  return 0
+}
+# commons_mongo_commons_mongo_download_all_indexes_end
 
 # vim: syn=sh filetype=sh
 
