@@ -176,11 +176,12 @@ commons_mongo_get_indexes_list () {
 
   local single_collection="$1"
   local filter_keyname="$2"
+  local ignore_id_=${3:-0}
   local pos=0
   local cmd=""
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en \
-    "(commons_mongo_get_indexes_list) args: collection '${single_collection}', filter = '${filter_keyname}'\n"
+    "(commons_mongo_get_indexes_list) args: collection '${single_collection}', filter = '${filter_keyname}', ignore_id_='${ignore_id_}'\n"
 
   if [ -z "${single_collection}" ] ; then
     cmd="
@@ -227,6 +228,10 @@ db.getCollectionNames().forEach(function(n){
       local kname=$(echo $row | jq -r -M .[$i].name )
 
       if [[ -n "${filter_keyname}" && "${kname}" != ${filter_keyname} ]] ; then
+        continue
+      fi
+
+      if [[ ${ignore_id_} -eq 1 && "${kname}" == "_id_" ]] ; then
         continue
       fi
 
@@ -584,5 +589,203 @@ commons_mongo_download_all_indexes () {
 }
 # commons_mongo_commons_mongo_download_all_indexes_end
 
-# vim: syn=sh filetype=sh
+# commons_mongo_commons_mongo_drop_index
+commons_mongo_drop_index () {
 
+  local cmd=""
+  local coll="$1"
+  local kname="$2"
+  local msgprefix=""
+  local out=""
+  local ok=""
+  local errmsg=""
+  local ans=""
+
+  if [ -n "${kname}" ] ; then
+    msgprefix="drop index: ${kname} "
+  else
+    msgprefix="drop all indexes: "
+  fi
+
+  _logfile_write "(mongo) Start ${msgprefix}(collection ${coll})" || return 1
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en \
+    "(commons_mongo_drop_index: Dropping index kname='${kname}', coll='${coll}'\n"
+
+  if [ -n "${kname}" ] ; then
+    cmd="db.${coll}.dropIndex('${kname}')"
+  else
+    cmd="db.${coll}.dropIndexes()"
+  fi
+
+  mongo_cmd_4var "_mongo_drop" "$cmd"
+  ans=$?
+
+  out=$(echo "$_mongo_drop" | sed -e 's/.lastOpTime.*//g' -e 's/.electionId.*//g')
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en \
+    "(commons_mongo_drop_index: (out)\n${out}\n"
+
+  ok=$(echo "${out}" | jq .ok)
+
+  if [ "${ok}" = "1" ] ; then
+    _logfile_write "OK ($ans)" || return 1
+    ans=0
+  else
+
+    errmsg=$(echo ${out} | jq .errmsg)
+    _logfile_write "KO ($ans) - ${errmsg}" || return 1
+    ans=1
+
+    out_handler_print "Error on ${msgprefix} for collection ${coll}: ${errmsg}"
+
+  fi
+
+  _logfile_write "(mongo) End ${msgprefix}(collection ${coll})" || return 1
+
+  return $ans
+}
+# commons_mongo_commons_mongo_drop_index_end
+
+# commons_mongo_commons_mongo_compile_idx
+commons_mongo_compile_idx () {
+
+  local f=$1
+  local msg=$2
+  # TODO: force option 3 support
+  local force="$3"
+  local f_base=$(basename "$f")
+  local idx_dir=$(dirname "$f")
+  local idx_str="${f_base/.js/}"
+  local coll=$(echo ${idx_str} | cut -d'.' -f1)
+  local kname=$(echo ${idx_str} | cut -d'.' -f2)
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en \
+    "(commons_mongo_compile_idx): coll='${coll}' kname='${kname}' f=${f}.\n"
+
+  [ -z "${f}" ] && error_generate "(commons_mongo_compile_idx) Invalid argument"
+
+  if [ ! -e "${f}" ] ; then
+    local log="File $f not found."
+    _logfile_write "(mongo) ${log}" || return 1
+
+    out_handler_print "${log}"
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en \
+      "(commons_mongo_compile_idx) File $f not found.\n"
+    return 1
+  fi
+
+  # Check if index is already present.
+  commons_mongo_get_indexes_list "${coll}" "${kname}" || \
+    error_handled "Error on check if index ${coll}.${kname} already exists."
+
+  local n_indexes=${#mongo_indexes[@]}
+
+  if [ $n_indexes -gt 0 ] ; then
+
+    local log="Index ${coll}.${kname} is already present. Nothing to do."
+    out_handler_print "${log}"
+
+    _logfile_write "(mongo) ${log}"
+
+  else
+
+    commons_mongo_compile_file "${f}" "$msg" "1" || return 1
+
+  fi
+
+  return 0
+}
+# commons_mongo_commons_mongo_compile_idx_end
+
+# commons_mongo_commons_mongo_compile_all_from_dir
+commons_mongo_compile_all_from_dir () {
+
+  local directory="$1"
+  local msg_head="$2"
+  local msg="$3"
+  local dtype="$4"
+  local closure="$5"
+  local f=""
+  local fb=""
+  local ex_f=""
+  local fk_is_present=1
+  local exc=0
+
+  _logfile_write "(mongo) Start compilation $msg_head: $msg" || return 1
+
+  for i in $directory/*.js ; do
+
+    if [ ! -f "${i}" ]  ; then
+      continue
+    fi
+
+    fk_is_present=1
+    exc=0
+
+    fb=`basename $i`
+    f="${fb/.js/}"
+
+    # Check if file is excluded
+    if [ ! -z "$MONGO_COMPILE_FILES_EXCLUDED" ] ; then
+
+      for e in $MONGO_COMPILE_FILES_EXCLUDED ; do
+
+        ex_f=`basename $e`
+        ex_f="${ex_f/.js/}"
+
+        if [ "$ex_f" == "$f" ] ; then
+          exc=1
+
+          _logfile_write "(mongo) Exclude file $fb for user request."
+
+          break
+        fi
+
+      done # end for exclueded
+
+    fi
+
+    # If file is excluded go to the next
+    [ $exc -eq 1 ] && continue
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en \
+      "(commons_mongo_compile_all_from_dir: compile file [$i].\n"
+
+    if [[ -n "$dtype" && x"$dtype" == x"idx" ]] ; then
+
+      commons_mongo_compile_idx "$i" "$msg" "${closure}"
+
+    else
+
+      commons_mongo_compile_file "$i" "$msg" "1"
+
+    fi
+
+    # POST: on error go to next file
+
+  done # end for
+
+  _logfile_write "(mongo) End compilation $msg_head: $msg" || return 1
+
+  return 0
+
+}
+# commons_mongo_commons_mongo_compile_all_from_dir_end
+
+# commons_mongo_commons_mongo_compile_all_idxs
+commons_mongo_compile_all_idxs () {
+
+  local msg="$1"
+  local force="$2"
+  local directory="$MONGO_DIR/indexes"
+
+  commons_mongo_compile_all_from_dir "$directory" "of all indexes" "$msg" "idx" "${force}" || \
+    return 1
+
+  return 0
+}
+# commons_mongo_commons_mongo_compile_all_idxs_end
+
+# vim: syn=sh filetype=sh

@@ -37,6 +37,7 @@ mongo_long_help () {
    echo -en "\tshow                    Show collections, indexes, etc.\n"
    echo -en "\tdownload                Download indexes/scripts.\n"
    echo -en "\tcreate                  Create indexes.\n"
+   echo -en "\tdrop                    Drop indexes.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -58,6 +59,7 @@ mongo_show_help () {
    echo -en "\tshow                    Show collections, indexes, etc.\n"
    echo -en "\tdownload                Download indexes/scripts.\n"
    echo -en "\tcreate                  Create indexes.\n"
+   echo -en "\tdrop                    Drop indexes.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -166,6 +168,7 @@ mongo_show () {
     echo -en "                         INAME contains name of the collection for retrieve all\n"
     echo -en "                         indexes of a specific collection or name of the collection \n"
     echo -en "                         with key name separated with a point.\n"
+    echo -en "[--exclude-id]           Exclude special index _id.\n"
     echo -en "\n"
 
     return 0
@@ -178,7 +181,7 @@ mongo_show () {
 
     local short_options="U:P:hH:D:t:S:"
     local long_options="database: authdb: conn-options: help" # connection long options
-    long_options="$long_options all indexes collections index: collection:"
+    long_options="$long_options all indexes collections index: collection: exclude-id"
 
     set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || \
       error_handled "Invalid parameters"
@@ -197,6 +200,7 @@ mongo_show () {
     MONGO_SHOW_INDEX_DESCR=0
     MONGO_SHOW_COLLS=""
     MONGO_SHOW_INDEXES=""
+    MONGO_SHOW_EXCLUDEID=0
 
     while [ $# -gt 0 ] ; do
       case "$1" in
@@ -214,6 +218,9 @@ mongo_show () {
           ;;
         --all)
           MONGO_SHOW_ALL=1
+          ;;
+        --exclude-id)
+          MONGO_SHOW_EXCLUDEID=1
           ;;
         --index)
           MONGO_SHOW_INDEX[$MONGO_SHOW_INDEX_DESCR]="$2"
@@ -244,6 +251,8 @@ mongo_show () {
   }
 
   _mongo_check_status
+
+  _mongo_help_message="print_help"
 
   _mongo_connections_args "$@" || error_handled ""
 
@@ -420,6 +429,7 @@ mongo_create () {
     echo -ne "                         To use with --index option and could be use multiple time.\n"
     echo -en "[--key KEY_JSON_CONT]    Indicate key fields to use. This option could be used multiple.\n"
     echo -ne "                         time or it is possible define multiple keys on single option.\n"
+    echo -ne "[--background]           Enable creation of index in background. Default is false.\n"
     echo -en "\n"
     echo -en "Example1 - Create an unique index for collection test1 on reverse order:\n"
     echo -en "\$> dbrm mongo create --index test1.field1 --unique --key \"field1:-1\"\n"
@@ -439,7 +449,7 @@ mongo_create () {
 
     local short_options="U:P:hH:D:t:S:"
     local long_options="database: authdb: conn-options: help" # connection long options
-    long_options="$long_options index: unique expire-sec: opt: key:"
+    long_options="$long_options index: unique expire-sec: opt: key: background"
 
     set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || \
       error_handled "Invalid parameters"
@@ -458,6 +468,7 @@ mongo_create () {
     MONGO_CREATE_KEYS=""
     MONGO_CREATE_OPT_INDEX=0
     MONGO_CREATE_KEY_INDEX=0
+    MONGO_CREATE_BACKGROUND=0
 
     while [ $# -gt 0 ] ; do
       case "$1" in
@@ -482,6 +493,9 @@ mongo_create () {
         --expire-sec)
           MONGO_CREATE_EXPIRE="$2"
           shift
+          ;;
+        --background)
+          MONGO_CREATE_BACKGROUND=1
           ;;
         --opt)
           MONGO_CREATE_OPTS[$MONGO_CREATE_OPT_INDEX]="$2"
@@ -539,7 +553,7 @@ mongo_create () {
 
     local coll=""
     local key=""
-    local opts=""
+    local opts="{"
     local keys="{"
     local i=0
     local pos=0
@@ -547,11 +561,9 @@ mongo_create () {
     coll=$(echo ${MONGO_CREATE_INDEX} | cut -d'.' -f 1)
     key=$(echo ${MONGO_CREATE_INDEX} | cut -d'.' -f 2)
 
-    [ $coll = $key ] && error_handled "Error: missing key name on INAME argument."
+    [ "${coll}" == "${key}" ] && error_generate "Error: missing key name on INAME argument."
 
     if [ $MONGO_CREATE_OPT_INDEX -gt 0 ] ; then
-
-      opts="{ "
 
       for i in ${!MONGO_CREATE_OPTS[@]}
       do
@@ -566,9 +578,43 @@ mongo_create () {
 
       done # End for opts
 
-      opts="${opts} }"
+    fi
+
+    if [ $MONGO_CREATE_UNIQUE -eq 1 ] ; then
+
+      if [ $pos -eq 0 ] ; then
+        opts="${opts} \"unique\": true"
+      else
+        opts="${opts}, \"unique\": true"
+      fi
+
+      let pos++
 
     fi
+
+    if [ -n "${MONGO_CREATE_EXPIRE}" ] ; then
+
+      if [ $pos -eq 0 ] ; then
+        opts="${opts} \"expireAfterSeconds\": ${MONGO_CREATE_EXPIRE}"
+      else
+        opts="${opts}, \"expireAfterSeconds\": ${MONGO_CREATE_EXPIRE}"
+      fi
+
+      let pos++
+
+    fi
+
+    if [ $MONGO_CREATE_BACKGROUND -eq 1 ] ; then
+
+      if [ $pos -eq 0 ] ; then
+        opts="${opts} \"background\": true"
+      else
+        opts="${opts}, \"background\": true"
+      fi
+
+    fi
+
+    opts="${opts} }"
 
     pos=0
     # Create keys
@@ -596,11 +642,110 @@ mongo_create () {
 
   fi
 
-
-
   return 0
 }
 # mongo_mongo_create_end
+
+# mongo_mongo_drop
+mongo_drop () {
+
+  # Shift first two input param
+  shift 2
+
+  _mongo_drop_help () {
+
+    echo -en "[--all-indexes]          Drop all indexes present on database (not _id_).\n"
+    echo -en "[--index INAME]          Index name to drop.\n"
+    echo -en "                         This option is not usable multiple time.\n"
+    echo -en "                         INAME contains name of the collection where drop all\n"
+    echo -en "                         indexes of a specific collection or name of the collection \n"
+    echo -en "                         with key name separated with a point.\n"
+
+    echo -en "\n"
+
+    return 0
+  }
+
+  _mongo_drop_args () {
+
+    [[ $DEBUG && $DEBUG == true ]] && \
+      echo -en "(_mongo_drop_args args: $@)\n"
+
+    local short_options="U:P:hH:D:t:S:"
+    local long_options="database: authdb: conn-options: help" # connection long options
+    long_options="$long_options all-indexes index:"
+
+    set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || \
+      error_handled "Invalid parameters"
+
+    if [ $# -lt 2 ] ; then # is there at least one param (--)
+      _mongo_drop_help
+      return 1
+    fi
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mongo_create_args: Found $# params)\n"
+
+    MONGO_DROP_INDEX=""
+    MONGO_DROP_ALL_INDEXES=0
+
+    while [ $# -gt 0 ] ; do
+      case "$1" in
+
+        -U|-P|-D|-H|--database|--authdb|--conn-options)
+          shift
+          # do nothing
+          ;;
+
+        --index)
+          [ -n $MONGO_DROP_INDEX ] && \
+            error_handled "Error: --index option used multiple times"
+          [ -z "$2" ] && \
+            error_handled "Error: invalid value for param --index"
+
+          MONGO_DROP_INDEX=$2
+          shift
+          ;;
+        --all-indexes)
+          MONGO_DROP_ALL_INDEXES=1
+          ;;
+        -h|--help)
+          _mongo_drop_help
+          return 1
+          ;;
+        --)
+          ;;
+        *)
+          error_generate "Invalid parameter $1."
+          ;;
+
+      esac
+
+      shift
+    done
+
+    return 0
+  }
+
+  _mongo_check_status
+
+  _mongo_help_message="print_help"
+
+  _mongo_connections_args "$@" || error_handled ""
+
+  _mongo_drop_args "$@" || error_handled ""
+
+  commons_mongo_check_vars || error_handled ""
+
+  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
+
+  commons_mongo_check_connection || \
+    error_handled "mongo client was unable to connect to DB with supplied credentials."
+
+  _mongo_drop || error_handled ""
+
+  return 0
+}
+# mongo_mongo_drop_end
 
 ##################################################################
 # Internal functions
@@ -774,22 +919,31 @@ _mongo_compile_args () {
   # mongo__mongo_compile_help
   _mongo_compile_help () {
     echo -en "[--file file]            Compile a particular file. (Use ABS Path or relative path from current dir.)\n"
+    echo -en "[--indexes]              Compile all indexes not already present.\n"
+    echo -en "[--index INAME]          Compila a particular index.\n"
+    echo -en "                         This option could be used multiple time.\n"
+    echo -en "                         INAME contains name of the collection where drop all\n"
+    echo -en "                         indexes of a specific collection or name of the collection \n"
+    echo -en "                         with key name separated with a point.\n"
 
     return 0
   }
   # mongo__mongo_compile_help_end
 
-  long_options="$long_options file:"
+  long_options="$long_options file: indexes index:"
 
   $(set -- $(getopt -u -q -o "$short_options" -l "$long_options" -- "$@")) || \
     error_handled "Invalid parameters"
 
-  if [ $# -lt 2 ] ; then
+  if [ $# -lt 1 ] ; then
     _mongo_compile_help
     return 1
   fi
 
   MONGO_COMPILE_FILE=""
+  MONGO_COMPILE_KEY_INDEX=0
+  MONGO_COMPILE_KEYS=""
+  MONGO_COMPILE_ALL_INDEXES=0
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -800,6 +954,14 @@ _mongo_compile_args () {
         ;;
       --conn-options)
         # do nothing
+        shift
+        ;;
+      --indexes)
+        MONGO_COMPILE_ALL_INDEXES=1
+        ;;
+      --index)
+        MONGO_COMPILE_KEYS[$MONGO_COMPILE_KEY_INDEX]="$2"
+        let MONGO_COMPILE_KEY_INDEX++
         shift
         ;;
       --file)
@@ -843,6 +1005,51 @@ _mongo_compile () {
 
   fi
 
+  if [ $MONGO_COMPILE_ALL_INDEXES -eq 1 ] ; then
+
+    commons_mongo_compile_all_idxs "" || \
+      error_handled "Error on compile all indexes."
+
+  fi
+
+  if [ $MONGO_COMPILE_KEY_INDEX -gt 0 ] ; then
+
+    for key in "${!MONGO_COMPILE_KEYS[@]}"
+    do
+
+      local f=$(basename ${MONGO_COMPILE_KEYS[$key]})
+      f=$(echo $f | sed -e 's/\.js$//g')
+
+      local coll=$(echo ${f} | cut -d'.' -f 1)
+      local key=$(echo ${f} | cut -d'.' -f 2)
+      local indexesdir="${MONGO_DIR}/indexes"
+
+      if [ "${coll}" == "${key}" ] ; then
+
+        for i in ${indexesdir}/${coll}.*.js ; do
+
+          if [ ! -f "${i}" ] ; then
+            continue
+          fi
+
+          f=$(basename "${i}" | sed -e 's/\.js$//g')
+
+          commons_mongo_compile_idx "${indexesdir}/${f}.js" "indexes of collection ${coll}" || \
+            error_handled "Error on compile index ${MONGO_COMPILE_KEYS[$key]}"
+
+        done # end for i
+
+      else
+
+        commons_mongo_compile_idx "${indexesdir}/${f}.js" "index" || \
+          error_handled "Error on compile index ${MONGO_COMPILE_KEYS[$key]}"
+
+      fi
+
+    done
+
+  fi
+
   return 0
 }
 # mongo__mongo_compile_end
@@ -852,7 +1059,7 @@ _mongo_show () {
 
   if [ $MONGO_SHOW_ALL -eq 1 ] ; then
 
-    _mongo_show_indexes
+    _mongo_show_indexes "" "" "" ${MONGO_SHOW_EXCLUDEID}
 
     _mongo_show_collections
 
@@ -860,7 +1067,7 @@ _mongo_show () {
 
   if [ $MONGO_SHOW_ALL_INDEXES -eq 1 ] ; then
 
-    _mongo_show_indexes
+    _mongo_show_indexes "" "" "" ${MONGO_SHOW_EXCLUDEID}
 
   fi
 
@@ -906,7 +1113,7 @@ _mongo_show () {
         show_detail=0
       fi
 
-      _mongo_show_indexes "${coll}" "${key}" ${show_detail}
+      _mongo_show_indexes "${coll}" "${key}" ${show_detail} ${MONGO_SHOW_EXCLUDEID}
 
       out_handler_print "\n"
 
@@ -1102,12 +1309,13 @@ _mongo_show_indexes () {
   local collection="$1"
   local keyname="$2"
   local detail="$3"
+  local exclude_id=${4:-0}
   local i=0
   local coll_name=25
   local key_name=25
   local keys_name=30
 
-  commons_mongo_get_indexes_list "${collection}" "${keyname}" || \
+  commons_mongo_get_indexes_list "${collection}" "${keyname}" ${exclude_id} || \
     error_handled "Error on retrieve indexes list."
 
   local n_indexes=${#mongo_indexes[@]}
@@ -1260,5 +1468,72 @@ _mongo_show_indexes () {
 }
 # mongo__mongo_show_indexes_end
 
+# mongo__mongo_drop
+_mongo_drop () {
+
+  local ans=""
+  local i=0
+  local kcoll=""
+  local kname=""
+
+  if [ $MONGO_DROP_ALL_INDEXES -eq 1 ] ; then
+
+    commons_mongo_get_indexes_list "" "" 1 || \
+      error_handled "Error on retrieve indexes list."
+
+    local n_indexes=${#mongo_indexes[@]}
+
+    if [ $n_indexes -eq 0 ] ; then
+
+      out_handler_print "No indexes found to drop. Nothing to do."
+
+    else
+
+      n_indexes=$((n_indexes/7))
+
+      for ((i=0; i<${n_indexes}; i++)) ; do
+
+        kcoll=${mongo_indexes[$i, 0]}
+        kname=${mongo_indexes[$i, 1]}
+
+        out_handler_print "Dropping index ${kname} of collection ${kcoll}..."
+
+        commons_mongo_drop_index "${kcoll}" "${kname}"
+        ans=$?
+
+        if [ $ans -eq 0 ] ; then
+          out_handler_print "OK"
+        fi
+
+      done # end for i
+
+    fi # end if $n_indexes
+
+  fi
+
+  if [ -n "$MONGO_DROP_INDEX" ] ; then
+
+    kcoll=$(echo ${MONGO_DROP_INDEX} | cut -d'.' -f 1)
+    kname=$(echo ${MONGO_DROP_INDEX} | cut -d'.' -f 2)
+
+    if [ $kcoll = $kname ] ; then
+      kname=""
+      out_handler_print "Dropping all index of collection ${kcoll}..."
+    else
+      out_handler_print "Dropping index ${kname} of collection ${kcoll}..."
+    fi
+
+    commons_mongo_drop_index "${kcoll}" "${kname}"
+    ans=$?
+
+    if [ $ans -eq 0 ] ; then
+      out_handler_print "OK"
+    fi
+
+  fi
+
+  return 0
+}
+# mongo__mongo_drop_end
 
 # vim: syn=sh filetype=sh
