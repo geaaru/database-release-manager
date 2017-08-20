@@ -342,7 +342,7 @@ db.getCollectionNames().forEach(function(n) {
         # Create associative array with columns (number index):
         # - collection
         # - storageSize
-        # - shared
+        # - sharded
         # - primary
         # - count
         # - nindexes
@@ -421,7 +421,7 @@ db.getCollectionNames().forEach(function(n) {
 
         ;;
 
-      *)
+      custom)
         # Create associative array with columns for collection (number index):
         # - collection
         # - custom json
@@ -465,7 +465,8 @@ commons_mongo_create_index_file () {
     mkdir -p ${indexesdir} || error_generate "Error on create directory ${indexesdir}."
   fi
 
-  # TODO: check if key is already present on database.
+  # TODO: check if key is already present on database
+  #       also with a different name.
   # TODO: add header to index file as comment (through MONGO_HEADER variable)
 
   [ -z "${opts}" ] && opts="{}"
