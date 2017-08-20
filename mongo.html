@@ -94,6 +94,10 @@
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Mongo Module</a><ul>
 <li><a class="reference internal" href="#variables">Variables</a></li>
+<li><a class="reference internal" href="#project-folder-structure">Project Folder Structure</a><ul>
+<li><a class="reference internal" href="#index-naming-convention">Index Naming Convention</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#commands">Commands</a><ul>
 <li><a class="reference internal" href="#mongo-version">mongo version</a></li>
 <li><a class="reference internal" href="#mongo-test-connection">mongo test_connection</a><ul>
@@ -114,6 +118,7 @@
 <li><a class="reference internal" href="#mongo-set-auth-var">mongo_set_auth_var</a></li>
 <li><a class="reference internal" href="#mongo-file">mongo_file</a></li>
 <li><a class="reference internal" href="#mongo-file-initrc">mongo_file_initrc</a></li>
+<li><a class="reference internal" href="#mongo-cmd-4var">mongo_cmd_4var</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#commons-mongo-api">Commons Mongo API</a><ul>
@@ -122,6 +127,15 @@
 <li><a class="reference internal" href="#commons-mongo-check-connection">commons_mongo_check_connection</a></li>
 <li><a class="reference internal" href="#commons-mongo-shell">commons_mongo_shell</a></li>
 <li><a class="reference internal" href="#commons-mongo-compile-file">commons_mongo_compile_file</a></li>
+<li><a class="reference internal" href="#commons-mongo-get-indexes-list">commons_mongo_get_indexes_list</a></li>
+<li><a class="reference internal" href="#commons-mongo-stats">commons_mongo_stats</a></li>
+<li><a class="reference internal" href="#commons-mongo-create-index-file">commons_mongo_create_index_file</a></li>
+<li><a class="reference internal" href="#commons-mongo-download-index">commons_mongo_download_index</a></li>
+<li><a class="reference internal" href="#commons-mongo-download-all-indexes">commons_mongo_download_all_indexes</a></li>
+<li><a class="reference internal" href="#commons-mongo-drop-index">commons_mongo_drop_index</a></li>
+<li><a class="reference internal" href="#commons-mongo-compile-idx">commons_mongo_compile_idx</a></li>
+<li><a class="reference internal" href="#commons-mongo-compile-all-from-dir">commons_mongo_compile_all_from_dir</a></li>
+<li><a class="reference internal" href="#commons-mongo-compile-all-idxs">commons_mongo_compile_all_idxs</a></li>
 </ul>
 </li>
 </ul>
@@ -215,6 +229,37 @@ target commands.</td>
 </table>
 </div></blockquote>
 </div>
+<div class="section" id="project-folder-structure">
+<span id="project-folder-structure"></span><h2>Project Folder Structure<a class="headerlink" href="#project-folder-structure" title="Permalink to this headline">¶</a></h2>
+<p>An initialized project folder is composed by these directories:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">creation_scripts</span></code>: this directory contains initial DDL script for create all
+collection of the project with master data types.
+This directory could be used at begin of the project for the first
+release, in the next release is then used <em>update_scripts</em> directory
+that contains script for upgrade project and trace changes between
+releasees.</li>
+<li><code class="docutils literal"><span class="pre">dbrm-profiles</span></code>: if profiles are enable contains all configuration files for
+different environment (dev, test, prod, etc.). This directory could be with
+a different name and depend of value present of DRM_PROFILES_PATH variable.</li>
+<li><code class="docutils literal"><span class="pre">indexes</span></code>: this directory contains files with all indexes of the database.
+Special index _id could be not present.</li>
+<li><code class="docutils literal"><span class="pre">update_scripts</span></code>: this directory is used for store scripts with changes on database between
+first release and next releases.</li>
+<li><code class="docutils literal"><span class="pre">schemas</span></code>: optinal directory that could be contains database schema of the
+collections for example done by Dia tool.</li>
+</ul>
+<p>Under project directory normally is also available <code class="docutils literal"><span class="pre">dbrm.conf</span></code> file with main configuration
+options of the project and <code class="docutils literal"><span class="pre">dbrm.db</span></code> sqlite database used by <code class="docutils literal"><span class="pre">dbrm</span></code> for the project.</p>
+<div class="section" id="index-naming-convention">
+<span id="index-naming-convention"></span><h3>Index Naming Convention<a class="headerlink" href="#index-naming-convention" title="Permalink to this headline">¶</a></h3>
+<p>Indexes created with <em>create</em> command or downloaded with <em>download</em> command has this
+naming convention:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>  <span class="n">filename</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">Collection</span> <span class="n">Name</span><span class="o">&gt;</span> <span class="s1">&#39;.&#39;</span> <span class="o">&lt;</span><span class="n">Index</span> <span class="n">Name</span><span class="o">&gt;</span> <span class="s1">&#39;.js&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
 <div class="section" id="commands">
 <span id="commands"></span><h2>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="mongo-version">
@@ -307,6 +352,7 @@ connection options.</li>
 <span id="mongo-set-auth-var"></span><h3>mongo_set_auth_var<a class="headerlink" href="#mongo-set-auth-var" title="Permalink to this headline">¶</a></h3>
 <p>Set mongo_auth variable with arguments to use with mongo client program.
 Valorize options like: -u username &#8211;password=pwd database.</p>
+<p>Currently, authentication with certificate is not yet supported.</p>
 <p><em>Parameters</em>:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">$1</span></code>: (db) Name of the schema to use</li>
@@ -479,6 +525,91 @@ compile file content. Is an alternative to .mongorc.js file.</li>
 </pre></div>
 </div>
 </div></div>
+<div class="section" id="mongo-cmd-4var">
+<span id="mongo-cmd-4var"></span><h3>mongo_cmd_4var<a class="headerlink" href="#mongo-cmd-4var" title="Permalink to this headline">¶</a></h3>
+<p>Execute an input statement on configured schema.</p>
+<p><em>Variables Used</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">MONGO_CLIENT</span></code>: Path of mongo client.</li>
+</ul>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (var) Name of the variable where is save output command.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (cmd) Command to execute.</li>
+<li><code class="docutils literal"><span class="pre">$3</span></code>: (rm_lf) If string length is not zero than from output command are remove LF.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock4'))">(Show/Hide)</a><br /><div id="hiddencodeblock4" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mongo_cmd_4var <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">set</span> -f
+  <span class="nb">local</span> <span class="nv">var</span><span class="o">=</span><span class="nv">$1</span>
+  <span class="nb">local</span> <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">initrc</span><span class="o">=</span><span class="nv">$3</span>
+  <span class="nb">local</span> <span class="nv">rm_lf</span><span class="o">=</span><span class="nv">$4</span>
+  <span class="nb">local</span> <span class="nv">v</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;--quiet&quot;</span>
+  <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="nb">local</span> <span class="nv">init_commands</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="nb">local</span> <span class="nv">commands</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$MONGO_CLIENT</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$mongo_auth</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -n <span class="s2">&quot;</span><span class="nv">$initrc</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">init_commands</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>cat <span class="nv">$initrc</span><span class="k">)</span><span class="s2">&quot;</span>
+  <span class="k">fi</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;(mongo_cmd_4var) Connection options </span><span class="nv">$opts</span><span class="s2"> </span><span class="nv">$MONGO_EXTRA_OPTIONS</span><span class="s2"> </span><span class="nv">$mongo_auth</span><span class="s2">.\n&quot;</span>
+
+
+  <span class="nv">v</span><span class="o">=</span><span class="k">$(</span><span class="nv">$MONGO_CLIENT</span> <span class="nv">$opts</span> <span class="nv">$MONGO_EXTRA_OPTIONS</span> <span class="nv">$mongo_auth</span> 2&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="s">&lt;&lt;EOF</span>
+<span class="s">$init_commands</span>
+<span class="s">$cmd</span>
+<span class="s">EOF</span>
+<span class="k">)</span>
+  <span class="nv">result</span><span class="o">=</span><span class="nv">$?</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;</span><span class="nv">$cmd</span><span class="s2"> ==&gt; </span><span class="nv">$v</span><span class="s2"> (</span><span class="nv">$result</span><span class="s2">)\n&quot;</span>
+
+  <span class="k">if</span> <span class="o">[[</span> <span class="nv">$result</span> -eq <span class="m">0</span> <span class="o">&amp;&amp;</span> -n <span class="s2">&quot;</span><span class="nv">$v</span><span class="s2">&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+    <span class="k">if</span> <span class="o">[[</span> -n <span class="nv">$rm_lf</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+      <span class="nv">v</span><span class="o">=</span><span class="sb">`</span><span class="nb">echo</span> <span class="nv">$v</span> <span class="p">|</span> sed <span class="s1">&#39;s/\n//g&#39;</span><span class="sb">`</span>
+
+    <span class="k">fi</span>
+
+  <span class="k">fi</span>
+
+  <span class="nb">eval</span> <span class="s2">&quot;</span><span class="nv">$var</span><span class="s2">=\$v&quot;</span>
+
+  <span class="nb">set</span> +f
+
+  <span class="k">return</span> <span class="nv">$result</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
 </div>
 <div class="section" id="commons-mongo-api">
 <span id="commons-mongo-api"></span><h2>Commons Mongo API<a class="headerlink" href="#commons-mongo-api" title="Permalink to this headline">¶</a></h2>
@@ -506,7 +637,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mon
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock4'))">(Show/Hide)</a><br /><div id="hiddencodeblock4" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_client <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock5'))">(Show/Hide)</a><br /><div id="hiddencodeblock5" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_client <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$mongo</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
 
@@ -583,7 +714,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mon
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock5'))">(Show/Hide)</a><br /><div id="hiddencodeblock5" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_vars <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock6'))">(Show/Hide)</a><br /><div id="hiddencodeblock6" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_vars <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">commons_msg</span><span class="o">=</span><span class="s1">&#39;variable on configuration file, through arguments or on current profile.&#39;</span>
 
@@ -615,7 +746,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mon
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock6'))">(Show/Hide)</a><br /><div id="hiddencodeblock6" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_connection <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock7'))">(Show/Hide)</a><br /><div id="hiddencodeblock7" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_connection <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;--quiet&quot;</span>
 
@@ -666,7 +797,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mon
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock7'))">(Show/Hide)</a><br /><div id="hiddencodeblock7" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_shell <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock8'))">(Show/Hide)</a><br /><div id="hiddencodeblock8" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_shell <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
   <span class="nb">local</span> <span class="nv">errorCode</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -721,7 +852,7 @@ or mongo_file command if equal to 0.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock8'))">(Show/Hide)</a><br /><div id="hiddencodeblock8" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_compile_file <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock9'))">(Show/Hide)</a><br /><div id="hiddencodeblock9" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_compile_file <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="nv">$2</span>
@@ -757,6 +888,867 @@ or mongo_file command if equal to 0.</li>
 </pre></div>
 </div>
 </div></div>
+<div class="section" id="commons-mongo-get-indexes-list">
+<span id="commons-mongo-get-indexes-list"></span><h3>commons_mongo_get_indexes_list<a class="headerlink" href="#commons-mongo-get-indexes-list" title="Permalink to this headline">¶</a></h3>
+<p>Retrieve list of all indexes of current mongodb database and some statistics.
+This method store result on associative array with name <em>mongo_indexes</em> that
+contains these columns:</p>
+<ul class="simple">
+<li>collection: Name of the collection.</li>
+<li>key: Name of the index</li>
+<li>keys: list of keys of the index separated by comma</li>
+<li>n_keys: number of keys of the index</li>
+<li>keys_complete: list of the index keys on JSON format</li>
+<li>index size: current index size</li>
+<li>index options: index options (for example unique, expireAfterSec, etc.)</li>
+</ul>
+<p>For identify the size of the array it is needed divide number of records
+between number of columns (in this case 7) and then iterate for number of
+elements.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>  commons_mongo_get_indexes_list <span class="s2">&quot;&quot;</span> <span class="s2">&quot;&quot;</span> <span class="s2">&quot;&quot;</span>
+
+  <span class="nb">local</span> <span class="nv">n_indexes</span><span class="o">=</span><span class="si">${#</span><span class="nv">mongo_indexes</span><span class="p">[@]</span><span class="si">}</span>
+  <span class="nb">local</span> <span class="nv">real_n_indexes</span><span class="o">=</span><span class="k">$((</span>n_indexes/7<span class="k">))</span>
+
+  <span class="c1"># Retrieve data for every index</span>
+  <span class="k">for</span> <span class="o">((</span><span class="nv">i</span><span class="o">=</span>0<span class="p">;</span> i&lt;<span class="si">${</span><span class="nv">real_n_indexes</span><span class="si">}</span><span class="p">;</span> i++<span class="o">)</span> <span class="p">;</span> <span class="k">do</span>
+      <span class="nb">local</span> <span class="nv">kcoll</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_indexes</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 0]</span><span class="si">}</span>
+      <span class="nb">local</span> <span class="nv">kname</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_indexes</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 1]</span><span class="si">}</span>
+      <span class="nb">local</span> <span class="nv">n_keys</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_indexes</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 3]</span><span class="si">}</span>
+      <span class="nb">local</span> <span class="nv">keys</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_indexes</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 4]</span><span class="si">}</span>
+      <span class="nb">local</span> <span class="nv">idxsize</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_indexes</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 5]</span><span class="si">}</span>
+      <span class="nb">local</span> <span class="nv">idxopts</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_indexes</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 6]</span><span class="si">}</span>
+  <span class="k">done</span>
+</pre></div>
+</div>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (single_collection) If present permit to retrieve list
+of indexes of a particular collection. If not present or
+equal to empty string than all indexes of database are returned.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (filter_keyname) Optional argument that permit to filter
+indexes with a particula key name.</li>
+<li><code class="docutils literal"><span class="pre">$3</span></code>: (ignore_id_) Optional argument that permit to filter
+special index _id from list. Possible values are 0 (default)
+and 1 (ignore index with key name <em>id</em>).</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock10'))">(Show/Hide)</a><br /><div id="hiddencodeblock10" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_get_indexes_list <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">single_collection</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">filter_keyname</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">ignore_id_</span><span class="o">=</span><span class="si">${</span><span class="nv">3</span><span class="k">:-</span><span class="nv">0</span><span class="si">}</span>
+  <span class="nb">local</span> <span class="nv">pos</span><span class="o">=</span>0
+  <span class="nb">local</span> <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="se">\</span>
+    <span class="s2">&quot;(commons_mongo_get_indexes_list) args: collection &#39;</span><span class="si">${</span><span class="nv">single_collection</span><span class="si">}</span><span class="s2">&#39;, filter = &#39;</span><span class="si">${</span><span class="nv">filter_keyname</span><span class="si">}</span><span class="s2">&#39;, ignore_id_=&#39;</span><span class="si">${</span><span class="nv">ignore_id_</span><span class="si">}</span><span class="s2">&#39;\n&quot;</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="si">${</span><span class="nv">single_collection</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;</span>
+<span class="s2">db.getCollectionNames().forEach(function(n){</span>
+<span class="s2">  print( JSON.stringify(db[n].getIndexSpecs()));</span>
+<span class="s2">})&quot;</span>
+
+  <span class="k">else</span>
+
+    <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;JSON.stringify(db[&#39;</span><span class="si">${</span><span class="nv">single_collection</span><span class="si">}</span><span class="s2">&#39;].getIndexSpecs())&quot;</span>
+
+  <span class="k">fi</span>
+
+
+  <span class="c1"># Retrieve stats data for index</span>
+  commons_mongo_stats <span class="s2">&quot;</span><span class="si">${</span><span class="nv">single_collection</span><span class="si">}</span><span class="s2">&quot;</span> <span class="s2">&quot;index&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  mongo_cmd_4var <span class="s2">&quot;_mongo_ans&quot;</span> <span class="s2">&quot;</span><span class="nv">$cmd</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="c1"># Create associative array for every entry</span>
+  <span class="c1"># with column:</span>
+  <span class="c1"># - collection</span>
+  <span class="c1"># - key name</span>
+  <span class="c1"># - keys</span>
+  <span class="c1"># - n_keys</span>
+  <span class="c1"># - keys_complete</span>
+  <span class="c1"># - index size</span>
+  <span class="c1"># - index options</span>
+
+  <span class="nb">unset</span> mongo_indexes
+  <span class="nb">declare</span> -g -A mongo_indexes
+
+  <span class="c1"># Reset array and declare it</span>
+  <span class="nv">mongo_indexes</span><span class="o">=()</span>
+
+  <span class="nv">IFS</span><span class="o">=</span><span class="s1">$&#39;\n&#39;</span>
+  <span class="k">for</span> row in <span class="nv">$_mongo_ans</span> <span class="p">;</span> <span class="k">do</span>
+
+    <span class="nb">local</span> <span class="nv">n_indexes</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq <span class="s1">&#39;length&#39;</span><span class="k">)</span>
+    <span class="nb">local</span> <span class="nv">i</span><span class="o">=</span>0
+
+    <span class="k">for</span> <span class="o">((</span><span class="nv">i</span><span class="o">=</span>0<span class="p">;</span> i&lt;<span class="si">${</span><span class="nv">n_indexes</span><span class="si">}</span><span class="p">;</span>i++<span class="o">))</span> <span class="p">;</span> <span class="k">do</span>
+
+      <span class="nb">local</span> <span class="nv">kname</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M .<span class="o">[</span><span class="nv">$i</span><span class="o">]</span>.name <span class="k">)</span>
+
+      <span class="k">if</span> <span class="o">[[</span> -n <span class="s2">&quot;</span><span class="si">${</span><span class="nv">filter_keyname</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">&amp;&amp;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">kname</span><span class="si">}</span><span class="s2">&quot;</span> !<span class="o">=</span> <span class="si">${</span><span class="nv">filter_keyname</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+        <span class="k">continue</span>
+      <span class="k">fi</span>
+
+      <span class="k">if</span> <span class="o">[[</span> <span class="si">${</span><span class="nv">ignore_id_</span><span class="si">}</span> -eq <span class="m">1</span> <span class="o">&amp;&amp;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">kname</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">==</span> <span class="s2">&quot;_id_&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+        <span class="k">continue</span>
+      <span class="k">fi</span>
+
+      <span class="nb">local</span> <span class="nv">kcoll</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M .<span class="o">[</span><span class="nv">$i</span><span class="o">]</span>.ns <span class="p">|</span> cut -d<span class="s1">&#39;.&#39;</span> -f 2<span class="k">)</span>
+      <span class="nb">local</span> <span class="nv">n_keys</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq <span class="s2">&quot;.[</span><span class="nv">$i</span><span class="s2">].key | keys | length&quot;</span><span class="k">)</span>
+      <span class="nb">local</span> <span class="nv">keys</span><span class="o">=(</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M <span class="s2">&quot;.[</span><span class="nv">$i</span><span class="s2">].key | keys | .[]&quot;</span><span class="k">)</span><span class="o">)</span>
+      <span class="nv">keys</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="si">${</span><span class="nv">keys</span><span class="p">[@]</span><span class="si">}</span> <span class="p">|</span> tr <span class="s2">&quot; &quot;</span> <span class="se">\,</span><span class="k">)</span>
+      <span class="nb">local</span> <span class="nv">index_size</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_stats</span><span class="p">[</span><span class="si">${</span><span class="nv">kcoll</span><span class="si">}</span><span class="p">, </span><span class="si">${</span><span class="nv">kname</span><span class="si">}</span><span class="p">]</span><span class="si">}</span>
+
+      <span class="nb">local</span> <span class="nv">keys_complete</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -M -c <span class="s2">&quot;.[</span><span class="nv">$i</span><span class="s2">].key&quot;</span><span class="k">)</span>
+
+      <span class="nb">local</span> <span class="nv">key_options</span><span class="o">=(</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M <span class="s2">&quot;.[</span><span class="nv">$i</span><span class="s2">] | keys | .[]&quot;</span><span class="k">)</span><span class="o">)</span>
+      <span class="nb">local</span> <span class="nv">opts_json</span><span class="o">=</span><span class="s2">&quot;{&quot;</span>
+
+      <span class="nb">local</span> <span class="nv">opt</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+      <span class="k">for</span> opt in <span class="si">${</span><span class="nv">key_options</span><span class="p">[@]</span><span class="si">}</span> <span class="p">;</span> <span class="k">do</span>
+
+        <span class="nb">local</span> <span class="nv">opt_val</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="k">case</span> <span class="nv">$opt</span> in
+          v<span class="p">|</span>key<span class="p">|</span>ns<span class="p">|</span>name<span class="o">)</span>
+            <span class="p">;;</span>
+          *<span class="o">)</span>
+            <span class="nv">opt_val</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -M <span class="s2">&quot;.[</span><span class="nv">$i</span><span class="s2">].</span><span class="nv">$opt</span><span class="s2">&quot;</span><span class="k">)</span>
+
+            <span class="k">if</span> <span class="o">[</span> <span class="si">${#</span><span class="nv">opts_json</span><span class="si">}</span> -eq <span class="m">1</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+              <span class="nv">opts_json</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">opts_json</span><span class="si">}</span><span class="s2"> \&quot;</span><span class="si">${</span><span class="nv">opt</span><span class="si">}</span><span class="s2">\&quot; : </span><span class="si">${</span><span class="nv">opt_val</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">else</span>
+              <span class="nv">opts_json</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">opts_json</span><span class="si">}</span><span class="s2">, \&quot;</span><span class="si">${</span><span class="nv">opt</span><span class="si">}</span><span class="s2">\&quot; : </span><span class="si">${</span><span class="nv">opt_val</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">fi</span>
+            <span class="p">;;</span>
+        <span class="k">esac</span>
+
+      <span class="k">done</span>
+
+      <span class="k">if</span> <span class="o">[</span> <span class="si">${#</span><span class="nv">opts_json</span><span class="si">}</span> -eq <span class="m">1</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+        <span class="nv">opts_json</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+      <span class="k">else</span>
+        <span class="nv">opts_json</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">opts_json</span><span class="si">}</span><span class="s2"> }&quot;</span>
+      <span class="k">fi</span>
+
+      <span class="c1"># echo -e $(printf &#39;%q&#39; $opts_json) | jq</span>
+      <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="se">\</span>
+        <span class="s2">&quot;(commons_mongo_get_indexes_list) kname = </span><span class="nv">$kname</span><span class="s2">, kcoll =</span><span class="nv">$kcoll</span><span class="s2">, n_keys=</span><span class="nv">$n_keys</span><span class="s2">, keys=</span><span class="nv">$keys_complete</span><span class="s2">.\n&quot;</span>
+
+      mongo_indexes<span class="o">[</span><span class="nv">$pos</span>, 0<span class="o">]=</span><span class="si">${</span><span class="nv">kcoll</span><span class="si">}</span>
+      mongo_indexes<span class="o">[</span><span class="nv">$pos</span>, 1<span class="o">]=</span><span class="si">${</span><span class="nv">kname</span><span class="si">}</span>
+      mongo_indexes<span class="o">[</span><span class="nv">$pos</span>, 2<span class="o">]=</span><span class="si">${</span><span class="nv">keys</span><span class="si">}</span>
+      mongo_indexes<span class="o">[</span><span class="nv">$pos</span>, 3<span class="o">]=</span><span class="si">${</span><span class="nv">n_keys</span><span class="si">}</span>
+      mongo_indexes<span class="o">[</span><span class="nv">$pos</span>, 4<span class="o">]=</span><span class="si">${</span><span class="nv">keys_complete</span><span class="si">}</span>
+      mongo_indexes<span class="o">[</span><span class="nv">$pos</span>, 5<span class="o">]=</span><span class="si">${</span><span class="nv">index_size</span><span class="k">:-</span><span class="s2">&quot;N.A&quot;</span><span class="si">}</span>
+      mongo_indexes<span class="o">[</span><span class="nv">$pos</span>, 6<span class="o">]=</span><span class="si">${</span><span class="nv">opts_json</span><span class="si">}</span>
+
+      <span class="nb">let</span> pos++
+
+    <span class="k">done</span>
+
+  <span class="k">done</span>
+  <span class="nb">unset</span> IFS
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="se">\</span>
+    <span class="s2">&quot;(commons_mongo_get_indexes_list) Found </span><span class="si">${#</span><span class="nv">mongo_indexes</span><span class="p">[@]</span><span class="si">}</span><span class="s2"> (</span><span class="nv">$pos</span><span class="s2">) indexes.\n&quot;</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-mongo-stats">
+<span id="commons-mongo-stats"></span><h3>commons_mongo_stats<a class="headerlink" href="#commons-mongo-stats" title="Permalink to this headline">¶</a></h3>
+<p>Retrieve statistics data of collections, indexes or custom stats.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (single_collection) If present permit to retrieve data
+of a particular collection. If not present or
+equal to empty string than all collections of database
+are used for retrieve data.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (target) Identify type of data returned. Possible values
+are <em>collection</em>, <em>index</em>, <em>custom</em>.</li>
+<li><code class="docutils literal"><span class="pre">$3</span></code>: (custom_content) Optional argument that contains <em>jq</em>
+parse string for retrieve a custom data from json stats
+of collection. It is used when target contains <em>custom</em>.</li>
+</ul>
+<p>Result data are store on <code class="docutils literal"><span class="pre">mongo_stats</span></code> array.</p>
+<p>If target is equal to <em>collection</em> then is returned an associative
+array with this columns:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">collection</span></code>: Name of the collection</li>
+<li><code class="docutils literal"><span class="pre">storageSize</span></code>: Storage size of the collection</li>
+<li><code class="docutils literal"><span class="pre">sharded</span></code>: Identify if collection is sharded (1) or not (0)</li>
+<li><code class="docutils literal"><span class="pre">primary</span></code>: If not sharded contains name of the primary node.</li>
+<li><code class="docutils literal"><span class="pre">count</span></code>: Number of documents of the collections.</li>
+<li><code class="docutils literal"><span class="pre">nindexes</span></code>: Number of indexes of the collections.</li>
+<li><code class="docutils literal"><span class="pre">totalIndexSize</span></code>: total size of all indexes of the collection.</li>
+<li><code class="docutils literal"><span class="pre">capped</span></code>: If collection is capped (1) or not (0)</li>
+<li><code class="docutils literal"><span class="pre">avgObjSize</span></code>: contains average document size</li>
+<li><code class="docutils literal"><span class="pre">size</span></code>: size of the collection</li>
+<li><code class="docutils literal"><span class="pre">sharded</span> <span class="pre">nodes</span></code>: If sharded list of sharded nodes.</li>
+</ul>
+<p>For identify the size of the array it is needed divide number of records
+between number of columns (in this case 11) and then iterate for number of
+elements.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>  commons_mongo_stats <span class="s2">&quot;&quot;</span> <span class="s2">&quot;collection&quot;</span>
+
+  <span class="nb">local</span> <span class="nv">n_colls</span><span class="o">=</span><span class="si">${#</span><span class="nv">mongo_stats</span><span class="p">[@]</span><span class="si">}</span>
+  <span class="nb">local</span> <span class="nv">real_n_colls</span><span class="o">=</span><span class="k">$((</span>n_stats/7<span class="k">))</span>
+
+  <span class="c1"># Retrieve data for every collection</span>
+  <span class="k">for</span> <span class="o">((</span><span class="nv">i</span><span class="o">=</span>0<span class="p">;</span> i&lt;<span class="si">${</span><span class="nv">real_n_colls</span><span class="si">}</span><span class="p">;</span> i++<span class="o">)</span> <span class="p">;</span> <span class="k">do</span>
+      <span class="nb">local</span> <span class="nv">coll</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_stats</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 0]</span><span class="si">}</span>
+      <span class="nb">local</span> <span class="nv">storsize</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_stats</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 1]</span><span class="si">}</span>
+      <span class="nb">local</span> <span class="nv">sharded</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_stats</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 2]</span><span class="si">}</span>
+      <span class="nb">local</span> <span class="nv">primary</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_stats</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 3]</span><span class="si">}</span>
+      <span class="nb">local</span> <span class="nv">count</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_stats</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 4]</span><span class="si">}</span>
+      <span class="nb">local</span> <span class="nv">n_idx</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_stats</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 5]</span><span class="si">}</span>
+      <span class="nb">local</span> <span class="nv">totIdx</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_stats</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 6]</span><span class="si">}</span>
+      <span class="nb">local</span> <span class="nv">capped</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_stats</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 7]</span><span class="si">}</span>
+      <span class="nb">local</span> <span class="nv">avgObjSize</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_stats</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 8]</span><span class="si">}</span>
+      <span class="nb">local</span> <span class="nv">size</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_stats</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 9]</span><span class="si">}</span>
+      <span class="nb">local</span> <span class="nv">shardedNodes</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_stats</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 10]</span><span class="si">}</span>
+  <span class="k">done</span>
+</pre></div>
+</div>
+<p>If target is equal to <em>index</em> then is returned an associative
+array with this columns:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">index</span> <span class="pre">size</span></code>: Size of the index.</li>
+</ul>
+<p>and where key of the array is composed by <em>collection name</em> and <em>index key
+name</em>.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>  commons_mongo_stats <span class="s2">&quot;&quot;</span> <span class="s2">&quot;index&quot;</span>
+
+  <span class="c1"># Found index size of key &quot;index1&quot; and collection &quot;c1&quot;</span>
+  cal <span class="nv">indexSize</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_stats</span><span class="p">[</span><span class="s2">&quot;c1&quot;</span><span class="p">, </span><span class="s2">&quot;index1&quot;</span><span class="p">]</span><span class="si">}</span>
+</pre></div>
+</div>
+<p>If target is equal to <em>custom</em> then is returned an associative
+array with this columns:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">collection</span></code>: Name of the collection</li>
+<li><code class="docutils literal"><span class="pre">json</span></code>: Custom json content returned by input js string.</li>
+</ul>
+<p>For identify the size of the array it is needed divide number of records
+between number of columns (in this case 2) and then iterate for number of
+elements.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>  commons_mongo_stats <span class="s2">&quot;&quot;</span> <span class="s2">&quot;custom&quot;</span> <span class="s2">&quot;.wiredTiger.cache&quot;</span>
+
+  <span class="nb">local</span> <span class="nv">n_colls</span><span class="o">=</span><span class="si">${#</span><span class="nv">mongo_stats</span><span class="p">[@]</span><span class="si">}</span>
+  <span class="nb">local</span> <span class="nv">real_n_colls</span><span class="o">=</span><span class="k">$((</span>n_stats/2<span class="k">))</span>
+
+  <span class="c1"># Retrieve data for every collection</span>
+  <span class="k">for</span> <span class="o">((</span><span class="nv">i</span><span class="o">=</span>0<span class="p">;</span> i&lt;<span class="si">${</span><span class="nv">real_n_colls</span><span class="si">}</span><span class="p">;</span> i++<span class="o">)</span> <span class="p">;</span> <span class="k">do</span>
+      <span class="nb">local</span> <span class="nv">coll</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_stats</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 0]</span><span class="si">}</span>
+      <span class="nb">local</span> <span class="nv">custom_json</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_stats</span><span class="p">[</span><span class="nv">$i</span><span class="p">, 1]</span><span class="si">}</span>
+  <span class="k">done</span>
+</pre></div>
+</div>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock11'))">(Show/Hide)</a><br /><div id="hiddencodeblock11" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_stats <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">scale</span><span class="o">=</span>1024
+  <span class="nb">local</span> <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="nb">local</span> <span class="nv">pos</span><span class="o">=</span>0
+  <span class="nb">local</span> <span class="nv">i</span><span class="o">=</span>0
+  <span class="c1"># Contains collection name.</span>
+  <span class="nb">local</span> <span class="nv">single_collection</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+  <span class="c1"># target values are: collection | index | custom</span>
+  <span class="nb">local</span> <span class="nv">target</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+  <span class="c1"># Custom content permit to customize filter for</span>
+  <span class="c1"># jq parser and return JSON to process.</span>
+  <span class="nb">local</span> <span class="nv">custom_content</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$3</span><span class="s2">&quot;</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="se">\</span>
+    <span class="s2">&quot;(commons_mongo_mongo_stats) args: </span><span class="nv">$@</span><span class="s2">.\n&quot;</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="si">${</span><span class="nv">single_collection</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;</span>
+<span class="s2">db.getCollectionNames().forEach(function(n) {</span>
+<span class="s2">  print( JSON.stringify(db[n].stats({scale: </span><span class="si">${</span><span class="nv">scale</span><span class="si">}</span><span class="s2">})) );</span>
+<span class="s2">})&quot;</span>
+  <span class="k">else</span>
+    <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;JSON.stringify(db[&#39;</span><span class="si">${</span><span class="nv">single_collection</span><span class="si">}</span><span class="s2">&#39;].stats({scale: </span><span class="si">${</span><span class="nv">scale</span><span class="si">}</span><span class="s2">}))&quot;</span>
+  <span class="k">fi</span>
+
+  mongo_cmd_4var <span class="s2">&quot;_mongo_stats&quot;</span> <span class="s2">&quot;</span><span class="nv">$cmd</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="nb">unset</span> mongo_stats
+  <span class="nb">declare</span> -g -A mongo_stats
+  <span class="nv">mongo_stats</span><span class="o">=()</span>
+
+  <span class="nv">IFS</span><span class="o">=</span><span class="s1">$&#39;\n&#39;</span>
+  <span class="k">for</span> row in <span class="nv">$_mongo_stats</span> <span class="p">;</span> <span class="k">do</span>
+
+    <span class="nb">local</span> <span class="nv">row_coll</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M .ns <span class="p">|</span> cut -d<span class="s1">&#39;.&#39;</span> -f 2<span class="k">)</span>
+
+    <span class="k">case</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">target</span><span class="si">}</span><span class="s2">&quot;</span> in
+      collection<span class="o">)</span>
+
+        <span class="c1"># Create associative array with columns (number index):</span>
+        <span class="c1"># - collection</span>
+        <span class="c1"># - storageSize</span>
+        <span class="c1"># - sharded</span>
+        <span class="c1"># - primary</span>
+        <span class="c1"># - count</span>
+        <span class="c1"># - nindexes</span>
+        <span class="c1"># - totalIndexSize</span>
+        <span class="c1"># - capped</span>
+        <span class="c1"># - average object size</span>
+        <span class="c1"># - size</span>
+        <span class="c1"># - sharded nodes</span>
+        <span class="nb">local</span> <span class="nv">storageSize</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="nb">local</span> <span class="nv">sharded</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="nb">local</span> <span class="nv">primary</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="nb">local</span> <span class="nv">count</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="nb">local</span> <span class="nv">nindexes</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="nb">local</span> <span class="nv">totalIndexSize</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="nb">local</span> <span class="nv">capped</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="nb">local</span> <span class="nv">avgObjSize</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="nb">local</span> <span class="nv">size</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="nb">local</span> <span class="nv">shardedNodes</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+        <span class="nv">storageSize</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M .storageSize<span class="k">)</span>
+        <span class="nv">sharded</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M .sharded<span class="k">)</span>
+
+        <span class="nv">count</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M .count<span class="k">)</span>
+        <span class="nv">nindexes</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M .nindexes<span class="k">)</span>
+        <span class="nv">totalIndexSize</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M .totalIndexSize<span class="k">)</span>
+        <span class="nv">capped</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M .capped<span class="k">)</span>
+        <span class="nv">avgObjSize</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M .avgObjSize<span class="k">)</span>
+        <span class="nv">size</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M .size<span class="k">)</span>
+
+        mongo_stats<span class="o">[</span><span class="nv">$pos</span>, 0<span class="o">]=</span><span class="si">${</span><span class="nv">row_coll</span><span class="si">}</span>
+        mongo_stats<span class="o">[</span><span class="nv">$pos</span>, 1<span class="o">]=</span><span class="si">${</span><span class="nv">storageSize</span><span class="si">}</span>
+
+        <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">sharded</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+          mongo_stats<span class="o">[</span><span class="nv">$pos</span>, 2<span class="o">]=</span>0
+          <span class="nv">primary</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M .primary<span class="k">)</span>
+          <span class="nv">shardedNodes</span><span class="o">=</span><span class="s2">&quot;-&quot;</span>
+        <span class="k">else</span>
+          mongo_stats<span class="o">[</span><span class="nv">$pos</span>, 2<span class="o">]=</span>1
+          <span class="nv">primary</span><span class="o">=</span><span class="s2">&quot;-&quot;</span>
+          <span class="nv">shardedNodes</span><span class="o">=(</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M <span class="s2">&quot;.shards | keys | .[]&quot;</span><span class="k">)</span><span class="o">)</span>
+          <span class="nv">shardedNodes</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="si">${</span><span class="nv">shardedNodes</span><span class="p">[@]</span><span class="si">}</span> <span class="p">|</span> tr <span class="s2">&quot; &quot;</span> <span class="se">\,</span><span class="k">)</span>
+        <span class="k">fi</span>
+        mongo_stats<span class="o">[</span><span class="nv">$pos</span>, 3<span class="o">]=</span><span class="si">${</span><span class="nv">primary</span><span class="si">}</span>
+        mongo_stats<span class="o">[</span><span class="nv">$pos</span>, 4<span class="o">]=</span><span class="si">${</span><span class="nv">count</span><span class="si">}</span>
+        mongo_stats<span class="o">[</span><span class="nv">$pos</span>, 5<span class="o">]=</span><span class="si">${</span><span class="nv">nindexes</span><span class="si">}</span>
+        mongo_stats<span class="o">[</span><span class="nv">$pos</span>, 6<span class="o">]=</span><span class="si">${</span><span class="nv">totalIndexSize</span><span class="si">}</span>
+        <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">capped</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+          mongo_stats<span class="o">[</span><span class="nv">$pos</span>, 7<span class="o">]=</span>0
+        <span class="k">else</span>
+          mongo_stats<span class="o">[</span><span class="nv">$pos</span>, 7<span class="o">]=</span>1
+        <span class="k">fi</span>
+        mongo_stats<span class="o">[</span><span class="nv">$pos</span>, 8<span class="o">]=</span><span class="si">${</span><span class="nv">avgObjSize</span><span class="si">}</span>
+        mongo_stats<span class="o">[</span><span class="nv">$pos</span>, 9<span class="o">]=</span><span class="si">${</span><span class="nv">size</span><span class="si">}</span>
+        mongo_stats<span class="o">[</span><span class="nv">$pos</span>, 10<span class="o">]=</span><span class="si">${</span><span class="nv">shardedNodes</span><span class="si">}</span>
+        <span class="p">;;</span>
+
+      index<span class="o">)</span>
+
+        <span class="c1"># Create associative array with columns (key is collection, index name):</span>
+        <span class="c1"># - index size</span>
+        <span class="nb">local</span> <span class="nv">indexSize</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+        <span class="nb">local</span> <span class="nv">nkeys</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M <span class="s2">&quot;.indexSizes | length&quot;</span><span class="k">)</span>
+
+        <span class="k">if</span> <span class="o">[</span> <span class="si">${</span><span class="nv">nkeys</span><span class="si">}</span> -gt <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+
+          <span class="nb">local</span> <span class="nv">keys</span><span class="o">=(</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M <span class="s2">&quot;.indexSizes | keys | .[]&quot;</span><span class="k">)</span><span class="o">)</span>
+
+          <span class="k">for</span> key in <span class="si">${</span><span class="nv">keys</span><span class="p">[@]</span><span class="si">}</span> <span class="p">;</span> <span class="k">do</span>
+
+            <span class="nv">indexSizes</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -r -M <span class="s2">&quot;.indexSizes.</span><span class="si">${</span><span class="nv">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="k">)</span>
+            mongo_stats<span class="o">[</span><span class="si">${</span><span class="nv">row_coll</span><span class="si">}</span>, <span class="si">${</span><span class="nv">key</span><span class="si">}</span><span class="o">]=</span><span class="si">${</span><span class="nv">indexSizes</span><span class="si">}</span>
+
+          <span class="k">done</span> <span class="c1"># end for key</span>
+
+        <span class="k">fi</span>
+
+        <span class="p">;;</span>
+
+      custom<span class="o">)</span>
+        <span class="c1"># Create associative array with columns for collection (number index):</span>
+        <span class="c1"># - collection</span>
+        <span class="c1"># - custom json</span>
+        <span class="nb">local</span> <span class="nv">custom_json</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="nv">$row</span> <span class="p">|</span> jq -M <span class="s2">&quot;</span><span class="si">${</span><span class="nv">custom_content</span><span class="si">}</span><span class="s2">&quot;</span><span class="k">)</span>
+
+        mongo_stats<span class="o">[</span><span class="nv">$pos</span>, 0<span class="o">]=</span><span class="si">${</span><span class="nv">row_coll</span><span class="si">}</span>
+        mongo_stats<span class="o">[</span><span class="nv">$pos</span>, 1<span class="o">]=</span><span class="si">${</span><span class="nv">custom_json</span><span class="si">}</span>
+
+        <span class="p">;;</span>
+    <span class="k">esac</span>
+
+    <span class="nb">let</span> pos++
+
+  <span class="k">done</span> <span class="c1"># end for</span>
+  <span class="nb">unset</span> IFS
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="se">\</span>
+    <span class="s2">&quot;(commons_mongo_stats) Found </span><span class="si">${#</span><span class="nv">mongo_stats</span><span class="p">[@]</span><span class="si">}</span><span class="s2"> (</span><span class="nv">$pos</span><span class="s2">) data.\n&quot;</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-mongo-create-index-file">
+<span id="commons-mongo-create-index-file"></span><h3>commons_mongo_create_index_file<a class="headerlink" href="#commons-mongo-create-index-file" title="Permalink to this headline">¶</a></h3>
+<p>Create index file for compilation under <code class="docutils literal"><span class="pre">$MONGO_DIR</span></code>/indexes directory.
+This function create only the file without execute it on database.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (coll) name of the collection where create index.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (name) Name of the index to create.</li>
+<li><code class="docutils literal"><span class="pre">$3</span></code>: (keys) list of keys as json content to use for create index.</li>
+<li><code class="docutils literal"><span class="pre">$4</span></code>: (opts) list of key options on json format to use on creation script.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>  <span class="c1"># Create index for collection c1 for fiedl f1 with option unique.</span>
+  commons_mongo_create_file <span class="s2">&quot;c1&quot;</span> <span class="s2">&quot;indexf1&quot;</span> <span class="s2">&quot;{f1:-1}&quot;</span> <span class="s2">&quot;{\&quot;unique\&quot;:true}&quot;</span>
+</pre></div>
+</div>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock12'))">(Show/Hide)</a><br /><div id="hiddencodeblock12" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_create_index_file <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">coll</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">keys</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$3</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$4</span><span class="s2">&quot;</span>
+
+  <span class="nb">local</span> <span class="nv">indexesdir</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">MONGO_DIR</span><span class="si">}</span><span class="s2">/indexes&quot;</span>
+  <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">indexesdir</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">coll</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">name</span><span class="si">}</span><span class="s2">.js&quot;</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="se">\</span>
+    <span class="s2">&quot;(commons_mongo_create_index_file): coll=&#39;</span><span class="si">${</span><span class="nv">coll</span><span class="si">}</span><span class="s2">&#39; name=&#39;</span><span class="si">${</span><span class="nv">name</span><span class="si">}</span><span class="s2">&#39; keys=&#39;</span><span class="si">${</span><span class="nv">keys</span><span class="si">}</span><span class="s2">&#39; opts=&#39;</span><span class="si">${</span><span class="nv">opts</span><span class="si">}</span><span class="s2">, f=</span><span class="si">${</span><span class="nv">f</span><span class="si">}</span><span class="s2">&#39;.\n&quot;</span>
+
+
+  <span class="c1"># Check if exists indexes or create it</span>
+  <span class="k">if</span> <span class="o">[[</span> ! -d <span class="si">${</span><span class="nv">indexesdir</span><span class="si">}</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    mkdir -p <span class="si">${</span><span class="nv">indexesdir</span><span class="si">}</span> <span class="o">||</span> error_generate <span class="s2">&quot;Error on create directory </span><span class="si">${</span><span class="nv">indexesdir</span><span class="si">}</span><span class="s2">.&quot;</span>
+  <span class="k">fi</span>
+
+  <span class="c1"># TODO: check if key is already present on database</span>
+  <span class="c1">#       also with a different name.</span>
+  <span class="c1"># TODO: add header to index file as comment (through MONGO_HEADER variable)</span>
+
+  <span class="o">[</span> -z <span class="s2">&quot;</span><span class="si">${</span><span class="nv">opts</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;{}&quot;</span>
+
+  <span class="nv">opts</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> -e <span class="k">$(</span><span class="nb">printf</span> <span class="s1">&#39;%s&#39;</span> <span class="nv">$opts</span><span class="k">)</span> <span class="p">|</span> jq --arg name <span class="nv">$name</span> <span class="s1">&#39;. + { name: $name}&#39;</span><span class="k">)</span>
+
+  <span class="c1">#echo -e &#39;{ }&#39; | jq --arg name prova &#39;. + { name: $name}&#39;</span>
+  <span class="nv">content</span><span class="o">=</span><span class="s2">&quot;</span>
+<span class="s2">db.</span><span class="si">${</span><span class="nv">coll</span><span class="si">}</span><span class="s2">.createIndex(</span><span class="si">${</span><span class="nv">keys</span><span class="si">}</span><span class="s2"> ,</span>
+<span class="si">${</span><span class="nv">opts</span><span class="si">}</span><span class="s2"> );</span>
+
+<span class="s2">&quot;</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="se">\</span>
+    <span class="s2">&quot;(commons_mongo_create_index_file) content =\n</span><span class="nv">$content</span><span class="s2">\n&quot;</span>
+
+  <span class="nb">echo</span> -en <span class="s2">&quot;</span><span class="nv">$content</span><span class="s2">&quot;</span> &gt; <span class="nv">$f</span> <span class="o">||</span> error_generate <span class="s2">&quot;Error on write file </span><span class="nv">$f</span><span class="s2">.&quot;</span>
+
+  _logfile_write <span class="s2">&quot;(mongo) Created index </span><span class="si">${</span><span class="nv">name</span><span class="si">}</span><span class="s2"> for collection </span><span class="si">${</span><span class="nv">coll</span><span class="si">}</span><span class="s2"> (file </span><span class="si">${</span><span class="nv">f</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="o">||</span> <span class="se">\</span>
+    <span class="k">return</span> 1
+
+  <span class="k">return</span> 0
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-mongo-download-index">
+<span id="commons-mongo-download-index"></span><h3>commons_mongo_download_index<a class="headerlink" href="#commons-mongo-download-index" title="Permalink to this headline">¶</a></h3>
+<p>Download and index configuration and create a creation script under `$MONGO_DIR/indexes directory.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (coll) name of the collection where download index data.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (kname) Name of the index to download.</li>
+<li><code class="docutils literal"><span class="pre">$3</span></code>: (arr_pos) Optional parameter that contains position of the
+index to download when there is already an valorized
+array mongo_indexes previously initialized.
+If not present function download indipendently
+index data through commons_mongo_get_indexes_list
+function.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock13'))">(Show/Hide)</a><br /><div id="hiddencodeblock13" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_download_index <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">coll</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">kname</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+  <span class="c1"># optional: set with position of mongo_indexes array if already</span>
+  <span class="c1">#           initialized.</span>
+  <span class="nb">local</span> <span class="nv">arr_pos</span><span class="o">=</span><span class="nv">$3</span>
+  <span class="nb">local</span> <span class="nv">keys</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="se">\</span>
+    <span class="s2">&quot;(commons_mongo_download_index): coll=&#39;</span><span class="si">${</span><span class="nv">coll</span><span class="si">}</span><span class="s2">&#39; kname=&#39;</span><span class="si">${</span><span class="nv">kname</span><span class="si">}</span><span class="s2">&#39; pos=</span><span class="si">${</span><span class="nv">arr_pos</span><span class="si">}</span><span class="s2">.\n&quot;</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="si">${</span><span class="nv">arr_pos</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+
+    commons_mongo_get_indexes_list <span class="s2">&quot;</span><span class="si">${</span><span class="nv">coll</span><span class="si">}</span><span class="s2">&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">kname</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="se">\</span>
+      error_generate <span class="s2">&quot;Error retrieve index data&quot;</span>
+
+    <span class="o">[</span> <span class="si">${#</span><span class="nv">mongo_indexes</span><span class="p">[@]</span><span class="si">}</span> -eq <span class="m">0</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+      error_generate <span class="s2">&quot;No index </span><span class="si">${</span><span class="nv">kname</span><span class="si">}</span><span class="s2"> for collection </span><span class="si">${</span><span class="nv">coll</span><span class="si">}</span><span class="s2"> found.&quot;</span>
+
+    <span class="nv">arr_pos</span><span class="o">=</span>0
+
+  <span class="k">fi</span>
+
+  <span class="nv">keys</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_indexes</span><span class="p">[</span><span class="nv">$arr_pos</span><span class="p">, 4]</span><span class="si">}</span>
+  <span class="nv">opts</span><span class="o">=</span><span class="si">${</span><span class="nv">mongo_indexes</span><span class="p">[</span><span class="nv">$arr_pos</span><span class="p">, 6]</span><span class="si">}</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+    <span class="nb">echo</span> -en <span class="s2">&quot;(commons_mongo_download_index): Found keys=&#39;</span><span class="si">${</span><span class="nv">keys</span><span class="si">}</span><span class="s2">&#39;, opts=&#39;</span><span class="si">${</span><span class="nv">opts</span><span class="si">}</span><span class="s2">&#39;.\n&quot;</span>
+
+  commons_mongo_create_index_file <span class="s2">&quot;</span><span class="si">${</span><span class="nv">coll</span><span class="si">}</span><span class="s2">&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">kname</span><span class="si">}</span><span class="s2">&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">keys</span><span class="si">}</span><span class="s2">&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">opts</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="se">\</span>
+    error_generate <span class="s2">&quot;Error on create index file.&quot;</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-mongo-download-all-indexes">
+<span id="commons-mongo-download-all-indexes"></span><h3>commons_mongo_download_all_indexes<a class="headerlink" href="#commons-mongo-download-all-indexes" title="Permalink to this headline">¶</a></h3>
+<p>Download all indexes to MONGO_DIR/indexes directory.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (collection) download all indexes of input collection.
+Empty string means all indexes.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (include_id_) Optional parameter that could be
+set to 0 (default value) when special index _id
+are ignored from download or set 1 when on download
+are created also files related with special index _id.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock14'))">(Show/Hide)</a><br /><div id="hiddencodeblock14" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-mongo-drop-index">
+<span id="commons-mongo-drop-index"></span><h3>commons_mongo_drop_index<a class="headerlink" href="#commons-mongo-drop-index" title="Permalink to this headline">¶</a></h3>
+<p>Drop a index from database if exists.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (coll) name of the collection where drop index.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (kname) Name of the index to drop. If not present
+then all indexes of the collection are dropped.
+Excluded special index that can be removed
+only for capped collection.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock15'))">(Show/Hide)</a><br /><div id="hiddencodeblock15" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-mongo-compile-idx">
+<span id="commons-mongo-compile-idx"></span><h3>commons_mongo_compile_idx<a class="headerlink" href="#commons-mongo-compile-idx" title="Permalink to this headline">¶</a></h3>
+<p>Compile file related with index of a collection..</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (f) path of the file to compile</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (msg) message to insert on logging file relative to input file</li>
+<li><code class="docutils literal"><span class="pre">$3</span></code>: (force) if index is present and force is equal to 1, then
+index is dropped and added again. NOT IMPLEMENTED.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock16'))">(Show/Hide)</a><br /><div id="hiddencodeblock16" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_compile_idx <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="nv">$1</span>
+  <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="nv">$2</span>
+  <span class="c1"># TODO: force option 3 support</span>
+  <span class="nb">local</span> <span class="nv">force</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$3</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">f_base</span><span class="o">=</span><span class="k">$(</span>basename <span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span><span class="k">)</span>
+  <span class="nb">local</span> <span class="nv">idx_dir</span><span class="o">=</span><span class="k">$(</span>dirname <span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span><span class="k">)</span>
+  <span class="nb">local</span> <span class="nv">idx_str</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">f_base</span><span class="p">/.js/</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">coll</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="si">${</span><span class="nv">idx_str</span><span class="si">}</span> <span class="p">|</span> cut -d<span class="s1">&#39;.&#39;</span> -f1<span class="k">)</span>
+  <span class="nb">local</span> <span class="nv">kname</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span> <span class="si">${</span><span class="nv">idx_str</span><span class="si">}</span> <span class="p">|</span> cut -d<span class="s1">&#39;.&#39;</span> -f2<span class="k">)</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="se">\</span>
+    <span class="s2">&quot;(commons_mongo_compile_idx): coll=&#39;</span><span class="si">${</span><span class="nv">coll</span><span class="si">}</span><span class="s2">&#39; kname=&#39;</span><span class="si">${</span><span class="nv">kname</span><span class="si">}</span><span class="s2">&#39; f=</span><span class="si">${</span><span class="nv">f</span><span class="si">}</span><span class="s2">.\n&quot;</span>
+
+  <span class="o">[</span> -z <span class="s2">&quot;</span><span class="si">${</span><span class="nv">f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> error_generate <span class="s2">&quot;(commons_mongo_compile_idx) Invalid argument&quot;</span>
+
+  <span class="k">if</span> <span class="o">[</span> ! -e <span class="s2">&quot;</span><span class="si">${</span><span class="nv">f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nb">local</span> <span class="nv">log</span><span class="o">=</span><span class="s2">&quot;File </span><span class="nv">$f</span><span class="s2"> not found.&quot;</span>
+    _logfile_write <span class="s2">&quot;(mongo) </span><span class="si">${</span><span class="nv">log</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+    out_handler_print <span class="s2">&quot;</span><span class="si">${</span><span class="nv">log</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="se">\</span>
+      <span class="s2">&quot;(commons_mongo_compile_idx) File </span><span class="nv">$f</span><span class="s2"> not found.\n&quot;</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="c1"># Check if index is already present.</span>
+  commons_mongo_get_indexes_list <span class="s2">&quot;</span><span class="si">${</span><span class="nv">coll</span><span class="si">}</span><span class="s2">&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">kname</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="se">\</span>
+    error_handled <span class="s2">&quot;Error on check if index </span><span class="si">${</span><span class="nv">coll</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">kname</span><span class="si">}</span><span class="s2"> already exists.&quot;</span>
+
+  <span class="nb">local</span> <span class="nv">n_indexes</span><span class="o">=</span><span class="si">${#</span><span class="nv">mongo_indexes</span><span class="p">[@]</span><span class="si">}</span>
+
+  <span class="k">if</span> <span class="o">[</span> <span class="nv">$n_indexes</span> -gt <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+
+    <span class="nb">local</span> <span class="nv">log</span><span class="o">=</span><span class="s2">&quot;Index </span><span class="si">${</span><span class="nv">coll</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">kname</span><span class="si">}</span><span class="s2"> is already present. Nothing to do.&quot;</span>
+    out_handler_print <span class="s2">&quot;</span><span class="si">${</span><span class="nv">log</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    _logfile_write <span class="s2">&quot;(mongo) </span><span class="si">${</span><span class="nv">log</span><span class="si">}</span><span class="s2">&quot;</span>
+
+  <span class="k">else</span>
+
+    commons_mongo_compile_file <span class="s2">&quot;</span><span class="si">${</span><span class="nv">f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="s2">&quot;</span><span class="nv">$msg</span><span class="s2">&quot;</span> <span class="s2">&quot;1&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">fi</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-mongo-compile-all-from-dir">
+<span id="commons-mongo-compile-all-from-dir"></span><h3>commons_mongo_compile_all_from_dir<a class="headerlink" href="#commons-mongo-compile-all-from-dir" title="Permalink to this headline">¶</a></h3>
+<p>Compile all files from input directory with .js extension.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (directory) Directory where there are files to compile.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (msg_head) Title message insert on logfile before compile files.</li>
+<li><code class="docutils literal"><span class="pre">$3</span></code>: (msg) message insert on logfile before compile files.</li>
+<li><code class="docutils literal"><span class="pre">$4</span></code>: (type) Identify type of directory: idx or empty.
+Optional.</li>
+<li><code class="docutils literal"><span class="pre">$5</span></code>: (closure) custom parameter with a value relative to type.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock17'))">(Show/Hide)</a><br /><div id="hiddencodeblock17" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_compile_all_from_dir <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">msg_head</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$3</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">dtype</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$4</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">closure</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$5</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="nb">local</span> <span class="nv">fb</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="nb">local</span> <span class="nv">ex_f</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="nb">local</span> <span class="nv">fk_is_present</span><span class="o">=</span>1
+  <span class="nb">local</span> <span class="nv">exc</span><span class="o">=</span>0
+
+  _logfile_write <span class="s2">&quot;(mongo) Start compilation </span><span class="nv">$msg_head</span><span class="s2">: </span><span class="nv">$msg</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">for</span> i in <span class="nv">$directory</span>/*.js <span class="p">;</span> <span class="k">do</span>
+
+    <span class="k">if</span> <span class="o">[</span> ! -f <span class="s2">&quot;</span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">]</span>  <span class="p">;</span> <span class="k">then</span>
+      <span class="k">continue</span>
+    <span class="k">fi</span>
+
+    <span class="nv">fk_is_present</span><span class="o">=</span>1
+    <span class="nv">exc</span><span class="o">=</span>0
+
+    <span class="nv">fb</span><span class="o">=</span><span class="sb">`</span>basename <span class="nv">$i</span><span class="sb">`</span>
+    <span class="nv">f</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">fb</span><span class="p">/.js/</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Check if file is excluded</span>
+    <span class="k">if</span> <span class="o">[</span> ! -z <span class="s2">&quot;</span><span class="nv">$MONGO_COMPILE_FILES_EXCLUDED</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+
+      <span class="k">for</span> e in <span class="nv">$MONGO_COMPILE_FILES_EXCLUDED</span> <span class="p">;</span> <span class="k">do</span>
+
+        <span class="nv">ex_f</span><span class="o">=</span><span class="sb">`</span>basename <span class="nv">$e</span><span class="sb">`</span>
+        <span class="nv">ex_f</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">ex_f</span><span class="p">/.js/</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$ex_f</span><span class="s2">&quot;</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+          <span class="nv">exc</span><span class="o">=</span>1
+
+          _logfile_write <span class="s2">&quot;(mongo) Exclude file </span><span class="nv">$fb</span><span class="s2"> for user request.&quot;</span>
+
+          <span class="nb">break</span>
+        <span class="k">fi</span>
+
+      <span class="k">done</span> <span class="c1"># end for exclueded</span>
+
+    <span class="k">fi</span>
+
+    <span class="c1"># If file is excluded go to the next</span>
+    <span class="o">[</span> <span class="nv">$exc</span> -eq <span class="m">1</span> <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="k">continue</span>
+
+    <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="se">\</span>
+      <span class="s2">&quot;(commons_mongo_compile_all_from_dir: compile file [</span><span class="nv">$i</span><span class="s2">].\n&quot;</span>
+
+    <span class="k">if</span> <span class="o">[[</span> -n <span class="s2">&quot;</span><span class="nv">$dtype</span><span class="s2">&quot;</span> <span class="o">&amp;&amp;</span> x<span class="s2">&quot;</span><span class="nv">$dtype</span><span class="s2">&quot;</span> <span class="o">==</span> x<span class="s2">&quot;idx&quot;</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+
+      commons_mongo_compile_idx <span class="s2">&quot;</span><span class="nv">$i</span><span class="s2">&quot;</span> <span class="s2">&quot;</span><span class="nv">$msg</span><span class="s2">&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">closure</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">else</span>
+
+      commons_mongo_compile_file <span class="s2">&quot;</span><span class="nv">$i</span><span class="s2">&quot;</span> <span class="s2">&quot;</span><span class="nv">$msg</span><span class="s2">&quot;</span> <span class="s2">&quot;1&quot;</span>
+
+    <span class="k">fi</span>
+
+    <span class="c1"># POST: on error go to next file</span>
+
+  <span class="k">done</span> <span class="c1"># end for</span>
+
+  _logfile_write <span class="s2">&quot;(mongo) End compilation </span><span class="nv">$msg_head</span><span class="s2">: </span><span class="nv">$msg</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="k">return</span> 1
+
+  <span class="k">return</span> 0
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-mongo-compile-all-idxs">
+<span id="commons-mongo-compile-all-idxs"></span><h3>commons_mongo_compile_all_idxs<a class="headerlink" href="#commons-mongo-compile-all-idxs" title="Permalink to this headline">¶</a></h3>
+<p>Compile all files under <code class="docutils literal"><span class="pre">$MONGO_DIR</span></code>/indexes directory.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (msg) message to insert on logging file relative to input file.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (force) if equals to 1, force compilation of all indexes also
+if already present.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock18'))">(Show/Hide)</a><br /><div id="hiddencodeblock18" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_compile_all_idxs <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">force</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$MONGO_DIR</span><span class="s2">/indexes&quot;</span>
+
+  commons_mongo_compile_all_from_dir <span class="s2">&quot;</span><span class="nv">$directory</span><span class="s2">&quot;</span> <span class="s2">&quot;of all indexes&quot;</span> <span class="s2">&quot;</span><span class="nv">$msg</span><span class="s2">&quot;</span> <span class="s2">&quot;idx&quot;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">force</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">||</span> <span class="se">\</span>
+    <span class="k">return</span> 1
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
 </div>
 </div>
 
@@ -773,7 +1765,7 @@ or mongo_file command if equal to 0.</li>
     </p>
     <p>
         &copy; Copyright 2017, Geaaru.<br/>
-      Last updated on Aug 03, 2017.<br/>
+      Last updated on Aug 20, 2017.<br/>
     </p>
   </div>
 </footer>
