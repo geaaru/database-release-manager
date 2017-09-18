@@ -428,7 +428,7 @@ mongo_create () {
     echo -ne "[--opt JSON_CONTENT]     Add custom index option as JSON content (without braces).\n"
     echo -ne "                         To use with --index option and could be use multiple time.\n"
     echo -en "[--key KEY_JSON_CONT]    Indicate key fields to use. This option could be used multiple.\n"
-    echo -ne "                         time or it is possible define multiple keys on single option.\n"
+    echo -ne "                         time for complex keys.\n"
     echo -ne "[--background]           Enable creation of index in background. Default is false.\n"
     echo -en "\n"
     echo -en "Example1 - Create an unique index for collection test1 on reverse order:\n"
@@ -438,6 +438,8 @@ mongo_create () {
     echo -en "\$> dbrm mongo create --index test1.index_m1 --expire-sec 3600 --key \"field1:-1\"\n"
     echo -en "                     --key \"field2:-1\"\n"
     echo -en "\n"
+    echo -en "NOTE: For sub-document keys add escaped double quote on key option.\n"
+    echo -en "      --key \"\\\"field.key:1\\\"\"\n"
 
     return 0
   }

@@ -389,7 +389,9 @@ dbm_show_profiles () {
     done
     unset IFS
 
+    out_tabs[0]="6"
     out_tabs[1]="${pname_len}"
+    out_tabs[2]="9"
 
     out_handler_print_arr
 

@@ -75,7 +75,11 @@ commons_mongo_check_vars () {
 # commons_mongo_commons_mongo_check_connection
 commons_mongo_check_connection () {
 
-  local opts="--quiet"
+#  local opts="--quiet"
+# TODO: Handle multiple --quiet option to avoid this error:
+#Error parsing command line:  Multiple occurrences of option "----quiet"
+#try '/usr/bin/mongo --help' for more information
+  local opts=""
 
   if [ -z "$MONGO_CLIENT" ] ; then
     return 1
