@@ -114,7 +114,7 @@ mongo_cmd_4var () {
   local initrc=$3
   local rm_lf=$4
   local v=""
-  local opts="--quiet"
+  local opts=""
   local result=""
   local init_commands=""
   local commands=""
@@ -125,6 +125,10 @@ mongo_cmd_4var () {
 
   if [ -z "$mongo_auth" ] ; then
     return 1
+  fi
+
+  if [[ "$MONGO_EXTRA_OPTIONS" != *--quiet* ]] ; then
+    opts="--quiet"
   fi
 
   if [ -n "$initrc" ] ; then
