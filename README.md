@@ -1,17 +1,20 @@
-database-release-manager
-========================
+# Database Release Manager
 
-Database Release Manager
+Tool written in Bash for simplify development process and sources organization and delivery of database changes on production environment.
 
-Documentation:
+## Mission
 
-  Scripts are written with robodoc syntax comments.
+Mission of database-release-manager (or dbrm for friends) is NOT create a new IDE for SQL, every users can use any IDE for create tables, functions, etc. but with dbrm is it possible unify process for trace database informations and store to a repository in an ordered mode.
 
-Note about Mysql >=5.6:
+# Software Structure
 
-  From version 5.6 of mysql command line command is present an annoying
-  warning message like this
-     'Warning: Using a password on the command line interface can be insecure.'
-  when is used a --password argument.
-  This warning message broken database-release-manager and it is required add
-  MYSQL5_6_ENV_PWD="1" on dbrm.conf file.
+Highly modulable software that could be customized and integrate to every system
+Sources are written to permit an easy 
+
+## Documentation
+
+Complete documentation is available [here](http://geaaru.github.io/database-release-manager/)
+
+## License
+
+Released with license GPL 3.0.
