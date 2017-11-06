@@ -36,8 +36,6 @@ from docutils import nodes
 from docutils.parsers.rst import directives
 from sphinx.directives.code import CodeBlock
 from sphinx.directives.code import LiteralInclude
-from sphinx.util.compat import make_admonition
-
 
 
 HCB_COUNTER = 0
