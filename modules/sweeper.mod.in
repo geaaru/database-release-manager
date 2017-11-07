@@ -99,6 +99,7 @@ sweeper_compress () {
 
   #Gathering all files matching
   file_list="$(find ${DBRM_SWEEPER_SRCDIR} ${DBRM_SWEEPER_MAX_DEPTH} ${DBRM_SWEEPER_FILE_TYPE} -mtime ${DBRM_SWEEPER_AGE} -regex "${DBRM_SWEEPER_REGEX}" ${DBRM_SWEEPER_FOLLOW_LINK})"
+  CNT_FILE_LIST=`echo "$file_list" | wc -l`
   [[ $DBRM_SWEEPER_DRYRUN -eq 1 ]] && echo "file to compress affected ="`echo "$file_list" | wc -l`
   [[ $DBRM_SWEEPER_DRYRUN -eq 1 ]] && echo "$file_list"
 
@@ -120,9 +121,13 @@ sweeper_compress () {
       tar_options=${tar_options/z/J}      
     fi
 
-    out=$(tar ${tar_options} ${DBRM_SWEEPER_DESTDIR}/${tar_name} ${file_list})
-    echo "${out}"
-    _logfile_write "tar: ${out}"
+    if [ $CNT_FILE_LIST -gt 0 ]; then
+
+      out=$(tar ${tar_options} ${DBRM_SWEEPER_DESTDIR}/${tar_name} ${file_list})
+      echo "${out}"
+      _logfile_write "tar: ${out}"
+
+    fi
 
     #Eventually generate log file with content of tar
     if [ ! -z "${DBRM_SWEEPER_ARCHIVE_PATH}" ]; then
@@ -153,22 +158,26 @@ sweeper_compress () {
       echo -en '\n--------------------------------------------------------------------\n\n' >> ${DBRM_SWEEPER_ARCHIVE_PATH}
     fi
 
-    #Eventually removing tarred files/dirs and empty directories
-    if [ "${DBRM_SWEEPER_REMOVE_SRC_FILES}" -eq "1" ]; then
-      out=$(rm -r ${file_list})
-      echo "${out}"
-      _logfile_write "remove: ${out}"
-    fi
-    if [ "${DBRM_SWEEPER_REMOVE_EMPTY_DIR}" -eq "1" ]; then
-      out=$(find ${DBRM_SWEEPER_SRCDIR}/* -type d -empty -delete)
-      echo "${out}"
-      _logfile_write "remove empty dir: ${out}"
-    fi
-    if [ $DBRM_SWEEPER_REMOVE_SRC_DIR -eq 1 ]; then
+    if [ $CNT_FILE_LIST -gt 0 ]; then
 
-      out=$(find ${DBRM_SWEEPER_SRCDIR} -type d -empty -delete)
-      echo ${out}
-      _logfile_write "remove empty dirs: ${out}"
+      #Eventually removing tarred files/dirs and empty directories
+      if [ "${DBRM_SWEEPER_REMOVE_SRC_FILES}" -eq "1" ]; then
+        out=$(rm -r ${file_list})
+        echo "${out}"
+        _logfile_write "remove: ${out}"
+      fi
+      if [ "${DBRM_SWEEPER_REMOVE_EMPTY_DIR}" -eq "1" ]; then
+        out=$(find ${DBRM_SWEEPER_SRCDIR}/* -type d -empty -delete)
+        echo "${out}"
+        _logfile_write "remove empty dir: ${out}"
+      fi
+      if [ $DBRM_SWEEPER_REMOVE_SRC_DIR -eq 1 ]; then
+
+        out=$(find ${DBRM_SWEEPER_SRCDIR} -type d -empty -delete)
+        echo ${out}
+        _logfile_write "remove empty dirs: ${out}"
+
+      fi
 
     fi
 
