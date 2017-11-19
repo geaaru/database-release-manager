@@ -12,20 +12,16 @@ mariadb_version="@PACKAGE_VERSION@"
 mariadb_status="0"
 
 
-#****f* mariadb/mariadb_version
-# FUNCTION
 #  Show version of mariadb module.
-# SOURCE
+# mariadb_mariadb_version
 mariadb_version() {
   echo -en "Version: ${mariadb_version}\n"
   return 0
 }
-#***
+# mariadb_mariadb_version_end
 
-#****f* mariadb/mariadb_long_help
-# FUNCTION
 #   Show long help message.
-# SOURCE
+# mariadb_mariadb_long_help
 mariadb_long_help () {
 
    echo -en "===========================================================================\n"
@@ -45,17 +41,16 @@ mariadb_long_help () {
    echo -en "\tcreate                  Create foreign keys/index/etc..\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
    echo -en "\tinitenv                 Create default directories if not present.\n"
+   echo -en "\tdump                    Dump database resources.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
    return 0
 }
-#***
+# mariadb_mariadb_long_help_end
 
-#****f* mariadb/mariadb_show_help
-# FUNCTION
 #   Show help message.
-# SOURCE
+# mariadb_mariadb_help
 mariadb_show_help () {
    echo -en "===========================================================================\n"
    echo -en "Module [mariadb]:\n"
@@ -71,18 +66,17 @@ mariadb_show_help () {
    echo -en "\tcreate                  Create foreign keys/index/etc..\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
    echo -en "\tinitenv                 Create default directories if not present.\n"
+   echo -en "\tdump                    Dump database resources.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
    return 0
 }
-#***
+# mariadb_mariadb_help_end
 
 
-#****f* mariadb/mariadb_initenv
-# FUNCTION
 #   Create all directories used by mariadb extensions.
-# SOURCE
+# mariadb_mariadb_initenv
 mariadb_initenv () {
 
   local result=1
@@ -119,13 +113,10 @@ mariadb_initenv () {
 
   return 0
 }
+# mariadb_mariadb_initenv_end
 
-#****f* mariadb/mariadb_shell
-# FUNCTION
 #   Enter on command line shell of Mysql/MariaDB server
-# SEE ALSO
-#   _mariadb_connections_args for list of available arguments.
-# SOURCE
+# mariadb_mariadb_shell
 mariadb_shell () {
 
   local result=1
@@ -149,15 +140,11 @@ mariadb_shell () {
 
   return 0
 }
-#***
+# mariadb_mariadb_shell_end
 
 
-#****f* mariadb/mariadb_test_connection
-# FUNCTION
 #   Test connection to Mysql/MariaDB server.
-# SEE ALSO
-#   _mariadb_connections_args for list of available arguments.
-# SOURCE
+# mariadb_mariadb_test_connection
 mariadb_test_connection () {
 
   local result=1
@@ -183,21 +170,15 @@ mariadb_test_connection () {
 
   return 0
 }
-#***
+# mariadb_mariadb_test_connection_end
 
-#****f* mariadb/mariadb_show
-# FUNCTION
 #    Show data about configured Mysql/MariaDB database.
-# DESCRIPTION
 #    This command permit to see:
 #    * list of defined procedures
 #    * list of defined functions
 #    * list of defined triggers
 #    * list of defined views.
-# SEE ALSO
-#    _mariadb_connections_args
-#    _mariadb_show_args
-# SOURCE
+# mariadb_mariadb_show
 mariadb_show () {
 
   local n_rec=0
@@ -382,16 +363,11 @@ mariadb_show () {
 
   return 0
 }
-#***
+# mariadb_mariadb_show_end
 
-#****f* mariadb/mariadb_compile
-# FUNCTION
 #   Compile SQL Statements (triggers, functions, views, procedures, file, etc.) to configured
 #   database.
-# SEE ALSO
-#   _mariadb_connections_args
-#   _mariadb_compile_args
-# SOURCE
+# mariadb_mariadb_compile
 mariadb_compile () {
 
   # Shift first two input param
@@ -417,16 +393,11 @@ mariadb_compile () {
 
   return 0
 }
-#***
+# mariadb_mariadb_compile_end
 
-#****f* mariadb/mariadb_download
-# FUNCTION
 #   Download SQL Statements (triggers, functions, views, procedures, file, etc.) to configured
 #   database.
-# SEE ALSO
-#   _mariadb_connections_args
-#   _mariadb_download_args
-# SOURCE
+# mariadb_mariadb_download
 mariadb_download () {
 
   # Shift first two input param
@@ -452,15 +423,10 @@ mariadb_download () {
 
   return 0
 }
-#***
+# mariadb_mariadb_download_end
 
-#****f* mariadb/mariadb_drop
-# FUNCTION
 #   Drop triggers, functions, views, procedures, file, etc. from database.
-# SEE ALSO
-#   _mariadb_connections_args
-#   _mariadb_drop_args
-# SOURCE
+# mariadb_mariadb_drop
 mariadb_drop () {
 
   # Shift first two input param
@@ -484,15 +450,10 @@ mariadb_drop () {
 
   return 0
 }
-#***
+# mariadb_mariadb_drop_end
 
-#****f* mariadb/mariadb_create
-# FUNCTION
-#   Create triggers, index file for compilation.
-# SEE ALSO
-#   _mariadb_connections_args
-#   _mariadb_create_args
-# SOURCE
+#   Create triggers, index file for compilation
+# mariadb_mariadb_create
 mariadb_create () {
 
   # Shift first two input param
@@ -516,7 +477,120 @@ mariadb_create () {
 
   return 0
 }
-#***
+# mariadb_mariadb_create_end
+
+# Dump database
+# mariadb_mariadb_dump
+mariadb_dump () {
+
+  # Shift first two input params
+  shift 2
+
+  _mariadb_dump_help () {
+    echo "
+[--to file]              Indicate target file where execute dump.
+[--prefix name]          Define a prefix name used instead of dump_\${MARIADB_DB}.
+[--auto]                 Use default target path
+                         \${MARIADB_DIR}/dumps/dump_\${MARIADB_DB}_YYYYMMDD_HHmmss.sql"
+
+    return 0
+  }
+
+  # Dump options
+  _mariadb_dump_args () {
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mariadb_dump_args: args: $@)\n"
+
+    local conn_s_options="U:P:hH:D:t:"
+    local conn_l_options="database: timezone: conn-options: ignore-timezone help"
+    local short_options="${conn_s_options}"
+    local long_options="${conn_l_options} to: auto prefix:"
+
+    local ddate=$(date +%Y%m%d_%H%M%S)
+    MARIADB_PREFIX=0
+    MARIADB_TO=0
+    MARIADB_AUTO=0
+    MARIADB_DUMPFILE=${MARIADB_DIR}/dumps/dump_${MARIADB_DB}_${ddate}.sql
+
+    $(set -- $(getopt -u -q -o "$short_options" -l "$long_options" -- "$@")) || \
+      error_handled "Invalid parameters"
+
+    if [ $# -lt 1 ] ; then
+      _mariadb_dump_help
+      return 1
+    fi
+
+    while [ $# -gt 0 ] ; do
+      case "$1" in
+
+        -U|-P|-D|-H|-S|--database|--timezone|--conn-options)
+          shift
+        ;;
+        --ignore-timezone)
+          ;;
+        --auto)
+          MARIADB_AUTO=1
+          ;;
+        --to)
+          MARIADB_TO=1
+          MARIADB_DUMPFILE="$2"
+          shift
+          ;;
+        --prefix)
+          MARIADB_PREFIX=1
+          MARIADB_DUMPFILE=${MARIADB_DIR}/dumps/${2}_${ddate}.sql
+          shift
+          ;;
+        --help|-h)
+          _mariadb_dump_help
+          return 1
+          ;;
+        *|--)
+          ;;
+
+      esac
+
+      shift
+
+    done
+
+    if [[ ${MARIADB_PREFIX} -eq 1 && ${MARIADB_TO} -eq 1 ]] ; then
+      echo "It isn't possible use --prefix with --to"
+      return 1
+    fi
+
+    if [[ ${MARIADB_AUTO} -eq 1 && ${MARIADB_TO} -eq 1 ]] ; then
+      echo "It isn't possible use --auto with --to"
+      return 1
+    fi
+
+    return 0
+  }
+
+  _mariadb_check_status
+
+  commons_mariadb_check_client_dump || erroro_handle ""
+
+  _mariadb_help_message="print_help"
+
+  _mariadb_connections_args "$@"
+
+  _mariadb_dump_args "$@" || error_handled ""
+
+  unset -f _mariadb_dump_args
+  unset -f _mariadb_dump_help
+
+  commons_mariadb_check_vars || error_handled ""
+
+  mysql_set_auth_var "$MARIADB_DB" "$MARIADB_USER" "$MARIADB_PWD" "$MARIADB_HOST"
+
+  commons_mariadb_check_connection || error_handled "MySQL client was unable to connect to DB with supplied credentials."
+
+  _mariadb_dump || error_handled ""
+
+  return 0
+}
+# mariddb_mariadb_dump_end
 
 ##################################################################
 # Internal functions
@@ -3510,5 +3584,24 @@ _mariadb_show_global_vars () {
 
 }
 #***
+
+# mariadb__mariadb_dump
+_mariadb_dump () {
+
+  local dir="$(dirname ${MARIADB_DUMPFILE})"
+  if [ ! -d "${dir}" ] ; then
+    mkdir ${dir} || error_handled "Error on create directory ${dir} for dump."
+  fi
+
+  commons_mariadb_dump "${MARIADB_DUMPFILE}" || \
+    error_handled "Error on dump database ${MARIADB_DB}."
+
+  out_handler_print "Dump of ${MARIADB_DB} database executed correctly to: ${MARIADB_DUMPFILE}."
+
+  out_handler_clean
+
+  return 0
+}
+# mariadb__mariadb_dump_end
 
 # vim: syn=sh filetype=sh ts=2 sw=2

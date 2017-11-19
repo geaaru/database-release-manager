@@ -1407,3 +1407,50 @@ _Returns_:
     :end-before: commmons_mariadb_commons_mariadb_show_gvars_end
 ```
 
+#### commons_mariadb_check_client_dump
+
+Check if mysqldump client program is present on system.
+If present MARIADB_CLIENT_DUMP variable with abs path is set.
+Function check if it is set `mysqldump` variable:
+* if it is not set then try to find path through 'which' program
+* if it is set then check if path is correct and program exists.
+
+_Returns_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/commons_mariadb.sh
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: commons_mariadb_commons_mariadb_check_client_dump
+    :end-before: commons_mariadb_commons_mariadb_check_client_dump_end
+```
+
+#### commons_mariadb_dump
+
+Execute dump of database.
+
+_Parameters_:
+
+  * `$1`: (targetfile) ABS Path of the file where is store dump.
+  * `$2`: (only_db) Optional option define if dump single database (1) or all (0).
+          Default value is 1.
+  * `$3`: (custom_opts) Optional define custom extra options.
+
+_Returns_:
+
+  * `0`: on success
+  * `1`: on error
+
+```eval_rst
+.. hidden-literalinclude:: ../../src/core/commons_mariadb.sh
+    :label: (Show/Hide)
+    :language: bash
+    :starthidden: True
+    :start-after: commons_mariadb_commons_mariadb_dump
+    :end-before: commons_mariadb_commons_mariadb_dump_end
+```
+

@@ -2860,4 +2860,91 @@ commons_mariadb_show_gvars () {
 }
 # commmons_mariadb_commons_mariadb_show_gvars_end
 
+# commons_mariadb_commons_mariadb_check_client_dump
+commons_mariadb_check_client_dump () {
+
+  if [ -z "$mysqldump" ] ; then
+
+    # POST: mysql variable not set
+    tmp=`which mysqldump 2> /dev/null`
+    var=$?
+
+    if [ $var -eq 0 ] ; then
+
+      [[ $DEBUG && $DEBUG == true ]] && echo -en "Use mysqldump: $tmp\n"
+
+      MARIADB_CLIENT_DUMP=$tmp
+
+      unset tmp
+
+    else
+
+      error_generate "mysqldump program not found"
+
+      return 1
+
+    fi
+
+  else
+
+    # POST: mysqldump variable set
+
+    # Check if file is correct
+    if [ -f "$mysqldump" ] ; then
+
+      [[ $DEBUG && $DEBUG == true ]] && echo -en "Use mysqldump: $mysqldump\n"
+
+      MARIADB_CLIENT_DUMP=$mysqldump
+
+    else
+
+      error_generate "$mysqldump program invalid."
+
+      return 1
+
+    fi
+
+  fi
+
+  export MARIADB_CLIENT_DUMP
+
+  return 0
+}
+# commons_mariadb_commons_mariadb_check_client_dump_end
+
+# commons_mariadb_commons_mariadb_dump
+commons_mariadb_dump () {
+
+  local opts=""
+  local targetfile="$1"
+  local only_db="${2:-1}"
+  local custom_opts=$3
+  local error_code=""
+
+  if [ -z "$MARIADB_CLIENT_DUMP" ] ; then
+    return 1
+  fi
+
+  if [ -z "$mysql_auth" ] ; then
+    return 1
+  fi
+
+  if [[ -n "${MARIADB_DB}" && ${only_db} -eq 1 ]] ; then
+    opts="--databases ${MARIADB_DB}"
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en \
+    "(commons_mariadb_dump) Try connection with $opts $custom_opts $MARIADB_EXTRA_OPTIONS $mysql_auth.\n"
+
+  $MARIADB_CLIENT_DUMP $opts $custom_opts $MARIADB_EXTRA_OPTIONS $mysql_auth > ${targetfile}
+
+  error_code=$?
+  if [ ${error_code} -ne 0 ] ; then
+    return 1
+  fi
+
+  return 0
+}
+# commons_mariadb_commons_mariadb_dump_end
+
 # vim: syn=sh filetype=sh

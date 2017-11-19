@@ -226,6 +226,9 @@ creation script.
    * - ``MARIADB_CLIENT``
      - Contains path of `myql` program. If not initialized dbrm try to automatically set
        this variable.
+   * - ``MARIADB_CLIENT_DUMP``
+     - Contains path of `mysqldump` program. If not initialized dbrm try to automatically
+       set this variable.
    * - ``MARIADB_TMZ``
      - Contains Timezone to use on database session. Default is UTC.
    * - ``MARIADB_IGNORE_TMZ``
@@ -1033,4 +1036,22 @@ NOTE: foreign key name is unique on database.
                          --ref-table T2 --ref-column "col1,col2" --auto-naming
 ```
 
+#### mariadb dump
+
+Permit to dump current configured database under `MARIADB_DIR/dumps` directory.
+
+##### dump options:
+
+  * `--auto`: Use default name as target of dump file:
+              `${MARIADB_DIR}/dumps/dump_${MARIADB_DB}_YYYYMMDD_HHmmss.sql`
+  * `--prefix`: Permit to customize prefix of the default path name.
+                For example to use a different name between production and development
+                environment.
+  * `--to`: Indicate target file where write dump.
+            This option could be used with --auto or --prefix option.
+
+```shell
+  $# dbrm mariadb drop --auto --prefix test
+  Dump of example database executed correctly to: ./dumps/test_20171119_154129.sql.
+```
 
