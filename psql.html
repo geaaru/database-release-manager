@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Psql API &#8212; Database Release Manager</title>
-    
-    <link rel="stylesheet" href="static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="static/dbrm.css" type="text/css" />
     <link rel="stylesheet" href="static/bootswatch-3.3.6/superhero/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="static/bootstrap-sphinx.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
@@ -39,7 +35,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 
   </head>
-  <body role="document">
+  <body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -123,7 +119,7 @@
     </a>
   </li>
   <li>
-    <a href="commons_mariadb.html" title="Next Chapter: Commons MariaDB API"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Commons Maria... &raquo;</span>
+    <a href="commons_mariadb.html" title="Next Chapter: Commons MariaDB API"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Commons MariaDB API &raquo;</span>
     </a>
   </li>
               
@@ -213,7 +209,7 @@ table. Default is hide columns.</td>
 <div class="section" id="psql-set-auth-var">
 <span id="psql-set-auth-var"></span><h3>psql_set_auth_var<a class="headerlink" href="#psql-set-auth-var" title="Permalink to this headline">¶</a></h3>
 <p>Set psql_auth variable with arguments to use with psql client program.
-Valorize options like: -u username &#8211;password=pwd database.</p>
+Valorize options like: -u username --password=pwd database.</p>
 <p><em>Parameters</em>:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">$1</span></code>: (db) Name of the schema to use</li>
@@ -236,7 +232,7 @@ Valorize options like: -u username &#8211;password=pwd database.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock179'))">(Show/Hide)</a><br /><div id="hiddencodeblock179" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>psql_set_auth_var <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock187'))">(Show/Hide)</a><br /><div id="hiddencodeblock187" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>psql_set_auth_var <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">db</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">user</span><span class="o">=</span><span class="nv">$2</span>
@@ -303,7 +299,7 @@ table. Default is hide columns.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock180'))">(Show/Hide)</a><br /><div id="hiddencodeblock180" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>psql_cmd_4var <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock188'))">(Show/Hide)</a><br /><div id="hiddencodeblock188" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>psql_cmd_4var <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">set</span> -f
   <span class="nb">local</span> <span class="nv">var</span><span class="o">=</span><span class="nv">$1</span>
@@ -387,7 +383,7 @@ table. Default is hide columns.</li>
 If present <code class="docutils literal"><span class="pre">POSTGRESQL_CLIENT</span></code> variable with abs path is set.
 Function check if it is set <code class="docutils literal"><span class="pre">psql</span></code> variable:</p>
 <ul class="simple">
-<li>if it is not set then try to find path through &#8216;which&#8217; program</li>
+<li>if it is not set then try to find path through 'which' program</li>
 <li>if it is set then check if path is correct and program exists.</li>
 </ul>
 <p><em>Returns</em>:</p>
@@ -405,7 +401,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">psq
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock181'))">(Show/Hide)</a><br /><div id="hiddencodeblock181" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_check_client <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock189'))">(Show/Hide)</a><br /><div id="hiddencodeblock189" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_check_client <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$psql</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
 
@@ -464,7 +460,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">psq
 If present POSTGRESQL_CLIENT_DUMP variable with abs path is set.
 Function check if it is set <code class="docutils literal"><span class="pre">pg_dump</span></code> variable:</p>
 <ul class="simple">
-<li>if it is not set then try to find path through &#8216;which&#8217; program</li>
+<li>if it is not set then try to find path through 'which' program</li>
 <li>if it is set then check if path is correct and program exists.</li>
 </ul>
 <p><em>Returns</em>:</p>
@@ -482,7 +478,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">pg_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock182'))">(Show/Hide)</a><br /><div id="hiddencodeblock182" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_check_client_dump <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock190'))">(Show/Hide)</a><br /><div id="hiddencodeblock190" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_check_client_dump <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$pg_dump</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
 
@@ -559,7 +555,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">pg_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock183'))">(Show/Hide)</a><br /><div id="hiddencodeblock183" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_check_vars <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock191'))">(Show/Hide)</a><br /><div id="hiddencodeblock191" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_check_vars <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">commons_msg</span><span class="o">=</span><span class="s1">&#39;variable on configuration file, through arguments or on current profile.&#39;</span>
 
@@ -591,7 +587,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">pg_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock184'))">(Show/Hide)</a><br /><div id="hiddencodeblock184" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_check_connection <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock192'))">(Show/Hide)</a><br /><div id="hiddencodeblock192" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_check_connection <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$POSTGRESQL_CLIENT</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
     <span class="k">return</span> 1
@@ -640,7 +636,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">pg_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock185'))">(Show/Hide)</a><br /><div id="hiddencodeblock185" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_shell <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock193'))">(Show/Hide)</a><br /><div id="hiddencodeblock193" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_shell <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
   <span class="nb">local</span> <span class="nv">errorCode</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -697,7 +693,7 @@ On default dump save both schema and data. (optional)</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock186'))">(Show/Hide)</a><br /><div id="hiddencodeblock186" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_dump <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock194'))">(Show/Hide)</a><br /><div id="hiddencodeblock194" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_dump <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
   <span class="nb">local</span> <span class="nv">targetfile</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
@@ -749,7 +745,7 @@ On default dump save both schema and data. (optional)</li>
     </p>
     <p>
         &copy; Copyright 2017, Geaaru.<br/>
-      Last updated on Aug 19, 2017.<br/>
+      Last updated on Nov 11, 2017.<br/>
     </p>
   </div>
 </footer>

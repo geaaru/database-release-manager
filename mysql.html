@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Mysql API &#8212; Database Release Manager</title>
-    
-    <link rel="stylesheet" href="static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="static/dbrm.css" type="text/css" />
     <link rel="stylesheet" href="static/bootswatch-3.3.6/superhero/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="static/bootstrap-sphinx.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
@@ -39,7 +35,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 
   </head>
-  <body role="document">
+  <body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -171,7 +167,7 @@ of the function and avoid set of timezone on session.</td>
 <td>Set timezone to use on session. Default is UTC.</td>
 </tr>
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">MARIADB_SHOW_COLUMNS</span></code></td>
-<td>If this variable is set remove &#8216;-N&#8217; option from mysql client
+<td>If this variable is set remove '-N' option from mysql client
 command to print column data.</td>
 </tr>
 <tr class="row-odd"><td><code class="docutils literal"><span class="pre">MARIADB_CLIENT</span></code></td>
@@ -192,10 +188,10 @@ in compilation. Default is 0.</td>
 </tr>
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">MYSQL5_6_ENV_PWD</span></code></td>
 <td>From version 5.6 of mysql command line command is present an annoying warning
-message like this &#8216;Warning: Using a password on the command line interface
-can be insecure.&#8217; when is used a &#8211;password argument.
+message like this 'Warning: Using a password on the command line interface
+can be insecure.' when is used a --password argument.
 This warning message broken database-release-manager and it is required add
-MYSQL5_6_ENV_PWD=&#8221;1&#8221; on dbrm.conf file.</td>
+MYSQL5_6_ENV_PWD=&quot;1&quot; on dbrm.conf file.</td>
 </tr>
 </tbody>
 </table>
@@ -205,7 +201,7 @@ MYSQL5_6_ENV_PWD=&#8221;1&#8221; on dbrm.conf file.</td>
 <span id="api"></span><h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="mysql-set-auth-var">
 <span id="mysql-set-auth-var"></span><h3>mysql_set_auth_var<a class="headerlink" href="#mysql-set-auth-var" title="Permalink to this headline">¶</a></h3>
-<p>Set <code class="docutils literal"><span class="pre">mysql_auth</span></code> variable with authentication string like: -u username &#8211;password=pwd database to use with mysql client program.</p>
+<p>Set <code class="docutils literal"><span class="pre">mysql_auth</span></code> variable with authentication string like: -u username --password=pwd database to use with mysql client program.</p>
 <p><em>Parameters</em>:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">$1</span></code>: (db) Name of the schema to use.</li>
@@ -227,7 +223,7 @@ MYSQL5_6_ENV_PWD=&#8221;1&#8221; on dbrm.conf file.</td>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock175'))">(Show/Hide)</a><br /><div id="hiddencodeblock175" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mysql_set_auth_var <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock183'))">(Show/Hide)</a><br /><div id="hiddencodeblock183" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mysql_set_auth_var <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">db</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">user</span><span class="o">=</span><span class="nv">$2</span>
@@ -272,7 +268,7 @@ defined on MARIADB_DB variable.</p>
 <li><code class="docutils literal"><span class="pre">MARIADB_IGNORE_TMZ</span></code>: this variable is used as an alternative to set third parameter
 of the function and avoid set of timezone on session.</li>
 <li><code class="docutils literal"><span class="pre">MARIADB_TMZ</span></code>: timezone to use on session. Default is UTC.</li>
-<li><code class="docutils literal"><span class="pre">MARIADB_SHOW_COLUMNS</span></code> if this variable is set remove &#8216;-N&#8217; option from mysql client
+<li><code class="docutils literal"><span class="pre">MARIADB_SHOW_COLUMNS</span></code> if this variable is set remove '-N' option from mysql client
 command to print column data.</li>
 <li><code class="docutils literal"><span class="pre">MARIADB_CLIENT</span></code>: Path of mysql client.</li>
 <li><code class="docutils literal"><span class="pre">MARIADB_EXTRA_OPTIONS</span></code>: Extra options for mysql client.</li>
@@ -302,7 +298,7 @@ in compilation. Default is 0.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock176'))">(Show/Hide)</a><br /><div id="hiddencodeblock176" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mysql_file <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock184'))">(Show/Hide)</a><br /><div id="hiddencodeblock184" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mysql_file <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">var</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="nv">$2</span>
@@ -353,13 +349,13 @@ in compilation. Default is 0.</li>
 <span id="mysql-source-file"></span><h3>mysql_source_file<a class="headerlink" href="#mysql-source-file" title="Permalink to this headline">¶</a></h3>
 <p>Compile a file and save output to input variable.
 This command is an alternative to mysql_file function that use source command.
-This command doesn&#8217;t replace placeholder DB_NAME.</p>
+This command doesn't replace placeholder DB_NAME.</p>
 <p><em>Variables Used</em>:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">MARIADB_IGNORE_TMZ</span></code>: this variable is used as an alternative to set third parameter
 of the function and avoid set of timezone on session.</li>
 <li><code class="docutils literal"><span class="pre">MARIADB_TMZ</span></code>: timezone to use on session. Default is UTC.</li>
-<li><code class="docutils literal"><span class="pre">MARIADB_SHOW_COLUMNS</span></code> if this variable is set remove &#8216;-N&#8217; option from mysql client
+<li><code class="docutils literal"><span class="pre">MARIADB_SHOW_COLUMNS</span></code> if this variable is set remove '-N' option from mysql client
 command to print column data.</li>
 <li><code class="docutils literal"><span class="pre">MARIADB_CLIENT</span></code>: Path of mysql client.</li>
 <li><code class="docutils literal"><span class="pre">MARIADB_EXTRA_OPTIONS</span></code>: Extra options for mysql client.</li>
@@ -389,7 +385,7 @@ in compilation. Default is 0.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock177'))">(Show/Hide)</a><br /><div id="hiddencodeblock177" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mysql_source_file <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock185'))">(Show/Hide)</a><br /><div id="hiddencodeblock185" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mysql_source_file <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">var</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="nv">$2</span>
@@ -443,7 +439,7 @@ in compilation. Default is 0.</li>
 <li><code class="docutils literal"><span class="pre">MARIADB_IGNORE_TMZ</span></code>: this variable is used as an alternative to set third parameter
 of the function and avoid set of timezone on session.</li>
 <li><code class="docutils literal"><span class="pre">MARIADB_TMZ</span></code>: timezone to use on session. Default is UTC.</li>
-<li><code class="docutils literal"><span class="pre">MARIADB_SHOW_COLUMNS</span></code> if this variable is set remove &#8216;-N&#8217; option from mysql client
+<li><code class="docutils literal"><span class="pre">MARIADB_SHOW_COLUMNS</span></code> if this variable is set remove '-N' option from mysql client
 command to print column data.</li>
 <li><code class="docutils literal"><span class="pre">MARIADB_CLIENT</span></code>: Path of mysql client.</li>
 <li><code class="docutils literal"><span class="pre">MARIADB_EXTRA_OPTIONS</span></code>: Extra options for mysql client.</li>
@@ -474,7 +470,7 @@ in compilation. Default is 0.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock178'))">(Show/Hide)</a><br /><div id="hiddencodeblock178" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mysql_cmd_4var <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock186'))">(Show/Hide)</a><br /><div id="hiddencodeblock186" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mysql_cmd_4var <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">set</span> -f
   <span class="nb">local</span> <span class="nv">var</span><span class="o">=</span><span class="nv">$1</span>
@@ -549,7 +545,7 @@ in compilation. Default is 0.</li>
     </p>
     <p>
         &copy; Copyright 2017, Geaaru.<br/>
-      Last updated on Aug 19, 2017.<br/>
+      Last updated on Nov 11, 2017.<br/>
     </p>
   </div>
 </footer>

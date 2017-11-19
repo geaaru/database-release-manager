@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>DBM Module &#8212; Database Release Manager</title>
-    
-    <link rel="stylesheet" href="static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="static/dbrm.css" type="text/css" />
     <link rel="stylesheet" href="static/bootswatch-3.3.6/superhero/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="static/bootstrap-sphinx.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
@@ -39,7 +35,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 
   </head>
-  <body role="document">
+  <body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -393,7 +389,7 @@ Default path is: <em>$HOME/.local/share/dbrm/profiles</em>.</td>
 <span id="initenv-options"></span><h4>initenv options:<a class="headerlink" href="#initenv-options" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">--to-current-dir</span></code>: Initialize dbrm stuff on current directory [.]. If this option is used is not possible use
-&#8211;to-dir option.</li>
+--to-dir option.</li>
 <li><code class="docutils literal"><span class="pre">--to-dir</span> <span class="pre">&lt;TARGET_DIR&gt;</span></code>: Initialize dbrm stuff on a target directory passed in input.</li>
 <li><code class="docutils literal"><span class="pre">--enable-profiles</span></code>: Enable Profiles Features on new project.</li>
 <li><code class="docutils literal"><span class="pre">--help|-h</span></code>: Show initenv command options.</li>
@@ -483,7 +479,7 @@ sqlite&gt;
 </div>
 <p>TODO:</p>
 <ul class="simple">
-<li>Manage help message like other modules with both -h and &#8211;help options.</li>
+<li>Manage help message like other modules with both -h and --help options.</li>
 </ul>
 </div>
 </div>
@@ -507,7 +503,7 @@ sqlite&gt;
 </div>
 <p>TODO:</p>
 <ul class="simple">
-<li>Manage help message like other modules with both -h and &#8211;help options.</li>
+<li>Manage help message like other modules with both -h and --help options.</li>
 <li>Add filter options (for id release, filename, etc.)</li>
 </ul>
 </div>
@@ -1767,7 +1763,7 @@ If release is present then are valorized these variables:</p>
 <p><em>Return</em>:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">0</span></code>: script is present.</li>
-<li><code class="docutils literal"><span class="pre">1</span></code>: script isn&#8217;t present. (An exit 1 command is call if not present)</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: script isn't present. (An exit 1 command is call if not present)</li>
 </ul>
 <script type="text/javascript">
     function showhide(element){
@@ -1811,7 +1807,7 @@ If release is present then are valorized these variables:</p>
 <p><em>Return</em>:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">0</span></code>: branch is present</li>
-<li><code class="docutils literal"><span class="pre">1</span></code>: branch isn&#8217;t present. (An exit 1 command is call if not present)</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: branch isn't present. (An exit 1 command is call if not present)</li>
 </ul>
 <script type="text/javascript">
     function showhide(element){
@@ -1849,7 +1845,7 @@ If release is present then are valorized these variables:</p>
 <p><em>Return</em>:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">0</span></code>: release is present</li>
-<li><code class="docutils literal"><span class="pre">1</span></code>: release isn&#8217;t present. (An exit 1 command is call if not present)</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: release isn't present. (An exit 1 command is call if not present)</li>
 </ul>
 <script type="text/javascript">
     function showhide(element){
@@ -3825,10 +3821,10 @@ _dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
 </ul>
 <p><em>Variables Used</em>:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">DBM_INIT_CURRDIR</span></code>: Set to 1 if &#8211;to-current-dir option is used. Default is 0.</li>
-<li><code class="docutils literal"><span class="pre">DBM_INIT_DIR</span></code>: Set with target directory of the &#8211;to-dir option.</li>
-<li><code class="docutils literal"><span class="pre">DBM_INIT_TARGETDIR</span></code>: Set to 1 if &#8211;to-dir option is used. Default is 0.</li>
-<li><code class="docutils literal"><span class="pre">DBM_INIT_PROFILES</span></code>: Set to 1 if &#8211;enable-profiles is present. Default is 0.</li>
+<li><code class="docutils literal"><span class="pre">DBM_INIT_CURRDIR</span></code>: Set to 1 if --to-current-dir option is used. Default is 0.</li>
+<li><code class="docutils literal"><span class="pre">DBM_INIT_DIR</span></code>: Set with target directory of the --to-dir option.</li>
+<li><code class="docutils literal"><span class="pre">DBM_INIT_TARGETDIR</span></code>: Set to 1 if --to-dir option is used. Default is 0.</li>
+<li><code class="docutils literal"><span class="pre">DBM_INIT_PROFILES</span></code>: Set to 1 if --enable-profiles is present. Default is 0.</li>
 </ul>
 <p><em>Return</em>:</p>
 <ul class="simple">
@@ -5341,7 +5337,7 @@ _dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
     </p>
     <p>
         &copy; Copyright 2017, Geaaru.<br/>
-      Last updated on Aug 19, 2017.<br/>
+      Last updated on Nov 11, 2017.<br/>
     </p>
   </div>
 </footer>

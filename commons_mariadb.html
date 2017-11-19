@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Commons MariaDB API &#8212; Database Release Manager</title>
-    
-    <link rel="stylesheet" href="static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="static/dbrm.css" type="text/css" />
     <link rel="stylesheet" href="static/bootswatch-3.3.6/superhero/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="static/bootstrap-sphinx.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
@@ -39,7 +35,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 
   </head>
-  <body role="document">
+  <body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -158,6 +154,8 @@
 <li><a class="reference internal" href="#commons-mariadb-drop-trigger">commons_mariadb_drop_trigger</a></li>
 <li><a class="reference internal" href="#commons-mariadb-drop-event">commons_mariadb_drop_event</a></li>
 <li><a class="reference internal" href="#commons-mariadb-show-gvars">commons_mariadb_show_gvars</a></li>
+<li><a class="reference internal" href="#commons-mariadb-check-client-dump">commons_mariadb_check_client_dump</a></li>
+<li><a class="reference internal" href="#commons-mariadb-dump">commons_mariadb_dump</a></li>
 </ul>
 </li>
 </ul>
@@ -175,7 +173,7 @@
     </a>
   </li>
   <li>
-    <a href="commons_oracle.html" title="Next Chapter: Commons Oracle API"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Commons Oracl... &raquo;</span>
+    <a href="commons_oracle.html" title="Next Chapter: Commons Oracle API"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Commons Oracle API &raquo;</span>
     </a>
   </li>
               
@@ -216,7 +214,7 @@
 If present MARIADB_CLIENT variable with abs path is set.
 Function check if it is set <code class="docutils literal"><span class="pre">mysql</span></code> variable:</p>
 <ul class="simple">
-<li>if it is not set then try to find path through &#8216;which&#8217; program</li>
+<li>if it is not set then try to find path through 'which' program</li>
 <li>if it is set then check if path is correct and program exists.</li>
 </ul>
 <p><em>Returns</em>:</p>
@@ -234,7 +232,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mys
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock11'))">(Show/Hide)</a><br /><div id="hiddencodeblock11" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_client <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock1'))">(Show/Hide)</a><br /><div id="hiddencodeblock1" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_client <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$mysql</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
 
@@ -311,7 +309,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mys
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock12'))">(Show/Hide)</a><br /><div id="hiddencodeblock12" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_vars <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock2'))">(Show/Hide)</a><br /><div id="hiddencodeblock2" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_vars <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">commons_msg</span><span class="o">=</span><span class="s1">&#39;variable on configuration file, through arguments or on current profile.&#39;</span>
 
@@ -344,7 +342,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mys
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock13'))">(Show/Hide)</a><br /><div id="hiddencodeblock13" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_connection <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock3'))">(Show/Hide)</a><br /><div id="hiddencodeblock3" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_connection <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$MARIADB_CLIENT</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
     <span class="k">return</span> 1
@@ -393,7 +391,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mys
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock14'))">(Show/Hide)</a><br /><div id="hiddencodeblock14" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_shell <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock4'))">(Show/Hide)</a><br /><div id="hiddencodeblock4" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_shell <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
 
@@ -450,7 +448,7 @@ Output of the compilation is saved on <code class="docutils literal"><span class
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock15'))">(Show/Hide)</a><br /><div id="hiddencodeblock15" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_file <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock5'))">(Show/Hide)</a><br /><div id="hiddencodeblock5" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_file <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="nv">$2</span>
@@ -506,7 +504,7 @@ Output of the compilation is saved on <code class="docutils literal"><span class
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock16'))">(Show/Hide)</a><br /><div id="hiddencodeblock16" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_source_file <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock6'))">(Show/Hide)</a><br /><div id="hiddencodeblock6" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_source_file <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="nv">$2</span>
@@ -565,7 +563,7 @@ then foreign key is dropped and added again.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock17'))">(Show/Hide)</a><br /><div id="hiddencodeblock17" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_fkey <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock7'))">(Show/Hide)</a><br /><div id="hiddencodeblock7" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_fkey <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="nv">$2</span>
@@ -691,7 +689,7 @@ index is dropped and added again.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock18'))">(Show/Hide)</a><br /><div id="hiddencodeblock18" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_idx <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock8'))">(Show/Hide)</a><br /><div id="hiddencodeblock8" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_idx <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="nv">$2</span>
@@ -809,7 +807,7 @@ index is dropped and added again.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock19'))">(Show/Hide)</a><br /><div id="hiddencodeblock19" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_all_procedures <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock9'))">(Show/Hide)</a><br /><div id="hiddencodeblock9" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_all_procedures <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$MARIADB_DIR</span><span class="s2">/procedures&quot;</span>
@@ -843,7 +841,7 @@ index is dropped and added again.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock20'))">(Show/Hide)</a><br /><div id="hiddencodeblock20" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_all_triggers <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock10'))">(Show/Hide)</a><br /><div id="hiddencodeblock10" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_all_triggers <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$MARIADB_DIR</span><span class="s2">/triggers&quot;</span>
@@ -877,7 +875,7 @@ index is dropped and added again.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock21'))">(Show/Hide)</a><br /><div id="hiddencodeblock21" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_all_functions <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock11'))">(Show/Hide)</a><br /><div id="hiddencodeblock11" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_all_functions <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$MARIADB_DIR</span><span class="s2">/functions&quot;</span>
@@ -911,7 +909,7 @@ index is dropped and added again.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock22'))">(Show/Hide)</a><br /><div id="hiddencodeblock22" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_all_views <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock12'))">(Show/Hide)</a><br /><div id="hiddencodeblock12" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_all_views <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$MARIADB_DIR</span><span class="s2">/views&quot;</span>
@@ -947,7 +945,7 @@ if already present.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock23'))">(Show/Hide)</a><br /><div id="hiddencodeblock23" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_all_fkeys <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock13'))">(Show/Hide)</a><br /><div id="hiddencodeblock13" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_all_fkeys <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">force</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -985,7 +983,7 @@ if already present.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock24'))">(Show/Hide)</a><br /><div id="hiddencodeblock24" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_all_idxs <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock14'))">(Show/Hide)</a><br /><div id="hiddencodeblock14" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_all_idxs <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">force</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1021,7 +1019,7 @@ if already present.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock25'))">(Show/Hide)</a><br /><div id="hiddencodeblock25" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_all_events <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock15'))">(Show/Hide)</a><br /><div id="hiddencodeblock15" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_all_events <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$MARIADB_DIR</span><span class="s2">/schedulers&quot;</span>
@@ -1060,7 +1058,7 @@ Optional.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock26'))">(Show/Hide)</a><br /><div id="hiddencodeblock26" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_all_from_dir <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock16'))">(Show/Hide)</a><br /><div id="hiddencodeblock16" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_compile_all_from_dir <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">msg_head</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1153,7 +1151,7 @@ Optional.</li>
 if count must be done for foreign key of the table or
 foreign keys that reference table.
 Optional field.
-Possible values are: &#8220;in&#8221; (default) | &#8220;ref&#8221;</li>
+Possible values are: &quot;in&quot; (default) | &quot;ref&quot;</li>
 </ul>
 <p><em>Returns</em>:</p>
 <p>Number of foreign keys found.</p>
@@ -1167,7 +1165,7 @@ Possible values are: &#8220;in&#8221; (default) | &#8220;ref&#8221;</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock27'))">(Show/Hide)</a><br /><div id="hiddencodeblock27" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_count_fkeys <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock17'))">(Show/Hide)</a><br /><div id="hiddencodeblock17" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_count_fkeys <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">tname</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">mode</span><span class="o">=</span><span class="nv">$2</span>
@@ -1235,7 +1233,7 @@ Possible values are: &#8220;in&#8221; (default) | &#8220;ref&#8221;</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock28'))">(Show/Hide)</a><br /><div id="hiddencodeblock28" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_count_procedures <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock18'))">(Show/Hide)</a><br /><div id="hiddencodeblock18" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_count_procedures <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;</span>
 <span class="s2">    SELECT COUNT(1) AS CNT</span>
@@ -1269,7 +1267,7 @@ Possible values are: &#8220;in&#8221; (default) | &#8220;ref&#8221;</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock29'))">(Show/Hide)</a><br /><div id="hiddencodeblock29" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_count_functions <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock19'))">(Show/Hide)</a><br /><div id="hiddencodeblock19" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_count_functions <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;</span>
 <span class="s2">    SELECT COUNT(1) AS CNT</span>
@@ -1303,7 +1301,7 @@ Possible values are: &#8220;in&#8221; (default) | &#8220;ref&#8221;</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock30'))">(Show/Hide)</a><br /><div id="hiddencodeblock30" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_count_triggers <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock20'))">(Show/Hide)</a><br /><div id="hiddencodeblock20" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_count_triggers <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;</span>
 <span class="s2">    SELECT COUNT(1) AS CNT</span>
@@ -1339,7 +1337,7 @@ Possible values are: &#8220;in&#8221; (default) | &#8220;ref&#8221;</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock31'))">(Show/Hide)</a><br /><div id="hiddencodeblock31" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_count_views <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock21'))">(Show/Hide)</a><br /><div id="hiddencodeblock21" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_count_views <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;</span>
 <span class="s2">    SELECT COUNT(1) AS CNT</span>
@@ -1372,7 +1370,7 @@ Possible values are: &#8220;in&#8221; (default) | &#8220;ref&#8221;</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock32'))">(Show/Hide)</a><br /><div id="hiddencodeblock32" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_count_events <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock22'))">(Show/Hide)</a><br /><div id="hiddencodeblock22" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_count_events <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;</span>
 <span class="s2">    SELECT COUNT(1) AS CNT</span>
@@ -1395,9 +1393,9 @@ Possible values are: &#8220;in&#8221; (default) | &#8220;ref&#8221;</li>
 <p>Count number of indexes present on database.</p>
 <p><em>Parameters</em>:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">$1</span></code>: (tname) Argument $1 if isn&#8217;t an empty string identify table name.</li>
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (tname) Argument $1 if isn't an empty string identify table name.</li>
 <li><code class="docutils literal"><span class="pre">$2</span></code>: (idx_types) Argument $2 identify indexes types.
-Values are: &#8220;all&#8221; (default), &#8220;primary&#8221;, &#8220;not_primary&#8221;</li>
+Values are: &quot;all&quot; (default), &quot;primary&quot;, &quot;not_primary&quot;</li>
 </ul>
 <p><em>Returns</em>:</p>
 <p>Number of indexes found.</p>
@@ -1411,7 +1409,7 @@ Values are: &#8220;all&#8221; (default), &#8220;primary&#8221;, &#8220;not_prima
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock33'))">(Show/Hide)</a><br /><div id="hiddencodeblock33" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_count_indexes <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock23'))">(Show/Hide)</a><br /><div id="hiddencodeblock23" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_count_indexes <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">tname</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">idx_types</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1484,7 +1482,7 @@ Values are: &#8220;all&#8221; (default), &#8220;primary&#8221;, &#8220;not_prima
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock34'))">(Show/Hide)</a><br /><div id="hiddencodeblock34" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_if_exist_procedure <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock24'))">(Show/Hide)</a><br /><div id="hiddencodeblock24" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_if_exist_procedure <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span>1
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
@@ -1529,7 +1527,7 @@ Values are: &#8220;all&#8221; (default), &#8220;primary&#8221;, &#8220;not_prima
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock35'))">(Show/Hide)</a><br /><div id="hiddencodeblock35" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_if_exist_function <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock25'))">(Show/Hide)</a><br /><div id="hiddencodeblock25" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_if_exist_function <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span>1
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
@@ -1574,7 +1572,7 @@ Values are: &#8220;all&#8221; (default), &#8220;primary&#8221;, &#8220;not_prima
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock36'))">(Show/Hide)</a><br /><div id="hiddencodeblock36" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_if_exist_view <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock26'))">(Show/Hide)</a><br /><div id="hiddencodeblock26" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_if_exist_view <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span>1
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
@@ -1620,7 +1618,7 @@ two foreign key with same name.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock37'))">(Show/Hide)</a><br /><div id="hiddencodeblock37" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_if_exist_fkey <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock27'))">(Show/Hide)</a><br /><div id="hiddencodeblock27" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_if_exist_fkey <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span>1
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
@@ -1687,7 +1685,7 @@ two foreign key with same name.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock38'))">(Show/Hide)</a><br /><div id="hiddencodeblock38" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_if_exist_index <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock28'))">(Show/Hide)</a><br /><div id="hiddencodeblock28" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_if_exist_index <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span>1
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
@@ -1745,7 +1743,7 @@ two foreign key with same name.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock39'))">(Show/Hide)</a><br /><div id="hiddencodeblock39" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_triggers_list <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock29'))">(Show/Hide)</a><br /><div id="hiddencodeblock29" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_triggers_list <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span>1
   <span class="nb">local</span> <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;</span>
@@ -1779,7 +1777,7 @@ two foreign key with same name.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock40'))">(Show/Hide)</a><br /><div id="hiddencodeblock40" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_count_tables <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock30'))">(Show/Hide)</a><br /><div id="hiddencodeblock30" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_count_tables <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;</span>
 <span class="s2">    SELECT COUNT(1) AS CNT</span>
@@ -1812,7 +1810,7 @@ is possible define columns to return.</li>
 <li><code class="docutils literal"><span class="pre">$5</span></code>: (mode) if tname is present this field could be used for identify
 count must be done for count foreign key of the table or foreign
 keys that reference table. Optional parameter.
-Possible values are: &#8220;in&#8221; (default) | &#8220;ref&#8221;</li>
+Possible values are: &quot;in&quot; (default) | &quot;ref&quot;</li>
 </ul>
 <p><em>Returns</em>:</p>
 <ul class="simple">
@@ -1829,7 +1827,7 @@ Possible values are: &#8220;in&#8221; (default) | &#8220;ref&#8221;</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock41'))">(Show/Hide)</a><br /><div id="hiddencodeblock41" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_fkeys_list <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock31'))">(Show/Hide)</a><br /><div id="hiddencodeblock31" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_fkeys_list <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">all</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">custom_column</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1925,7 +1923,7 @@ Possible values are: &#8220;in&#8221; (default) | &#8220;ref&#8221;</li>
 <p><em>Parameters</em>:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">$1</span></code>: (idx_types) Identify indexes types.
-Values are: &#8220;all&#8221; (default), &#8220;primary&#8221;, &#8220;not_primary&#8221;</li>
+Values are: &quot;all&quot; (default), &quot;primary&quot;, &quot;not_primary&quot;</li>
 <li><code class="docutils literal"><span class="pre">$2</span></code>: (custom_column) If not empty defined list of column returned.</li>
 <li><code class="docutils literal"><span class="pre">$3</span></code>: (tname) Table name to use on filter. Optional</li>
 <li><code class="docutils literal"><span class="pre">$4</span></code>: (index_name) Index name to filter. Optional.</li>
@@ -1945,7 +1943,7 @@ Values are: &#8220;all&#8221; (default), &#8220;primary&#8221;, &#8220;not_prima
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock42'))">(Show/Hide)</a><br /><div id="hiddencodeblock42" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_indexes_list <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock32'))">(Show/Hide)</a><br /><div id="hiddencodeblock32" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_indexes_list <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">idx_types</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">custom_column</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -2061,7 +2059,7 @@ is possible define columns to return.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock43'))">(Show/Hide)</a><br /><div id="hiddencodeblock43" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_tables_list <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock33'))">(Show/Hide)</a><br /><div id="hiddencodeblock33" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_tables_list <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">all</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">custom_column</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -2118,7 +2116,7 @@ is possible define columns to return.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock44'))">(Show/Hide)</a><br /><div id="hiddencodeblock44" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_desc_table <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock34'))">(Show/Hide)</a><br /><div id="hiddencodeblock34" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_desc_table <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">tname</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">custom_column</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -2179,7 +2177,7 @@ is possible define columns to return.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock45'))">(Show/Hide)</a><br /><div id="hiddencodeblock45" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_exist_table <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock35'))">(Show/Hide)</a><br /><div id="hiddencodeblock35" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_exist_table <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">tname</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span>1
@@ -2223,7 +2221,7 @@ is possible define columns to return.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock46'))">(Show/Hide)</a><br /><div id="hiddencodeblock46" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_exist_event <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock36'))">(Show/Hide)</a><br /><div id="hiddencodeblock36" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_exist_event <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">ename</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span>1
@@ -2269,7 +2267,7 @@ ROUTINE_NAME.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock47'))">(Show/Hide)</a><br /><div id="hiddencodeblock47" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_procedures_list <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock37'))">(Show/Hide)</a><br /><div id="hiddencodeblock37" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_procedures_list <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">all</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">all_column</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -2315,7 +2313,7 @@ ROUTINE_NAME.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock48'))">(Show/Hide)</a><br /><div id="hiddencodeblock48" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_functions_list <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock38'))">(Show/Hide)</a><br /><div id="hiddencodeblock38" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_functions_list <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">all</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">all_column</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -2343,7 +2341,7 @@ ROUTINE_NAME.</li>
 Data are returned as a row with pipe (|) separator.</p>
 <p><em>Parameters</em>:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">$1</span></code>: (opt) If equal to &#8216;all&#8217; then are returned columns EVENT_NAME,
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (opt) If equal to 'all' then are returned columns EVENT_NAME,
 DEFINER, TIME_ZONE, EVENT_TYPE, EXECUTE_AT, INTERVAL_VALUE,
 INTERVAL_FIELD, STARTS , ENDS, STATUS, ON_COMPLETION,
 CREATED, LAST_ALTERED, LAST_EXECUTED, EVENT_COMMENT
@@ -2366,7 +2364,7 @@ STATUS, CREATED end LAST_EXECUTED.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock49'))">(Show/Hide)</a><br /><div id="hiddencodeblock49" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_events_list <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock39'))">(Show/Hide)</a><br /><div id="hiddencodeblock39" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_events_list <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">opt</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">ename</span><span class="o">=</span><span class="nv">$2</span>
@@ -2441,7 +2439,7 @@ STATUS, CREATED end LAST_EXECUTED.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock50'))">(Show/Hide)</a><br /><div id="hiddencodeblock50" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_views_list <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock40'))">(Show/Hide)</a><br /><div id="hiddencodeblock40" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_views_list <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;</span>
 <span class="s2">    SELECT TABLE_NAME, IS_UPDATABLE</span>
@@ -2479,7 +2477,7 @@ Optional paramenter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock51'))">(Show/Hide)</a><br /><div id="hiddencodeblock51" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_if_exist_trigger <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock41'))">(Show/Hide)</a><br /><div id="hiddencodeblock41" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_if_exist_trigger <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span>1
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
@@ -2539,7 +2537,7 @@ Optional paramenter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock52'))">(Show/Hide)</a><br /><div id="hiddencodeblock52" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_procedure <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock42'))">(Show/Hide)</a><br /><div id="hiddencodeblock42" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_procedure <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span><span class="s2">&quot;</span>
   <span class="nv">name</span><span class="o">=</span><span class="sb">`</span>basename <span class="nv">$name</span><span class="sb">`</span>
@@ -2621,7 +2619,7 @@ Optional paramenter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock53'))">(Show/Hide)</a><br /><div id="hiddencodeblock53" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_function <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock43'))">(Show/Hide)</a><br /><div id="hiddencodeblock43" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_function <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span>1
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -2706,7 +2704,7 @@ Optional paramenter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock54'))">(Show/Hide)</a><br /><div id="hiddencodeblock54" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_trigger <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock44'))">(Show/Hide)</a><br /><div id="hiddencodeblock44" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_trigger <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span>1
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -2778,7 +2776,7 @@ Optional paramenter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock55'))">(Show/Hide)</a><br /><div id="hiddencodeblock55" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_event <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock45'))">(Show/Hide)</a><br /><div id="hiddencodeblock45" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_event <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span>1
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -2931,7 +2929,7 @@ Optional paramenter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock56'))">(Show/Hide)</a><br /><div id="hiddencodeblock56" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_view <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock46'))">(Show/Hide)</a><br /><div id="hiddencodeblock46" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_view <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">result</span><span class="o">=</span>1
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -2993,7 +2991,7 @@ Optional paramenter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock57'))">(Show/Hide)</a><br /><div id="hiddencodeblock57" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_all_views <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock47'))">(Show/Hide)</a><br /><div id="hiddencodeblock47" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_all_views <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">n_rec</span><span class="o">=</span>0
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -3050,7 +3048,7 @@ Optional paramenter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock58'))">(Show/Hide)</a><br /><div id="hiddencodeblock58" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_all_procedures <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock48'))">(Show/Hide)</a><br /><div id="hiddencodeblock48" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_all_procedures <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">n_rec</span><span class="o">=</span>0
   <span class="nb">local</span> <span class="nv">i</span><span class="o">=</span>1
@@ -3103,7 +3101,7 @@ Optional paramenter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock59'))">(Show/Hide)</a><br /><div id="hiddencodeblock59" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_all_functions <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock49'))">(Show/Hide)</a><br /><div id="hiddencodeblock49" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_all_functions <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">n_rec</span><span class="o">=</span>0
   <span class="nb">local</span> <span class="nv">i</span><span class="o">=</span>1
@@ -3156,7 +3154,7 @@ Optional paramenter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock60'))">(Show/Hide)</a><br /><div id="hiddencodeblock60" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_all_triggers <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock50'))">(Show/Hide)</a><br /><div id="hiddencodeblock50" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_all_triggers <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">n_rec</span><span class="o">=</span>0
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -3214,7 +3212,7 @@ Optional paramenter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock61'))">(Show/Hide)</a><br /><div id="hiddencodeblock61" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_all_events <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock51'))">(Show/Hide)</a><br /><div id="hiddencodeblock51" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_all_events <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">n_rec</span><span class="o">=</span>0
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -3279,7 +3277,7 @@ Optional paramenter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock62'))">(Show/Hide)</a><br /><div id="hiddencodeblock62" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_fkey <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock52'))">(Show/Hide)</a><br /><div id="hiddencodeblock52" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_fkey <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">table</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">2</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -3367,7 +3365,7 @@ Optional paramenter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock63'))">(Show/Hide)</a><br /><div id="hiddencodeblock63" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_all_fkeys <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock53'))">(Show/Hide)</a><br /><div id="hiddencodeblock53" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_all_fkeys <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">n_rec</span><span class="o">=</span>0
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -3432,7 +3430,7 @@ Optional paramenter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock64'))">(Show/Hide)</a><br /><div id="hiddencodeblock64" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_drop_fkey <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock54'))">(Show/Hide)</a><br /><div id="hiddencodeblock54" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_drop_fkey <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">is_present</span><span class="o">=</span>1
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
@@ -3537,7 +3535,7 @@ Optional paramenter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock65'))">(Show/Hide)</a><br /><div id="hiddencodeblock65" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_index <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock55'))">(Show/Hide)</a><br /><div id="hiddencodeblock55" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_index <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">tname</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">2</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -3636,7 +3634,7 @@ Optional paramenter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock66'))">(Show/Hide)</a><br /><div id="hiddencodeblock66" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_all_indexes <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock56'))">(Show/Hide)</a><br /><div id="hiddencodeblock56" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_all_indexes <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">with_pk</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">n_rec</span><span class="o">=</span>0
@@ -3692,7 +3690,7 @@ Optional paramenter.</li>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">$1</span></code>: (fkey) name of the index key to drop.</li>
 <li><code class="docutils literal"><span class="pre">$2</span></code>: (tname) Name of the table related with the index to drop.</li>
-<li><code class="docutils literal"><span class="pre">$3</span></code>: (avoid_warn) If not empty and index doesn&#8217;t exist no warning
+<li><code class="docutils literal"><span class="pre">$3</span></code>: (avoid_warn) If not empty and index doesn't exist no warning
 message are printed.</li>
 </ul>
 <p><em>Returns</em>:</p>
@@ -3710,7 +3708,7 @@ message are printed.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock67'))">(Show/Hide)</a><br /><div id="hiddencodeblock67" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_drop_index <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock57'))">(Show/Hide)</a><br /><div id="hiddencodeblock57" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_drop_index <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">is_present</span><span class="o">=</span>1
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
@@ -3834,7 +3832,7 @@ message are printed.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock68'))">(Show/Hide)</a><br /><div id="hiddencodeblock68" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_create_fkey_file <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock58'))">(Show/Hide)</a><br /><div id="hiddencodeblock58" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_create_fkey_file <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">table</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -3888,7 +3886,7 @@ message are printed.</li>
 <li><code class="docutils literal"><span class="pre">$2</span></code>: (table) name of the table where create index.</li>
 <li><code class="docutils literal"><span class="pre">$3</span></code>: (keys) list of columns of the index.</li>
 <li><code class="docutils literal"><span class="pre">$4</span></code>: (itable) for particolar index could be contains
-&#8220;UNIQUE&#8221; | &#8220;FULLTEXT&#8221; | &#8220;SPATIAL&#8221;</li>
+&quot;UNIQUE&quot; | &quot;FULLTEXT&quot; | &quot;SPATIAL&quot;</li>
 </ul>
 <p><em>Returns</em>:</p>
 <ul class="simple">
@@ -3905,7 +3903,7 @@ message are printed.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock69'))">(Show/Hide)</a><br /><div id="hiddencodeblock69" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_create_index_file <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock59'))">(Show/Hide)</a><br /><div id="hiddencodeblock59" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_create_index_file <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">table</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -3968,7 +3966,7 @@ message are printed.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock70'))">(Show/Hide)</a><br /><div id="hiddencodeblock70" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_table_def <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock60'))">(Show/Hide)</a><br /><div id="hiddencodeblock60" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_get_table_def <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">tname</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">def</span><span class="o">=</span><span class="s2">&quot;CREATE TABLE IF NOT EXISTS \`</span><span class="si">${</span><span class="nv">tname</span><span class="si">}</span><span class="s2">\` (\n&quot;</span>
@@ -4134,7 +4132,7 @@ Optional parameter.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock71'))">(Show/Hide)</a><br /><div id="hiddencodeblock71" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_all_tables <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock61'))">(Show/Hide)</a><br /><div id="hiddencodeblock61" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_download_all_tables <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">tname</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -4275,7 +4273,7 @@ Optional parameter.</li>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">$1</span></code>: (fkey) name of the trigger to drop.</li>
 <li><code class="docutils literal"><span class="pre">$2</span></code>: (tname) Name of the table related with the trigger to drop.</li>
-<li><code class="docutils literal"><span class="pre">$3</span></code>: (avoid_warn) If not empty and trigger doesn&#8217;t exist no warning
+<li><code class="docutils literal"><span class="pre">$3</span></code>: (avoid_warn) If not empty and trigger doesn't exist no warning
 message are printed.</li>
 </ul>
 <p><em>Returns</em>:</p>
@@ -4293,7 +4291,7 @@ message are printed.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock72'))">(Show/Hide)</a><br /><div id="hiddencodeblock72" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_drop_trigger <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock62'))">(Show/Hide)</a><br /><div id="hiddencodeblock62" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_drop_trigger <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">is_present</span><span class="o">=</span>1
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
@@ -4347,7 +4345,7 @@ message are printed.</li>
 <p><em>Parameters</em>:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">$1</span></code>: (ename) name of the event to drop.</li>
-<li><code class="docutils literal"><span class="pre">$2</span></code>: (avoid_warn) If not empty and event doesn&#8217;t exist no warning
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (avoid_warn) If not empty and event doesn't exist no warning
 message are printed.</li>
 </ul>
 <p><em>Returns</em>:</p>
@@ -4365,7 +4363,7 @@ message are printed.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock73'))">(Show/Hide)</a><br /><div id="hiddencodeblock73" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_drop_trigger <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock63'))">(Show/Hide)</a><br /><div id="hiddencodeblock63" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_drop_trigger <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">is_present</span><span class="o">=</span>1
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
@@ -4435,7 +4433,7 @@ message are printed.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock74'))">(Show/Hide)</a><br /><div id="hiddencodeblock74" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_show_gvars <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock64'))">(Show/Hide)</a><br /><div id="hiddencodeblock64" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_show_gvars <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">filter</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -4460,6 +4458,142 @@ message are printed.</li>
 </pre></div>
 </div>
 </div></div>
+<div class="section" id="commons-mariadb-check-client-dump">
+<span id="commons-mariadb-check-client-dump"></span><h3>commons_mariadb_check_client_dump<a class="headerlink" href="#commons-mariadb-check-client-dump" title="Permalink to this headline">¶</a></h3>
+<p>Check if mysqldump client program is present on system.
+If present MARIADB_CLIENT_DUMP variable with abs path is set.
+Function check if it is set <code class="docutils literal"><span class="pre">mysqldump</span></code> variable:</p>
+<ul class="simple">
+<li>if it is not set then try to find path through 'which' program</li>
+<li>if it is set then check if path is correct and program exists.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock65'))">(Show/Hide)</a><br /><div id="hiddencodeblock65" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_check_client_dump <span class="o">()</span> <span class="o">{</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$mysqldump</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+
+    <span class="c1"># POST: mysql variable not set</span>
+    <span class="nv">tmp</span><span class="o">=</span><span class="sb">`</span>which mysqldump 2&gt; /dev/null<span class="sb">`</span>
+    <span class="nv">var</span><span class="o">=</span><span class="nv">$?</span>
+
+    <span class="k">if</span> <span class="o">[</span> <span class="nv">$var</span> -eq <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+
+      <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;Use mysqldump: </span><span class="nv">$tmp</span><span class="s2">\n&quot;</span>
+
+      <span class="nv">MARIADB_CLIENT_DUMP</span><span class="o">=</span><span class="nv">$tmp</span>
+
+      <span class="nb">unset</span> tmp
+
+    <span class="k">else</span>
+
+      error_generate <span class="s2">&quot;mysqldump program not found&quot;</span>
+
+      <span class="k">return</span> 1
+
+    <span class="k">fi</span>
+
+  <span class="k">else</span>
+
+    <span class="c1"># POST: mysqldump variable set</span>
+
+    <span class="c1"># Check if file is correct</span>
+    <span class="k">if</span> <span class="o">[</span> -f <span class="s2">&quot;</span><span class="nv">$mysqldump</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+
+      <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;Use mysqldump: </span><span class="nv">$mysqldump</span><span class="s2">\n&quot;</span>
+
+      <span class="nv">MARIADB_CLIENT_DUMP</span><span class="o">=</span><span class="nv">$mysqldump</span>
+
+    <span class="k">else</span>
+
+      error_generate <span class="s2">&quot;</span><span class="nv">$mysqldump</span><span class="s2"> program invalid.&quot;</span>
+
+      <span class="k">return</span> 1
+
+    <span class="k">fi</span>
+
+  <span class="k">fi</span>
+
+  <span class="nb">export</span> MARIADB_CLIENT_DUMP
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
+<div class="section" id="commons-mariadb-dump">
+<span id="commons-mariadb-dump"></span><h3>commons_mariadb_dump<a class="headerlink" href="#commons-mariadb-dump" title="Permalink to this headline">¶</a></h3>
+<p>Execute dump of database.</p>
+<p><em>Parameters</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">$1</span></code>: (targetfile) ABS Path of the file where is store dump.</li>
+<li><code class="docutils literal"><span class="pre">$2</span></code>: (only_db) Optional option define if dump single database (1) or all (0).
+Default value is 1.</li>
+<li><code class="docutils literal"><span class="pre">$3</span></code>: (custom_opts) Optional define custom extra options.</li>
+</ul>
+<p><em>Returns</em>:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">0</span></code>: on success</li>
+<li><code class="docutils literal"><span class="pre">1</span></code>: on error</li>
+</ul>
+<script type="text/javascript">
+    function showhide(element){
+        if (!document.getElementById)
+            return
+        if (element.style.display == "block")
+            element.style.display = "none"
+        else
+            element.style.display = "block"
+    };
+</script>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock66'))">(Show/Hide)</a><br /><div id="hiddencodeblock66" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mariadb_dump <span class="o">()</span> <span class="o">{</span>
+
+  <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+  <span class="nb">local</span> <span class="nv">targetfile</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">only_db</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">2</span><span class="k">:-</span><span class="nv">1</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nb">local</span> <span class="nv">custom_opts</span><span class="o">=</span><span class="nv">$3</span>
+  <span class="nb">local</span> <span class="nv">error_code</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$MARIADB_CLIENT_DUMP</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$mysql_auth</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">if</span> <span class="o">[[</span> -n <span class="s2">&quot;</span><span class="si">${</span><span class="nv">MARIADB_DB</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">&amp;&amp;</span> <span class="si">${</span><span class="nv">only_db</span><span class="si">}</span> -eq <span class="m">1</span> <span class="o">]]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;--databases </span><span class="si">${</span><span class="nv">MARIADB_DB</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">fi</span>
+
+  <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="se">\</span>
+    <span class="s2">&quot;(commons_mariadb_dump) Try connection with </span><span class="nv">$opts</span><span class="s2"> </span><span class="nv">$custom_opts</span><span class="s2"> </span><span class="nv">$MARIADB_EXTRA_OPTIONS</span><span class="s2"> </span><span class="nv">$mysql_auth</span><span class="s2">.\n&quot;</span>
+
+  <span class="nv">$MARIADB_CLIENT_DUMP</span> <span class="nv">$opts</span> <span class="nv">$custom_opts</span> <span class="nv">$MARIADB_EXTRA_OPTIONS</span> <span class="nv">$mysql_auth</span> &gt; <span class="si">${</span><span class="nv">targetfile</span><span class="si">}</span>
+
+  <span class="nv">error_code</span><span class="o">=</span><span class="nv">$?</span>
+  <span class="k">if</span> <span class="o">[</span> <span class="si">${</span><span class="nv">error_code</span><span class="si">}</span> -ne <span class="m">0</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
+    <span class="k">return</span> 1
+  <span class="k">fi</span>
+
+  <span class="k">return</span> 0
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></div>
 </div>
 </div>
 
@@ -4476,7 +4610,7 @@ message are printed.</li>
     </p>
     <p>
         &copy; Copyright 2017, Geaaru.<br/>
-      Last updated on Aug 19, 2017.<br/>
+      Last updated on Nov 19, 2017.<br/>
     </p>
   </div>
 </footer>

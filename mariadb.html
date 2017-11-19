@@ -1,18 +1,14 @@
 <!DOCTYPE html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>MariadDB Module &#8212; Database Release Manager</title>
-    
-    <link rel="stylesheet" href="static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="static/dbrm.css" type="text/css" />
     <link rel="stylesheet" href="static/bootswatch-3.3.6/superhero/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="static/bootstrap-sphinx.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
@@ -39,7 +35,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 
   </head>
-  <body role="document">
+  <body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -139,6 +135,10 @@
 <li><a class="reference internal" href="#create-options">create options:</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#mariadb-dump">mariadb dump</a><ul>
+<li><a class="reference internal" href="#dump-options">dump options:</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -212,7 +212,7 @@ upgrade project and trace changes between releasees.</li>
 <li><code class="docutils literal"><span class="pre">dbrm-profiles</span></code>: if profiles are enable contains all configuration files for
 different environment (dev, test, prod, etc.). This directory could be with
 a different name and depend of value present of DRM_PROFILES_PATH variable.</li>
-<li><code class="docutils literal"><span class="pre">foreign_keys</span></code>: this directory contains files related with all foreign keys of the project&#8217;s tables</li>
+<li><code class="docutils literal"><span class="pre">foreign_keys</span></code>: this directory contains files related with all foreign keys of the project's tables</li>
 <li><code class="docutils literal"><span class="pre">functions</span></code>: this directory contains files with database functions code</li>
 <li><code class="docutils literal"><span class="pre">indexes</span></code>: this directory contains files with all indexes of the database.</li>
 <li><code class="docutils literal"><span class="pre">procedures</span></code>: this directory contains files with database procedure code</li>
@@ -244,9 +244,9 @@ required set of this <em>GRANT</em>:</p>
 <span id="fix-for-mysql-5-6"></span><h3>Fix for Mysql &gt;= 5.6<a class="headerlink" href="#fix-for-mysql-5-6" title="Permalink to this headline">¶</a></h3>
 <p>From version 5.6 of mysql command line tool is present an annoying
 warning message like this:</p>
-<p><em>&#8216;Warning: Using a password on the command line interface can be insecure.&#8217;</em>
-<em>when is used a &#8211;password argument.</em></p>
-<p>This warning message broken <code class="docutils literal"><span class="pre">dbrm</span></code> and it is required add MYSQL5_6_ENV_PWD=&#8221;1&#8221; on <code class="docutils literal"><span class="pre">dbrm.conf</span></code> file.</p>
+<p><em>'Warning: Using a password on the command line interface can be insecure.'</em>
+<em>when is used a --password argument.</em></p>
+<p>This warning message broken <code class="docutils literal"><span class="pre">dbrm</span></code> and it is required add MYSQL5_6_ENV_PWD=&quot;1&quot; on <code class="docutils literal"><span class="pre">dbrm.conf</span></code> file.</p>
 </div>
 <div class="section" id="best-practices">
 <span id="best-practices"></span><h3>Best Practices<a class="headerlink" href="#best-practices" title="Permalink to this headline">¶</a></h3>
@@ -342,7 +342,7 @@ start events is required enable <em>event_scheduler</em> a runtime (with root us
   event_scheduler     OFF
 </pre></div>
 </div>
-<p>On cluster configuration <em>Event Scheduler</em> doesn&#8217;t manage automatically activation on single node, so we
+<p>On cluster configuration <em>Event Scheduler</em> doesn't manage automatically activation on single node, so we
 can manage concurrent execution through an application mutex or with activation of <em>event scheduler</em>
 service only on single node.</p>
 </div>
@@ -401,13 +401,17 @@ to remove comments from compiled functions/procedures (Option that could be used
 <td>Contains path of <cite>myql</cite> program. If not initialized dbrm try to automatically set
 this variable.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MARIADB_TMZ</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MARIADB_CLIENT_DUMP</span></code></td>
+<td>Contains path of <cite>mysqldump</cite> program. If not initialized dbrm try to automatically
+set this variable.</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MARIADB_TMZ</span></code></td>
 <td>Contains Timezone to use on database session. Default is UTC.</td>
 </tr>
-<tr class="row-even"><td><code class="docutils literal"><span class="pre">MARIADB_IGNORE_TMZ</span></code></td>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MARIADB_IGNORE_TMZ</span></code></td>
 <td>Set to 1 when to avoid initialization of Timezone on database connection. Default is 0.</td>
 </tr>
-<tr class="row-odd"><td><code class="docutils literal"><span class="pre">MARIADB_COMPILE_FILES_EXCLUDED</span></code></td>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">MARIADB_COMPILE_FILES_EXCLUDED</span></code></td>
 <td>Permit to define a list of script that are present on project directory to ignore
 on compilation proecess.</td>
 </tr>
@@ -533,7 +537,7 @@ tables to analyzed table and optional show script of create table.</li>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">--procedures</span></code>: Show list of procedures name present on database.</li>
 <li><code class="docutils literal"><span class="pre">--triggers</span></code>: Show list of trigger name present on database.</li>
-<li>`&#8211;functions: Show list of functions name present on database.</li>
+<li>`--functions: Show list of functions name present on database.</li>
 <li><code class="docutils literal"><span class="pre">--views</span></code>: Show list of view name present on database.</li>
 <li><code class="docutils literal"><span class="pre">--foreign-keys</span></code>: Show list of foreign keys name present on database.</li>
 <li><code class="docutils literal"><span class="pre">--tables</span></code>: Show list of tables present on database.</li>
@@ -543,9 +547,9 @@ tables to analyzed table and optional show script of create table.</li>
 <li><code class="docutils literal"><span class="pre">--table</span> <span class="pre">TABLE_NAME</span></code>: Show detail of a table. This option could be repeated.</li>
 <li><code class="docutils literal"><span class="pre">--fkey</span> <span class="pre">FKEY_NAME</span></code>: Show detail of a foreign key. This option could be repeated.</li>
 <li><code class="docutils literal"><span class="pre">--event</span> <span class="pre">EVENT_NAME</span></code>: Show detail of a event. This option could be repeated.</li>
-<li><code class="docutils literal"><span class="pre">--table-def</span></code>: Show table definition SQL (To use with &#8211;table).</li>
+<li><code class="docutils literal"><span class="pre">--table-def</span></code>: Show table definition SQL (To use with --table).</li>
 <li><code class="docutils literal"><span class="pre">--global-vars</span></code>: Show global variables of the instance.</li>
-<li><code class="docutils literal"><span class="pre">--vars-filter</span> <span class="pre">FILTER</span></code>: Apply filter in LIKE as %FILTER% (To use with &#8211;global-vars).</li>
+<li><code class="docutils literal"><span class="pre">--vars-filter</span> <span class="pre">FILTER</span></code>: Apply filter in LIKE as %FILTER% (To use with --global-vars).</li>
 </ul>
 <p>There are many options with <code class="docutils literal"><span class="pre">show</span></code> command so I propose only few examples here related with
 Openstack Juno database.</p>
@@ -673,22 +677,22 @@ it with name <VNAME> and .sql extension.</li>
 and .sql extension.</li>
 <li><code class="docutils literal"><span class="pre">--event</span> <span class="pre">ENAME</span></code>: Download a particular event under directory <em>schedulers</em> and
 save it with name <ENAME> and .sql extension.</li>
-<li><code class="docutils literal"><span class="pre">--index</span> <span class="pre">IDXNAME</span></code>: Download a particular index (Require &#8211;index-table) and save it
+<li><code class="docutils literal"><span class="pre">--index</span> <span class="pre">IDXNAME</span></code>: Download a particular index (Require --index-table) and save it
 under directory <em>indexes</em> with name &lt;TABLE_NAME&gt;-<IDXNAME> and
 .sql extension. Only one index a time can be specified.</li>
-<li><code class="docutils literal"><span class="pre">--index-table</span> <span class="pre">tname</span></code>: Name of table of index to download. (To use with &#8211;index).</li>
+<li><code class="docutils literal"><span class="pre">--index-table</span> <span class="pre">tname</span></code>: Name of table of index to download. (To use with --index).</li>
 <li><code class="docutils literal"><span class="pre">--with-pk-indexes</span></code>: Download also primary key indexes.
-(To use with &#8211;all|&#8211;index|&#8211;all-indexes)</li>
-<li><code class="docutils literal"><span class="pre">--all-tables</span></code>: Download all tables definitions that aren&#8217;t present on target
-file. This option could be used with &#8211;file.
+(To use with --all|--index|--all-indexes)</li>
+<li><code class="docutils literal"><span class="pre">--all-tables</span></code>: Download all tables definitions that aren't present on target
+file. This option could be used with --file.
 Default path where save tables definitions is
 <code class="docutils literal"><span class="pre">creation_scripts/initial_ddl.sql</span></code>.
 Could be used also for append new tables to an existing file.</li>
 <li><code class="docutils literal"><span class="pre">--table</span> <span class="pre">TNAME</span></code>: Download schema of a particular table
-This option could be used with &#8211;file.</li>
+This option could be used with --file.</li>
 <li><code class="docutils literal"><span class="pre">--file</span> <span class="pre">FILE</span></code>: (optional) File where write tables definitions.
 Default is creation_scripts/initial_ddl.sql</li>
-<li><code class="docutils literal"><span class="pre">--fk-table</span> <span class="pre">TNAME</span></code>: Table name of foreign key to download. To use with &#8211;foreign-key.
+<li><code class="docutils literal"><span class="pre">--fk-table</span> <span class="pre">TNAME</span></code>: Table name of foreign key to download. To use with --foreign-key.
 If this param is missing dbrm try to identify table
 name. If there are more or one fkey with same name
 then elaboration is blocked.</li>
@@ -822,9 +826,9 @@ with Openstack Juno database.</p>
 <li><code class="docutils literal"><span class="pre">--all-functions</span></code>: Compile all functions present under MARIADB_DIR/functions subdirectories.</li>
 <li><code class="docutils literal"><span class="pre">--all-views</span></code>: Compile all views present on <code class="docutils literal"><span class="pre">MARIADB_DIR/views</span></code> subdirectories.</li>
 <li><code class="docutils literal"><span class="pre">--all-foreign-keys</span></code>: Compile all foreign keys present on <code class="docutils literal"><span class="pre">MARIADB_DIR/foreign_keys</span></code> subdirectories
-if not present on database. (Use &#8211;force to drop and compile again fkey).</li>
+if not present on database. (Use --force to drop and compile again fkey).</li>
 <li><code class="docutils literal"><span class="pre">--all-indexes</span></code>: Compile all indexes present on <code class="docutils literal"><span class="pre">MARIADB_DIR/indexes</span></code> subdirectories
-if not present on database. (Use &#8211;force to drop and compile again index).
+if not present on database. (Use --force to drop and compile again index).
 If an index is connected to a foreign keys then is needed drop foreign key
 before drop and recompile index.</li>
 <li><code class="docutils literal"><span class="pre">--all-events</span></code>: Compile all events present on MARIADB_DIR/schedulers subdirectories.</li>
@@ -841,18 +845,18 @@ name PNAME.</li>
 configuration variable).</li>
 <li><code class="docutils literal"><span class="pre">--id-script</span> <span class="pre">SCRIPT_ID</span></code>: Compile a particular script registered under MARIADB_DIR/<directory>/.</li>
 <li><code class="docutils literal"><span class="pre">--file</span> <span class="pre">FILE</span></code>: Compile a particular file. (Use ABS Path or relative path from current dir.)
-For dump file use &#8211;dumpfile option.</li>
+For dump file use --dumpfile option.</li>
 <li><code class="docutils literal"><span class="pre">--dumpfile</span> <span class="pre">FILE</span></code>: Compile a dump file. (Use ABS Path or relative path from current dir.)
-Currently, this option doesn&#8217;t replace schema reference automatically.</li>
+Currently, this option doesn't replace schema reference automatically.</li>
 <li><code class="docutils literal"><span class="pre">--force</span></code>: For foreign keys it means that fkey/index is dropped and add again also if
 already present.</li>
-<li><code class="docutils literal"><span class="pre">--fk-table</span> <span class="pre">TNAME</span></code>: Table name of foreign key to compile. To use with &#8211;fkey.
+<li><code class="docutils literal"><span class="pre">--fk-table</span> <span class="pre">TNAME</span></code>: Table name of foreign key to compile. To use with --fkey.
 If this param is missing dbrm try to identify table
 name. If there are more or one fkey with same name
 then elaboration is blocked.</li>
 <li><code class="docutils literal"><span class="pre">--event</span> <span class="pre">ENAME</span></code>: Compile a particular event/scheduler under MARIADB_DIR/schedulers directory.</li>
 </ul>
-<p>For argument with value if it isn&#8217;t passed value argument is ignored.</p>
+<p>For argument with value if it isn't passed value argument is ignored.</p>
 <p><em>Compile all foreign keys of Openstack Juno project</em></p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb compile --all-foreign-keys
   <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file allowedaddresspairs-allowedaddresspairs_ibfk_1.sql<span class="o">)</span>: 
@@ -1131,12 +1135,12 @@ then elaboration is blocked.</li>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">--fkey</span> <span class="pre">FKEY_NAME</span></code>: Drop foreign key FKEY_NAME from database.
 This option could be repeated.</li>
-<li><code class="docutils literal"><span class="pre">--index</span> <span class="pre">INDEX_NAME</span></code>: Drop index INDEX_NAME from database. To use with &#8211;index-table.
+<li><code class="docutils literal"><span class="pre">--index</span> <span class="pre">INDEX_NAME</span></code>: Drop index INDEX_NAME from database. To use with --index-table.
 This option could be use only one time.</li>
 <li><code class="docutils literal"><span class="pre">--index-table</span> <span class="pre">NAME</span></code>: Table name of index to drop from database.
-To use with &#8211;index.</li>
+To use with --index.</li>
 <li><code class="docutils literal"><span class="pre">--fk-table</span> <span class="pre">NAME</span></code>: Table name of the foreign key/keys to drop.
-To use optional with &#8211;fkey.</li>
+To use optional with --fkey.</li>
 <li><code class="docutils literal"><span class="pre">--all-fkeys</span></code>: Drop all foreign keys from current database.</li>
 <li><code class="docutils literal"><span class="pre">--all-indexes</span></code>: Drop all not primary indexes from current database.</li>
 <li><code class="docutils literal"><span class="pre">--all-triggers</span></code>: Drop all trigger of the database.</li>
@@ -1158,11 +1162,11 @@ To use optional with &#8211;fkey.</li>
 <span id="create-options"></span><h4>create options:<a class="headerlink" href="#create-options" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">--fkey</span> <span class="pre">FKEY_NAME</span></code>: Create foreign key <em>FKEY_NAME</em> file, ready for compilation.
-Others mandatary parameters: &#8211;on-table,&#8211;on-column,&#8211;ref-table
-&#8211;ref-column.</li>
+Others mandatary parameters: --on-table,--on-column,--ref-table
+--ref-column.</li>
 <li><code class="docutils literal"><span class="pre">--index</span> <span class="pre">INAME</span></code>: Create index <em>INAME</em> file, ready for compilation.
-Others mandatary parameters: &#8211;on-table,&#8211;on-column.
-Others optional parameters: &#8211;itype.</li>
+Others mandatary parameters: --on-table,--on-column.
+Others optional parameters: --itype.</li>
 <li><code class="docutils literal"><span class="pre">--auto-naming</span></code>: Use automatic naming convention of foreign key
 and index used by dbrm.</li>
 <li><code class="docutils literal"><span class="pre">--on-table</span> <span class="pre">TNAME</span></code>: Choice table where create database entity.</li>
@@ -1170,7 +1174,7 @@ and index used by dbrm.</li>
 create.</li>
 <li><code class="docutils literal"><span class="pre">--ref-table</span> <span class="pre">RTNAME</span></code>: Reference table related with db entity to create.</li>
 <li><code class="docutils literal"><span class="pre">--ref-column</span> <span class="pre">RCOLS</span></code>: Reference columns related with db entity to create.</li>
-<li><code class="docutils literal"><span class="pre">--itype</span> <span class="pre">TYPE</span></code>: To use with &#8211;index for define type of index.
+<li><code class="docutils literal"><span class="pre">--itype</span> <span class="pre">TYPE</span></code>: To use with --index for define type of index.
 Possible values are UNIQUE|SPATIAL|FULLTEXT.</li>
 </ul>
 <p>NOTE: foreign key name is unique on database.</p>
@@ -1194,6 +1198,26 @@ Possible values are UNIQUE|SPATIAL|FULLTEXT.</li>
 </div>
 </div>
 </div>
+<div class="section" id="mariadb-dump">
+<span id="mariadb-dump"></span><h3>mariadb dump<a class="headerlink" href="#mariadb-dump" title="Permalink to this headline">¶</a></h3>
+<p>Permit to dump current configured database under <code class="docutils literal"><span class="pre">MARIADB_DIR/dumps</span></code> directory.</p>
+<div class="section" id="dump-options">
+<span id="dump-options"></span><h4>dump options:<a class="headerlink" href="#dump-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--auto</span></code>: Use default name as target of dump file:
+<code class="docutils literal"><span class="pre">${MARIADB_DIR}/dumps/dump_${MARIADB_DB}_YYYYMMDD_HHmmss.sql</span></code></li>
+<li><code class="docutils literal"><span class="pre">--prefix</span></code>: Permit to customize prefix of the default path name.
+For example to use a different name between production and development
+environment.</li>
+<li><code class="docutils literal"><span class="pre">--to</span></code>: Indicate target file where write dump.
+This option could be used with --auto or --prefix option.</li>
+</ul>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb drop --auto --prefix <span class="nb">test</span>
+  Dump of example database executed correctly to: ./dumps/test_20171119_154129.sql.
+</pre></div>
+</div>
+</div>
+</div>
 </div>
 </div>
 
@@ -1210,7 +1234,7 @@ Possible values are UNIQUE|SPATIAL|FULLTEXT.</li>
     </p>
     <p>
         &copy; Copyright 2017, Geaaru.<br/>
-      Last updated on Aug 19, 2017.<br/>
+      Last updated on Nov 19, 2017.<br/>
     </p>
   </div>
 </footer>
