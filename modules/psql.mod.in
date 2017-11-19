@@ -385,7 +385,7 @@ _psql_dump_args () {
   local conn_s_options="U:P:hH:D:t:S:"
   local conn_l_options="database: timezone: conn-options: ignore-timezone help"
   local short_options="${conn_s_options}"
-  local long_options="${conn_l_options} help to:"
+  local long_options="${conn_l_options} to:"
 
   local ddate=$(date +%Y%m%d_%H%M%S)
   POSTGRESQL_DUMPFILE=${POSTGRESQL_DIR}/dumps/dump_${POSTGRESQL_SCHEMA}_${ddate}.sql
