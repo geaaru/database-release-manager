@@ -27,7 +27,7 @@
     <script type="text/javascript" src="static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="static/bootstrap-sphinx.js"></script>
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Commons API" href="common.html" />
+    <link rel="next" title="SSL Module" href="ssl.html" />
     <link rel="prev" title="Oracle Module" href="oracle.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -70,6 +70,7 @@
 <li class="toctree-l1"><a class="reference internal" href="mariadb.html">MariaDB Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="oracle.html">Oracle Module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Mongo Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ssl.html">SSL Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common.html">Commons API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mysql.html">Mysql API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sqlplus.html">Sqlplus API</a></li>
@@ -107,6 +108,26 @@
 </li>
 <li><a class="reference internal" href="#mongo-compile">mongo compile</a><ul>
 <li><a class="reference internal" href="#compile-options">compile options:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mongo-download">mongo download</a><ul>
+<li><a class="reference internal" href="#download-options">download options:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mongo-create">mongo create</a><ul>
+<li><a class="reference internal" href="#create-options">create options:</a></li>
+<li><a class="reference internal" href="#example1-create-an-unique-index-with-reverse-order">Example1 - Create an unique index with reverse order</a><ul>
+<li><a class="reference internal" href="#example-2-create-an-expire-index">Example 2 - Create an expire index</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mongo-drop">mongo drop</a><ul>
+<li><a class="reference internal" href="#drop-options">drop options:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mongo-show">mongo show</a><ul>
+<li><a class="reference internal" href="#show-options">show options:</a></li>
 </ul>
 </li>
 </ul>
@@ -150,7 +171,7 @@
     </a>
   </li>
   <li>
-    <a href="common.html" title="Next Chapter: Commons API"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Commons API &raquo;</span>
+    <a href="ssl.html" title="Next Chapter: SSL Module"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">SSL Module &raquo;</span>
     </a>
   </li>
               
@@ -332,6 +353,12 @@ connection options.</li>
 connection options.</li>
 <li><code class="docutils literal"><span class="pre">--authdb</span> <span class="pre">db</span></code>: Override MONGO_AUTHDB variable for set authentication database.</li>
 <li><code class="docutils literal"><span class="pre">--file</span> <span class="pre">FILE</span></code>: Compile a particular file. (Use ABS Path or relative path from current dir.)</li>
+<li><code class="docutils literal"><span class="pre">--indexes</span></code>: Compile all indexes not already present.</li>
+<li><code class="docutils literal"><span class="pre">--index</span> <span class="pre">INAME</span></code>: Compila a particular index.
+This option could be used multiple time.
+INAME contains name of the collection where drop all
+indexes of a specific collection or name of the collection
+with key name separated with a point.</li>
 </ul>
 <p>For argument with value if it isn't passed value argument is ignored.</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span>  dbrm mongo compile --file test.js
@@ -340,6 +367,95 @@ connection options.</li>
   Compile operation successfull.
 </pre></div>
 </div>
+</div>
+</div>
+<div class="section" id="mongo-download">
+<span id="mongo-download"></span><h3>mongo download<a class="headerlink" href="#mongo-download" title="Permalink to this headline">¶</a></h3>
+<p>Download all indexes present on target database.</p>
+<div class="section" id="download-options">
+<span id="download-options"></span><h4>download options:<a class="headerlink" href="#download-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--indexes</span></code>: Download all indexes present on database.</li>
+<li><code class="docutils literal"><span class="pre">--include-id</span></code>: Download also special index _id that aren't
+available only for capped collection created with
+autoIndexId option to false using db.createCollection.
+On default _id index aren't downloaded.</li>
+<li><code class="docutils literal"><span class="pre">--index</span> <span class="pre">INAME</span></code>: Index name to download.
+It is possible download only a single index a time.
+INAME contains name of the collection for download all
+indexes of a specific collection or name of the collection
+with key name separated with a point.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="mongo-create">
+<span id="mongo-create"></span><h3>mongo create<a class="headerlink" href="#mongo-create" title="Permalink to this headline">¶</a></h3>
+<p>Create indexes on MongoDB database.</p>
+<div class="section" id="create-options">
+<span id="create-options"></span><h4>create options:<a class="headerlink" href="#create-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--index</span> <span class="pre">INAME</span></code>: Name of the index to create..
+It is possible create only a single index a time.
+INAME contains name of the collection where create index
+with index name separated with a point.</li>
+<li><code class="docutils literal"><span class="pre">--unique</span></code>: To use with --index option for create an unique index.</li>
+<li><code class="docutils literal"><span class="pre">--expire-sec</span> <span class="pre">SEC</span></code>: To use with --index option for set expireAfterSeconds option.
+SEC contains number of seconds.</li>
+<li><code class="docutils literal"><span class="pre">--opt</span> <span class="pre">JSON_CONTENT</span></code>: Add custom index option as JSON content (without braces).
+To use with --index option and could be use multiple time.</li>
+<li><code class="docutils literal"><span class="pre">--key</span> <span class="pre">KEY_JSON_CONT</span></code>: Indicate key fields to use. This option could be used multiple.
+time for complex keys.</li>
+<li><code class="docutils literal"><span class="pre">--background</span></code>: Enable creation of index in background. Default is false.</li>
+</ul>
+</div>
+<div class="section" id="example1-create-an-unique-index-with-reverse-order">
+<span id="example1-create-an-unique-index-with-reverse-order"></span><h4>Example1 - Create an unique index with reverse order<a class="headerlink" href="#example1-create-an-unique-index-with-reverse-order" title="Permalink to this headline">¶</a></h4>
+<p>Create an unique index for collection test1 on reverse order:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mongo create --index test1.field1 --unique --key <span class="s2">&quot;field1:-1&quot;</span>
+</pre></div>
+</div>
+<div class="section" id="example-2-create-an-expire-index">
+<span id="example-2-create-an-expire-index"></span><h5>Example 2 - Create an expire index<a class="headerlink" href="#example-2-create-an-expire-index" title="Permalink to this headline">¶</a></h5>
+<p>Create an expire index for collection test1 of two fields:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mongo create --index test1.index_m1 --expire-sec <span class="m">3600</span> <span class="se">\</span>
+    --key <span class="s2">&quot;field1:-1&quot;</span> --key <span class="s2">&quot;field2:-1&quot;</span>
+</pre></div>
+</div>
+<p>For sub-document keys add escaped double quote on key option.</p>
+</div>
+</div>
+</div>
+<div class="section" id="mongo-drop">
+<span id="mongo-drop"></span><h3>mongo drop<a class="headerlink" href="#mongo-drop" title="Permalink to this headline">¶</a></h3>
+<p>Drop indexes from database.</p>
+<div class="section" id="drop-options">
+<span id="drop-options"></span><h4>drop options:<a class="headerlink" href="#drop-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--all-indexes</span></code>: Drop all indexes present on database (not <em>id</em>).</li>
+<li><code class="docutils literal"><span class="pre">--index</span> <span class="pre">INAME</span></code>: Index name to drop.
+This option is not usable multiple time.
+INAME contains name of the collection where drop all
+indexes of a specific collection or name of the collection
+with key name separated with a point.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="mongo-show">
+<span id="mongo-show"></span><h3>mongo show<a class="headerlink" href="#mongo-show" title="Permalink to this headline">¶</a></h3>
+<p>Retrieve some informations from database.</p>
+<div class="section" id="show-options">
+<span id="show-options"></span><h4>show options:<a class="headerlink" href="#show-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--indexes</span></code>: Show list of indexes present on database.</li>
+<li><code class="docutils literal"><span class="pre">--collections</span></code>: Show list of collections present on database.</li>
+<li><code class="docutils literal"><span class="pre">--all</span></code>: Show list of all indexes, collections on database.</li>
+<li><code class="docutils literal"><span class="pre">--collection</span> <span class="pre">CNAME</span></code>: Show detail of a collection. This option could be repeated.</li>
+<li><code class="docutils literal"><span class="pre">--index</span> <span class="pre">INAME</span></code>: Show detail of a index. This option could be repeated.
+INAME contains name of the collection for retrieve all
+indexes of a specific collection or name of the collection
+with key name separated with a point.</li>
+<li><code class="docutils literal"><span class="pre">--exclude-id</span></code>: Exclude special index _id.</li>
+</ul>
 </div>
 </div>
 </div>
@@ -372,7 +488,7 @@ Valorize options like: -u username --password=pwd database.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock167'))">(Show/Hide)</a><br /><div id="hiddencodeblock167" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mongo_set_auth_var <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock1'))">(Show/Hide)</a><br /><div id="hiddencodeblock1" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mongo_set_auth_var <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">db</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">user</span><span class="o">=</span><span class="nv">$2</span>
@@ -420,7 +536,7 @@ Valorize options like: -u username --password=pwd database.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock168'))">(Show/Hide)</a><br /><div id="hiddencodeblock168" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mongo_file <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock2'))">(Show/Hide)</a><br /><div id="hiddencodeblock2" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mongo_file <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">var</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="nv">$2</span>
@@ -478,7 +594,7 @@ compile file content. Is an alternative to .mongorc.js file.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock169'))">(Show/Hide)</a><br /><div id="hiddencodeblock169" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mongo_file_initrc <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock3'))">(Show/Hide)</a><br /><div id="hiddencodeblock3" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mongo_file_initrc <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">var</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="nv">$2</span>
@@ -550,7 +666,7 @@ compile file content. Is an alternative to .mongorc.js file.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock170'))">(Show/Hide)</a><br /><div id="hiddencodeblock170" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mongo_cmd_4var <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock4'))">(Show/Hide)</a><br /><div id="hiddencodeblock4" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>mongo_cmd_4var <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">set</span> -f
   <span class="nb">local</span> <span class="nv">var</span><span class="o">=</span><span class="nv">$1</span>
@@ -638,7 +754,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mon
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock171'))">(Show/Hide)</a><br /><div id="hiddencodeblock171" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_client <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock5'))">(Show/Hide)</a><br /><div id="hiddencodeblock5" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_client <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$mongo</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
 
@@ -715,7 +831,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mon
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock172'))">(Show/Hide)</a><br /><div id="hiddencodeblock172" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_vars <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock6'))">(Show/Hide)</a><br /><div id="hiddencodeblock6" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_vars <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">commons_msg</span><span class="o">=</span><span class="s1">&#39;variable on configuration file, through arguments or on current profile.&#39;</span>
 
@@ -747,7 +863,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mon
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock173'))">(Show/Hide)</a><br /><div id="hiddencodeblock173" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_connection <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock7'))">(Show/Hide)</a><br /><div id="hiddencodeblock7" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_check_connection <span class="o">()</span> <span class="o">{</span>
   <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$MONGO_CLIENT</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
@@ -801,7 +917,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">mon
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock174'))">(Show/Hide)</a><br /><div id="hiddencodeblock174" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_shell <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock8'))">(Show/Hide)</a><br /><div id="hiddencodeblock8" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_shell <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
   <span class="nb">local</span> <span class="nv">errorCode</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -856,7 +972,7 @@ or mongo_file command if equal to 0.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock175'))">(Show/Hide)</a><br /><div id="hiddencodeblock175" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_compile_file <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock9'))">(Show/Hide)</a><br /><div id="hiddencodeblock9" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_compile_file <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="nv">$2</span>
@@ -951,7 +1067,7 @@ and 1 (ignore index with key name <em>id</em>).</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock176'))">(Show/Hide)</a><br /><div id="hiddencodeblock176" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_get_indexes_list <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock10'))">(Show/Hide)</a><br /><div id="hiddencodeblock10" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_get_indexes_list <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">single_collection</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">filter_keyname</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1182,7 +1298,7 @@ elements.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock177'))">(Show/Hide)</a><br /><div id="hiddencodeblock177" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_stats <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock11'))">(Show/Hide)</a><br /><div id="hiddencodeblock11" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_stats <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">scale</span><span class="o">=</span>1024
   <span class="nb">local</span> <span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -1359,7 +1475,7 @@ This function create only the file without execute it on database.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock178'))">(Show/Hide)</a><br /><div id="hiddencodeblock178" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_create_index_file <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock12'))">(Show/Hide)</a><br /><div id="hiddencodeblock12" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_create_index_file <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">coll</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1436,7 +1552,7 @@ function.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock179'))">(Show/Hide)</a><br /><div id="hiddencodeblock179" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_download_index <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock13'))">(Show/Hide)</a><br /><div id="hiddencodeblock13" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_download_index <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">coll</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">kname</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1502,7 +1618,7 @@ are created also files related with special index _id.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock180'))">(Show/Hide)</a><br /><div id="hiddencodeblock180" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock14'))">(Show/Hide)</a><br /><div id="hiddencodeblock14" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div></div>
@@ -1532,7 +1648,7 @@ only for capped collection.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock181'))">(Show/Hide)</a><br /><div id="hiddencodeblock181" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock15'))">(Show/Hide)</a><br /><div id="hiddencodeblock15" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div></div>
@@ -1561,7 +1677,7 @@ index is dropped and added again. NOT IMPLEMENTED.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock182'))">(Show/Hide)</a><br /><div id="hiddencodeblock182" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_compile_idx <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock16'))">(Show/Hide)</a><br /><div id="hiddencodeblock16" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_compile_idx <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="nv">$2</span>
@@ -1640,7 +1756,7 @@ Optional.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock183'))">(Show/Hide)</a><br /><div id="hiddencodeblock183" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_compile_all_from_dir <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock17'))">(Show/Hide)</a><br /><div id="hiddencodeblock17" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_compile_all_from_dir <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">msg_head</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1739,7 +1855,7 @@ if already present.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock184'))">(Show/Hide)</a><br /><div id="hiddencodeblock184" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_compile_all_idxs <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock18'))">(Show/Hide)</a><br /><div id="hiddencodeblock18" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_mongo_compile_all_idxs <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">force</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>

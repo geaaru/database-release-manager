@@ -137,7 +137,13 @@ From command line is visible result of compilation but a more detailed trace is 
   * `--conn-options opts`: Override MONGO_EXTRA_OPTIONS variable for enable extra
                            connection options.
   * `--authdb db`: Override MONGO_AUTHDB variable for set authentication database.
- * `--file FILE`: Compile a particular file. (Use ABS Path or relative path from current dir.)
+  * `--file FILE`: Compile a particular file. (Use ABS Path or relative path from current dir.)
+  * `--indexes`: Compile all indexes not already present.
+  * `--index INAME`: Compila a particular index.
+                     This option could be used multiple time.
+                     INAME contains name of the collection where drop all
+                     indexes of a specific collection or name of the collection 
+                     with key name separated with a point.
 
 For argument with value if it isn't passed value argument is ignored.
 
@@ -147,6 +153,92 @@ For argument with value if it isn't passed value argument is ignored.
   (mongo) End compilation (file test.js, result => 0): File test.js
   Compile operation successfull.
 ```
+
+#### mongo download
+
+Download all indexes present on target database.
+
+##### download options:
+
+  * `--indexes`: Download all indexes present on database.
+  * `--include-id`: Download also special index _id that aren't
+                    available only for capped collection created with
+                    autoIndexId option to false using db.createCollection.
+                    On default _id index aren't downloaded.
+  * `--index INAME`: Index name to download.
+                     It is possible download only a single index a time.
+                     INAME contains name of the collection for download all
+                     indexes of a specific collection or name of the collection 
+                     with key name separated with a point.
+
+
+#### mongo create
+
+Create indexes on MongoDB database.
+
+##### create options:
+
+  * `--index INAME`: Name of the index to create..
+                     It is possible create only a single index a time.
+                     INAME contains name of the collection where create index
+                     with index name separated with a point.
+  * `--unique`: To use with --index option for create an unique index.
+  * `--expire-sec SEC`: To use with --index option for set expireAfterSeconds option.
+                        SEC contains number of seconds.
+  * `--opt JSON_CONTENT`: Add custom index option as JSON content (without braces).
+                         To use with --index option and could be use multiple time.
+  * `--key KEY_JSON_CONT`: Indicate key fields to use. This option could be used multiple.
+                           time for complex keys.
+  * `--background`: Enable creation of index in background. Default is false.
+
+##### Example1 - Create an unique index with reverse order
+
+Create an unique index for collection test1 on reverse order:
+
+```shell
+  $# dbrm mongo create --index test1.field1 --unique --key "field1:-1"
+```
+
+###### Example 2 - Create an expire index
+
+Create an expire index for collection test1 of two fields:
+
+```shell
+  $# dbrm mongo create --index test1.index_m1 --expire-sec 3600 \
+    --key "field1:-1" --key "field2:-1"
+```
+
+For sub-document keys add escaped double quote on key option.
+
+#### mongo drop
+
+Drop indexes from database.
+
+##### drop options:
+
+  * `--all-indexes`: Drop all indexes present on database (not _id_).
+  * `--index INAME`: Index name to drop.
+                     This option is not usable multiple time.
+                     INAME contains name of the collection where drop all
+                     indexes of a specific collection or name of the collection 
+                     with key name separated with a point.
+
+#### mongo show
+
+Retrieve some informations from database.
+
+##### show options:
+
+  * `--indexes`: Show list of indexes present on database.
+  * `--collections`: Show list of collections present on database.
+  * `--all`: Show list of all indexes, collections on database.
+  * `--collection CNAME`: Show detail of a collection. This option could be repeated.
+  * `--index INAME`: Show detail of a index. This option could be repeated.
+                     INAME contains name of the collection for retrieve all
+                     indexes of a specific collection or name of the collection 
+                     with key name separated with a point.
+  * `--exclude-id`: Exclude special index _id.
+
 
 ### API
 
