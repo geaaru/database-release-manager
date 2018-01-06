@@ -9,7 +9,8 @@ Mission of database-release-manager (or dbrm for friends) is NOT create a new ID
 ## Software Structure
 
 Highly modulable software that could be customized and integrate to every system
-Sources are written to permit an easy 
+Sources. It's been written in bash scripting but could be integrate to any external
+tools to simplify developers work.
 
 ## Documentation
 
@@ -17,7 +18,7 @@ Complete documentation is available [here](http://geaaru.github.io/database-rele
 
 ## License
 
-Released with license GPL 3.0.
+Released with license GPL 2.0.
 
 ## Commercial Support
 
