@@ -68,6 +68,7 @@
 <li class="toctree-l1"><a class="reference internal" href="logfile.html">Logfile Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Install Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mariadb.html">MariaDB Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oracle.html">Oracle Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongo.html">Mongo Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common.html">Commons API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mysql.html">Mysql API</a></li>
@@ -1224,7 +1225,7 @@ Load all *.inc files of dbm module that contains help messages and command line 
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock112'))">(Show/Hide)</a><br /><div id="hiddencodeblock112" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_init<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock114'))">(Show/Hide)</a><br /><div id="hiddencodeblock114" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_init<span class="o">()</span> <span class="o">{</span>
 
   <span class="c1"># Load dbm module files</span>
   <span class="k">for</span> i in <span class="nv">$DBRM_CORE_FILES_DIR</span>/dbm/*.inc <span class="p">;</span> <span class="k">do</span>
@@ -1257,7 +1258,7 @@ If is not defined then $LOCAL_DIR/.dbm_history file is used.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock113'))">(Show/Hide)</a><br /><div id="hiddencodeblock113" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_post_init <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock115'))">(Show/Hide)</a><br /><div id="hiddencodeblock115" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_post_init <span class="o">()</span> <span class="o">{</span>
 
   <span class="c1"># Check if exists DRM_DB</span>
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&quot;(dbm_post_init: Check if is present sqlite internal db file: </span><span class="nv">$DRM_DB</span><span class="s2">)&quot;</span>
@@ -1322,7 +1323,7 @@ DBRM database file.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock114'))">(Show/Hide)</a><br /><div id="hiddencodeblock114" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_upgrade <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock116'))">(Show/Hide)</a><br /><div id="hiddencodeblock116" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_upgrade <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">i</span><span class="o">=</span>0
   <span class="nb">local</span> <span class="nv">tschema</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -1375,7 +1376,7 @@ DBRM database file.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock115'))">(Show/Hide)</a><br /><div id="hiddencodeblock115" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_how_many_profiles <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock117'))">(Show/Hide)</a><br /><div id="hiddencodeblock117" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_how_many_profiles <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">query</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
 
@@ -1410,7 +1411,7 @@ Check also if file exists.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock116'))">(Show/Hide)</a><br /><div id="hiddencodeblock116" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_get_profile_by_name <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock118'))">(Show/Hide)</a><br /><div id="hiddencodeblock118" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_get_profile_by_name <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">query</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
@@ -1463,7 +1464,7 @@ Check also if file exists.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock117'))">(Show/Hide)</a><br /><div id="hiddencodeblock117" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_get_default_profile_filepath <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock119'))">(Show/Hide)</a><br /><div id="hiddencodeblock119" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_get_default_profile_filepath <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">query</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
 
@@ -1515,7 +1516,7 @@ Check also if file exists.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock118'))">(Show/Hide)</a><br /><div id="hiddencodeblock118" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_prof_byid <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock120'))">(Show/Hide)</a><br /><div id="hiddencodeblock120" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_prof_byid <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_profile</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
@@ -1557,7 +1558,7 @@ Check also if file exists.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock119'))">(Show/Hide)</a><br /><div id="hiddencodeblock119" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_prof_byname <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock121'))">(Show/Hide)</a><br /><div id="hiddencodeblock121" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_prof_byname <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">profile_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
@@ -1600,7 +1601,7 @@ Check also if file exists.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock120'))">(Show/Hide)</a><br /><div id="hiddencodeblock120" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_rel <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock122'))">(Show/Hide)</a><br /><div id="hiddencodeblock122" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_rel <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">rel_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">rel_version</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1654,7 +1655,7 @@ If second parameter is valorized then are set these variables:</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock121'))">(Show/Hide)</a><br /><div id="hiddencodeblock121" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_script_data <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock123'))">(Show/Hide)</a><br /><div id="hiddencodeblock123" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_script_data <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_script</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">set_variables</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1724,7 +1725,7 @@ If release is present then are valorized these variables:</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock122'))">(Show/Hide)</a><br /><div id="hiddencodeblock122" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_first_release <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock124'))">(Show/Hide)</a><br /><div id="hiddencodeblock124" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_first_release <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
@@ -1775,7 +1776,7 @@ If release is present then are valorized these variables:</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock123'))">(Show/Hide)</a><br /><div id="hiddencodeblock123" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_id_script <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock125'))">(Show/Hide)</a><br /><div id="hiddencodeblock125" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_id_script <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_script</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">id_release</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1819,7 +1820,7 @@ If release is present then are valorized these variables:</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock124'))">(Show/Hide)</a><br /><div id="hiddencodeblock124" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_id_branch <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock126'))">(Show/Hide)</a><br /><div id="hiddencodeblock126" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_id_branch <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_branch</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">query</span><span class="o">=</span><span class="s2">&quot;SELECT COUNT(1) AS res FROM Branches WHERE id_branch = </span><span class="nv">$id_branch</span><span class="s2">&quot;</span>
@@ -1857,7 +1858,7 @@ If release is present then are valorized these variables:</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock125'))">(Show/Hide)</a><br /><div id="hiddencodeblock125" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_id_rel <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock127'))">(Show/Hide)</a><br /><div id="hiddencodeblock127" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_if_exist_id_rel <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_release</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">query</span><span class="o">=</span><span class="s2">&quot;SELECT COUNT(1) AS res FROM Releases WHERE id_release = </span><span class="nv">$id_release</span><span class="s2">&quot;</span>
@@ -1898,7 +1899,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock126'))">(Show/Hide)</a><br /><div id="hiddencodeblock126" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_field_rel <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock128'))">(Show/Hide)</a><br /><div id="hiddencodeblock128" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_field_rel <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">field</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">rel_name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1943,7 +1944,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock127'))">(Show/Hide)</a><br /><div id="hiddencodeblock127" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_field_rel_byid <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock129'))">(Show/Hide)</a><br /><div id="hiddencodeblock129" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_field_rel_byid <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">field</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">id_release</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -1987,7 +1988,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock128'))">(Show/Hide)</a><br /><div id="hiddencodeblock128" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_field_script <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock130'))">(Show/Hide)</a><br /><div id="hiddencodeblock130" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_retrieve_field_script <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">field</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">id_script</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -2029,7 +2030,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock129'))">(Show/Hide)</a><br /><div id="hiddencodeblock129" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_get_table_schema <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock131'))">(Show/Hide)</a><br /><div id="hiddencodeblock131" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_get_table_schema <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">table</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
@@ -2064,7 +2065,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock130'))">(Show/Hide)</a><br /><div id="hiddencodeblock130" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_remove_all_scripts_rel_inhib <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock132'))">(Show/Hide)</a><br /><div id="hiddencodeblock132" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_remove_all_scripts_rel_inhib <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_release</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
@@ -2164,7 +2165,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock131'))">(Show/Hide)</a><br /><div id="hiddencodeblock131" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_remove_release <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock133'))">(Show/Hide)</a><br /><div id="hiddencodeblock133" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_remove_release <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_release</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
@@ -2235,7 +2236,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock132'))">(Show/Hide)</a><br /><div id="hiddencodeblock132" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_update_idorder <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock134'))">(Show/Hide)</a><br /><div id="hiddencodeblock134" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_update_idorder <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_branch</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">idx</span><span class="o">=</span>0
@@ -2309,7 +2310,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock133'))">(Show/Hide)</a><br /><div id="hiddencodeblock133" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_remove_all_scripts_rel_ded <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock135'))">(Show/Hide)</a><br /><div id="hiddencodeblock135" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_remove_all_scripts_rel_ded <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">id_release</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
@@ -2409,7 +2410,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock134'))">(Show/Hide)</a><br /><div id="hiddencodeblock134" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_save2undo <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock136'))">(Show/Hide)</a><br /><div id="hiddencodeblock136" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_save2undo <span class="o">()</span> <span class="o">{</span>
     <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
     <span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$msg</span><span class="s2">&quot;</span> &gt;&gt; <span class="nv">$DBM_UNDO_SCRIPT</span>
@@ -2441,7 +2442,7 @@ On success, data are available through <code class="docutils literal"><span clas
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock135'))">(Show/Hide)</a><br /><div id="hiddencodeblock135" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_save2history <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock137'))">(Show/Hide)</a><br /><div id="hiddencodeblock137" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_save2history <span class="o">()</span> <span class="o">{</span>
     <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
     <span class="nb">echo</span> <span class="s2">&quot;</span><span class="nv">$msg</span><span class="s2">&quot;</span> &gt;&gt; <span class="nv">$DBM_HISTORY</span>
@@ -2475,7 +2476,7 @@ If there a new version of a module call module upgrade function if is present.</
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock136'))">(Show/Hide)</a><br /><div id="hiddencodeblock136" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_check_extensions <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock138'))">(Show/Hide)</a><br /><div id="hiddencodeblock138" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_check_extensions <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
   <span class="nb">local</span> <span class="nv">v</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -2550,7 +2551,7 @@ Save extension version to <code class="docutils literal"><span class="pre">_ext_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock137'))">(Show/Hide)</a><br /><div id="hiddencodeblock137" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_is_present <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock139'))">(Show/Hide)</a><br /><div id="hiddencodeblock139" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_is_present <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">ext</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
 
@@ -2597,7 +2598,7 @@ Save extension version to <code class="docutils literal"><span class="pre">_ext_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock138'))">(Show/Hide)</a><br /><div id="hiddencodeblock138" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_inst_extension <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock140'))">(Show/Hide)</a><br /><div id="hiddencodeblock140" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_inst_extension <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">ename</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">eversion</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -2651,7 +2652,7 @@ Save extension version to <code class="docutils literal"><span class="pre">_ext_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock139'))">(Show/Hide)</a><br /><div id="hiddencodeblock139" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_update_extension <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock141'))">(Show/Hide)</a><br /><div id="hiddencodeblock141" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_update_extension <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">ename</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">eversion</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -2698,7 +2699,7 @@ Save extension version to <code class="docutils literal"><span class="pre">_ext_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock140'))">(Show/Hide)</a><br /><div id="hiddencodeblock140" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_update_extension <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock142'))">(Show/Hide)</a><br /><div id="hiddencodeblock142" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_update_extension <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">ename</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">eversion</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -2740,7 +2741,7 @@ Save extension version to <code class="docutils literal"><span class="pre">_ext_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock141'))">(Show/Hide)</a><br /><div id="hiddencodeblock141" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_check_dbm <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock143'))">(Show/Hide)</a><br /><div id="hiddencodeblock143" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_exts_check_dbm <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> _sqlite_exists_table -c <span class="s2">&quot;</span><span class="nv">$DRM_DB</span><span class="s2">&quot;</span> -t <span class="s2">&quot;Extensions&quot;</span> <span class="p">;</span> <span class="k">then</span>
     <span class="k">return</span> 1
@@ -2774,7 +2775,7 @@ Save extension version to <code class="docutils literal"><span class="pre">_ext_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock142'))">(Show/Hide)</a><br /><div id="hiddencodeblock142" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_initenv_help <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock144'))">(Show/Hide)</a><br /><div id="hiddencodeblock144" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_initenv_help <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">echo</span> -en <span class="s2">&quot;[--to-current-dir]      Initialize current directory [.].\n&quot;</span>
   <span class="nb">echo</span> -en <span class="s2">&quot;[--to-dir target]       Initialize target directory.\n&quot;</span>
@@ -3841,7 +3842,7 @@ _dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock143'))">(Show/Hide)</a><br /><div id="hiddencodeblock143" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock145'))">(Show/Hide)</a><br /><div id="hiddencodeblock145" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div></div>
@@ -3862,7 +3863,7 @@ _dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock144'))">(Show/Hide)</a><br /><div id="hiddencodeblock144" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_ins_rel_help <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock146'))">(Show/Hide)</a><br /><div id="hiddencodeblock146" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_ins_rel_help <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">echo</span> -en <span class="s2">&quot;[-n name]               Release Name.\n&quot;</span>
   <span class="nb">echo</span> -en <span class="s2">&quot;[-d YYYY-MM-DD]         Release Date. (Use now if not available)\n&quot;</span>
@@ -3918,7 +3919,7 @@ _dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock145'))">(Show/Hide)</a><br /><div id="hiddencodeblock145" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock147'))">(Show/Hide)</a><br /><div id="hiddencodeblock147" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div></div>
@@ -3939,7 +3940,7 @@ _dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock146'))">(Show/Hide)</a><br /><div id="hiddencodeblock146" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_add_prof_help <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock148'))">(Show/Hide)</a><br /><div id="hiddencodeblock148" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_add_prof_help <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">echo</span> -en <span class="s2">&quot;[--name name]          Profile name to insert.\n&quot;</span>
   <span class="nb">echo</span> -en <span class="s2">&quot;[--file file]          Filename of the profile. Example: prof1.conf.\n&quot;</span>
@@ -3968,7 +3969,7 @@ _dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock147'))">(Show/Hide)</a><br /><div id="hiddencodeblock147" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_prof_help <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock149'))">(Show/Hide)</a><br /><div id="hiddencodeblock149" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_prof_help <span class="o">()</span> <span class="o">{</span>
   <span class="nb">echo</span> -en <span class="s2">&quot;[--name profile_name]  Name of the profile.\n&quot;</span>
   <span class="nb">echo</span> -en <span class="s2">&quot;[--id id_profile]      Id of the profile.\n&quot;</span>
   <span class="nb">echo</span> -en <span class="s2">&quot;[-h]                   Show this help message.\n&quot;</span>
@@ -4010,7 +4011,7 @@ _dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock148'))">(Show/Hide)</a><br /><div id="hiddencodeblock148" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_prof_help <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock150'))">(Show/Hide)</a><br /><div id="hiddencodeblock150" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_prof_help <span class="o">()</span> <span class="o">{</span>
   <span class="nb">echo</span> -en <span class="s2">&quot;[--name profile_name]  Name of the profile.\n&quot;</span>
   <span class="nb">echo</span> -en <span class="s2">&quot;[--id id_profile]      Id of the profile.\n&quot;</span>
   <span class="nb">echo</span> -en <span class="s2">&quot;[-h]                   Show this help message.\n&quot;</span>
@@ -4052,7 +4053,7 @@ Default value is 0.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock149'))">(Show/Hide)</a><br /><div id="hiddencodeblock149" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_add_prof_args <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock151'))">(Show/Hide)</a><br /><div id="hiddencodeblock151" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_add_prof_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_add_prof_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
 
@@ -4140,7 +4141,7 @@ Default value is 0.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock150'))">(Show/Hide)</a><br /><div id="hiddencodeblock150" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_ins_bra_args <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock152'))">(Show/Hide)</a><br /><div id="hiddencodeblock152" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_ins_bra_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">ans</span><span class="o">=</span>0
 
@@ -4213,7 +4214,7 @@ Default value is 0.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock151'))">(Show/Hide)</a><br /><div id="hiddencodeblock151" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_ins_script_type_args <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock153'))">(Show/Hide)</a><br /><div id="hiddencodeblock153" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_ins_script_type_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_script_type_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
 
@@ -4304,7 +4305,7 @@ If this option is present are not needed release name and release version.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock152'))">(Show/Hide)</a><br /><div id="hiddencodeblock152" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_ins_script_args <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock154'))">(Show/Hide)</a><br /><div id="hiddencodeblock154" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_ins_script_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_script_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
 
@@ -4426,7 +4427,7 @@ If this option is present are not needed release name and release version.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock153'))">(Show/Hide)</a><br /><div id="hiddencodeblock153" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_rel_dep_args <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock155'))">(Show/Hide)</a><br /><div id="hiddencodeblock155" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_rel_dep_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_rel_dep_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
 
@@ -4517,7 +4518,7 @@ If this option is present are not needed release name and release version.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock154'))">(Show/Hide)</a><br /><div id="hiddencodeblock154" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_upd_script_args <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock156'))">(Show/Hide)</a><br /><div id="hiddencodeblock156" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_upd_script_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_upd_script_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
 
@@ -4601,7 +4602,7 @@ If this option is present are not needed release name and release version.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock155'))">(Show/Hide)</a><br /><div id="hiddencodeblock155" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_rm_script_args <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock157'))">(Show/Hide)</a><br /><div id="hiddencodeblock157" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_rm_script_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">show_help</span><span class="o">=</span><span class="nb">false</span>
 
@@ -4695,7 +4696,7 @@ If this option is present are not needed release name and release version.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock156'))">(Show/Hide)</a><br /><div id="hiddencodeblock156" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_upd_release_args <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock158'))">(Show/Hide)</a><br /><div id="hiddencodeblock158" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_upd_release_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_upd_release_args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
 
@@ -4832,7 +4833,7 @@ If this option is present are not needed release name and release version.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock157'))">(Show/Hide)</a><br /><div id="hiddencodeblock157" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_move_release_args <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock159'))">(Show/Hide)</a><br /><div id="hiddencodeblock159" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_move_release_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_inhibit_script_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
 
@@ -4929,7 +4930,7 @@ If this option is present are not needed release name and release version.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock158'))">(Show/Hide)</a><br /><div id="hiddencodeblock158" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_inhibit_script_args <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock160'))">(Show/Hide)</a><br /><div id="hiddencodeblock160" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_inhibit_script_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_ins_inhibit_script_args args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
 
@@ -5017,7 +5018,7 @@ If this option is present are not needed release name and release version.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock159'))">(Show/Hide)</a><br /><div id="hiddencodeblock159" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_move_script_args <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock161'))">(Show/Hide)</a><br /><div id="hiddencodeblock161" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_move_script_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="o">[[</span> <span class="nv">$DEBUG</span> <span class="o">&amp;&amp;</span> <span class="nv">$DEBUG</span> <span class="o">==</span> <span class="nb">true</span> <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> -en <span class="s2">&quot;(_dbm_check_move_script_args: </span><span class="nv">$@</span><span class="s2">)\n&quot;</span>
 
@@ -5202,7 +5203,7 @@ _dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock160'))">(Show/Hide)</a><br /><div id="hiddencodeblock160" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_rem_rel_args <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock162'))">(Show/Hide)</a><br /><div id="hiddencodeblock162" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_check_rem_rel_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">short_options</span><span class="o">=</span><span class="s2">&quot;r:hf&quot;</span>
 
@@ -5282,7 +5283,7 @@ _dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock161'))">(Show/Hide)</a><br /><div id="hiddencodeblock161" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock163'))">(Show/Hide)</a><br /><div id="hiddencodeblock163" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">short_options</span><span class="o">=</span><span class="s2">&quot;b:h&quot;</span>
 
@@ -5337,7 +5338,7 @@ _dbm_show_rel_args <span class="o">()</span> <span class="o">{</span>
     </p>
     <p>
         &copy; Copyright 2017, Geaaru.<br/>
-      Last updated on Nov 11, 2017.<br/>
+      Last updated on Jan 06, 2018.<br/>
     </p>
   </div>
 </footer>

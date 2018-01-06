@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>SSL Module &#8212; Database Release Manager</title>
+    <link rel="stylesheet" href="static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="static/dbrm.css" type="text/css" />
+    <link rel="stylesheet" href="static/bootswatch-3.3.6/superhero/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="static/bootstrap-sphinx.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <script type="text/javascript" src="static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="static/bootstrap-sphinx.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Commons API" href="common.html" />
+    <link rel="prev" title="Mongo Module" href="mongo.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          Database Release Manager</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="dbm.html">Dbm Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logfile.html">Logfile Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mariadb.html">MariaDB Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oracle.html">Oracle Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mongo.html">Mongo Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">SSL Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common.html">Commons API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mysql.html">Mysql API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sqlplus.html">Sqlplus API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="psql.html">Psql API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commons_mariadb.html">Commons Mariadb API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commons_oracle.html">Commons Oracle API</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">SSL Module</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#variables">Variables</a></li>
+<li><a class="reference internal" href="#commands">Commands</a><ul>
+<li><a class="reference internal" href="#ssl-version">ssl version</a></li>
+<li><a class="reference internal" href="#ssl-init">ssl init</a></li>
+<li><a class="reference internal" href="#ssl-deinit">ssl deinit</a></li>
+<li><a class="reference internal" href="#ssl-list">ssl list</a></li>
+<li><a class="reference internal" href="#ssl-create">ssl create</a><ul>
+<li><a class="reference internal" href="#create-options">create options:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ssl-delete">ssl delete</a><ul>
+<li><a class="reference internal" href="#delete-options">delete options:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ssl-enable">ssl enable</a><ul>
+<li><a class="reference internal" href="#enable-options">enable options:</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ssl-disable">ssl disable</a><ul>
+<li><a class="reference internal" href="#disable-options">disable options:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="mongo.html" title="Previous Chapter: Mongo Module"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Mongo Module</span>
+    </a>
+  </li>
+  <li>
+    <a href="common.html" title="Next Chapter: Commons API"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Commons API &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row" >
+    <div class="col-md-12 content">
+      
+  <div class="section" id="ssl-module">
+<span id="ssl-module"></span><h1>SSL Module<a class="headerlink" href="#ssl-module" title="Permalink to this headline">¶</a></h1>
+<p>Target of this module is supply a tool for trace and manage SSL tunnels or
+reverse tunnels to reach remote services through SSH channel.</p>
+<p><code class="docutils literal"><span class="pre">ssl</span></code> module is often used without a dbrm project directory because use default <code class="docutils literal"><span class="pre">dbrm</span></code>
+database under <code class="docutils literal"><span class="pre">$HOME/.local/share/dbrm</span></code> directory.</p>
+<div class="section" id="requirements">
+<span id="requirements"></span><h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">ssl</span></code> module when use password for authentication use <code class="docutils literal"><span class="pre">sshpass</span></code> module that must installed
+on host where user enable tunnels.</p>
+</div>
+<div class="section" id="variables">
+<span id="variables"></span><h2>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><table border="1" class="colwidths-given docutils">
+<colgroup>
+<col width="33%" />
+<col width="67%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Variable</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">DBRM_SSL_ACTIVE_TUN_FILE</span></code></td>
+<td>Contains path where <cite>ssl</cite> module trace active SSL tunnels and pids.
+Default path is: <cite>$HOME/.local/share/dbrm/dbrm_ssl_tuns</cite></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">SSHPASS</span></code></td>
+<td>Variable to define with password when is not used key authentication.</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="commands">
+<span id="commands"></span><h2>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="ssl-version">
+<span id="ssl-version"></span><h3>ssl version<a class="headerlink" href="#ssl-version" title="Permalink to this headline">¶</a></h3>
+<p>Show version of ssl module.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm ssl version
+  Version: 0.1.0
+</pre></div>
+</div>
+</div>
+<div class="section" id="ssl-init">
+<span id="ssl-init"></span><h3>ssl init<a class="headerlink" href="#ssl-init" title="Permalink to this headline">¶</a></h3>
+<p>Before use ssl module it is needed execute init command that initialize ssl module
+tables inside dbrm database.</p>
+<p>This operation is needed only one time.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  
+  <span class="nv">$#</span> dbrm ssl init
+</pre></div>
+</div>
+</div>
+<div class="section" id="ssl-deinit">
+<span id="ssl-deinit"></span><h3>ssl deinit<a class="headerlink" href="#ssl-deinit" title="Permalink to this headline">¶</a></h3>
+<p>This method remove all defined tunnel and remove <code class="docutils literal"><span class="pre">ssl</span></code> module tables from active <code class="docutils literal"><span class="pre">dbrm</span></code> database.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  
+  <span class="nv">$#</span> dbrm ssl deinit
+</pre></div>
+</div>
+</div>
+<div class="section" id="ssl-list">
+<span id="ssl-list"></span><h3>ssl list<a class="headerlink" href="#ssl-list" title="Permalink to this headline">¶</a></h3>
+<p>Permit to see list of SSL tunnels created on current <code class="docutils literal"><span class="pre">dbrm</span></code> database.</p>
+<p>Last column <code class="docutils literal"><span class="pre">PID</span></code> is valorized with pid of process that maintain active tunnel.</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm ssl <span class="nv">list</span>
+  <span class="o">=========================================================================================================</span>
+  SSL <span class="nv">Tunnels</span>
+  <span class="o">=========================================================================================================</span>
+  ID    NAME     REMOTE HOST    R PORT  TUNNEL HOST    T HPORT T USER    REVERSE LOCAL PORT  LOCAL HOST <span class="nv">PID</span>
+  <span class="o">=========================================================================================================</span>
+  <span class="m">1</span>     TUNNEL1  172.22.97.120  <span class="m">27017</span>   localhost      <span class="m">20022</span>   root      N       <span class="m">37017</span>                  -
+  <span class="m">2</span>     TUNNEL2  192.168.20.10  <span class="m">22</span>      172.16.90.101  <span class="m">22</span>      root      N       <span class="m">20022</span>                  -
+</pre></div>
+</div>
+</div>
+<div class="section" id="ssl-create">
+<span id="ssl-create"></span><h3>ssl create<a class="headerlink" href="#ssl-create" title="Permalink to this headline">¶</a></h3>
+<p>Create a SSL tunnel definition. There are two possible types of tunnel: normal tunnel and a reverse tunnel.</p>
+<p>A normal tunnel permit to reach a service expose to a remote host in localhost through a specific host.</p>
+<p>A reverse tunnel permit to a remote host to reach a particular service to our host or versus a host that is reacheable
+from our host.</p>
+<div class="section" id="create-options">
+<span id="create-options"></span><h4>create options:<a class="headerlink" href="#create-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--on-local-port</span> <span class="pre">port</span></code>: Local port where binding tcp flow versus remote host
+through ssl tunnel.</li>
+<li><code class="docutils literal"><span class="pre">--on-local-host</span> <span class="pre">host</span></code>: Host (local or an host reachable without tunnel)
+that will be available in remote host with reverse tunnel.</li>
+<li><code class="docutils literal"><span class="pre">--remote-host</span> <span class="pre">host</span></code>: Host to reach through ssl tunnel.</li>
+<li><code class="docutils literal"><span class="pre">--remote-port</span> <span class="pre">port</span></code> Port of remote host to reach through ssl tunnel or for
+reverse tunnel, port in binding to remote host for reach
+local host.</li>
+<li><code class="docutils literal"><span class="pre">--tunnel-host</span> <span class="pre">host</span></code>: Host to use for reach remote host.</li>
+<li>`--tunnel-hport port: Port of host used for tunnel. Default is 22.</li>
+<li>`--tunnel-user user: User to use on tunnel creation. Default is current user.</li>
+<li><code class="docutils literal"><span class="pre">--name</span> <span class="pre">name</span></code>: Name of the tunnel.</li>
+<li><code class="docutils literal"><span class="pre">--reverse</span></code>: Add this option for reverse tunnel.</li>
+<li>Example of normal tunnel:</li>
+</ul>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm ssl create --name TUNNEL1 --tunnel-host 172.16.90.101 --tunnel-user root <span class="se">\</span>
+     --remote-host 192.168.20.10 --remote-port <span class="m">22</span> --on-local-port 20022
+</pre></div>
+</div>
+<p>This command create a normal tunnel with name TUNNEL1 that permit to reach through
+local port 20022 SSH port (22) of host 192.168.20.10 thorugh a tunnel with port
+SSH of the host 172.16.90.101.
+Host 192.168.20.10 is not reachable only from host 172.16.90.101.</p>
+<ul class="simple">
+<li>Example of reverse tunnel:</li>
+</ul>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm ssl create --name TUNNEL2 --tunnel-host 192.168.20.10 --tunnel-user root <span class="se">\</span>
+     --remote-host 172.16.90.101 --remote-port <span class="m">9999</span> --on-local-port <span class="m">80</span> <span class="se">\</span>
+     --on-local-host 127.0.0.1 --reverse
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="ssl-delete">
+<span id="ssl-delete"></span><h3>ssl delete<a class="headerlink" href="#ssl-delete" title="Permalink to this headline">¶</a></h3>
+<p>Delete an existing SSL tunnel from <code class="docutils literal"><span class="pre">dbrm</span></code> database.</p>
+<div class="section" id="delete-options">
+<span id="delete-options"></span><h4>delete options:<a class="headerlink" href="#delete-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--name</span> <span class="pre">name</span></code>: Name of the tunnel to delete.</li>
+<li><code class="docutils literal"><span class="pre">--id-tunnel</span> <span class="pre">id</span></code>: Id of the tunnel to delete.</li>
+</ul>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="c1">#$ dbrm ssl delete --name TUNNEL1</span>
+  Are you sure to remove tunnel with name TUNNEL1? <span class="o">[</span>yes/no<span class="o">]</span>: yes
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="ssl-enable">
+<span id="ssl-enable"></span><h3>ssl enable<a class="headerlink" href="#ssl-enable" title="Permalink to this headline">¶</a></h3>
+<p>Enable tunnel available on <code class="docutils literal"><span class="pre">dbrm</span></code> database.</p>
+<p>On active tunnel currently process detach SSH process and can't identify if tunnel die.
+So, after enable a tunnel it is needed check if is running with <code class="docutils literal"><span class="pre">ssl</span> <span class="pre">list</span></code> command.</p>
+<div class="section" id="enable-options">
+<span id="enable-options"></span><h4>enable options:<a class="headerlink" href="#enable-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--name</span> <span class="pre">name</span></code>: Name of the tunnel to activate.
+Use this or --id-tunnel.</li>
+<li>`--id-tunnel id: Id of the tunnel to activate.
+Use this or --name.</li>
+<li><code class="docutils literal"><span class="pre">--auto-increment</span></code>: If local port is busy, automatically
+increment port until a free port is found.
+This param is optional.</li>
+<li><code class="docutils literal"><span class="pre">--no-def-opts</span></code>: Disable default options used on tunnel.
+This param is optional.</li>
+<li><code class="docutils literal"><span class="pre">--use-sshpass</span></code>: Use sshpass for send password to ssh session.
+For security considerations a best way is to use
+ssh key authentication.
+On use sshpass set SSHPASS env variable with
+password string.</li>
+</ul>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> <span class="nv">SSHPASS</span><span class="o">=</span><span class="nb">pwd</span> dbrm ssl <span class="nb">enable</span> --name TUNNEL1 --use-sshpass
+  Tunnel <span class="m">25</span> is now active with pid 16440.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="ssl-disable">
+<span id="ssl-disable"></span><h3>ssl disable<a class="headerlink" href="#ssl-disable" title="Permalink to this headline">¶</a></h3>
+<p>Disable an active tunnel.</p>
+<div class="section" id="disable-options">
+<span id="disable-options"></span><h4>disable options:<a class="headerlink" href="#disable-options" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">--name</span> <span class="pre">name</span></code>: Name of the tunnel to activate.
+Use this or --id-tunnel.</li>
+<li><code class="docutils literal"><span class="pre">--id-tunnel</span> <span class="pre">id</span></code>: Id of the tunnel to activate.
+Use this or --name.</li>
+</ul>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm ssl disable --id-tunnel 1
+  Tunnel <span class="m">1</span> is not active.
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017, Geaaru.<br/>
+      Last updated on Jan 06, 2018.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

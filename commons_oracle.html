@@ -67,6 +67,7 @@
 <li class="toctree-l1"><a class="reference internal" href="logfile.html">Logfile Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Install Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mariadb.html">MariaDB Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oracle.html">Oracle Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongo.html">Mongo Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common.html">Commons API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mysql.html">Mysql API</a></li>
@@ -198,7 +199,7 @@ If doesn't exists then try to see if TNS_ADMIN variable is already set.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock75'))">(Show/Hide)</a><br /><div id="hiddencodeblock75" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_check_tnsnames <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock77'))">(Show/Hide)</a><br /><div id="hiddencodeblock77" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_check_tnsnames <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">packagedir</span><span class="o">=</span><span class="nv">$1</span>
 
@@ -243,7 +244,7 @@ If doesn't exists then try to see if TNS_ADMIN variable is already set.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock76'))">(Show/Hide)</a><br /><div id="hiddencodeblock76" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_check_sqlplus <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock78'))">(Show/Hide)</a><br /><div id="hiddencodeblock78" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_check_sqlplus <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$sqlplus</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
 
@@ -322,7 +323,7 @@ and check validity of TNS_ADMIN variable path.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock77'))">(Show/Hide)</a><br /><div id="hiddencodeblock77" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_check_vars <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock79'))">(Show/Hide)</a><br /><div id="hiddencodeblock79" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_check_vars <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">commons_msg</span><span class="o">=</span><span class="s1">&#39;variable on configuration file, through arguments or on current profile.&#39;</span>
 
@@ -357,7 +358,7 @@ and try to do a connection to database.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock78'))">(Show/Hide)</a><br /><div id="hiddencodeblock78" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_check_connection <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock80'))">(Show/Hide)</a><br /><div id="hiddencodeblock80" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_check_connection <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$SQLPLUS</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
     <span class="k">return</span> 1
@@ -403,7 +404,7 @@ and try to do a connection to database.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock79'))">(Show/Hide)</a><br /><div id="hiddencodeblock79" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_shell <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock81'))">(Show/Hide)</a><br /><div id="hiddencodeblock81" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_shell <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$SQLPLUS</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
     <span class="k">return</span> 1
@@ -438,7 +439,7 @@ and try to do a connection to database.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock80'))">(Show/Hide)</a><br /><div id="hiddencodeblock80" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_packages<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock82'))">(Show/Hide)</a><br /><div id="hiddencodeblock82" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_packages<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">packagesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/packages
   <span class="nb">local</span> <span class="nv">export_packages_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span>/export_packages.sql
@@ -485,7 +486,7 @@ then this function do nothing.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock81'))">(Show/Hide)</a><br /><div id="hiddencodeblock81" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_packages<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock83'))">(Show/Hide)</a><br /><div id="hiddencodeblock83" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_packages<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">packagesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/packages
   <span class="nb">local</span> <span class="nv">export_packages_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span>/export_packages.sql
@@ -552,7 +553,7 @@ then this function do nothing.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock82'))">(Show/Hide)</a><br /><div id="hiddencodeblock82" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_packages<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock84'))">(Show/Hide)</a><br /><div id="hiddencodeblock84" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_packages<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">packagesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/packages
   <span class="nb">local</span> <span class="nv">export_packages_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">packagesdir</span><span class="si">}</span>/export_packages.sql
@@ -654,7 +655,7 @@ commons_oracle_download_create_export_package<span class="o">()</span> <span cla
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock83'))">(Show/Hide)</a><br /><div id="hiddencodeblock83" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_package<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock85'))">(Show/Hide)</a><br /><div id="hiddencodeblock85" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_package<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">packagename</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
   <span class="nb">local</span> <span class="nv">packagesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/packages
@@ -696,7 +697,7 @@ commons_oracle_download_create_export_package<span class="o">()</span> <span cla
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock84'))">(Show/Hide)</a><br /><div id="hiddencodeblock84" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_functions<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock86'))">(Show/Hide)</a><br /><div id="hiddencodeblock86" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_functions<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">functionsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/functions
   <span class="nb">local</span> <span class="nv">export_functions_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span>/export_function.sql
@@ -743,7 +744,7 @@ then this function do nothing.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock85'))">(Show/Hide)</a><br /><div id="hiddencodeblock85" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_functions<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock87'))">(Show/Hide)</a><br /><div id="hiddencodeblock87" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_functions<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">functionsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/functions
   <span class="nb">local</span> <span class="nv">export_functions_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span>/export_function.sql
@@ -809,7 +810,7 @@ then this function do nothing.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock86'))">(Show/Hide)</a><br /><div id="hiddencodeblock86" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_functions<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock88'))">(Show/Hide)</a><br /><div id="hiddencodeblock88" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_functions<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">functionsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/functions
   <span class="nb">local</span> <span class="nv">export_functions_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">functionsdir</span><span class="si">}</span>/export_function.sql
@@ -935,7 +936,7 @@ commons_oracle_download_create_export_function<span class="o">()</span> <span cl
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock87'))">(Show/Hide)</a><br /><div id="hiddencodeblock87" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_function<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock89'))">(Show/Hide)</a><br /><div id="hiddencodeblock89" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_function<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">functionname</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
   <span class="nb">local</span> <span class="nv">functionsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/functions
@@ -977,7 +978,7 @@ commons_oracle_download_create_export_function<span class="o">()</span> <span cl
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock88'))">(Show/Hide)</a><br /><div id="hiddencodeblock88" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_views<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock90'))">(Show/Hide)</a><br /><div id="hiddencodeblock90" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_views<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">viewsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/views
   <span class="nb">local</span> <span class="nv">export_views_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span>/export_view.sql
@@ -1024,7 +1025,7 @@ then this function do nothing.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock89'))">(Show/Hide)</a><br /><div id="hiddencodeblock89" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_views<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock91'))">(Show/Hide)</a><br /><div id="hiddencodeblock91" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_views<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">viewsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/views
   <span class="nb">local</span> <span class="nv">export_views_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span>/export_view.sql
@@ -1090,7 +1091,7 @@ then this function do nothing.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock90'))">(Show/Hide)</a><br /><div id="hiddencodeblock90" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_views<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock92'))">(Show/Hide)</a><br /><div id="hiddencodeblock92" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_views<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">viewsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/views
   <span class="nb">local</span> <span class="nv">export_views_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">viewsdir</span><span class="si">}</span>/export_view.sql
@@ -1216,7 +1217,7 @@ commons_oracle_download_create_export_view<span class="o">()</span> <span class=
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock91'))">(Show/Hide)</a><br /><div id="hiddencodeblock91" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_view<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock93'))">(Show/Hide)</a><br /><div id="hiddencodeblock93" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_view<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">viewname</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
   <span class="nb">local</span> <span class="nv">viewsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/views
@@ -1258,7 +1259,7 @@ commons_oracle_download_create_export_view<span class="o">()</span> <span class=
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock92'))">(Show/Hide)</a><br /><div id="hiddencodeblock92" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_jobs<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock94'))">(Show/Hide)</a><br /><div id="hiddencodeblock94" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_jobs<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">jobsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/jobs
   <span class="nb">local</span> <span class="nv">export_jobs_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span>/export_job.sql
@@ -1305,7 +1306,7 @@ then this function do nothing.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock93'))">(Show/Hide)</a><br /><div id="hiddencodeblock93" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_jobs<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock95'))">(Show/Hide)</a><br /><div id="hiddencodeblock95" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_jobs<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">jobsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/jobs
   <span class="nb">local</span> <span class="nv">export_jobs_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span>/export_job.sql
@@ -1363,7 +1364,7 @@ then this function do nothing.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock94'))">(Show/Hide)</a><br /><div id="hiddencodeblock94" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_job<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock96'))">(Show/Hide)</a><br /><div id="hiddencodeblock96" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_job<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">jobname</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
   <span class="nb">local</span> <span class="nv">jobsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/jobs
@@ -1416,7 +1417,7 @@ then this function do nothing.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock95'))">(Show/Hide)</a><br /><div id="hiddencodeblock95" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_jobs<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock97'))">(Show/Hide)</a><br /><div id="hiddencodeblock97" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_jobs<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">jobsdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/jobs
   <span class="nb">local</span> <span class="nv">export_jobs_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">jobsdir</span><span class="si">}</span>/export_job.sql
@@ -1537,7 +1538,7 @@ commons_oracle_download_create_export_job<span class="o">()</span> <span class="
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock96'))">(Show/Hide)</a><br /><div id="hiddencodeblock96" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_schedules<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock98'))">(Show/Hide)</a><br /><div id="hiddencodeblock98" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_schedules<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">schedulesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/schedules
   <span class="nb">local</span> <span class="nv">export_schedules_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span>/export_schedule.sql
@@ -1584,7 +1585,7 @@ then this function do nothing.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock97'))">(Show/Hide)</a><br /><div id="hiddencodeblock97" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_schedules<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock99'))">(Show/Hide)</a><br /><div id="hiddencodeblock99" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_schedules<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">schedulesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/schedules
   <span class="nb">local</span> <span class="nv">export_schedules_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span>/export_schedule.sql
@@ -1643,7 +1644,7 @@ then this function do nothing.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock98'))">(Show/Hide)</a><br /><div id="hiddencodeblock98" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_schedule<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock100'))">(Show/Hide)</a><br /><div id="hiddencodeblock100" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_schedule<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">schedulename</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
   <span class="nb">local</span> <span class="nv">schedulesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/schedules
@@ -1696,7 +1697,7 @@ then this function do nothing.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock99'))">(Show/Hide)</a><br /><div id="hiddencodeblock99" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_schedules<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock101'))">(Show/Hide)</a><br /><div id="hiddencodeblock101" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_schedules<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">schedulesdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/schedules
   <span class="nb">local</span> <span class="nv">export_schedules_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">schedulesdir</span><span class="si">}</span>/export_schedule.sql
@@ -1818,7 +1819,7 @@ commons_oracle_download_create_export_schedule<span class="o">()</span> <span cl
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock100'))">(Show/Hide)</a><br /><div id="hiddencodeblock100" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_triggers<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock102'))">(Show/Hide)</a><br /><div id="hiddencodeblock102" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_all_triggers<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">triggersdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/triggers
   <span class="nb">local</span> <span class="nv">export_triggers_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span>/export_trigger.sql
@@ -1865,7 +1866,7 @@ then this function do nothing.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock101'))">(Show/Hide)</a><br /><div id="hiddencodeblock101" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_triggers<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock103'))">(Show/Hide)</a><br /><div id="hiddencodeblock103" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_triggers<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">triggersdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/triggers
   <span class="nb">local</span> <span class="nv">export_triggers_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span>/export_trigger.sql
@@ -1924,7 +1925,7 @@ then this function do nothing.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock102'))">(Show/Hide)</a><br /><div id="hiddencodeblock102" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_trigger<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock104'))">(Show/Hide)</a><br /><div id="hiddencodeblock104" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_trigger<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">triggername</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">/.sql/</span><span class="si">}</span>
   <span class="nb">local</span> <span class="nv">triggersdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/triggers
@@ -1977,7 +1978,7 @@ then this function do nothing.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock103'))">(Show/Hide)</a><br /><div id="hiddencodeblock103" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_triggers<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock105'))">(Show/Hide)</a><br /><div id="hiddencodeblock105" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_download_create_export_triggers<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">triggersdir</span><span class="o">=</span><span class="si">${</span><span class="nv">ORACLE_DIR</span><span class="si">}</span>/triggers
   <span class="nb">local</span> <span class="nv">export_triggers_sql</span><span class="o">=</span><span class="si">${</span><span class="nv">triggersdir</span><span class="si">}</span>/export_trigger.sql
@@ -2104,7 +2105,7 @@ commons_oracle_download_create_export_trigger<span class="o">()</span> <span cla
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock104'))">(Show/Hide)</a><br /><div id="hiddencodeblock104" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_file<span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock106'))">(Show/Hide)</a><br /><div id="hiddencodeblock106" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_file<span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">f</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="nv">$2</span>
@@ -2158,7 +2159,7 @@ commons_oracle_download_create_export_trigger<span class="o">()</span> <span cla
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock105'))">(Show/Hide)</a><br /><div id="hiddencodeblock105" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_packages <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock107'))">(Show/Hide)</a><br /><div id="hiddencodeblock107" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_packages <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ORACLE_DIR</span><span class="s2">/packages&quot;</span>
@@ -2192,7 +2193,7 @@ commons_oracle_download_create_export_trigger<span class="o">()</span> <span cla
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock106'))">(Show/Hide)</a><br /><div id="hiddencodeblock106" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_triggers <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock108'))">(Show/Hide)</a><br /><div id="hiddencodeblock108" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_triggers <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ORACLE_DIR</span><span class="s2">/triggers&quot;</span>
@@ -2226,7 +2227,7 @@ commons_oracle_download_create_export_trigger<span class="o">()</span> <span cla
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock107'))">(Show/Hide)</a><br /><div id="hiddencodeblock107" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_functions <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock109'))">(Show/Hide)</a><br /><div id="hiddencodeblock109" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_functions <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ORACLE_DIR</span><span class="s2">/functions&quot;</span>
@@ -2260,7 +2261,7 @@ commons_oracle_download_create_export_trigger<span class="o">()</span> <span cla
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock108'))">(Show/Hide)</a><br /><div id="hiddencodeblock108" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_views <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock110'))">(Show/Hide)</a><br /><div id="hiddencodeblock110" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_views <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ORACLE_DIR</span><span class="s2">/views&quot;</span>
@@ -2294,7 +2295,7 @@ commons_oracle_download_create_export_trigger<span class="o">()</span> <span cla
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock109'))">(Show/Hide)</a><br /><div id="hiddencodeblock109" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_jobs <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock111'))">(Show/Hide)</a><br /><div id="hiddencodeblock111" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_jobs <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ORACLE_DIR</span><span class="s2">/jobs&quot;</span>
@@ -2328,7 +2329,7 @@ commons_oracle_download_create_export_trigger<span class="o">()</span> <span cla
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock110'))">(Show/Hide)</a><br /><div id="hiddencodeblock110" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_jobs <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock112'))">(Show/Hide)</a><br /><div id="hiddencodeblock112" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_jobs <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$ORACLE_DIR</span><span class="s2">/jobs&quot;</span>
@@ -2365,7 +2366,7 @@ It is possible esclude some .sql files through <code class="docutils literal"><s
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock111'))">(Show/Hide)</a><br /><div id="hiddencodeblock111" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_from_dir <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock113'))">(Show/Hide)</a><br /><div id="hiddencodeblock113" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_oracle_compile_all_from_dir <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">directory</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
   <span class="nb">local</span> <span class="nv">msg_head</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
@@ -2437,7 +2438,7 @@ It is possible esclude some .sql files through <code class="docutils literal"><s
     </p>
     <p>
         &copy; Copyright 2017, Geaaru.<br/>
-      Last updated on Nov 11, 2017.<br/>
+      Last updated on Jan 06, 2018.<br/>
     </p>
   </div>
 </footer>

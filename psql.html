@@ -68,6 +68,7 @@
 <li class="toctree-l1"><a class="reference internal" href="logfile.html">Logfile Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Install Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mariadb.html">MariaDB Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oracle.html">Oracle Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongo.html">Mongo Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common.html">Commons API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mysql.html">Mysql API</a></li>
@@ -232,7 +233,7 @@ Valorize options like: -u username --password=pwd database.</p>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock187'))">(Show/Hide)</a><br /><div id="hiddencodeblock187" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>psql_set_auth_var <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock189'))">(Show/Hide)</a><br /><div id="hiddencodeblock189" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>psql_set_auth_var <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">db</span><span class="o">=</span><span class="nv">$1</span>
   <span class="nb">local</span> <span class="nv">user</span><span class="o">=</span><span class="nv">$2</span>
@@ -299,7 +300,7 @@ table. Default is hide columns.</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock188'))">(Show/Hide)</a><br /><div id="hiddencodeblock188" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>psql_cmd_4var <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock190'))">(Show/Hide)</a><br /><div id="hiddencodeblock190" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>psql_cmd_4var <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">set</span> -f
   <span class="nb">local</span> <span class="nv">var</span><span class="o">=</span><span class="nv">$1</span>
@@ -401,7 +402,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">psq
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock189'))">(Show/Hide)</a><br /><div id="hiddencodeblock189" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_check_client <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock191'))">(Show/Hide)</a><br /><div id="hiddencodeblock191" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_check_client <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$psql</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
 
@@ -478,7 +479,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">pg_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock190'))">(Show/Hide)</a><br /><div id="hiddencodeblock190" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_check_client_dump <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock192'))">(Show/Hide)</a><br /><div id="hiddencodeblock192" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_check_client_dump <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$pg_dump</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
 
@@ -555,7 +556,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">pg_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock191'))">(Show/Hide)</a><br /><div id="hiddencodeblock191" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_check_vars <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock193'))">(Show/Hide)</a><br /><div id="hiddencodeblock193" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_check_vars <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">commons_msg</span><span class="o">=</span><span class="s1">&#39;variable on configuration file, through arguments or on current profile.&#39;</span>
 
@@ -587,7 +588,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">pg_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock192'))">(Show/Hide)</a><br /><div id="hiddencodeblock192" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_check_connection <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock194'))">(Show/Hide)</a><br /><div id="hiddencodeblock194" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_check_connection <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$POSTGRESQL_CLIENT</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
     <span class="k">return</span> 1
@@ -636,7 +637,7 @@ Function check if it is set <code class="docutils literal"><span class="pre">pg_
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock193'))">(Show/Hide)</a><br /><div id="hiddencodeblock193" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_shell <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock195'))">(Show/Hide)</a><br /><div id="hiddencodeblock195" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_shell <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
   <span class="nb">local</span> <span class="nv">errorCode</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
@@ -693,7 +694,7 @@ On default dump save both schema and data. (optional)</li>
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock194'))">(Show/Hide)</a><br /><div id="hiddencodeblock194" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_dump <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock196'))">(Show/Hide)</a><br /><div id="hiddencodeblock196" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>commons_psql_dump <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">opts</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
   <span class="nb">local</span> <span class="nv">targetfile</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
@@ -745,7 +746,7 @@ On default dump save both schema and data. (optional)</li>
     </p>
     <p>
         &copy; Copyright 2017, Geaaru.<br/>
-      Last updated on Nov 11, 2017.<br/>
+      Last updated on Jan 06, 2018.<br/>
     </p>
   </div>
 </footer>

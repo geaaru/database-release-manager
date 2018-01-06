@@ -68,6 +68,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Logfile Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Install Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mariadb.html">MariaDB Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oracle.html">Oracle Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongo.html">Mongo Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common.html">Commons API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mysql.html">Mysql API</a></li>
@@ -243,7 +244,7 @@ If LOGFILE variable is not set then logfile module is automatically disabled.</p
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock163'))">(Show/Hide)</a><br /><div id="hiddencodeblock163" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_logfile_init <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock165'))">(Show/Hide)</a><br /><div id="hiddencodeblock165" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_logfile_init <span class="o">()</span> <span class="o">{</span>
 
   <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="nv">$LOGFILE</span><span class="s2">&quot;</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then</span>
     <span class="nv">logfile_status</span><span class="o">=</span><span class="s2">&quot;0&quot;</span>
@@ -285,7 +286,7 @@ If LOGFILE variable is not set then logfile module is automatically disabled.</p
             element.style.display = "block"
     };
 </script>
-<a href="javascript:showhide(document.getElementById('hiddencodeblock164'))">(Show/Hide)</a><br /><div id="hiddencodeblock164" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_logfile_write <span class="o">()</span> <span class="o">{</span>
+<a href="javascript:showhide(document.getElementById('hiddencodeblock166'))">(Show/Hide)</a><br /><div id="hiddencodeblock166" style="display: none"><div class="highlight-bash"><div class="highlight"><pre><span></span>_logfile_write <span class="o">()</span> <span class="o">{</span>
 
   <span class="nb">local</span> <span class="nv">msg</span><span class="o">=</span><span class="nv">$1</span>
 
@@ -322,7 +323,7 @@ If LOGFILE variable is not set then logfile module is automatically disabled.</p
     </p>
     <p>
         &copy; Copyright 2017, Geaaru.<br/>
-      Last updated on Nov 11, 2017.<br/>
+      Last updated on Jan 06, 2018.<br/>
     </p>
   </div>
 </footer>

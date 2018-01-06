@@ -27,7 +27,7 @@
     <script type="text/javascript" src="static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="static/bootstrap-sphinx.js"></script>
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Mongo Module" href="mongo.html" />
+    <link rel="next" title="Oracle Module" href="oracle.html" />
     <link rel="prev" title="Install Module" href="install.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -68,6 +68,7 @@
 <li class="toctree-l1"><a class="reference internal" href="logfile.html">Logfile Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Install Module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">MariaDB Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oracle.html">Oracle Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mongo.html">Mongo Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common.html">Commons API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mysql.html">Mysql API</a></li>
@@ -156,7 +157,7 @@
     </a>
   </li>
   <li>
-    <a href="mongo.html" title="Next Chapter: Mongo Module"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Mongo Module &raquo;</span>
+    <a href="oracle.html" title="Next Chapter: Oracle Module"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Oracle Module &raquo;</span>
     </a>
   </li>
               
@@ -413,7 +414,7 @@ set this variable.</td>
 </tr>
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">MARIADB_COMPILE_FILES_EXCLUDED</span></code></td>
 <td>Permit to define a list of script that are present on project directory to ignore
-on compilation proecess.</td>
+on compilation process.</td>
 </tr>
 </tbody>
 </table>
@@ -699,7 +700,9 @@ then elaboration is blocked.</li>
 </ul>
 <p>There are many options with <code class="docutils literal"><span class="pre">downlaod</span></code> command so I propose only few examples here related
 with Openstack Juno database.</p>
-<p><em>Download all indexes (not primary keys)</em></p>
+<ul class="simple">
+<li>Download all indexes (not primary keys)*</li>
+</ul>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb download --all-indexes
   Download index uniq_agents0agent_type0host of table agents <span class="o">(</span><span class="m">1</span> of 76<span class="o">)</span>.
   Download index network_id of table brocadeports <span class="o">(</span><span class="m">2</span> of 76<span class="o">)</span>.
@@ -857,7 +860,9 @@ then elaboration is blocked.</li>
 <li><code class="docutils literal"><span class="pre">--event</span> <span class="pre">ENAME</span></code>: Compile a particular event/scheduler under MARIADB_DIR/schedulers directory.</li>
 </ul>
 <p>For argument with value if it isn't passed value argument is ignored.</p>
-<p><em>Compile all foreign keys of Openstack Juno project</em></p>
+<ul class="simple">
+<li>Compile all foreign keys of Openstack Juno project*</li>
+</ul>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm mariadb compile --all-foreign-keys
   <span class="o">(</span>mariadb<span class="o">)</span> Start compilation <span class="o">(</span>file allowedaddresspairs-allowedaddresspairs_ibfk_1.sql<span class="o">)</span>: 
   <span class="o">(</span>mariadb<span class="o">)</span> End compilation <span class="o">(</span>file allowedaddresspairs-allowedaddresspairs_ibfk_1.sql, <span class="nv">result</span> <span class="o">=</span>&gt; 0<span class="o">)</span>: 
@@ -1234,7 +1239,7 @@ This option could be used with --auto or --prefix option.</li>
     </p>
     <p>
         &copy; Copyright 2017, Geaaru.<br/>
-      Last updated on Nov 19, 2017.<br/>
+      Last updated on Jan 06, 2018.<br/>
     </p>
   </div>
 </footer>
