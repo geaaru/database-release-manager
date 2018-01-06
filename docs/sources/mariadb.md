@@ -235,7 +235,7 @@ creation script.
      - Set to 1 when to avoid initialization of Timezone on database connection. Default is 0.
    * - ``MARIADB_COMPILE_FILES_EXCLUDED``
      - Permit to define a list of script that are present on project directory to ignore
-       on compilation proecess.
+       on compilation process.
 ```
 
 
@@ -526,7 +526,7 @@ Download procedures, trigger, functions, foreign keys, indexes, views, events an
 There are many options with `downlaod` command so I propose only few examples here related
 with Openstack Juno database.
 
-*Download all indexes (not primary keys)*
+* Download all indexes (not primary keys)*
 
 ```shell
   $# dbrm mariadb download --all-indexes
@@ -687,7 +687,7 @@ From command line is visible result of compilation but a more detailed trace is 
 
 For argument with value if it isn't passed value argument is ignored.
 
-*Compile all foreign keys of Openstack Juno project*
+* Compile all foreign keys of Openstack Juno project*
 
 ```shell
   $# dbrm mariadb compile --all-foreign-keys

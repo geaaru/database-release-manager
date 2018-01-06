@@ -10,7 +10,9 @@ Database Release Manager
     Logfile Module <logfile.md>
     Install Module <install.md>
     MariaDB Module <mariadb.md>
+    Oracle Module <oracle.md>
     Mongo Module <mongo.md>
+    SSL Module <ssl.md>
     Commons API <common.md>
     Mysql API <mysql.md>
     Sqlplus API <sqlplus.md>
