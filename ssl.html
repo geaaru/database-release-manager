@@ -100,6 +100,8 @@
 <li><a class="reference internal" href="#ssl-list">ssl list</a></li>
 <li><a class="reference internal" href="#ssl-create">ssl create</a><ul>
 <li><a class="reference internal" href="#create-options">create options:</a></li>
+<li><a class="reference internal" href="#example-of-normal-tunnel">Example of normal tunnel:</a></li>
+<li><a class="reference internal" href="#example-of-reverse-tunnel">Example of reverse tunnel:</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#ssl-delete">ssl delete</a><ul>
@@ -258,12 +260,14 @@ that will be available in remote host with reverse tunnel.</li>
 reverse tunnel, port in binding to remote host for reach
 local host.</li>
 <li><code class="docutils literal"><span class="pre">--tunnel-host</span> <span class="pre">host</span></code>: Host to use for reach remote host.</li>
-<li>`--tunnel-hport port: Port of host used for tunnel. Default is 22.</li>
-<li>`--tunnel-user user: User to use on tunnel creation. Default is current user.</li>
+<li><code class="docutils literal"><span class="pre">--tunnel-hport</span> <span class="pre">port</span></code>: Port of host used for tunnel. Default is 22.</li>
+<li><code class="docutils literal"><span class="pre">--tunnel-user</span> <span class="pre">user</span></code>: User to use on tunnel creation. Default is current user.</li>
 <li><code class="docutils literal"><span class="pre">--name</span> <span class="pre">name</span></code>: Name of the tunnel.</li>
 <li><code class="docutils literal"><span class="pre">--reverse</span></code>: Add this option for reverse tunnel.</li>
-<li>Example of normal tunnel:</li>
 </ul>
+</div>
+<div class="section" id="example-of-normal-tunnel">
+<span id="example-of-normal-tunnel"></span><h4>Example of normal tunnel:<a class="headerlink" href="#example-of-normal-tunnel" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm ssl create --name TUNNEL1 --tunnel-host 172.16.90.101 --tunnel-user root <span class="se">\</span>
      --remote-host 192.168.20.10 --remote-port <span class="m">22</span> --on-local-port 20022
 </pre></div>
@@ -272,9 +276,9 @@ local host.</li>
 local port 20022 SSH port (22) of host 192.168.20.10 thorugh a tunnel with port
 SSH of the host 172.16.90.101.
 Host 192.168.20.10 is not reachable only from host 172.16.90.101.</p>
-<ul class="simple">
-<li>Example of reverse tunnel:</li>
-</ul>
+</div>
+<div class="section" id="example-of-reverse-tunnel">
+<span id="example-of-reverse-tunnel"></span><h4>Example of reverse tunnel:<a class="headerlink" href="#example-of-reverse-tunnel" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>  <span class="nv">$#</span> dbrm ssl create --name TUNNEL2 --tunnel-host 192.168.20.10 --tunnel-user root <span class="se">\</span>
      --remote-host 172.16.90.101 --remote-port <span class="m">9999</span> --on-local-port <span class="m">80</span> <span class="se">\</span>
      --on-local-host 127.0.0.1 --reverse
@@ -307,7 +311,7 @@ So, after enable a tunnel it is needed check if is running with <code class="doc
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">--name</span> <span class="pre">name</span></code>: Name of the tunnel to activate.
 Use this or --id-tunnel.</li>
-<li>`--id-tunnel id: Id of the tunnel to activate.
+<li><code class="docutils literal"><span class="pre">--id-tunnel</span> <span class="pre">id</span></code>: Id of the tunnel to activate.
 Use this or --name.</li>
 <li><code class="docutils literal"><span class="pre">--auto-increment</span></code>: If local port is busy, automatically
 increment port until a free port is found.
