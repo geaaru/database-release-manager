@@ -40,7 +40,6 @@ AC_PATH_PROG(CP, cp)
 AC_PATH_PROG(MV, mv)
 AC_PATH_PROG(LN, ln)
 AC_PATH_PROG(MKDIR, mkdir)
-AC_PATH_PROG(ROBODOC, robodoc)
 
 AC_PATH_PROG(BASH_PATH, bash)
 if [ test -z "$BASH_PATH" ]; then
