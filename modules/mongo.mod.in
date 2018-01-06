@@ -416,12 +416,10 @@ mongo_create () {
 
   _mongo_create_help () {
 
-    echo -en "[--indexes]              Download all indexes present on database.\n"
-    echo -en "[--index INAME]          Index name to download.\n"
-    echo -en "                         It is possible download only a single index a time.\n"
-    echo -en "                         INAME contains name of the collection for download all\n"
-    echo -en "                         indexes of a specific collection or name of the collection \n"
-    echo -en "                         with key name separated with a point.\n"
+    echo -en "[--index INAME]          Name of the index to create..\n"
+    echo -en "                         It is possible create only a single index a time.\n"
+    echo -en "                         INAME contains name of the collection where create index\n"
+    echo -en "                         with index name separated with a point.\n"
     echo -en "[--unique]               To use with --index option for create an unique index.\n"
     echo -en "[--expire-sec SEC]       To use with --index option for set expireAfterSeconds option.\n"
     echo -ne "                         SEC contains number of seconds.\n"
