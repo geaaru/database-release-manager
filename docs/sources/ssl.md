@@ -98,12 +98,12 @@ from our host.
                          reverse tunnel, port in binding to remote host for reach
                          local host.
   * `--tunnel-host host`: Host to use for reach remote host.
-  * `--tunnel-hport port: Port of host used for tunnel. Default is 22.
-  * `--tunnel-user user: User to use on tunnel creation. Default is current user.
+  * `--tunnel-hport port`: Port of host used for tunnel. Default is 22.
+  * `--tunnel-user user`: User to use on tunnel creation. Default is current user.
   * `--name name`: Name of the tunnel.
   * `--reverse`: Add this option for reverse tunnel.
 
-* Example of normal tunnel:
+##### Example of normal tunnel:
 
 ```shell
   $# dbrm ssl create --name TUNNEL1 --tunnel-host 172.16.90.101 --tunnel-user root \
@@ -115,7 +115,7 @@ local port 20022 SSH port (22) of host 192.168.20.10 thorugh a tunnel with port
 SSH of the host 172.16.90.101.
 Host 192.168.20.10 is not reachable only from host 172.16.90.101.
 
-* Example of reverse tunnel:
+##### Example of reverse tunnel:
 
 ```shell
   $# dbrm ssl create --name TUNNEL2 --tunnel-host 192.168.20.10 --tunnel-user root \
@@ -147,7 +147,7 @@ So, after enable a tunnel it is needed check if is running with `ssl list` comma
 
   * `--name name`: Name of the tunnel to activate.
                    Use this or --id-tunnel.
-  * `--id-tunnel id: Id of the tunnel to activate.
+  * `--id-tunnel id`: Id of the tunnel to activate.
                      Use this or --name.
   * `--auto-increment`: If local port is busy, automatically
                         increment port until a free port is found.
