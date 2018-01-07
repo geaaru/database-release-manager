@@ -1,0 +1,40 @@
+language: bash
+sudo: true
+python:
+  - "3.5"
+before_install:
+  - sudo apt-get install autotools-dev
+  - sudo apt-get install autogen
+  - sudo apt-get install shtool
+  - sudo apt-get install sqlite3
+  - sudo pip install --upgrade pip
+  - sudo pip install sphinx  --upgrade
+  - sudo pip install recommonmark sphinx-bootstrap-theme --upgrade
+# Currently with ubuntu trusty package of sphinx-bootstrap-theme
+# is not available and sphinx is very very old!!!
+#  - sudo apt-get install python3-sphinx-bootstrap-theme python-sphinx
+#  - sudo apt-get install python3-recommonmark python-recommonmark
+#
+# TODO: use docker sabayon distro for execute test ASAP.
+
+script: libtoolize --force && aclocal && autoconf && automake --force-missing --add-missing && ./configure && make && make docs && sudo make install
+after_success:
+  - dbrm dbm version
+
+# addons:
+#   coverity_scan:
+#     project:
+#       name: geaaru/database-release-manager
+#       version: master
+#       description: >
+#         Tool written in Bash for simplify development
+#         process and sources organization and delivery
+#         of database changes on production environment
+#       notification_email: geaaru@gmail.com
+#       build_command_prepend: ./configure
+#       build_command: make
+#       branch_pattern: coverity_scan
+#     apt:
+#       packages:
+#         - autoconf
+#         - build-essential
