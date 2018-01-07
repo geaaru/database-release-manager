@@ -2,6 +2,8 @@
 
 Tool written in Bash for simplify development process and sources organization and delivery of database changes on production environment.
 
+[![Build Status](https://travis-ci.org/geaaru/database-release-manager.svg?branch=master)](https://travis-ci.org/geaaru/database-release-manager)
+
 ## Mission
 
 Mission of database-release-manager (or dbrm for friends) is NOT create a new IDE for SQL, every users can use any IDE for create tables, functions, etc. but with dbrm is it possible unify process for trace database informations and store to a repository in an ordered mode.
