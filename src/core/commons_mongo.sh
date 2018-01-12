@@ -625,7 +625,9 @@ commons_mongo_drop_index () {
   mongo_cmd_4var "_mongo_drop" "$cmd"
   ans=$?
 
-  out=$(echo "$_mongo_drop" | sed -e 's/.lastOpTime.*//g' -e 's/.electionId.*//g')
+  out=$(echo "$_mongo_drop" | sed -e 's/ObjectId(.*.)/""/g')
+  # Skip timestamp and NumberLong data
+  out=$(echo "$out" | sed -e 's/Timestamp(.*.)/""/g' -e 's/NumberLong(.*.)/""/g')
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en \
     "(commons_mongo_drop_index: (out)\n${out}\n"
