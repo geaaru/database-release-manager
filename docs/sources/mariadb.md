@@ -1051,7 +1051,7 @@ Permit to dump current configured database under `MARIADB_DIR/dumps` directory.
             This option could be used with --auto or --prefix option.
 
 ```shell
-  $# dbrm mariadb drop --auto --prefix test
+  $# dbrm mariadb dump --auto --prefix test
   Dump of example database executed correctly to: ./dumps/test_20171119_154129.sql.
 ```
 
