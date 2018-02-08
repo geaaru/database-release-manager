@@ -199,6 +199,13 @@ _package_handle_profile_params () {
       if [[ -e ${DRM_PROFILES_PATH}/${file} ]] ; then
         cp ${DRM_PROFILES_PATH}/${file} ${profiles_dir} || \
           error_handled "Error on copy file of profile $name."
+
+        # Replace MONGO_DIR with project DIR because files are then copy under pj_dir
+        if [[ ! -z "$SQLCA"  && "$SQLCA" =~ .*mongo.* ]] ; then
+
+          sed -i -e 's:MONGO_DIR=.*:MONGO_DIR=./project:g' ${profiles_dir}/${file}
+        fi
+
       else
         echo -en "WARN: file of profile ${name} not found. I ignore it."
       fi
@@ -233,6 +240,12 @@ _package_copy_project_files () {
   if [[ ! -z "$SQLCA"  && "$SQLCA" =~ .*oracle.* ]] ; then
 
     _package_copy_pj_oracle_files
+
+  fi
+
+  if [[ ! -z "$SQLCA"  && "$SQLCA" =~ .*mongo.* ]] ; then
+
+    _package_copy_pj_mongo_files
 
   fi
 
@@ -295,6 +308,43 @@ _package_copy_pj_oracle_files () {
 
   error_handled "NOT IMPLEMENTED!"
 
+}
+
+_package_copy_pj_mongo_files () {
+  local pj_dir="$DBRM_PACKAGE_TMPDIR/project"
+  local files=""
+
+  local adapter_dirs="
+    creation_scripts
+    indexes
+    scripts
+    update_scripts
+    shard
+  "
+
+  for dir in ${adapter_dirs} ; do
+
+    # Check if exists creation_scripts directory
+    if [[ -d ${MONGO_DIR}/${dir} ]] ; then
+
+      [[ $DEBUG && $DEBUG == true ]] && \
+        echo -en "(_package_copy_pj_mongo_files): Copying dir ${LOCAL_DIR}/${dir}...\n"
+
+      mkdir ${pj_dir}/${dir} || \
+        error_handled "Error on create temporary directory ${pj_dir}/${dir}"
+
+      files=$(ls ${MONGO_DIR}/${dir}/*.js 2>/dev/null)
+      if [[ -n "${files}" ]] ; then
+        for f in ${files} ; do
+          cp $f ${pj_dir}/${dir} || error_handled "Error on copy file $f from ${dir} directory."
+        done
+      fi
+
+    fi
+
+  done
+
+  return 0
 }
 
 _package_copy_extra_data () {
@@ -405,6 +455,15 @@ _package_copy_dbrm_files () {
 
   fi
 
+  if [[ ! -z "$SQLCA"  && "$SQLCA" =~ .*mongo.* ]] ; then
+
+    core_files="${core_files}
+      mongo.sh
+      commons_mongo.sh
+    "
+
+  fi
+
   for f in $core_files ; do
 
     cp $DBRM_CORE_FILES_DIR/$f ${dbrmfiles_dir}/share/core/ || error_handled "Error on copy core file $f."
@@ -462,6 +521,23 @@ _package_init () {
 _package_create_args () {
 
   [[ $DEBUG ]] && echo -en "(_package_create_args args: $@)\n"
+
+  _package_create_help () {
+
+    echo -en "[--exclude file]        Exclude file on tarball file.\n"
+    echo -en "[--to f.tar.gz]         Path of target tarball filename.\n"
+    echo -en "[--dirname dir]         Supply name of the directory to use as \n"
+    echo -en "                        main directory inside target tarball tree.\n"
+    echo -en "                        This option is optional. Default is current\n"
+    echo -en "                        directory name.\n"
+    echo -en "[--include-dir d]       Include extra directory on tarball.\n"
+    echo -en "                        This option could be repeated.\n"
+    echo -en "[--include-file f]      Include extra file on tarball.\n"
+    echo -en "                        This option could be repeated.\n"
+    echo -en "\n"
+
+    return 0
+  }
 
   local short_options="h"
   local long_options="dirname: to: exclude: include-file: include-dir: help"
@@ -527,24 +603,10 @@ _package_create_args () {
     return 1
   fi
 
-  return 0
-}
-
-_package_create_help () {
-
-  echo -en "[--exclude file]        Exclude file on tarball file.\n"
-  echo -en "[--to f.tar.gz]         Path of target tarball filename.\n"
-  echo -en "[--dirname dir]         Supply name of the directory to use as \n"
-  echo -en "                        main directory inside target tarball tree.\n"
-  echo -en "                        This option is optional. Default is current\n"
-  echo -en "                        directory name.\n"
-  echo -en "[--include-dir d]       Include extra directory on tarball.\n"
-  echo -en "                        This option could be repeated.\n"
-  echo -en "[--include-file f]      Include extra file on tarball.\n"
-  echo -en "                        This option could be repeated.\n"
-  echo -en "\n"
+  unset -f _package_create_help
 
   return 0
 }
+
 
 # vim: syn=sh filetype=sh ts=2 sw=2
