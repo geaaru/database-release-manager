@@ -567,7 +567,7 @@ commons_mongo_download_all_indexes () {
 
       # TODO: show if use out_handler_print instead of echo
 
-      if [[ ${include_id_} -gt 0 && "${kname}" == "_id_" ]] ; then
+      if [[ ${include_id_} -eq 0 && "${kname}" == "_id_" ]] ; then
         echo -en "Ignored index ${kname} of collection ${kcoll} ($idx of ${n_indexes}).\n"
         continue
       fi
