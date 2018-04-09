@@ -616,15 +616,17 @@ mongo_create () {
 
     opts="${opts} }"
 
+    local escaped_key=""
     pos=0
     # Create keys
     for i in ${!MONGO_CREATE_KEYS[@]}
     do
 
+      escaped_key=$(echo ${MONGO_CREATE_KEYS[$i]} | awk '{split($0, a, ":"); OFS=""; print "\"",a[1],"\":",a[2] }')
       if [ $pos -eq 0 ] ; then
-        keys="${keys} ${MONGO_CREATE_KEYS[$i]}"
+        keys="${keys} ${escaped_key}"
       else
-        keys="${keys}, ${MONGO_CREATE_KEYS[$i]}"
+        keys="${keys}, ${escaped_key}"
       fi
 
       let pos++
