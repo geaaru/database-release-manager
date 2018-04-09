@@ -436,8 +436,6 @@ mongo_create () {
     echo -en "\$> dbrm mongo create --index test1.index_m1 --expire-sec 3600 --key \"field1:-1\"\n"
     echo -en "                     --key \"field2:-1\"\n"
     echo -en "\n"
-    echo -en "NOTE: For sub-document keys add escaped double quote on key option.\n"
-    echo -en "      --key \"\\\"field.key\\\":1\"\n"
 
     return 0
   }

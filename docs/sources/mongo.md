@@ -208,8 +208,6 @@ Create an expire index for collection test1 of two fields:
     --key "field1:-1" --key "field2:-1"
 ```
 
-For sub-document keys add escaped double quote on key option.
-
 #### mongo drop
 
 Drop indexes from database.
