@@ -44,6 +44,7 @@ oracle_long_help () {
    echo -en "\tcompile                 Compile packages/triggers/views/etc.\n"
    echo -en "\tshell                   Enter on sqlplus shell of current configuration.\n"
    echo -en "\tquery                   Execute directly a query on current database.\n"
+   echo -en "\tinitenv                 Create default directories if not present.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -67,12 +68,134 @@ oracle_show_help () {
    echo -en "\tcompile                 Compile packages/triggers/views/etc.\n"
    echo -en "\tshell                   Enter on sqlplus shell of current configuration.\n"
    echo -en "\tquery                   Execute directly a query on current database.\n"
+   echo -en "\tinitenv                 Create default directories if not present.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
    return 0
 }
 #***
+
+
+# oracle_oracle_initenv
+oracle_initenv () {
+
+  _oracle_initenv_help () {
+    echo -en "[--to-current-dir]      Initialize current directory [.].\n"
+    echo -en "[--to-dir target]       Initialize target directory.\n"
+    echo -en "[--help|-h]             Show help message.\n"
+    echo -en "\n"
+
+    return 0
+  }
+
+  _oracle_initenv_args () {
+
+    local short_options="h"
+    local long_options="to-dir: help to-current-dir"
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_initenv_args [$#]: $@)\n"
+
+    if [ $# -eq 0 ] ; then
+      _oracle_initenv_help
+      return 1
+    fi
+
+    $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || \
+      error_handled "Invalid parameters"
+
+    ORACLE_INIT_CURRDIR=0
+    ORACLE_INIT_DIR=""
+    ORACLE_INIT_TARGETDIR=0
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_initenv_args [$#]: $@)\n"
+    while [ $# -gt 0 ] ; do
+      case "$1" in
+
+        --to-current-dir)
+          ORACLE_INIT_CURRDIR=1
+          ;;
+        --to-dir)
+          ORACLE_INIT_TARGETDIR=1
+          ORACLE_INIT_DIR="$2"
+          shift
+          ;;
+        --enable-profiles)
+          ORACLE_INIT_PROFILES=1
+          ;;
+        -h|--help)
+          _oracle_initenv_help
+          return 1
+          ;;
+        --)
+          error_generate "Invalid parameter."
+          ;;
+        *)
+          error_generate "Invalid parameter $1."
+          ;;
+      esac
+      shift
+
+    done
+
+    if [[ $ORACLE_INIT_CURRDIR -eq 1 && $ORACLE_INIT_TARGETDIR -eq 1 ]] ; then
+      out_handler_print "Use only --to-dir or --to-current-dir option."
+      return 1
+    fi
+
+    if [[ $ORACLE_INIT_TARGETDIR -eq 1 ]] ; then
+      if [ ! -d $ORACLE_INIT_DIR ] ; then
+        out_handler_print "Invalid directory $DBM_INIT_DIR."
+        return 1
+      fi
+    else
+
+      # Set ORACLE_INIT_DIR to .
+      ORACLE_INIT_DIR=.
+    fi
+
+    return 0
+  }
+
+  local result=1
+  local ndirs=0
+  local directories="
+    creation_scripts
+    functions
+    packages
+    procedures
+    triggers
+    schemas
+    update_scripts
+    views
+    synonims
+    jobs
+    schedulers
+  "
+
+  # Shift first tow input param
+  shift 2
+
+  _oracle_initenv_args "$@" || error_handled ""
+
+  unset -f _oracle_initenv_args
+  unset -f _oracle_initenv_help
+
+  for d in $directories ; do
+
+    # Check if foreign key directory
+    if [[ ! -d ${ORACLE_INIT_DIR}/$d ]] ; then
+      mkdir -p ${ORACLE_INIT_DIR}/$d || error_generate "Error on create directory $d."
+      let ndirs++
+    fi
+
+  done
+
+  out_handler_print "Directories created: ${ndirs}."
+
+  return 0
+}
+# oracle_oracle_initenv_end
 
 #****f* oracle/oracle_test_connection
 # FUNCTION
