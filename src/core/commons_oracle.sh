@@ -1097,7 +1097,9 @@ commons_oracle_show_tables () {
   "
 
   local sqlopts="set echo off heading off feedback off pages 50000"
-  sqlplus_cmd_4var "ORACLE_ANS" "${cmd}" "" "" "${sqlopts}" ""
+  sqlplus_cmd_4var "ORACLE_ANS" "${cmd}" "" "" "${sqlopts}" "" || return 1
+
+  return 0
 }
 
 
