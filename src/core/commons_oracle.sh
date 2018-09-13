@@ -1067,4 +1067,38 @@ commons_oracle_compile_all_from_dir () {
 }
 # commons_oracle_commons_oracle_compile_all_from_dir_end
 
+# commons_oracle_commons_oracle_compile_a
+commons_oracle_show_tables () {
+
+  local columns="${1:-"D.TABLE_NAME||'|'||D.NUM_ROWS||'|'||D.BLOCKS||'|'||D.AVG_ROW_LEN||'|'||NVL(TMP.N_PART, 0)||'|'||NVL(TMP.N_SUBPART, 0)||'|'||NVL(TO_CHAR(TMP.LAST_UPDATE, 'YYYY-MM-DD HH24:MI'), 'N.A.')"}"
+  local filter="${2}"
+
+  local cmd="
+    SELECT ${columns}
+    FROM (
+      SELECT AT.table_name, S.NUM_ROWS, S.BLOCKS, S.AVG_ROW_LEN
+      FROM all_tables AT,
+          ALL_TAB_STATISTICS S
+     WHERE AT.owner = '${ORACLE_USER}'
+     AND S.OWNER = '${ORACLE_USER}'
+     AND S.PARTITION_NAME IS NULL
+     AND AT.table_name  = S.TABLE_NAME ${filter}
+    ) D
+    LEFT JOIN (
+        SELECT TABLE_NAME,
+               MAX(STATS_UPDATE_TIME) LAST_UPDATE,
+              COUNT(PARTITION_NAME) AS N_PART,
+              COUNT(SUBPARTITION_NAME) AS N_SUBPART
+        FROM ALL_TAB_STATS_HISTORY
+        GROUP BY TABLE_NAME
+    ) TMP
+    ON  TMP.TABLE_NAME = D.TABLE_NAME
+    ORDER by D.table_name
+  "
+
+  local sqlopts="set echo off heading off feedback off pages 50000"
+  sqlplus_cmd_4var "ORACLE_ANS" "${cmd}" "" "" "${sqlopts}" ""
+}
+
+
 # vim: syn=sh filetype=sh

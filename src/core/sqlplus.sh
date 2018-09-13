@@ -55,6 +55,7 @@ sqlplus_cmd_4var() {
   local v=""
   local feedback="$4"
   local custom_opts="$5"
+  local as_array="$6"
   local opts=""
 
   if [[ -n "${custom_opts}" ]] ; then
@@ -89,13 +90,18 @@ EOF
 
   if [[ -n $rm_lf ]] ; then
 
+    echo "RMMMM"
     v=`echo $v | sed 's/\n//g'`
 
   fi
 
 #  declare -x "$var"="$v"
   #read -r "$var" <<< "$v"
-  eval "$var=\$v"
+  if [ -n "${as_array}" ] ; then
+    eval "$var=( \$v )"
+  else
+    eval "$var=\$v"
+  fi
 
   set +f
 

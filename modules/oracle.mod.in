@@ -45,6 +45,7 @@ oracle_long_help () {
    echo -en "\tshell                   Enter on sqlplus shell of current configuration.\n"
    echo -en "\tquery                   Execute directly a query on current database.\n"
    echo -en "\tinitenv                 Create default directories if not present.\n"
+   echo -en "\tshow                    Retrieve database informations.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -69,6 +70,7 @@ oracle_show_help () {
    echo -en "\tshell                   Enter on sqlplus shell of current configuration.\n"
    echo -en "\tquery                   Execute directly a query on current database.\n"
    echo -en "\tinitenv                 Create default directories if not present.\n"
+   echo -en "\tshow                    Retrieve database informations.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -196,6 +198,92 @@ oracle_initenv () {
   return 0
 }
 # oracle_oracle_initenv_end
+
+# oracle_oracle_show
+oracle_show () {
+
+  _oracle_show_help () {
+    echo -en "[--tables]              List of tables.\n"
+    echo -en "[--filter [vale]]       Define filter for table name (Use REGEXP_LIKE).\n"
+    echo -en "\n"
+
+    return 0
+  }
+
+  _oracle_show_args () {
+
+    local short_options="h"
+    local long_options="tables filter:"
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_show_args [$#]: $@)\n"
+
+    if [ $# -eq 0 ] ; then
+      _oracle_show_help
+      return 1
+    fi
+
+    $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || \
+      error_handled "Invalid parameters"
+
+    ORACLE_SHOW_TABLES=0
+    ORACLE_SHOW_FILTER=""
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_show_args [$#]: $@)\n"
+    while [ $# -gt 0 ] ; do
+      case "$1" in
+
+        --tables)
+          ORACLE_SHOW_TABLES=1
+          ;;
+        --filter)
+          ORACLE_SHOW_FILTER="$2"
+          shift
+          ;;
+        -h|--help)
+          _oracle_show_help
+          return 1
+          ;;
+        --)
+          error_generate "Invalid parameter."
+          ;;
+        *)
+          error_generate "Invalid parameter $1."
+          ;;
+      esac
+      shift
+
+    done
+
+    return 0
+  }
+
+  # Shift first tow input param
+  shift 2
+
+  _oracle_show_args "$@" || error_handled ""
+
+  _oracle_check_status
+
+  _oracle_help_message="do_help"
+
+  _oracle_connections_args "$@"
+
+  unset -f _oracle_show_args
+  unset -f _oracle_show_help
+
+  commons_oracle_check_vars
+
+  sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD"
+
+  commons_oracle_check_connection || error_handled "SQLPlus was unable to connect the DB with the supplied credentials"
+
+  if [ $ORACLE_SHOW_TABLES -eq 1 ] ; then
+    _oracle_show_tables "$@"
+  fi
+
+  return 0
+}
+# oracle_oracle_show_end
 
 #****f* oracle/oracle_test_connection
 # FUNCTION
@@ -1272,8 +1360,108 @@ _oracle_query () {
     out_handler_print "${ORACLE_ANS}"
   fi
 
-
   return $res
 }
 #***
+
+# oracle__oracle_show_tables
+_oracle_show_tables () {
+
+  local filter=""
+  if [ -n "${ORACLE_SHOW_FILTER}" ] ; then
+    filter="AND REGEXP_LIKE(AT.table_name, '${ORACLE_SHOW_FILTER}') "
+  fi
+
+  commons_oracle_show_tables "" "${filter}" || error_handled "Unexpected error on retrieve list of tables."
+
+  if [ -n "${ORACLE_ANS}" ] ; then
+
+    local counter=1
+    local tname=""
+    local nrows=""
+    local blocks=""
+    local avg_row_len=""
+    local n_part=""
+    local n_subpart=""
+    local last_stats_update=""
+    local n_rows=$(echo -e "${ORACLE_ANS}" | wc -l)
+    local nrows_size=20
+    local tname_size=30
+
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+    out_ttitle="Tables (n. $n_rows)"
+
+    out_headers[0]="TABLE_NAME"
+    out_headers[1]="NUM_ROWS"
+    out_headers[2]="BLOCKS"
+    out_headers[3]="AVG_ROW_LEN"
+    out_headers[4]="N_PART"
+    out_headers[5]="N_SUBPART"
+    out_headers[6]="LAST_STATS_UPDATE"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;31m"
+    out_el_pre[2]="\e[1;32m"
+    out_el_pre[3]="\e[1;34m"
+    out_el_pre[4]="\e[1;35m"
+    out_el_pre[5]="\e[1;36m"
+    out_el_pre[6]="\e[1;37m"
+
+    out_el_post[0]="\e[m"
+
+    IFS=$'\n'
+    for row in $ORACLE_ANS ; do
+
+      tname=$(echo $row | awk '{split($0,a,"|"); print a[1]}')
+      nrows=$(echo $row | awk '{split($0,a,"|"); print a[2]}')
+      blocks=$(echo $row | awk '{split($0,a,"|"); print a[3]}')
+      avg_row_len=$(echo $row | awk '{split($0,a,"|"); print a[4]}')
+      n_part=$(echo $row | awk '{split($0,a,"|"); print a[5]}')
+      n_subpart=$(echo $row | awk '{split($0,a,"|"); print a[6]}')
+      last_stats_update=$(echo $row | awk '{split($0,a,"|"); print a[7]}')
+
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${tname}\""
+      eval "row${counter}[1]=\"${nrows}\""
+      eval "row${counter}[2]=\"${blocks}\""
+      eval "row${counter}[3]=\"${avg_row_len}\""
+      eval "row${counter}[4]=\"${n_part}\""
+      eval "row${counter}[5]=\"${n_subpart}\""
+      eval "row${counter}[6]=\"${last_stats_update}\""
+
+      # Check if needed enlarge size of first column
+      if [ ${#tname} -ge $tname_size ] ; then
+        tname_size=$((${#tname_size}+1))
+      fi
+      if [ ${#nrows} -ge $nrows_size ] ; then
+        nrows_size=$((${#nrows}+1))
+      fi
+
+      let counter++
+    done
+    unset IFS
+
+    out_tabs[0]=$tname_size
+    out_tabs[1]=$nrows_size
+    out_tabs[2]=14
+    out_tabs[3]=12
+    out_tabs[4]=13
+    out_tabs[5]=24
+    out_tabs[6]=24
+
+    out_handler_print_arr
+
+  else
+    out_handler_print "No tables found."
+  fi
+
+  out_handler_clean
+
+  return 0
+}
+# oracle__oracle_show_tables_end
+
 # vim: syn=sh filetype=sh ts=2 sw=2
