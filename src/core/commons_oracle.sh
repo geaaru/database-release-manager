@@ -1067,7 +1067,7 @@ commons_oracle_compile_all_from_dir () {
 }
 # commons_oracle_commons_oracle_compile_all_from_dir_end
 
-# commons_oracle_commons_oracle_compile_a
+# commons_oracle_commons_oracle_show_tables
 commons_oracle_show_tables () {
 
   local columns="${1:-"D.TABLE_NAME||'|'||D.NUM_ROWS||'|'||D.BLOCKS||'|'||D.AVG_ROW_LEN||'|'||NVL(TMP.N_PART, 0)||'|'||NVL(TMP.N_SUBPART, 0)||'|'||NVL(TO_CHAR(TMP.LAST_UPDATE, 'YYYY-MM-DD HH24:MI'), 'N.A.')"}"
@@ -1097,10 +1097,74 @@ commons_oracle_show_tables () {
   "
 
   local sqlopts="set echo off heading off feedback off pages 50000"
-  sqlplus_cmd_4var "ORACLE_ANS" "${cmd}" "" "" "${sqlopts}" "" || return 1
+  sqlplus_cmd_4var "ORACLE_ANS" "${cmd}" "" "" "${sqlopts}" "1" || return 1
 
   return 0
 }
+# commons_oracle_commons_oracle_show_tables_end
+
+# commons_oracle_commons_oracle_show_indexes
+commons_oracle_show_indexes () {
+
+  #   SELECT TMP.TABLE_NAME,
+  #       TMP.INDEX_NAME,
+  #       TMP.INDEX_TYPE,
+  #       TMP.UNIQUE_IDX,
+  #       TMP.COMPRESSION,
+  #       TMP.TABLESPACE_NAME,
+  #       TMP.CONSTRAINT_TYPE,
+  #       TMP.STATUS,
+  #       TMP.COLUMNS,
+  #       TMP.LOGGING,
+  #       TMP.CONSTRAINT_NAME,
+  #       TMP.BLEVEL,
+  #       TMP.AVG_DATA_BLOCKS_PER_KEY,
+  #       TMP.NUM_ROWS,
+  #       TMP.SAMPLE_SIZE,
+  #       TMP.LAST_ANALYZED
+  local ret_columns="${1:-"TMP.TABLE_NAME||'|'||TMP.INDEX_NAME||'|'||TMP.INDEX_TYPE||'|'||TMP.UNIQUE_IDX||'|'||TMP.COMPRESSION||'|'||TMP.TABLESPACE_NAME||'|'||TMP.CONSTRAINT_TYPE||'|'||TMP.STATUS||'|'||TMP.COLUMNS||'|'||TMP.LOGGING||'|'||TMP.CONSTRAINT_NAME||'|'||TMP.BLEVEL||'|'||TMP.AVG_DATA_BLOCKS_PER_KEY||'|'||TMP.NUM_ROWS||'|'||TMP.SAMPLE_SIZE||'|'||NVL(TO_CHAR(TMP.LAST_ANALYZED, 'YYYY-MM-DD HH24:MI'), 'N.A')"}"
+  local filter="${2}"
+
+  local cmd="SELECT ${ret_columns}
+  FROM (
+    SELECT
+          AI.TABLE_NAME,
+          AI.INDEX_NAME,
+          AI.INDEX_TYPE,
+          CASE WHEN AI.UNIQUENESS = 'UNIQUE' THEN 'Y' ELSE 'N' END AS UNIQUE_IDX,
+          AC.CONSTRAINT_TYPE,
+          AC.CONSTRAINT_NAME,
+          (
+           SELECT LISTAGG(COLUMN_NAME, ',')
+                 WITHIN GROUP (ORDER BY COLUMN_NAME) \"ALL_CONS_COLUMNS\"
+          FROM ALL_CONS_COLUMNS
+          WHERE TABLE_NAME = AI.TABLE_NAME
+          AND CONSTRAINT_NAME = AC.CONSTRAINT_NAME
+          ) AS COLUMNS,
+          CASE WHEN AI.COMPRESSION = 'DISABLED' THEN 'N' ELSE 'Y' END AS COMPRESSION,
+          AI.TABLESPACE_NAME,
+          AI.LOGGING,
+          AI.BLEVEL,
+          AI.AVG_DATA_BLOCKS_PER_KEY,
+          AI.STATUS,
+          AI.NUM_ROWS,
+          AI.SAMPLE_SIZE,
+          AI.LAST_ANALYZED,
+          AI.INDEXING
+    FROM ALL_INDEXES  AI,
+         ALL_CONSTRAINTS AC
+    WHERE AI.OWNER = '${ORACLE_USER}'
+    AND AC.INDEX_NAME = AI.INDEX_NAME ${filter}
+    ORDER BY AI.TABLE_NAME, AI.INDEX_NAME
+  ) TMP
+"
+
+  local sqlopts="set echo off heading off feedback off pages 50000 lines 5000"
+  sqlplus_cmd_4var "ORACLE_ANS" "${cmd}" "" "" "${sqlopts}" "1" || return 1
+
+  return 0
+}
+# commons_oracle_commons_oracle_show_indexes_end
 
 
 # vim: syn=sh filetype=sh

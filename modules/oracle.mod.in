@@ -204,7 +204,11 @@ oracle_show () {
 
   _oracle_show_help () {
     echo -en "[--tables]              List of tables.\n"
-    echo -en "[--filter [vale]]       Define filter for table name (Use REGEXP_LIKE).\n"
+    echo -en "[--indexes]             List of indexes.\n"
+    echo -en "[--index]               Show detail of a specific index. Could be used multiple time.\n"
+    echo -en "[--invalid]             Filter invalid indexes.\n"
+    echo -en "[--tablespace [value]]  Filter for table space name (Use REGEXP_LIKE).\n"
+    echo -en "[--filter [value]]      Define filter for table name (Use REGEXP_LIKE).\n"
     echo -en "\n"
 
     return 0
@@ -213,7 +217,7 @@ oracle_show () {
   _oracle_show_args () {
 
     local short_options="h"
-    local long_options="tables filter:"
+    local long_options="tables filter: indexes index: invalid tablespace:"
 
     [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_show_args [$#]: $@)\n"
 
@@ -226,7 +230,12 @@ oracle_show () {
       error_handled "Invalid parameters"
 
     ORACLE_SHOW_TABLES=0
+    ORACLE_SHOW_INDEXES=0
+    ORACLE_SHOW_INDEX=""
+    ORACLE_SHOW_INDEX_NUM=0
     ORACLE_SHOW_FILTER=""
+    ORACLE_SHOW_INVALID=1
+    ORACLE_SHOW_TABLESPACE=""
 
     [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_show_args [$#]: $@)\n"
     while [ $# -gt 0 ] ; do
@@ -235,9 +244,24 @@ oracle_show () {
         --tables)
           ORACLE_SHOW_TABLES=1
           ;;
+        --indexes)
+          ORACLE_SHOW_INDEXES=1
+          ;;
         --filter)
           ORACLE_SHOW_FILTER="$2"
           shift
+          ;;
+        --index)
+          ORACLE_SHOW_INDEX[${ORACLE_SHOW_INDEX_NUM}]=$2
+          let ORACLE_SHOW_INDEX_NUM++
+          shift
+          ;;
+        --tablespace)
+          ORACLE_SHOW_TABLESPACE=$2
+          shift
+          ;;
+        --invalid)
+          ORACLE_SHOW_INVALID=1
           ;;
         -h|--help)
           _oracle_show_help
@@ -278,7 +302,18 @@ oracle_show () {
   commons_oracle_check_connection || error_handled "SQLPlus was unable to connect the DB with the supplied credentials"
 
   if [ $ORACLE_SHOW_TABLES -eq 1 ] ; then
-    _oracle_show_tables "$@"
+    _oracle_show_tables
+  fi
+
+  if [ $ORACLE_SHOW_INDEXES -eq 1 ] ; then
+    _oracle_show_indexes
+  fi
+
+  if [ $ORACLE_SHOW_INDEX_NUM -gt 0 ] ; then
+    local i=0
+    for i in ${!ORACLE_SHOW_INDEX[@]} ; do
+      _oracle_show_index "${ORACLE_SHOW_INDEX[${i}]}"
+    done
   fi
 
   return 0
@@ -1391,7 +1426,7 @@ _oracle_show_tables () {
     out_hsep=1
     out_prepost_mode="any"
     out_htabs_mode="tabs"
-    out_ttitle="Tables (n. $n_rows)"
+    out_ttitle="TABLES (n. $n_rows)"
 
     out_headers[0]="TABLE_NAME"
     out_headers[1]="NUM_ROWS"
@@ -1434,7 +1469,7 @@ _oracle_show_tables () {
 
       # Check if needed enlarge size of first column
       if [ ${#tname} -ge $tname_size ] ; then
-        tname_size=$((${#tname_size}+1))
+        tname_size=$((${#tname}+1))
       fi
       if [ ${#nrows} -ge $nrows_size ] ; then
         nrows_size=$((${#nrows}+1))
@@ -1449,7 +1484,7 @@ _oracle_show_tables () {
     out_tabs[2]=14
     out_tabs[3]=12
     out_tabs[4]=13
-    out_tabs[5]=24
+    out_tabs[5]=15
     out_tabs[6]=24
 
     out_handler_print_arr
@@ -1463,5 +1498,279 @@ _oracle_show_tables () {
   return 0
 }
 # oracle__oracle_show_tables_end
+
+# oracle__oracle_show_indexes
+_oracle_show_indexes () {
+
+  local filter=""
+  if [ -n "${ORACLE_SHOW_FILTER}" ] ; then
+    filter="AND REGEXP_LIKE(AI.table_name, '${ORACLE_SHOW_FILTER}') "
+  fi
+
+  if [ -n "${ORACLE_SHOW_INVALID}" ] ; then
+    filter="${filter} AND AI.STATUS <> 'VALID' "
+  fi
+
+  if [ -n "${ORACLE_SHOW_TABLESPACE}" ] ; then
+    filter="${filter} AND REGEXP_LIKE(AI.TABLESPACE_NAME, '${ORACLE_SHOW_TABLESPACE}') "
+  fi
+
+  commons_oracle_show_indexes "" "${filter}" || error_handled "Unexpected error on retrieve list of indexes."
+
+  if [ -n "${ORACLE_ANS}" ] ; then
+
+    local counter=0
+    local attr=1
+    local tname=""
+    local iname=""
+    local itype=""
+    local unique=""
+    local ctype=""
+    local cname=""
+    local columns=""
+    local compression=""
+    local tablespace=""
+    local logging=""
+    local blevel=""
+    local avg_data_blocks=""
+    local status=""
+    local nrows=""
+    local samplesize=""
+    local last_analyzed=""
+
+    local n_rows=$(echo -e "${ORACLE_ANS}" | wc -l)
+    local tname_size=20
+    local iname_size=20
+    local tsname_size=16
+    local cols_size=20
+
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+    out_ttitle="INDEXES (n. $n_rows)"
+
+    out_headers[${counter}]="TABLE_NAME" ; out_el_pre[${counter}]="\e[1;31m" ; let counter++
+    out_headers[${counter}]="INDEX_NAME" ; out_el_pre[${counter}]="\e[1;32m" ; let counter++
+    out_headers[${counter}]="IDX_TYPE" ; out_el_pre[${counter}]="\e[1;34m" ; let counter++
+    out_headers[${counter}]="UNIQUE" ; out_el_pre[${counter}]="\e[1;35m" ; let counter++
+    out_headers[${counter}]="COMPR" ; out_el_pre[${counter}]="\e[1;36m" ; let counter++
+    out_headers[${counter}]="TABLESPACE_NAME" ; out_el_pre[${counter}]="\e[1;37m" ; let counter++
+    out_headers[${counter}]="CTYPE" ; out_el_pre[${counter}]="\e[1;38m" ; let counter++
+    out_headers[${counter}]="STATUS" ; out_el_pre[${counter}]="\e[1;34m" ; let counter++
+    out_headers[${counter}]="COLUMNS" ; out_el_pre[${counter}]="\e[1;33m" ; let counter++
+
+    counter=1
+
+    out_el_post[0]="\e[m"
+
+    IFS=$'\n'
+    for row in $ORACLE_ANS ; do
+
+      attr=1
+
+      tname=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+      eval "row${counter}[${attr}]=\"${tname}\"" ; let attr++
+
+      iname=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+      eval "row${counter}[${attr}]=\"${iname}\"" ; let attr++
+
+      itype=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+      eval "row${counter}[${attr}]=\"${itype}\"" ; let attr++
+
+      unique=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+      eval "row${counter}[${attr}]=\"${unique}\"" ; let attr++
+
+      compression=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+      eval "row${counter}[${attr}]=\"${compression}\"" ; let attr++
+
+      tablespace=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+      eval "row${counter}[${attr}]=\"${tablespace}\"" ; let attr++
+
+      ctype=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+      eval "row${counter}[${attr}]=\"${ctype}\"" ; let attr++
+
+      status=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+      eval "row${counter}[${attr}]=\"${status}\"" ; let attr++
+
+      columns=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+      eval "row${counter}[${attr}]=\"${columns}\"" ; let attr++
+
+      out_rows[$counter]="row"${counter}
+
+      # Check if needed enlarge size of first column
+      if [ ${#tname} -ge $tname_size ] ; then
+        tname_size=$((${#tname}+1))
+      fi
+      if [ ${#iname} -ge $iname_size ] ; then
+        iname_size=$((${#iname}+1))
+      fi
+      if [ ${#columns} -ge $cols_size ] ; then
+        cols_size=$((${#columns}+1))
+      fi
+      if [ ${#tablespace} -ge ${tsname_size} ] ; then
+        tsname_size=$((${#tablespace}+1))
+      fi
+
+      let counter++
+    done
+    unset IFS
+
+    counter=0
+    out_tabs[${counter}]=$tname_size ; let counter++ # "TABLE_NAME" ;
+    out_tabs[${counter}]=$iname_size ; let counter++ # "INDEX_NAME"
+    out_tabs[${counter}]=10 ; let counter++ # "INDEX_TYPE" ;
+    out_tabs[${counter}]=7 ; let counter++ # "UNIQUE_IDX" ;
+    out_tabs[${counter}]=6 ; let counter++ # "COMPR"
+    out_tabs[${counter}]=$tsname_size ; let counter++ # "TABLESPACE_NAME"
+    out_tabs[${counter}]=6 ; let counter++ # "CTYPE"
+    out_tabs[${counter}]=9 ; let counter++ # "STATUS"
+    out_tabs[${counter}]=$cols_size ; let counter++ # "COLUMNS"
+
+    out_handler_print_arr
+
+  else
+    out_handler_print "No indexes found."
+  fi
+
+  out_handler_clean
+
+  return 0
+}
+# oracle__oracle_show_indexes_end
+
+# oracle__oracle_show_indexe
+_oracle_show_index () {
+
+  local index="$1"
+  local filter=""
+
+  filter="AND AI.INDEX_NAME = '${index}' "
+
+  commons_oracle_show_indexes "" "${filter}" || error_handled "Unexpected error on retrieve list of indexes."
+
+  if [ -n "${ORACLE_ANS}" ] ; then
+
+    local counter=0
+    local attr=1
+    local tname=""
+    local iname=""
+    local itype=""
+    local unique=""
+    local ctype=""
+    local cname=""
+    local cols=""
+    local compression=""
+    local tablespace=""
+    local logging=""
+    local blevel=""
+    local avg_data_blocks=""
+    local status=""
+    local nrows=""
+    local samplesize=""
+    local last_analyzed=""
+
+    local n_rows=$(echo -e "${ORACLE_ANS}" | wc -l)
+    local nrows_size=20
+    local tname_size=20
+    local iname_size=20
+    local cname_size=20
+    local tsname_size=16
+    local cols_size=20
+
+    out_vertical=1
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="htabs"
+    out_ttitle="INDEX $index"
+
+    out_headers[${counter}]="TABLE NAME" ; out_el_pre[${counter}]="\e[1;31m" ; let counter++
+    out_headers[${counter}]="INDEX NAME" ; out_el_pre[${counter}]="\e[1;32m" ; let counter++
+    out_headers[${counter}]="INDEX TYPE" ; out_el_pre[${counter}]="\e[1;34m" ; let counter++
+    out_headers[${counter}]="UNIQUE" ; out_el_pre[${counter}]="\e[1;35m" ; let counter++
+    out_headers[${counter}]="COMPRESSION" ; out_el_pre[${counter}]="\e[1;36m" ; let counter++
+    out_headers[${counter}]="TABLESPACE NAME" ; out_el_pre[${counter}]="\e[1;37m" ; let counter++
+    out_headers[${counter}]="CONSTRAINT TYPE" ; out_el_pre[${counter}]="\e[1;38m" ; let counter++
+    out_headers[${counter}]="STATUS" ; out_el_pre[${counter}]="\e[1;34m" ; let counter++
+    out_headers[${counter}]="COLUMNS" ; out_el_pre[${counter}]="\e[1;33m" ; let counter++
+    out_headers[${counter}]="LOGGING" ; out_el_pre[${counter}]="\e[1;31m" ; let counter++
+    out_headers[${counter}]="CONSTRAINT NAME" ; out_el_pre[${counter}]="\e[1;32m" ; let counter++
+    out_headers[${counter}]="BLEVEL" ; out_el_pre[${counter}]="\e[1;32m" ; let counter++
+    out_headers[${counter}]="AVG DATA BLOCKS PER KEY" ; out_el_pre[${counter}]="\e[1;33m" ; let counter++
+    out_headers[${counter}]="NUMBER ROWS" ; out_el_pre[${counter}]="\e[1;35m" ; let counter++
+    out_headers[${counter}]="SAMPLE SIZE" ; out_el_pre[${counter}]="\e[1;36m" ; let counter++
+    out_headers[${counter}]="LAST ANALYZED DATE" ; out_el_pre[${counter}]="\e[1;31m" ; let counter++
+
+    out_el_post[0]="\e[m"
+
+    row=$ORACLE_ANS
+
+    counter=1
+    attr=1
+
+    declare -a columns
+
+    tname=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+    columns[${attr}]="${tname}" ; let attr++
+
+    iname=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+    columns[${attr}]="${iname}" ; let attr++
+
+    itype=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+    columns[${attr}]="${itype}" ; let attr++
+
+    unique=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+    columns[${attr}]="${unique}" ; let attr++
+
+    compression=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+    columns[${attr}]="${compression}" ; let attr++
+
+    tablespace=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+    columns[${attr}]="${tablespace}" ; let attr++
+
+    ctype=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+    columns[${attr}]="${ctype}" ; let attr++
+
+    status=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+    columns[${attr}]="${status}" ; let attr++
+
+    cols=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+    columns[${attr}]="${cols}" ; let attr++
+
+    logging=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+    columns[${attr}]="${logging}" ; let attr++
+
+    cname=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+    columns[${attr}]="${cname}" ; let attr++
+
+    blevel=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+    columns[${attr}]="${blevel}" ; let attr++
+
+    avg_data_blocks=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+    columns[${attr}]="${avg_data_blocks}" ; let attr++
+
+    nrows=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+    columns[${attr}]="${nrows}" ; let attr++
+
+    samplesize=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+    columns[${attr}]="${samplesize}" ; let attr++
+
+    last_analyzed=$(echo $row | awk "{split(\$0,a,\"|\"); print a[${attr}]}")
+    columns[${attr}]="${last_analyzed}" ; let attr++
+
+    out_rows[0]="columns"
+    out_tabs[0]=40
+    out_htabs[0]=40
+
+    out_handler_print_arr
+
+  else
+    out_handler_print "No index ${index} found."
+  fi
+
+  out_handler_clean
+
+  return 0
+}
+# oracle__oracle_show_index_end
 
 # vim: syn=sh filetype=sh ts=2 sw=2
