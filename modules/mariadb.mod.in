@@ -1123,7 +1123,7 @@ _mariadb_download_help () {
   echo -en "[--function name]        Download a particular function.\n"
   echo -en "[--view name]            Download a particular view.\n"
   echo -en "[--foreign-key name]     Download a particular foreign key.\n"
-  echo -en "[--event name]        Download a particular event.\n"
+  echo -en "[--event name]           Download a particular event.\n"
   echo -en "[--index name]           Download a particular index (Require --index-table).\n"
   echo -en "                         Only one index a time.\n"
   echo -en "[--index-table tname]    Name of table of index to download. (To use with --index).\n"
