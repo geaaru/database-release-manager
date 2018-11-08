@@ -77,8 +77,6 @@ mongo_shell () {
 
   _mongo_check_status
 
-  _mongo_help_message="print_help"
-
   _mongo_connections_args "$@" || error_handled ""
 
   commons_mongo_check_vars || error_handled ""
@@ -872,6 +870,7 @@ _mongo_connections_args () {
           _mongo_connection_help
           return 0
         fi
+        _mongo_connection_help
         return 1
         ;;
       *|--)
@@ -970,7 +969,7 @@ _mongo_compile_args () {
         ;;
       --help|-h)
         if [ -n "$_mongo_help_message" ] ; then
-          _mongo_connection_help
+          _mongo_compile_help
           return 0
         fi
         return 1
