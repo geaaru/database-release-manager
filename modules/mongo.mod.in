@@ -968,8 +968,8 @@ _mongo_compile_args () {
         shift
         ;;
       --help|-h)
-        if [ -n "$_mongo_help_message" ] ; then
-          _mongo_compile_help
+        _mongo_compile_help
+        if [ -n "$_mongo_help_compile_message" ] ; then
           return 0
         fi
         return 1
