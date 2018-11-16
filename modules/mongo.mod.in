@@ -38,6 +38,7 @@ mongo_long_help () {
    echo -en "\tdownload                Download indexes/scripts.\n"
    echo -en "\tcreate                  Create indexes.\n"
    echo -en "\tdrop                    Drop indexes.\n"
+   echo -en "\timport                  Import file.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -60,6 +61,7 @@ mongo_show_help () {
    echo -en "\tdownload                Download indexes/scripts.\n"
    echo -en "\tcreate                  Create indexes.\n"
    echo -en "\tdrop                    Drop indexes.\n"
+   echo -en "\timport                  Import file.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
 
@@ -681,7 +683,7 @@ mongo_drop () {
       return 1
     fi
 
-    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mongo_create_args: Found $# params)\n"
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mongo_drop_args: Found $# params)\n"
 
     MONGO_DROP_INDEX=""
     MONGO_DROP_ALL_INDEXES=0
@@ -744,6 +746,102 @@ mongo_drop () {
   return 0
 }
 # mongo_mongo_drop_end
+
+mongo_import () {
+
+  # Shift first two input param
+  shift 2
+
+  _mongo_import_help () {
+
+    echo -en "[--file]                 Path of the file to import.\n"
+
+    echo -en "\n"
+    echo -en "NOTE: For additional import options use MONGOIMPORT_EXTRA_OPTIONS\n"
+    echo -en "      variable."
+    echo -en "\n"
+
+    return 0
+  }
+
+  _mongo_import_args () {
+
+    [[ $DEBUG && $DEBUG == true ]] && \
+      echo -en "(_mongo_import_args args: $@)\n"
+
+    local short_options="U:P:hH:D:t:S:"
+    local long_options="database: authdb: conn-options: help" # connection long options
+    long_options="$long_options file:"
+
+    set -- `getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@"` || \
+      error_handled "Invalid parameters"
+
+    if [ $# -lt 1 ] ; then # is there at least one param (--)
+      _mongo_import_help
+      return 1
+    fi
+
+    [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mongo_import_args: Found $# params)\n"
+
+    MONGO_IMPORT_FILE=""
+
+    while [ $# -gt 0 ] ; do
+      case "$1" in
+
+        -U|-P|-D|-H|--database|--authdb|--conn-options)
+          shift
+          # do nothing
+          ;;
+
+        --file)
+          [ -z "$2" ] && \
+            error_handled "Error: invalid value for param --file"
+
+          MONGO_IMPORT_FILE=$2
+          shift
+          ;;
+        -h|--help)
+          _mongo_import_help
+          return 1
+          ;;
+        --)
+          ;;
+        *)
+          error_generate "Invalid parameter $1."
+          ;;
+
+      esac
+
+      shift
+    done
+
+    return 0
+  }
+
+  _mongo_check_status
+
+  _mongo_help_message="print_help"
+
+  _mongo_connections_args "$@" || error_handled ""
+
+  _mongo_import_args "$@" || error_handled ""
+
+  commons_mongo_check_vars || error_handled ""
+
+  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
+
+  commons_mongo_check_connection || \
+    error_handled "mongo client was unable to connect to DB with supplied credentials."
+
+  mongo_set_import_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
+
+  commons_mongo_check_import || error_handled ""
+
+  commons_mongo_import_file "$MONGO_IMPORT_FILE" "File $MONGO_IMPORT_FILE" || \
+    error_handled "Error on import file $MONGO_IMPORT_FILE."
+
+  return 0
+}
 
 ##################################################################
 # Internal functions

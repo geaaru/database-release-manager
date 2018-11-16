@@ -5,6 +5,53 @@
 # License: GPL 2.0
 #------------------------------------------------
 
+# commons_mongo_commons_mongo_check_import
+commons_mongo_check_import () {
+  if [ -z "$mongoimport" ] ; then
+
+    # POST: mongo variable not set
+    tmp=`which mongoimport 2> /dev/null`
+    var=$?
+
+    if [ $var -eq 0 ] ; then
+
+      [[ $DEBUG && $DEBUG == true ]] && echo -en "Use mongoimport: $tmp\n"
+      MONGO_IMPORT=$tmp
+      unset tmp
+
+    else
+
+      error_generate "mongoimport program not found"
+      return 1
+
+    fi
+
+  else
+
+    # POST: mongoimport variable already set
+
+    # Check if file is correct
+    if [ -f "$mongoimport" ] ; then
+
+      [[ $DEBUG && $DEBUG == true ]] && echo -en "Use mongoimport: $mongoimport\n"
+
+      MONGO_IMPORT=$psq
+
+    else
+
+      error_generate "$mongoimport program invalid."
+      return 1
+
+    fi
+
+  fi
+
+  export MONGO_IMPORT
+
+  return 0
+}
+# commons_mongo_commons_mongo_check_import_end
+
 # commons_mongo_commons_mongo_check_client
 commons_mongo_check_client () {
 
@@ -793,5 +840,36 @@ commons_mongo_compile_all_idxs () {
   return 0
 }
 # commons_mongo_commons_mongo_compile_all_idxs_end
+
+# commons_mongo_commons_mongo_import_file
+commons_mongo_import_file () {
+
+  local f=$1
+  local msg=$2
+  local f_base=$(basename "$f")
+
+  if [ ! -e $f ] ; then
+    _logfile_write "(mongo) File $f not found." || return 1
+    return 1
+  fi
+
+  _logfile_write "(mongo) Start import (file $f_base): $msg" || return 1
+
+  echo "(mongo) Start import (file $f_base): $msg"
+
+  MONGO_OUTPUT=""
+
+  mongo_import_file "MONGO_OUTPUT" "$f"
+  local ans=$?
+
+  _logfile_write "\n$MONGO_OUTPUT" || return 1
+
+  _logfile_write "(mongo) End import (file $f_base, result => $ans): $msg" || return 1
+
+  echo -en "(mongo) End import (file $f_base, result => $ans): $msg\n"
+
+  return $ans
+}
+# commons_mongo_commons_mongo_import_file_end
 
 # vim: syn=sh filetype=sh

@@ -30,6 +30,30 @@ mongo_set_auth_var () {
 }
 # mongo_mongo_set_auth_var_end
 
+# mongo_mongo_set_import_auth_var
+mongo_set_import_auth_var () {
+  local db=$1
+  local user=$2
+  local pwd=$3
+  local host=$4
+  local auth_db=$5
+
+  # TODO: check if use --host and --port instead of host:port/db
+
+
+  if [ -n "${auth_db}" ] ; then
+    mongoimport_auth="${mongoimport_auth} --authenticationDatabase ${auth_db}"
+  fi
+
+  # TODO: Check of pass username and password with single quote
+  mongoimport_auth="--host ${host} --db ${db} --username=$user --password=${pwd} ${mongoimport_auth}"
+
+  [[ $DEBUG && $DEBUG == true ]] && echo "Use ${mongoimport_auth}"
+
+  return 0
+}
+# mongo_mongo_set_import_auth_var_end
+
 # mongo_mongo_file
 mongo_file () {
 
@@ -60,6 +84,35 @@ mongo_file () {
   return $result
 }
 # mongo_mongo_file_end
+
+# mongo_mongo_import
+mongo_import_file () {
+
+  local var=$1
+  local f=$2
+  local result=""
+
+  if [ -z "$MONGO_IMPORT" ] ; then
+    return 1
+  fi
+
+  if [ -z "$mongoimport_auth" ] ; then
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(mongoimport_file) Try import file $f: $MONGO_IMPORT $MONGOIMPORT_EXTRA_OPTIONS $mongoimport_auth --file $f.\n"
+
+  v=$(eval $MONGO_IMPORT $MONGOIMPORT_EXTRA_OPTIONS $mongoimport_auth --file $f 2>&1)
+  result=$?
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(mongoimport_file) Import $f => $v ($result).\n"
+
+  eval "$var=\$v"
+
+  return $result
+}
 
 # mongo_mongo_file_initrc
 mongo_file_initrc () {
