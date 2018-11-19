@@ -1,7 +1,8 @@
 language: bash
 sudo: true
+dist: xenial
 python:
-  - "3.5"
+  - "3.6"
 before_install:
   - sudo apt-get install autotools-dev
   - sudo apt-get install autogen
@@ -17,7 +18,15 @@ before_install:
 #
 # TODO: use docker sabayon distro for execute test ASAP.
 
-script: libtoolize --force && aclocal && autoconf && automake --force-missing --add-missing && ./configure && make && make docs && sudo make install
+script:
+  - libtoolize --force
+  - aclocal
+  - autoconf
+  - automake --force-missing --add-missing
+  - ./configure
+  - make
+  - make docs
+  - sudo make install
 after_success:
   - dbrm dbm version
 
