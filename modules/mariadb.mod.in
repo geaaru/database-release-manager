@@ -209,30 +209,37 @@ mariadb_show () {
     _mariadb_show_f_p "procedures"
 
     out_handler_print "\n"
+    out_handler_clean
 
     _mariadb_show_f_p "functions"
 
     out_handler_print "\n"
+    out_handler_clean
 
     _mariadb_show_triggers
 
     out_handler_print "\n"
+    out_handler_clean
 
     _mariadb_show_views
 
     out_handler_print "\n"
+    out_handler_clean
 
     _mariadb_show_tables
 
     out_handler_print "\n"
+    out_handler_clean
 
     _mariadb_show_foreign_keys
 
     out_handler_print "\n"
+    out_handler_clean
 
     _mariadb_show_indexes
 
     out_handler_print "\n"
+    out_handler_clean
 
   else
 
@@ -243,6 +250,8 @@ mariadb_show () {
 
       out_handler_print "\n"
 
+      out_handler_clean
+
     fi
 
     # Show routines
@@ -251,6 +260,8 @@ mariadb_show () {
       _mariadb_show_f_p "functions"
 
       out_handler_print "\n"
+
+      out_handler_clean
 
     fi
 
@@ -261,6 +272,8 @@ mariadb_show () {
 
       out_handler_print "\n"
 
+      out_handler_clean
+
     fi
 
     # Show views
@@ -269,6 +282,8 @@ mariadb_show () {
       _mariadb_show_views
 
       out_handler_print "\n"
+
+      out_handler_clean
 
     fi
 
@@ -279,6 +294,8 @@ mariadb_show () {
 
       out_handler_print "\n"
 
+      out_handler_clean
+
     fi
 
     # Show foreign keys
@@ -287,6 +304,8 @@ mariadb_show () {
       _mariadb_show_foreign_keys
 
       out_handler_print "\n"
+
+      out_handler_clean
 
     fi
 
@@ -297,6 +316,8 @@ mariadb_show () {
 
       out_handler_print "\n"
 
+      out_handler_clean
+
     fi
 
     # Show events/scheduler
@@ -306,6 +327,8 @@ mariadb_show () {
 
       out_handler_print "\n"
 
+      out_handler_clean
+
     fi
 
     # Show variables
@@ -314,6 +337,8 @@ mariadb_show () {
       _mariadb_show_global_vars "${MARIADB_SHOW_VARFILTER}"
 
       out_handler_print "\n"
+
+      out_handler_clean
 
     fi
 
@@ -328,6 +353,8 @@ mariadb_show () {
 
       out_handler_print "\n"
 
+      out_handler_clean
+
     done
 
   fi
@@ -340,6 +367,8 @@ mariadb_show () {
       _mariadb_show_fkey ${MARIADB_SHOW_FKEYS[$i]}
 
       out_handler_print "\n"
+
+      out_handler_clean
 
     done
 
@@ -354,6 +383,8 @@ mariadb_show () {
       _mariadb_show_event ${MARIADB_SHOW_EVENTS[$i]}
 
       out_handler_print "\n"
+
+      out_handler_clean
 
     done
 
@@ -2560,6 +2591,7 @@ _mariadb_show_views () {
 # SOURCE
 _mariadb_show_table () {
 
+  local i=0
   local counter=1
   local tname="$1"
   local is_present=1
@@ -2686,6 +2718,7 @@ _mariadb_show_table () {
 # SOURCE
 _mariadb_show_tables () {
 
+  local i=0
   local counter=1
   local n_rec=0
   local name=""
@@ -2770,6 +2803,17 @@ _mariadb_show_tables () {
 
     out_handler_print_arr
 
+    # Clean row${counter}
+    for ((i=0;i<$counter;i++)) ; do
+      eval "unset row${i}[0]"
+      eval "unset row${i}[1]"
+      eval "unset row${i}[2]"
+      eval "unset row${i}[3]"
+      eval "unset row${i}[4]"
+      eval "unset row${i}[5]"
+      eval "unset row${i}[6]"
+      eval "unset row${i}"
+    done
   fi
 
   out_handler_clean
@@ -2986,6 +3030,7 @@ _mariadb_show_fkey () {
 # SOURCE
 _mariadb_show_f_p () {
 
+  local i=0
   local n_rec=0
   local target="$1"
   local target_column=""
@@ -2996,6 +3041,7 @@ _mariadb_show_f_p () {
   local last_update=""
   local target_size=23
   local definer_size=20
+  declare -A out_rows
 
   commons_mariadb_count_${target}
   n_rec=$?
@@ -3069,6 +3115,15 @@ _mariadb_show_f_p () {
     out_tabs[3]=23
 
     out_handler_print_arr
+
+    # Clean row${counter}
+    for ((i=0;i<$counter;i++)) ; do
+      eval "unset row${i}[0]"
+      eval "unset row${i}[1]"
+      eval "unset row${i}[2]"
+      eval "unset row${i}[3]"
+      eval "unset row${i}"
+    done
 
   fi
 
