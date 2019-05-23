@@ -43,6 +43,7 @@ DRM_DB=$LOCAL_DIR/dbrm.db
 # MARIADB_DIR="/dir_mariadb_files
 # MARIADB_TMZ="UTC" Timezone used on session. Default is UTC.
 # MARIADB_COMPILE_FILES_EXCLUDED=""
+# MARIADB_INIT_CMDS="SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'"
 #
 # Add -v to see executed statement on log.
 # MARIADB_EXTRA_OPTIONS=""

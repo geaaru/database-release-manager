@@ -51,6 +51,10 @@ mysql_file () {
   if [[ ! -z "$MARIADB_IGNORE_TMZ" && $MARIADB_IGNORE_TMZ -eq 1 ]] ; then
     tz=""
   fi
+  local init_hook=""
+  if [ -n "${MARIADB_INIT_CMDS}" ] ; then
+    init_hook="${MARIADB_INIT_CMDS}"
+  fi
   local sql="$(cat $f | sed -e 's:`DB_NAME`:`'$MARIADB_DB'`:g' )"
 
   if [ -n "$MARIADB_SHOW_COLUMNS" ] ; then
@@ -65,7 +69,7 @@ mysql_file () {
     echo -en "Execute $MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth for sql command:\n$sql\n"
 
   v=$($MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth 2>&1 <<EOF
-$tz
+${tz}${init_hook}
 $sql;
 EOF
 )
@@ -98,7 +102,10 @@ mysql_source_file () {
   if [[ ! -z "$MARIADB_IGNORE_TMZ" && $MARIADB_IGNORE_TMZ -eq 1 ]] ; then
     tz=""
   fi
-
+  local init_hook=""
+  if [ -n "${MARIADB_INIT_CMDS}" ] ; then
+    init_hook="${MARIADB_INIT_CMDS}"
+  fi
   if [ -n "$MARIADB_SHOW_COLUMNS" ] ; then
     opts=""
   fi
@@ -111,7 +118,7 @@ mysql_source_file () {
     echo -en "Execute $MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth for sql command:\n$sql\n"
 
   v=$($MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth 2>&1 <<EOF
-$tz
+${tz}${init_hook}
 source $f;
 EOF
 )
@@ -146,7 +153,10 @@ mysql_cmd_4var () {
   if [[ ! -z "$MARIADB_IGNORE_TMZ" && $MARIADB_IGNORE_TMZ -eq 1 ]] ; then
     tz=""
   fi
-
+  local init_hook=""
+  if [ -n "${MARIADB_INIT_CMDS}" ] ; then
+    init_hook="${MARIADB_INIT_CMDS}"
+  fi
   if [ -n "$MARIADB_SHOW_COLUMNS" ] ; then
     opts=""
   fi
@@ -158,7 +168,7 @@ mysql_cmd_4var () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "Connection options: $MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth\n"
 
   v=$($MARIADB_CLIENT -A $opts $MARIADB_EXTRA_OPTIONS $mysql_auth 2>&1 <<EOF
-$tz
+${tz}${init_hook}
 $cmd;
 EOF
 )
