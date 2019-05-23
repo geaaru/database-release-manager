@@ -876,7 +876,7 @@ _oracle_compile_args () {
         fi
         shift
         ;;
-      -h)
+      -h|--help)
         _oracle_compile_help
         return 1
         ;;
