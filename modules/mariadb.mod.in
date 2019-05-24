@@ -1879,6 +1879,8 @@ _mariadb_compile () {
     commons_mariadb_compile_all_fkeys "" $MARIADB_COMPILE_FORCE || \
       error_handled "Error on compile all foreign keys."
     commons_mariadb_compile_all_events "" || error_handled "Error on compile all events."
+    commons_mariadb_compile_all_idxs "" $MARIADB_COMPILE_FORCE || \
+      error_handled "Error on compile all indexes."
 
   else
 
