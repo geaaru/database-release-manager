@@ -137,6 +137,12 @@ _logfile_write () {
   echo -en "$d - $msg\n" >> $LOGFILE || return 1
   echo -en "------------------------------------------------------\n" >> $LOGFILE || return 1
 
+  if [ -n "$DBRM_VERBOSE" ] ; then
+    echo -en "------------------------------------------------------\n"
+    echo -en "$d - $msg\n"
+    echo -en "------------------------------------------------------\n"
+  fi
+
   return 0
 
 }
