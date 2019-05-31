@@ -1287,7 +1287,7 @@ _ssl_start_tun () {
   [ -z "$reverse_flag" ] && error_generate "(_ssl_start_tun): Invalid reverse flag."
 
   local def_opts=" \
-    -N
+    -N \
     -o ServerAliveInterval=30 \
     -o ServerAliveCountMax=4 \
     -o ExitOnForwardFailure=yes \
@@ -1301,6 +1301,10 @@ _ssl_start_tun () {
 
   if [ $DBRM_SSL_TUN_DEF_OPTS -eq 0 ] ; then
     def_opts=""
+  fi
+
+  if [ "${DBRM_SSL_EXTRA_OPTS}" != "" ] ; then
+    def_opts="$def_opts ${DBRM_SSL_EXTRA_OPTS}"
   fi
 
   if [ "$reverse_flag" -eq 1 ] ; then
