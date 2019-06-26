@@ -297,7 +297,7 @@ oracle_show () {
 
   commons_oracle_check_vars
 
-  sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD"
+  sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD" "$ORACLE_ROLE"
 
   commons_oracle_check_connection || error_handled "SQLPlus was unable to connect the DB with the supplied credentials"
 
@@ -341,7 +341,7 @@ oracle_test_connection () {
 
   commons_oracle_check_vars
 
-  sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD"
+  sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD" "$ORACLE_ROLE"
 
   commons_oracle_check_connection || error_handled "SQLPlus was unable to connect the DB with the supplied credentials"
 
@@ -375,7 +375,7 @@ oracle_compile () {
 
   commons_oracle_check_vars
 
-  sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD"
+  sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD" "$ORACLE_ROLE"
 
   commons_oracle_check_connection || error_handled "SQLPlus was unable to connect the DB with the supplied credentials"
 
@@ -411,7 +411,7 @@ oracle_download () {
 
   commons_oracle_check_vars
 
-  sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD"
+  sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD" "$ORACLE_ROLE"
 
   commons_oracle_check_connection || error_handled "SQLPlus was unable to connect the DB with the supplied credentials"
 
@@ -441,7 +441,7 @@ oracle_shell () {
 
   commons_oracle_check_vars
 
-  sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD"
+  sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD" "$ORACLE_ROLE"
 
   commons_oracle_check_connection || error_handled "SQLPlus was unable to connect the DB with the supplied credentials"
 
@@ -471,7 +471,7 @@ oracle_query () {
 
   commons_oracle_check_vars
 
-  sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD"
+  sqlplus_set_sqlplus_auth_var "$ORACLE_SID" "$ORACLE_USER" "$ORACLE_PWD" "$ORACLE_ROLE"
 
   commons_oracle_check_connection || error_handled "SQLPlus was unable to connect the DB with the supplied credentials"
 
@@ -563,7 +563,7 @@ _oracle_connections_args () {
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_connections_args args: $@)\n"
 
-  local short_options="S:U:P:hD:t:"
+  local short_options="S:U:P:hD:t:r:"
   local long_options="help"
 
   $(set -- $(getopt -u -q -o "$short_options" -- "$@")) || error_handled "Invalid parameters"
@@ -578,11 +578,13 @@ _oracle_connections_args () {
       -U) ORACLE_USER="$2";shift;;
       -D) ORACLE_DIR="$2";shift;;
       -t) TNS_ADMIN="$2";shift;;
+      -r) ORACLE_ROLE="$2";shift;;
       -h|--help)
         if [ -n "$_oracle_help_message" ] ; then
           echo -en "[-S oracle_sid]         Override Oracle SID (or set ORACLE_SID on configuration file).\n"
           echo -en "[-P oracle_pwd]         Override Oracle Password (or set ORACLE_PWD on configuration file).\n"
           echo -en "[-U oracle_user]        Override Oracle schema/user (or set ORACLE_USER on configuration file).\n"
+          echo -en "[-r oracle_role]        Override Oracle role (or set ORACLE_ROLE on configuration file).\n"
           echo -en "[-t tnsadmin_path]      Override TNS_ADMIN variable with path of the file tnsnames.ora.\n"
           echo -en "[-D oracle_dir]         Directory where save/retrieve packages/views/functions, etc..\n"
           echo -en "                        (or set ORACLE_DIR on configuration file). \n"

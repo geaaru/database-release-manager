@@ -11,8 +11,13 @@ sqlplus_set_sqlplus_auth_var () {
   local db=$1
   local user=$2
   local pwd=$3
+  local role=$4
 
-  export sqlplus_auth="$user/$pwd@$db"
+  if [ -n "$role" ] ; then
+    export sqlplus_auth="$user/$pwd@$db as $role"
+  else
+    export sqlplus_auth="$user/$pwd@$db"
+  fi
 
   [[ $DEBUG && $DEBUG == true ]] && echo "Use $sqlplus_auth"
 

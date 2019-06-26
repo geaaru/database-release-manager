@@ -29,6 +29,7 @@ DRM_DB=$LOCAL_DIR/dbrm.db
 # ORACLE_USER="user"
 # ORACLE_PWD="pwd"
 # ORACLE_SID="sid"
+# ORACLE_ROLE="sysdba"
 # ORACLE_DIR=/dir_oracle_files
 # ORACLE_COMPILE_FILES_EXCLUDED="pkTest.sql" For exclude particular files on compilation.
 
