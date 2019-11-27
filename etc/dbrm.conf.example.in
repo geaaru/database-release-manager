@@ -77,6 +77,7 @@ DRM_DB=$LOCAL_DIR/dbrm.db
 # MONGO_HOST="host"
 # MONGO_DIR="/dir_mariadb_files
 # MONGO_EXTRA_OPTIONS=""
+# MONGO_URI="mongodb://mongod1:27017,mongod2:27017,mongod3:27017/database?replicaSet=rs0"
 
 # Path of SQLITE3 database
 #SQLITEDB=@SQLITEDB@

@@ -83,7 +83,7 @@ mongo_shell () {
 
   commons_mongo_check_vars || error_handled ""
 
-  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
+  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}" "${MONGO_URI}"
 
   commons_mongo_check_connection || \
     error_handled "mongo client was unable to connect to DB with supplied credentials."
@@ -110,7 +110,7 @@ mongo_test_connection () {
 
   commons_mongo_check_vars || error_handled ""
 
-  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
+  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}" "${MONGO_URI}"
 
   commons_mongo_check_connection || \
     error_handled "mongo client was unable to connect to DB with supplied credentials."
@@ -139,7 +139,7 @@ mongo_compile () {
 
   commons_mongo_check_vars || error_handled ""
 
-  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
+  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}" "${MONGO_URI}"
 
   commons_mongo_check_connection || \
     error_handled "mongo client was unable to connect to DB with supplied credentials."
@@ -205,7 +205,7 @@ mongo_show () {
     while [ $# -gt 0 ] ; do
       case "$1" in
 
-        -U|-P|-D|-H|--database|--authdb|--conn-options)
+        -U|-P|-D|-H|--database|--authdb|--conn-options|--uri)
           shift
           # do nothing
           ;;
@@ -263,7 +263,7 @@ mongo_show () {
 
   commons_mongo_check_vars || error_handled ""
 
-  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
+  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}" "${MONGO_URI}"
 
   commons_mongo_check_connection || \
     error_handled "Mongo client was unable to connecto to DB with supplied credentials."
@@ -324,7 +324,7 @@ mongo_download () {
     while [ $# -gt 0 ] ; do
       case "$1" in
 
-        -U|-P|-D|-H|--database|--authdb|--conn-options)
+        -U|-P|-D|-H|--database|--authdb|--conn-options|--uri)
           shift
           # do nothing
           ;;
@@ -375,7 +375,7 @@ mongo_download () {
 
   commons_mongo_check_vars || error_handled ""
 
-  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
+  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}" "${MONGO_URI}"
 
   if [ $MONGO_DOWNLOAD_ALL_INDEXES -eq 1 ] ; then
 
@@ -471,7 +471,7 @@ mongo_create () {
     while [ $# -gt 0 ] ; do
       case "$1" in
 
-        -U|-P|-D|-H|--database|--authdb|--conn-options)
+        -U|-P|-D|-H|--database|--authdb|--conn-options|--uri)
           shift
           # do nothing
           ;;
@@ -544,8 +544,7 @@ mongo_create () {
 
   commons_mongo_check_vars || error_handled ""
 
-  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
-
+  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}" "${MONGO_URI}"
 
   if [ -n "${MONGO_CREATE_INDEX}" ] ; then
 
@@ -691,7 +690,7 @@ mongo_drop () {
     while [ $# -gt 0 ] ; do
       case "$1" in
 
-        -U|-P|-D|-H|--database|--authdb|--conn-options)
+        -U|-P|-D|-H|--database|--authdb|--conn-options|--uri)
           shift
           # do nothing
           ;;
@@ -736,7 +735,7 @@ mongo_drop () {
 
   commons_mongo_check_vars || error_handled ""
 
-  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
+  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}" "${MONGO_URI}"
 
   commons_mongo_check_connection || \
     error_handled "mongo client was unable to connect to DB with supplied credentials."
@@ -788,7 +787,7 @@ mongo_import () {
     while [ $# -gt 0 ] ; do
       case "$1" in
 
-        -U|-P|-D|-H|--database|--authdb|--conn-options)
+        -U|-P|-D|-H|--database|--authdb|--conn-options|--uri)
           shift
           # do nothing
           ;;
@@ -828,12 +827,12 @@ mongo_import () {
 
   commons_mongo_check_vars || error_handled ""
 
-  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
+  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}" "${MONGO_URI}"
 
   commons_mongo_check_connection || \
     error_handled "mongo client was unable to connect to DB with supplied credentials."
 
-  mongo_set_import_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}"
+  mongo_set_import_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}" "${MONGO_URI}"
 
   commons_mongo_check_import || error_handled ""
 
@@ -924,13 +923,15 @@ _mongo_check_status () {
 #                         Permit to configure extra connection parameters. This option could be used
 #                         more of one time.
 #   * -h                  Show help message
+#   * --uri               Override Mongo URI as alternative of host. If not present it is used
+#                         MONGO_URI variable from configuration file.
 # SOURCE
 _mongo_connections_args () {
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mongo_connections_args args: $@)\n"
 
   local short_options="U:P:hH:D:t:S:"
-  local long_options="database: authdb: conn-options:  help"
+  local long_options="database: authdb: conn-options: uri: help"
 
   $(set -- $(getopt -u -q -o "$short_options" -l "$long_options" -- "$@")) || \
     error_handled "Invalid parameters"
@@ -946,6 +947,10 @@ _mongo_connections_args () {
       -P) MONGO_PWD="$2";shift;;
       -D) MONGO_DIR="$2";shift;;
       -H) MONGO_HOST="$2";shift;;
+      --uri)
+        MONGO_URI="$2"
+        shift
+        ;;
       --database)
         MONGO_DB="$2"
         shift
@@ -999,6 +1004,7 @@ _mongo_connection_help () {
 [--database db]          Override MONGO_DB variable for database name.
 [--conn-options opts]    Override MONGO_EXTRA_OPTIONS variable for enable extra connection options.
 [--authdb db]            Override MONGO_AUTHDB variable for set authentication database.
+[--uri URI]              Override MONGO_URI variable for set connection URI.
 "
 
   return 0
@@ -1045,7 +1051,7 @@ _mongo_compile_args () {
   while [ $# -gt 0 ] ; do
     case "$1" in
 
-      -U|-P|-D|-H|--database|--authdb)
+      -U|-P|-D|-H|--database|--authdb|--uri)
         # do nothing
         shift
         ;;

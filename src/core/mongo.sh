@@ -13,6 +13,7 @@ mongo_set_auth_var () {
   local pwd=$3
   local host=$4
   local auth_db=$5
+  local uri=$6
 
   # TODO: check if use --host and --port instead of host:port/db
 
@@ -22,7 +23,16 @@ mongo_set_auth_var () {
   fi
 
   # TODO: Check of pass username and password with single quote
-  mongo_auth="${host}/${db} --username=$user --password=${pwd} ${mongo_auth}"
+  if [ -n "${host}" ] ; then
+    mongo_auth="${host}/${db} --username=$user --password=${pwd} ${mongo_auth}"
+  else
+    if [ -n "${uri}" ] ; then
+      mongo_auth="${uri} --username=$user --password=${pwd} ${mongo_auth}"
+    else
+      echo "Missing configuration options"
+      return 1
+    fi
+  fi
 
   [[ $DEBUG && $DEBUG == true ]] && echo "Use ${mongo_auth}"
 
@@ -37,6 +47,7 @@ mongo_set_import_auth_var () {
   local pwd=$3
   local host=$4
   local auth_db=$5
+  local uri=$6
 
   # TODO: check if use --host and --port instead of host:port/db
 
@@ -46,7 +57,16 @@ mongo_set_import_auth_var () {
   fi
 
   # TODO: Check of pass username and password with single quote
-  mongoimport_auth="--host ${host} --db ${db} --username=$user --password=${pwd} ${mongoimport_auth}"
+  if [ -n "${host}" ] ; then
+    mongoimport_auth="--host ${host} --db ${db} --username=$user --password=${pwd} ${mongoimport_auth}"
+  else
+    if [ -n "${uri}" ] ; then
+      mongoimport_auth="${uri} --db ${db} --username=$user --password=${pwd} ${mongoimport_auth}"
+    else
+      echo "Missing configuration options"
+      return 1
+    fi
+  fi
 
   [[ $DEBUG && $DEBUG == true ]] && echo "Use ${mongoimport_auth}"
 
