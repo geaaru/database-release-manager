@@ -650,12 +650,14 @@ _oracle_download_args () {
   ORACLE_DOWNLOAD_ALL_VIEWS=0
   ORACLE_DOWNLOAD_ALL_JOBS=0
   ORACLE_DOWNLOAD_ALL_SCHEDULES=0
+  ORACLE_DOWNLOAD_ALL_TESTS=0
   ORACLE_DOWNLOAD_PACKAGE=""
   ORACLE_DOWNLOAD_TRIGGER=""
   ORACLE_DOWNLOAD_FUNCTION=""
   ORACLE_DOWNLOAD_VIEW=""
   ORACLE_DOWNLOAD_JOB=""
   ORACLE_DOWNLOAD_SCHEDULE=""
+  ORACLE_DOWNLOAD_TEST=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -683,6 +685,9 @@ _oracle_download_args () {
       --all-schedules)
         ORACLE_DOWNLOAD_ALL_SCHEDULES=1
         ;;
+      --all-tests)
+        ORACLE_DOWNLOAD_ALL_TESTS=1
+        ;;
       --all)
         ORACLE_DOWNLOAD_ALL=1
         ;;
@@ -708,6 +713,10 @@ _oracle_download_args () {
         ;;
       --schedule)
         ORACLE_DOWNLOAD_SCHEDULE="$2"
+        shift
+        ;;
+      --test)
+        ORACLE_DOWNLOAD_TEST="$2"
         shift
         ;;
 
@@ -742,6 +751,7 @@ _oracle_download_help () {
   echo -en "[--all-views]           Download all views.\n"
   echo -en "[--all-jobs]            Download all jobs.\n"
   echo -en "[--all-schedules]       Download all schedules.\n"
+  echo -en "[--all-tests]           Download all tests.\n"
   echo -en "[--all]                 Download all.\n"
   echo -en "[--package name]        Download a particular package.\n"
   echo -en "[--trigger name]        Download a particular trigger.\n"
@@ -749,6 +759,7 @@ _oracle_download_help () {
   echo -en "[--view name]           Download a particular view.\n"
   echo -en "[--job name]            Download a particular job.\n"
   echo -en "[--schedule name]       Download a particular schedule.\n"
+  echo -en "[--test name]           Download a particular test.\n"
 
   return 0
 }
@@ -764,11 +775,17 @@ _oracle_download_help () {
 #   * --file [f]          Compile file f.
 #   * --all-functions     Compile all functions.
 #   * --all-views         Compile all views.
+#   * --all-jobs          Compile all jobs.
+#   * --all-schedules     Compile all schedules.
+#   * --all-tests         Compile all tests.
 #   * --all               Compile all packages, triggers, view, functions.
 #   * --package [p]       Compile package p.
 #   * --trigger [t]       Compile trigger t.
 #   * --function [f]      Compile function f.
 #   * --view [v]          Compile view v.
+#   * --job [j]           Compile job j.
+#   * --schedule [s]      Compile schedule s.
+#   * --test [u]          Compile test u.
 #   * -h                  Show help message.
 # SEE ALSO
 #   _oracle_connections_args
@@ -778,7 +795,7 @@ _oracle_compile_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_compile_args args: $@)\n"
 
   local short_options="S:U:P:hD:t:"
-  local long_options="all-packages all-triggers id-script: file: all-functions all-views all package: trigger: function: view:"
+  local long_options="all-packages all-triggers id-script: file: all-functions all-views all-jobs all-schedules all-tests all package: trigger: function: view: job: schedule: test:"
 
   $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
 
@@ -798,12 +815,14 @@ _oracle_compile_args () {
   ORACLE_COMPILE_ALL_VIEWS=0
   ORACLE_COMPILE_ALL_JOBS=0
   ORACLE_COMPILE_ALL_SCHEDULES=0
+  ORACLE_COMPILE_ALL_TESTS=0
   ORACLE_COMPILE_PACKAGE=""
   ORACLE_COMPILE_TRIGGER=""
   ORACLE_COMPILE_FUNCTION=""
   ORACLE_COMPILE_VIEW=""
   ORACLE_COMPILE_JOB=""
   ORACLE_COMPILE_SCHEDULE=""
+  ORACLE_COMPILE_TEST=""
   ORACLE_COMPILE_ID_SCRIPT=""
   ORACLE_COMPILE_FILE=""
   local ORACLE_COMPILE_EXC_RCVD=0
@@ -834,6 +853,9 @@ _oracle_compile_args () {
       --all-schedules)
         ORACLE_COMPILE_ALL_SCHEDULES=1
         ;;
+      --all-tests)
+        ORACLE_COMPILE_ALL_TESTS=1
+        ;;
       --all)
         ORACLE_COMPILE_ALL=1
         ;;
@@ -859,6 +881,10 @@ _oracle_compile_args () {
         ;;
       --schedule)
         ORACLE_COMPILE_SCHEDULE="$2"
+        shift
+        ;;
+      --test)
+        ORACLE_COMPILE_TEST="$2"
         shift
         ;;
       --id-script)
@@ -909,14 +935,16 @@ _oracle_compile_help () {
   echo -en "[--all-views]           Compile all views present on ORACLE_DIR subdirectories.\n"
   echo -en "[--all-jobs]            Compile all jobs present on ORACLE_DIR subdirectories.\n"
   echo -en "[--all-schedules]       Compile all schedules present on ORACLE_DIR subdirectories.\n"
+  echo -en "[--all-tests]           Compile all tests present on ORACLE_DIR subdirectories.\n"
   echo -en "[--all]                 Compile all packages, triggers, functions, views, jobs and schedules present under\n"
   echo -en "                        ORACLE_DIR subdirectories.\n"
   echo -en "[--package name]        Compile a particular package under ORACLE_DIR/packages directory.\n"
   echo -en "[--trigger name]        Compile a particular trigger under ORACLE_DIR/triggers directory.\n"
   echo -en "[--function name]       Compile a particular function under ORACLE_DIR/functions directory.\n"
   echo -en "[--view name]           Compile a particular view under ORACLE_DIR/views directory.\n"
-  echo -en "[--job name]            Compile a particular job under ORACLE_DIR/views directory.\n"
-  echo -en "[--schedule name]       Compile a particular schedule under ORACLE_DIR/views directory.\n"
+  echo -en "[--job name]            Compile a particular job under ORACLE_DIR/jobs directory.\n"
+  echo -en "[--schedule name]       Compile a particular schedule under ORACLE_DIR/schedules directory.\n"
+  echo -en "[--test name]           Compile a particular test under ORACLE_DIR/tests directory.\n"
   echo -en "[--exclude filename]    Exclude a particular file from compilation.\n"
   echo -en "                        (This option can be repeat and override ORACLE_COMPILE_FILES_EXCLUDED\n"
   echo -en "                         configuration variable).\n"
@@ -938,6 +966,9 @@ _oracle_compile_help () {
 #   commons_oracle_compile_all_triggers
 #   commons_oracle_compile_all_views
 #   commons_oracle_compile_all_functions
+#   commons_oracle_compile_all_jobs
+#   commons_oracle_compile_all_schedules
+#   commons_oracle_compile_all_tests
 # SOURCE
 _oracle_compile () {
 
@@ -970,7 +1001,13 @@ _oracle_compile () {
 
     commons_oracle_compile_all_functions "" || error_handled "Error on compile all functions."
 
-    commons_oracle_compile_all_views "" || error_handled "Error on compile all functions."
+    commons_oracle_compile_all_views "" || error_handled "Error on compile all views."
+
+    commons_oracle_compile_all_jobs "" || error_handled "Error on compile all jobs."
+    
+    commons_oracle_compile_all_schedules "" || error_handled "Error on compile all schedules."
+
+    commons_oracle_compile_all_tests"" || error_handled "Error on compile all tests."
 
   else
 
@@ -1082,6 +1119,24 @@ _oracle_compile () {
 
     fi
 
+    # Check for all-schedules of single test
+
+    if [ $ORACLE_COMPILE_ALL_TESTS -eq 1 ] ; then
+
+      commons_oracle_compile_all_tests "" || error_handled "Error on compile all tests."
+
+    else
+
+      if [ ! -z "$ORACLE_COMPILE_TESTS" ] ; then
+
+        f="${ORACLE_COMPILE_TESTS/.sql/}"
+        f=$(basename $f)
+        commons_oracle_compile_file "$ORACLE_DIR/tests/$f.sql" "" || error_handled "Error on compile file $f.sql"
+
+      fi
+
+    fi
+
 
   fi # end else ORACLE_COMPILE_ALL
 
@@ -1097,10 +1152,16 @@ _oracle_compile () {
 #   commons_oracle_download_all_triggers
 #   commons_oracle_download_all_functions
 #   commons_oracle_download_all_views
+#   commons_oracle_download_all_jobs
+#   commons_oracle_download_all_schedules
+#   commons_oracle_download_all_tests
 #   commons_oracle_download_package
 #   commons_oracle_download_trigger
 #   commons_oracle_download_function
 #   commons_oracle_download_view
+#   commons_oracle_download_job
+#   commons_oracle_download_schedule
+#   commons_oracle_download_test
 # SOURCE
 _oracle_download () {
 
@@ -1117,6 +1178,8 @@ _oracle_download () {
     commons_oracle_download_all_jobs || error_handled "Error on download all jobs."
 
     commons_oracle_download_all_schedules || error_handled "Error on download all schedules."
+
+    commons_oracle_download_all_tests || error_handled "Error on download all tests."
 
   else
 
@@ -1204,13 +1267,29 @@ _oracle_download () {
 
     if [ $ORACLE_DOWNLOAD_ALL_SCHEDULES -eq 1 ] ; then
 
-      commons_oracle_download_all_schedules || error_handled "Error on download all jobs."
+      commons_oracle_download_all_schedules || error_handled "Error on download all schedules."
 
     else
 
       if [ ! -z "$ORACLE_DOWNLOAD_SCHEDULE" ] ; then
 
         commons_oracle_download_schedule "$ORACLE_DOWNLOAD_SCHEDULE" || error_handled "Error on download schedule $ORACLE_DOWNLOAD_SCHEDULE ."
+
+      fi
+
+    fi
+
+    # Check for all-schedules of single test
+
+    if [ $ORACLE_DOWNLOAD_ALL_TESTS -eq 1 ] ; then
+
+      commons_oracle_download_all_tests || error_handled "Error on download all tests."
+
+    else
+
+      if [ ! -z "$ORACLE_DOWNLOAD_TEST" ] ; then
+
+        commons_oracle_download_test "$ORACLE_DOWNLOAD_TEST" || error_handled "Error on download test $ORACLE_DOWNLOAD_TEST ."
 
       fi
 
