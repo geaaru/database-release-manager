@@ -273,6 +273,140 @@ commons_oracle_download_package() {
 }
 # commons_oracle_commons_oracle_download_package_end
 
+##########################
+
+# commons_oracle_commons_oracle_download_all_tests
+commons_oracle_download_all_tests() {
+
+  local testsdir=${ORACLE_DIR}/tests
+  local export_tests_sql=${testsdir}/export_tests.sql
+
+  _logfile_write "Start download of all tests." || return 1
+
+  commons_oracle_download_create_export_tests
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_tests_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of all tests." || return 1
+
+  return $ans
+}
+# commons_oracle_commons_oracle_download_all_tests_end
+
+# commons_oracle_commons_oracle_download_create_export_tests
+commons_oracle_download_create_export_tests() {
+
+  local testsdir=${ORACLE_DIR}/tests
+  local export_tests_sql=${testsdir}/export_tests.sql
+  local export_tests_file=${testsdir}/export_tests_gen.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+  if [[ ! -e ${export_tests_file} || ! -e ${export_tests_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_tests_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_tests_sql} file." || return 1
+
+    # Create export_tests.sql file
+    _logfile_write "sed -e 's:TESTS_DIR:'${testsdir}/':g' \
+      \"$_oracle_scripts/export_tests_gen.sql.in\" > \"${export_tests_file}\""
+    sed -e 's:TESTS_DIR:'${testsdir}'/:g' "$_oracle_scripts/export_tests_gen.sql.in" > "${export_tests_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_tests_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_tests_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_tests_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+# commons_oracle_commons_oracle_download_create_export_tests_end
+
+# commons_oracle_commons_oracle_download_create_export_test
+commons_oracle_download_create_export_test() {
+
+  local testname=${1/.sql/}
+
+  local testsdir=${ORACLE_DIR}/tests
+  local export_test_sql=${testsdir}/export_test_${testname}.sql
+  local export_test_file=${testsdir}/export_tests_gen_${testname}.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+  if [[ ! -e ${export_test_file} || ! -e ${export_test_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_test_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_test_sql} file." || return 1
+
+    # Create export_test_${testname}.sql file
+    _logfile_write "sed -e 's:TESTS_DIR:'${testsdir}/':g' \
+      \"$_oracle_scripts/export_test_gen.sql.in\" > \"${export_test_file}\""
+    sed -e 's:TESTS_DIR:'${testsdir}'/:g' "$_oracle_scripts/export_test_gen.sql.in" > "${export_test_file}"
+
+    # Replace TEST_NAME string
+    _logfile_write "sed -i -e 's:TEST_NAME:'${testname}':g' \"${export_test_file}\""
+    sed -i -e 's:TEST_NAME:'${testname}':g' "${export_test_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_test_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_test_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_test_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+# commons_oracle_commons_oracle_download_create_export_test_end
+
+# commons_oracle_commons_oracle_download_test
+commons_oracle_download_test() {
+
+  local testname=${1/.sql/}
+  local testsdir=${ORACLE_DIR}/tests
+  local export_test_sql=${testsdir}/export_test_${testname}.sql
+
+  _logfile_write "Start download of the test ${testname}." || return 1
+
+  commons_oracle_download_create_export_test $testname
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_test_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of the test ${testname}." || return 1
+
+  return $ans
+}
+# commons_oracle_commons_oracle_download_test_end
+
+
+##########################
+
+
+
 # commons_oracle_commons_oracle_download_all_functions
 commons_oracle_download_all_functions() {
 
@@ -1010,6 +1144,19 @@ commons_oracle_compile_all_schedules () {
   return 0
 }
 # commons_oracle_commons_oracle_compile_all_schedules_end
+
+# commons_oracle_commons_oracle_compile_all_tests
+commons_oracle_compile_all_tests () {
+
+  local msg="$1"
+  local directory="$ORACLE_DIR/tests"
+
+  commons_oracle_compile_all_from_dir "$directory" "of all tests" "$msg" || return 1
+
+  return 0
+}
+# commons_oracle_commons_oracle_compile_all_tests_end
+
 
 # commons_oracle_commons_oracle_compile_all_from_dir
 commons_oracle_compile_all_from_dir () {
