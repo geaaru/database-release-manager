@@ -24,7 +24,8 @@ BEGIN
    FOR t_name IN (select u.object_name 
    from user_objects u
    where object_type = 'PACKAGE' 
-   AND u.object_name = UPPER(packagename)) LOOP
+   AND u.object_name = UPPER(packagename)
+   AND SUBSTR(LOWER(u.object_name),1 ,4) <> 'test') LOOP
       SELECT CASE WHEN SUBSTR(LOWER(t_name.object_name),1 ,2) = 'pk'
                   THEN 'spool '||packagesdir||'pk'||InitCap(REPLACE(LOWER(t_name.object_name), 'pk', ''))||'.sql'
                   ELSE 'spool '||packagesdir||LOWER(t_name.object_name)||'.sql'
