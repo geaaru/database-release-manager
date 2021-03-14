@@ -35,7 +35,36 @@ psql_set_auth_var () {
 }
 # psql_set_auth_var_end
 
+psql_file () {
 
+  local var=$1
+  local f=$2
+  local opts=""
+  local result=""
+
+  if [ -z "$POSTGRESQL_CLIENT" ] ; then
+    return 1
+  fi
+
+  if [ -z "$psql_auth" ] ; then
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(psql_file) Try compile file $f with options $opts $POSTGRESQL_EXTRA_OPTIONS $psql_auth.\n"
+
+  v=$(eval $POSTGRESQL_CLIENT $opts $POSTGRESQL_EXTRA_OPTIONS $psql_auth -f $f 2>&1)
+  result=$?
+
+  [[ $DEBUG && $DEBUG == true ]] && \
+    echo -en "(psql_file) Compile $f => $v ($result).\n"
+
+  eval "$var=\$v"
+
+  return $result
+}
+
+# TODO: We could use row_to_json with jq for process data.
 # psql_psql_cmd_4var
 psql_cmd_4var () {
 
@@ -47,7 +76,7 @@ psql_cmd_4var () {
   local v=""
   local opts=""
   # Set separator
-  opts="${opts} -P fieldsep='|'"
+  opts="${opts} -P fieldsep=|"
   # Disable footer
   opts="${opts} -P footer=off"
   # Tuple only

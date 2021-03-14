@@ -39,7 +39,8 @@ psql_long_help () {
    echo -en "\tversion                 Show module version.\n"
    echo -en "\ttest_connection         Test connection versus database.\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
-   echo -en "\show                     Show data from database.\n"
+   echo -en "\tshow                    Show data from database.\n"
+   echo -en "\tcompile                 Compile files\n"
    echo -en "\tdump                    Dump database resources.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
@@ -62,6 +63,7 @@ psql_show_help () {
    echo -en "\ttest_connection         Test connection versus database.\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
    echo -en "\tshow                    Show data from database.\n"
+   echo -en "\tcompile                 Compile files\n"
    echo -en "\tdump                    Dump database resources.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
@@ -207,12 +209,56 @@ psql_show () {
 
   commons_psql_check_connection || error_handled "psql client was unable to connect to DB with supplied credentials."
 
-  commons_psql_shell || error_handled "Error on enter on command line shell."
+  if [ $PSQL_SHOW_ALL -eq 1 ] ; then
+
+      _psql_show_tables
+
+      out_handler_print "\n"
+
+      out_handler_clean
+
+  else
+
+    if [ $PSQL_SHOW_TABLES -eq 1 ] ; then
+
+      _psql_show_tables
+
+      out_handler_print "\n"
+
+      out_handler_clean
+    fi
+  fi
 
   return 0
 }
 #***
 
+psql_compile () {
+  local result=1
+
+  # Shift first two input param
+  shift 2
+
+  _psql_check_status
+
+  _psql_help_message="print_help"
+
+  _psql_connections_args "$@" || error_handled ""
+
+  _psql_compile_args "$@" || error_handled ""
+
+  commons_psql_check_vars || error_handled ""
+
+  psql_set_auth_var "$POSTGRESQL_DB" "$POSTGRESQL_USER" "$POSTGRESQL_PWD" "$POSTGRESQL_HOST" "${POSTGRESQL_SCHEMA}"
+
+  commons_psql_check_connection || error_handled "psql client was unable to connect to DB with supplied credentials."
+
+  _psql_compile || error_handled ""
+
+  out_handler_print "Compile operation successfull."
+
+  return 0
+}
 
 ##################################################################
 # Internal functions
@@ -439,12 +485,20 @@ _psql_show_args () {
   local conn_s_options="U:P:hH:D:t:S:"
   local conn_l_options="database: timezone: conn-options: ignore-timezone help"
   local short_options="${conn_s_options}"
-  local long_options="${conn_l_options} help :"
+  local long_options="${conn_l_options} all tables help:"
 
   $(set -- $(getopt -u -q -o "$short_options" -l "$long_options" -- "$@")) || \
     error_handled "Invalid parameters"
 
-  [ $# -lt 1 ] && return 0 # is there at least one param (--)
+  if [ $# -lt 1 ] ; then
+    _psql_show_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_psql_show_args: Found $# params)\n"
+
+  PSQL_SHOW_ALL=0
+  PSQL_SHOW_TABLES=0
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -458,7 +512,79 @@ _psql_show_args () {
         _psql_show_help
         return 1
         ;;
-      *|--)
+      --tables)
+        PSQL_SHOW_TABLES=1
+        ;;
+      --all)
+        PSQL_SHOW_ALL=1
+        ;;
+      --)
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
+        ;;
+
+    esac
+
+    shift
+
+  done
+
+  return 0
+}
+#***
+
+
+#****f* psql/_psql_compile_args
+# FUNCTION
+#   Parse command line for compile  command.
+# DESCRIPTION
+#   Available commands line are:
+#   * --file file         Compile an SQL file.
+#   * -h                  Show help message
+# SOURCE
+_psql_compile_args () {
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_psql_compile_args args: $@)\n"
+
+  local conn_s_options="U:P:hH:D:t:S:"
+  local conn_l_options="database: timezone: conn-options: ignore-timezone help"
+  local short_options="${conn_s_options}"
+  local long_options="${conn_l_options} file: help:"
+
+  $(set -- $(getopt -u -q -o "$short_options" -l "$long_options" -- "$@")) || \
+    error_handled "Invalid parameters"
+
+  if [ $# -lt 1 ] ; then
+    _psql_compile_help
+    return 1
+  fi
+
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_psql_compile_args: Found $# params)\n"
+
+  PSQL_COMPILE_ALL=0
+  PSQL_COMPILE_FILE=""
+
+  while [ $# -gt 0 ] ; do
+    case "$1" in
+
+      -U|-P|-D|-H|-S|--database|--timezone|--conn-options)
+        shift
+      ;;
+      --ignore-timezone)
+        ;;
+      --help|-h)
+        _psql_compile_help
+        return 1
+        ;;
+      --file)
+        PSQL_COMPILE_FILE="$2"
+        shift
+        ;;
+      --)
+        ;;
+      *)
+        error_generate "Invalid parameter $1."
         ;;
 
     esac
@@ -516,14 +642,158 @@ _psql_dump_help () {
 # SOURCE
 _psql_show_help () {
 
-  echo "
-
+  echo "Available arguments:
 [--tables]               Show list of tables present on database.
+[--all]                  Show list of all tables.
 
 "
 
   return 0
 }
 #***
+
+#****f* psql/_psql_compile_help
+# FUNCTION
+#   Internal function that print help message of compile command.
+# SOURCE
+_psql_compile_help () {
+
+  echo "Available arguments:
+[--file file]            Compile a partucular file. (Use ABS Path or relative path from current dir.)
+
+"
+
+  return 0
+}
+#***
+
+#****f* psql/_psql_compile
+# FUNCTION
+#   Internal function that manage compilation process.
+# SOURCE
+_psql_compile () {
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "(_psql_compile args: $@)\n"
+
+  # Compile single file if available
+  if [ ! -z "$PSQL_COMPILE_FILE" ] ; then
+
+    commons_psql_compile_file "$PSQL_COMPILE_FILE" "File $PSQL_COMPILE_FILE" || \
+      error_handled "Error on compile file $PSQL_COMPILE_FILE."
+
+  fi
+
+  return 0
+}
+#***
+
+_psql_show_tables () {
+
+  local i=0
+  local counter=1
+  local n_rec=0
+  local name=""
+  local schema=""
+  local owner=""
+  local tablespace=""
+  local hasrules=""
+  local hasindexes=""
+  local hastriggers=""
+  local name_size=23
+  local schema_size=15
+
+  commons_psql_count_tables
+  n_rec=$?
+
+  if [ $n_rec -eq 0 ] ; then
+
+    out_handler_print "No tables available."
+
+  else
+
+    commons_psql_get_tables_list "1" || error_handled "Error on get tables name list."
+
+    out_hsep=1
+    out_prepost_mode="any"
+    out_htabs_mode="tabs"
+
+    out_headers[0]="TABLE_NAME"
+    out_headers[1]="SCHEMA_NAME"
+    out_headers[2]="OWNER"
+    out_headers[3]="TABLESPACE"
+    out_headers[4]="HAS_RULES"
+    out_headers[5]="HAS_INDEXES"
+    out_headers[6]="HAS_TRIGGERS"
+
+    out_el_pre[0]="\e[1;33m"
+    out_el_pre[1]="\e[1;32m"
+    out_el_pre[2]="\e[1;31m"
+    out_el_pre[3]="\e[1;34m"
+    out_el_pre[4]="\e[1;35m"
+    out_el_pre[5]="\e[1;36m"
+    out_el_pre[6]="\e[1;37m"
+
+    out_el_post[0]="\e[m"
+
+    IFS=$'\n'
+    for row in $_psql_ans ; do
+
+      name=`echo $row | awk '{split($0,a,"|"); print a[1]}'`
+      schema=`echo $row | awk '{split($0,a,"|"); print a[2]}'`
+      owner=`echo $row | awk '{split($0,a,"|"); print a[3]}'`
+      tablespace=`echo $row | awk '{split($0,a,"|"); print a[4]}'`
+      hasrules=`echo $row | awk '{split($0,a,"|"); print a[5]}'`
+      hasindexes=`echo $row | awk '{split($0,a,"|"); print a[6]}'`
+      hastriggers=`echo $row | awk '{split($0,a,"|"); print a[7]}'`
+
+      out_rows[$counter]="row"${counter}
+
+      eval "row${counter}[0]=\"${name}\""
+      eval "row${counter}[1]=\"${schema}\""
+      eval "row${counter}[2]=\"${owner}\""
+      eval "row${counter}[3]=\"${tablespace}\""
+      eval "row${counter}[4]=\"${hasrules}\""
+      eval "row${counter}[5]=\"${hasindexes}\""
+      eval "row${counter}[6]=\"${hastriggers}\""
+
+      # Check if needed enlarge size of first column
+      if [ ${#name} -ge $name_size ] ; then
+        name_size=$((${#name}+1))
+      fi
+
+      if [ ${#schema} -ge $schema_size ] ; then
+        schema_size=$((${#schema}+1))
+      fi
+      let counter++
+
+    done
+    unset IFS
+
+    out_tabs[0]=$name_size
+    out_tabs[1]=$schema_size
+    out_tabs[2]=15
+    out_tabs[3]=15
+    out_tabs[4]=11
+    out_tabs[5]=13
+    out_tabs[6]=13
+
+    out_handler_print_arr
+
+    # Clean row${counter}
+    for ((i=0;i<$counter;i++)) ; do
+      eval "unset row${i}[0]"
+      eval "unset row${i}[1]"
+      eval "unset row${i}[2]"
+      eval "unset row${i}[3]"
+      eval "unset row${i}[4]"
+      eval "unset row${i}[5]"
+      eval "unset row${i}[6]"
+      eval "unset row${i}"
+    done
+  fi
+
+  out_handler_clean
+
+  return 0
+}
 
 # vim: syn=sh filetype=sh
