@@ -61,7 +61,7 @@ psql_show_help () {
    echo -en "\tversion                 Show module version.\n"
    echo -en "\ttest_connection         Test connection versus database.\n"
    echo -en "\tshell                   Enter on command line shell of database.\n"
-   echo -en "\show                     Show data from database.\n"
+   echo -en "\tshow                    Show data from database.\n"
    echo -en "\tdump                    Dump database resources.\n"
    echo -en "---------------------------------------------------------------------------\n"
    echo -en "===========================================================================\n"
