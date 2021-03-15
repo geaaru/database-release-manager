@@ -5,7 +5,7 @@
 # License: GPL 2.0
 
 AC_PREREQ([2.69])
-AC_INIT([database-release-manager], [0.2.0], [geaaru@gmail.com])
+AC_INIT([database-release-manager], [0.2.1], [geaaru@gmail.com])
 
 AM_INIT_AUTOMAKE
 
