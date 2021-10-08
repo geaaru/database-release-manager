@@ -14,6 +14,7 @@ EXTRA_DIST = \
 				 dbm/dbm_args.inc \
 				 dbm/dbm_tools.inc \
 				 dbm/dbm_exts.inc \
+				 dbm/dbm_semver.inc \
 				 mongo.sh \
 				 psql.sh
 
@@ -36,5 +37,6 @@ dbmdir = $(CORE_DIR)/dbm
 dist_dbm_DATA = \
 					 dbm/dbm_args.inc \
 					 dbm/dbm_tools.inc \
-					 dbm/dbm_exts.inc
+					 dbm/dbm_exts.inc \
+					 dbm/dbm_semver.inc
 

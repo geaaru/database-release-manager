@@ -145,7 +145,9 @@ _dbm_exts_check_dbm () {
 
   _dbm_exts_is_present "dbm" || return 1
 
-  if [ "${dbm_version}" != "${_ext_version}" ] ; then
+  cmp=$(_dbm_semver_compare_version "${dbm_version}" "${_ext_version}")
+  [[ $DEBUG ]] && echo "Compare versions: ${dbm_version} ${_ext_version} - $cmp"
+  if [ "${cmp}" == "1" ] ; then
     return 1
   fi
 
