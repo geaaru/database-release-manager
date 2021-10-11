@@ -1,0 +1,33 @@
+on: push
+concurrency:
+  group: registries-tests
+
+name: Build on push
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install deps
+        run: |
+          sudo apt-get install -y autotools-dev autogen shtool sqlite3
+          sudo pip install --upgrade pip
+          sudo pip install sphinx --upgrade
+          sudo pip install recommonmark sphinx-bootstrap-theme --upgrade
+
+      - name: Configure
+        run: |
+          libtoolize --force
+          aclocal
+          automake --force-missing --add-missing
+          ./configure
+          make
+
+      - name: Generate documentation and install
+        run: |
+          make doc
+          sudo make install
+
+      - name: Tests
+        run: |
+          dbrm dbm version
