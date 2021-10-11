@@ -30,7 +30,7 @@ jobs:
 
       - name: Generate documentation and install
         run: |
-          make doc
+          make docs
           sudo make install
 
       - name: Tests
