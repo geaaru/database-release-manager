@@ -15,6 +15,9 @@ jobs:
           sudo pip install sphinx --upgrade
           sudo pip install recommonmark sphinx-bootstrap-theme --upgrade
 
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Configure
         run: |
           libtoolize --force
