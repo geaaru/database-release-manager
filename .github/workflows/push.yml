@@ -18,7 +18,9 @@ jobs:
       - name: Configure
         run: |
           libtoolize --force
+          ls -l
           aclocal
+          autoconf
           automake --force-missing --add-missing
           ./configure
           make
