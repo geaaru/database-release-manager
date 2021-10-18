@@ -1,0 +1,50 @@
+SET LONG 200000
+SET PAGESIZE 0
+SET LINESIZE 300
+SET LONGC 300
+SET TRIMSPOOL ON
+SET TERM OFF
+SET FEEDBACK OFF
+set SERVEROUTPUT on
+
+spool PROCS_DIRexport_procedure_PROC_NAME.sql
+select 'SET LONG 200000' from dual; 
+select 'SET PAGESIZE 0' from dual;
+select 'SET LINESIZE 300' from dual;
+select 'SET LONGC 300' from dual;
+select 'SET TRIMSPOOL ON' from dual; 
+select 'SET TERM OFF' from dual;
+select 'SET FEEDBACK OFF' from dual;
+select 'set SERVEROUTPUT on' from dual;
+DECLARE
+   res VARCHAR2(200);
+   procsdir VARCHAR2(500) := 'PROCS_DIR';
+   procname VARCHAR2(500) := 'PROC_NAME';
+
+BEGIN
+   FOR t_name IN (select u.object_name 
+   from user_objects u 
+   where object_type = 'PROCEDURE' 
+   AND u.object_name like UPPER (procname)||'%') LOOP
+      SELECT CASE WHEN SUBSTR(LOWER(t_name.object_name), 1, 2) = 'pr'
+                  THEN 'spool '||procsdir||'pr'||InitCap(REPLACE(LOWER(t_name.object_name), 'pr', ''))||'.sql'
+                  ELSE 'spool '||procsdir||LOWER(t_name.object_name)||'.sql'
+             END into res
+      FROM dual;
+      dbms_output.put_line (res); 
+      select 'select TRIM(dbms_metadata.GET_DDL(''PROCEDURE'',u.object_name)) from user_objects u where object_type = ''PROCEDURE'' AND u.object_name = UPPER ('''||t_name.object_name||''');' into res from dual;
+      dbms_output.put_line (res); 
+      select 'select ''/'' from dual;' into res from dual;
+      dbms_output.put_line (res); 
+      select 'spool off;' into res from dual;
+      dbms_output.put_line (res); 
+      select ' ' into res from dual;
+      dbms_output.put_line (res); 
+   END LOOP;
+END;
+/
+select 'exit' from dual;
+spool off;
+exit
+/
+

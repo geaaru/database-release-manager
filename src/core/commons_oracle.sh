@@ -787,6 +787,133 @@ commons_oracle_download_create_export_job() {
 }
 # commons_oracle_commons_oracle_download_create_export_job_end
 
+# commons_oracle_commons_oracle_download_all_procedures
+commons_oracle_download_all_procedures() {
+
+  local proceduresdir=${ORACLE_DIR}/procedures
+  local export_procedures_sql=${proceduresdir}/export_procedures.sql
+
+  _logfile_write "Start download of all procedures." || return 1
+
+  commons_oracle_download_create_export_procedures
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_procedures_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of all procedures." || return 1
+
+  return $ans
+}
+# commons_oracle_commons_oracle_download_all_procedures_end
+
+# commons_oracle_commons_oracle_download_create_export_procedures
+commons_oracle_download_create_export_procedures() {
+
+  local proceduresdir=${ORACLE_DIR}/procedures
+  local export_procedures_sql=${proceduresdir}/export_procedures.sql
+  local export_procedures_file=${proceduresdir}/export_procedures_gen.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+  if [[ ! -e ${export_procedures_file} || ! -e ${export_procedures_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_procedures_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_procedures_sql} file." || return 1
+
+    # Create export_procedure.sql file
+    _logfile_write "sed -e 's:PROCS_DIR:'${proceduresdir}/':g' \
+      \"$_oracle_scripts/export_procedures_gen.sql.in\" > \"${export_procedures_file}\""
+    sed -e 's:PROCS_DIR:'${proceduresdir}'/:g' "$_oracle_scripts/export_procedures_gen.sql.in" > "${export_procedures_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_procedures_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_procedures_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_procedures_file} is updated." || return 1
+
+  fi
+
+  return $ans
+}
+# commons_oracle_commons_oracle_download_create_export_procedures_end
+
+# commons_oracle_commons_oracle_download_procedure
+commons_oracle_download_procedure() {
+
+  local procedurename=${1/.sql/}
+  local proceduresdir=${ORACLE_DIR}/procedures
+  local export_procedure_sql=${proceduresdir}/export_procedure_${procedurename}.sql
+
+  _logfile_write "Start download of the procedure ${procedurename}." || return 1
+
+  commons_oracle_download_create_export_procedure $procedurename
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_procedure_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of the procedure ${procedurename}." || return 1
+
+  return $ans
+}
+# commons_oracle_commons_oracle_download_procedure_end
+
+# commons_oracle_commons_oracle_download_create_export_procedure
+commons_oracle_download_create_export_procedure() {
+
+  local procedurename=${1/.sql/}
+
+  local proceduresdir=${ORACLE_DIR}/procedures
+  local export_procedure_sql=${proceduresdir}/export_procedure_${procedurename}.sql
+  local export_procedure_file=${proceduresdir}/export_procedures_gen_${procedurename}.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+  if [[ ! -e ${export_procedure_file} || ! -e ${export_procedure_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_procedure_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_procedure_sql} file." || return 1
+
+    # Create export_procedure_${procedurename}.sql file
+    _logfile_write "sed -e 's:PROCS_DIR:'${proceduresdir}/':g' \
+      \"$_oracle_scripts/export_procedure_gen.sql.in\" > \"${export_procedure_file}\""
+    sed -e 's:PROCS_DIR:'${proceduresdir}'/:g' "$_oracle_scripts/export_procedure_gen.sql.in" > "${export_procedure_file}"
+
+    # Replace PROC_NAME string
+    _logfile_write "sed -i -e 's:PROC_NAME:'${procedurename}':g' \"${export_procedure_file}\""
+    sed -i -e 's:PROC_NAME:'${procedurename}':g' "${export_procedure_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_procedure_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_procedure_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_procedure_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+# commons_oracle_commons_oracle_download_create_export_procedure_end
+
+
 # commons_oracle_commons_oracle_download_all_schedules
 commons_oracle_download_all_schedules() {
 
@@ -1132,6 +1259,19 @@ commons_oracle_compile_all_jobs () {
   return 0
 }
 # commons_oracle_commons_oracle_compile_all_jobs_end
+
+# commons_oracle_commons_oracle_compile_all_procedures
+commons_oracle_compile_all_procedures () {
+
+  local msg="$1"
+  local directory="$ORACLE_DIR/procedures"
+
+  commons_oracle_compile_all_from_dir "$directory" "of all procedures" "$msg" || return 1
+
+  return 0
+}
+# commons_oracle_commons_oracle_compile_all_procedures_end
+
 
 # commons_oracle_commons_oracle_compile_all_schedules
 commons_oracle_compile_all_schedules () {

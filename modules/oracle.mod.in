@@ -40,8 +40,8 @@ oracle_long_help () {
    echo -en "\tshow_help               Show command list.\n"
    echo -en "\tversion                 Show module version.\n"
    echo -en "\ttest_connection         Test connection versus database.\n"
-   echo -en "\tdownload                Download packages/triggers/views/etc.\n"
-   echo -en "\tcompile                 Compile packages/triggers/views/etc.\n"
+   echo -en "\tdownload                Download packages/procedures/triggers/views/etc.\n"
+   echo -en "\tcompile                 Compile packages/procedures/triggers/views/etc.\n"
    echo -en "\tshell                   Enter on sqlplus shell of current configuration.\n"
    echo -en "\tquery                   Execute directly a query on current database.\n"
    echo -en "\tinitenv                 Create default directories if not present.\n"
@@ -65,8 +65,8 @@ oracle_show_help () {
    echo -en "\tshow_help               Show command list.\n"
    echo -en "\tversion                 Show module version.\n"
    echo -en "\ttest_connection         Test connection versus database.\n"
-   echo -en "\tdownload                Download packages/triggers/views/etc.\n"
-   echo -en "\tcompile                 Compile packages/triggers/views/etc.\n"
+   echo -en "\tdownload                Download packages/procedures/triggers/views/etc.\n"
+   echo -en "\tcompile                 Compile packages/procedures/triggers/views/etc.\n"
    echo -en "\tshell                   Enter on sqlplus shell of current configuration.\n"
    echo -en "\tquery                   Execute directly a query on current database.\n"
    echo -en "\tinitenv                 Create default directories if not present.\n"
@@ -651,6 +651,7 @@ _oracle_download_args () {
   ORACLE_DOWNLOAD_ALL_JOBS=0
   ORACLE_DOWNLOAD_ALL_SCHEDULES=0
   ORACLE_DOWNLOAD_ALL_TESTS=0
+  ORACLE_DOWNLOAD_ALL_PROCEDURES=0
   ORACLE_DOWNLOAD_PACKAGE=""
   ORACLE_DOWNLOAD_TRIGGER=""
   ORACLE_DOWNLOAD_FUNCTION=""
@@ -658,6 +659,7 @@ _oracle_download_args () {
   ORACLE_DOWNLOAD_JOB=""
   ORACLE_DOWNLOAD_SCHEDULE=""
   ORACLE_DOWNLOAD_TEST=""
+  ORACLE_DOWNLOAD_PROCEDURE=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -688,6 +690,9 @@ _oracle_download_args () {
       --all-tests)
         ORACLE_DOWNLOAD_ALL_TESTS=1
         ;;
+      --all-procedures)
+        ORACLE_DOWNLOAD_ALL_PROCEDURES=1
+        ;;
       --all)
         ORACLE_DOWNLOAD_ALL=1
         ;;
@@ -717,6 +722,10 @@ _oracle_download_args () {
         ;;
       --test)
         ORACLE_DOWNLOAD_TEST="$2"
+        shift
+        ;;
+      --procedure)
+        ORACLE_DOWNLOAD_PROCEDURE="$2"
         shift
         ;;
 
@@ -752,6 +761,7 @@ _oracle_download_help () {
   echo -en "[--all-jobs]            Download all jobs.\n"
   echo -en "[--all-schedules]       Download all schedules.\n"
   echo -en "[--all-tests]           Download all tests.\n"
+  echo -en "[--all-procedures]      Download all procedures.\n"
   echo -en "[--all]                 Download all.\n"
   echo -en "[--package name]        Download a particular package.\n"
   echo -en "[--trigger name]        Download a particular trigger.\n"
@@ -760,6 +770,7 @@ _oracle_download_help () {
   echo -en "[--job name]            Download a particular job.\n"
   echo -en "[--schedule name]       Download a particular schedule.\n"
   echo -en "[--test name]           Download a particular test.\n"
+  echo -en "[--procedure name]      Download a particular procedure.\n"
 
   return 0
 }
@@ -778,6 +789,7 @@ _oracle_download_help () {
 #   * --all-jobs          Compile all jobs.
 #   * --all-schedules     Compile all schedules.
 #   * --all-tests         Compile all tests.
+#   * --all-procedures    Compile all procedures.
 #   * --all               Compile all packages, triggers, view, functions.
 #   * --package [p]       Compile package p.
 #   * --trigger [t]       Compile trigger t.
@@ -786,6 +798,7 @@ _oracle_download_help () {
 #   * --job [j]           Compile job j.
 #   * --schedule [s]      Compile schedule s.
 #   * --test [u]          Compile test u.
+#   * --procedure [r]     Compile procedure u.
 #   * -h                  Show help message.
 # SEE ALSO
 #   _oracle_connections_args
@@ -816,6 +829,7 @@ _oracle_compile_args () {
   ORACLE_COMPILE_ALL_JOBS=0
   ORACLE_COMPILE_ALL_SCHEDULES=0
   ORACLE_COMPILE_ALL_TESTS=0
+  ORACLE_COMPILE_ALL_PROCEDURES=0
   ORACLE_COMPILE_PACKAGE=""
   ORACLE_COMPILE_TRIGGER=""
   ORACLE_COMPILE_FUNCTION=""
@@ -823,6 +837,7 @@ _oracle_compile_args () {
   ORACLE_COMPILE_JOB=""
   ORACLE_COMPILE_SCHEDULE=""
   ORACLE_COMPILE_TEST=""
+  ORACLE_COMPILE_PROCEDURE=""
   ORACLE_COMPILE_ID_SCRIPT=""
   ORACLE_COMPILE_FILE=""
   local ORACLE_COMPILE_EXC_RCVD=0
@@ -856,6 +871,9 @@ _oracle_compile_args () {
       --all-tests)
         ORACLE_COMPILE_ALL_TESTS=1
         ;;
+      --all-procedures)
+        ORACLE_COMPILE_ALL_PROCEDURES=1
+        ;;
       --all)
         ORACLE_COMPILE_ALL=1
         ;;
@@ -885,6 +903,10 @@ _oracle_compile_args () {
         ;;
       --test)
         ORACLE_COMPILE_TEST="$2"
+        shift
+        ;;
+      --procedure)
+        ORACLE_COMPILE_PROCEDURE="$2"
         shift
         ;;
       --id-script)
@@ -936,6 +958,7 @@ _oracle_compile_help () {
   echo -en "[--all-jobs]            Compile all jobs present on ORACLE_DIR subdirectories.\n"
   echo -en "[--all-schedules]       Compile all schedules present on ORACLE_DIR subdirectories.\n"
   echo -en "[--all-tests]           Compile all tests present on ORACLE_DIR subdirectories.\n"
+  echo -en "[--all-procedures]      Compile all procedures present on ORACLE_DIR subdirectories.\n"
   echo -en "[--all]                 Compile all packages, triggers, functions, views, jobs and schedules present under\n"
   echo -en "                        ORACLE_DIR subdirectories.\n"
   echo -en "[--package name]        Compile a particular package under ORACLE_DIR/packages directory.\n"
@@ -945,6 +968,7 @@ _oracle_compile_help () {
   echo -en "[--job name]            Compile a particular job under ORACLE_DIR/jobs directory.\n"
   echo -en "[--schedule name]       Compile a particular schedule under ORACLE_DIR/schedules directory.\n"
   echo -en "[--test name]           Compile a particular test under ORACLE_DIR/tests directory.\n"
+  echo -en "[--procedure name]      Compile a particular procedure under ORACLE_DIR/procedures directory.\n"
   echo -en "[--exclude filename]    Exclude a particular file from compilation.\n"
   echo -en "                        (This option can be repeat and override ORACLE_COMPILE_FILES_EXCLUDED\n"
   echo -en "                         configuration variable).\n"
@@ -969,6 +993,7 @@ _oracle_compile_help () {
 #   commons_oracle_compile_all_jobs
 #   commons_oracle_compile_all_schedules
 #   commons_oracle_compile_all_tests
+#   commons_oracle_compile_all_procedures
 # SOURCE
 _oracle_compile () {
 
@@ -1008,6 +1033,8 @@ _oracle_compile () {
     commons_oracle_compile_all_schedules "" || error_handled "Error on compile all schedules."
 
     commons_oracle_compile_all_tests"" || error_handled "Error on compile all tests."
+
+    commons_oracle_compile_all_procedures"" || error_handled "Error on compile all procedures."
 
   else
 
@@ -1065,7 +1092,7 @@ _oracle_compile () {
 
     fi
 
-    # Check for all-views of single view
+    # Check for all-views or single view
 
     if [ $ORACLE_COMPILE_ALL_VIEWS -eq 1 ] ; then
 
@@ -1083,7 +1110,7 @@ _oracle_compile () {
 
     fi
 
-    # Check for all-jobs of single job
+    # Check for all-jobs or single job
 
     if [ $ORACLE_COMPILE_ALL_JOBS -eq 1 ] ; then
 
@@ -1101,7 +1128,7 @@ _oracle_compile () {
 
     fi
 
-    # Check for all-schedules of single schedule
+    # Check for all-schedules or single schedule
 
     if [ $ORACLE_COMPILE_ALL_SCHEDULES -eq 1 ] ; then
 
@@ -1119,7 +1146,7 @@ _oracle_compile () {
 
     fi
 
-    # Check for all-schedules of single test
+    # Check for all-tests or single test
 
     if [ $ORACLE_COMPILE_ALL_TESTS -eq 1 ] ; then
 
@@ -1137,6 +1164,23 @@ _oracle_compile () {
 
     fi
 
+    # Check for all-tests or single test
+
+    if [ $ORACLE_COMPILE_ALL_PROCEDURES -eq 1 ] ; then
+
+      commons_oracle_compile_all_procedures "" || error_handled "Error on compile all procedures."
+
+    else
+
+      if [ ! -z "$ORACLE_COMPILE_PROCEDURE" ] ; then
+
+        f="${ORACLE_COMPILE_PROCEDURE/.sql/}"
+        f=$(basename $f)
+        commons_oracle_compile_file "$ORACLE_DIR/procedures/$f.sql" "" || error_handled "Error on compile file $f.sql"
+
+      fi
+
+    fi
 
   fi # end else ORACLE_COMPILE_ALL
 
@@ -1180,6 +1224,8 @@ _oracle_download () {
     commons_oracle_download_all_schedules || error_handled "Error on download all schedules."
 
     commons_oracle_download_all_tests || error_handled "Error on download all tests."
+
+    commons_oracle_download_all_procedures || error_handled "Error on download all procedures."
 
   else
 
@@ -1231,7 +1277,7 @@ _oracle_download () {
 
     fi
 
-    # Check for all-views of single view
+    # Check for all-views or single view
 
     if [ $ORACLE_DOWNLOAD_ALL_VIEWS -eq 1 ] ; then
 
@@ -1247,7 +1293,7 @@ _oracle_download () {
 
     fi
 
-    # Check for all-jobs of single job
+    # Check for all-jobs or single job
 
     if [ $ORACLE_DOWNLOAD_ALL_JOBS -eq 1 ] ; then
 
@@ -1263,7 +1309,7 @@ _oracle_download () {
 
     fi
 
-    # Check for all-schedules of single schedule
+    # Check for all-schedules or single schedule
 
     if [ $ORACLE_DOWNLOAD_ALL_SCHEDULES -eq 1 ] ; then
 
@@ -1279,7 +1325,7 @@ _oracle_download () {
 
     fi
 
-    # Check for all-schedules of single test
+    # Check for all-tests or single test
 
     if [ $ORACLE_DOWNLOAD_ALL_TESTS -eq 1 ] ; then
 
@@ -1290,6 +1336,20 @@ _oracle_download () {
       if [ ! -z "$ORACLE_DOWNLOAD_TEST" ] ; then
 
         commons_oracle_download_test "$ORACLE_DOWNLOAD_TEST" || error_handled "Error on download test $ORACLE_DOWNLOAD_TEST ."
+
+      fi
+
+    fi
+
+    if [ $ORACLE_DOWNLOAD_ALL_PROCEDURES -eq 1 ] ; then
+
+      commons_oracle_download_all_procedures || error_handled "Error on download all procedures."
+
+    else
+
+      if [ ! -z "$ORACLE_DOWNLOAD_PROCEDURE" ] ; then
+
+        commons_oracle_download_procedure "$ORACLE_DOWNLOAD_PROCEDURE" || error_handled "Error on download procedure $ORACLE_DOWNLOAD_PROCEDURE ."
 
       fi
 

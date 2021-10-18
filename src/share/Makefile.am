@@ -17,7 +17,9 @@ EXTRA_DIST = \
 				 oracle/export_schedule_gen.sql.in \
 				 oracle/export_schedules_gen.sql.in \
 				 oracle/export_test_gen.sql.in \
-				 oracle/export_tests_gen.sql.in
+				 oracle/export_tests_gen.sql.in \
+				 oracle/export_procedure_gen.sql.in \
+				 oracle/export_procedures_gen.sql.in
 
 
 DISTCLEANFILES =
@@ -37,5 +39,7 @@ dist_oracle_DATA = \
 						 oracle/export_schedule_gen.sql.in \
 						 oracle/export_schedules_gen.sql.in \
 						 oracle/export_test_gen.sql.in \
-						 oracle/export_tests_gen.sql.in
+						 oracle/export_tests_gen.sql.in \
+						 oracle/export_procedure_gen.sql.in \
+						 oracle/export_procedures_gen.sql.in
 
