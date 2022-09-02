@@ -10,8 +10,8 @@ set SERVEROUTPUT on
 spool PACKAGES_DIRexport_package_PACKAGE_NAME.sql
 select 'SET LONG 600000' from dual; 
 select 'SET PAGESIZE 0' from dual;
-select 'SET LINESIZE 200' from dual;
-select 'SET LONGC 200' from dual;
+select 'SET LINESIZE 300' from dual;
+select 'SET LONGC 300' from dual;
 select 'SET TRIMSPOOL ON' from dual; 
 select 'SET TERM OFF' from dual;
 select 'SET FEEDBACK OFF' from dual;
