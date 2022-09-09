@@ -27,7 +27,7 @@ mongo_set_auth_var () {
     mongo_auth="${host}/${db} --username=$user --password=${pwd} ${mongo_auth}"
   else
     if [ -n "${uri}" ] ; then
-      mongo_auth="${uri} --username=$user --password=${pwd} ${mongo_auth}"
+      mongo_auth="\"${uri}\" ${mongo_auth}"
     else
       echo "Missing configuration options"
       return 1
@@ -61,7 +61,7 @@ mongo_set_import_auth_var () {
     mongoimport_auth="--host ${host} --db ${db} --username=$user --password=${pwd} ${mongoimport_auth}"
   else
     if [ -n "${uri}" ] ; then
-      mongoimport_auth="${uri} --db ${db} --username=$user --password=${pwd} ${mongoimport_auth}"
+      mongoimport_auth="${uri} ${mongoimport_auth}"
     else
       echo "Missing configuration options"
       return 1

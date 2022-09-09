@@ -110,9 +110,21 @@ commons_mongo_check_vars () {
 
   local commons_msg='variable on configuration file, through arguments or on current profile.'
 
-  check_var "MONGO_USER" || error_handled "You must define MONGO_USER $commons_msg"
-  check_var "MONGO_PWD"  || error_handled "You must define MONGO_PWD $commons_msg"
-  check_var "MONGO_DB"   || error_handled "You must define MONGO_DB $commons_msg"
+  check_var "MONGO_USER" || {
+    if [ -z "$MONGO_URI" ] ; then
+      error_handled "You must define MONGO_USER $commons_msg"
+    fi
+  }
+  check_var "MONGO_PWD"  || {
+    if [ -z "$MONGO_URI" ] ; then
+      error_handled "You must define MONGO_PWD $commons_msg"
+    fi
+  }
+  check_var "MONGO_DB"   || {
+    if [ -z "$MONGO_URI" ] ; then
+      error_handled "You must define MONGO_DB $commons_msg"
+    fi
+  }
   check_var "MONGO_DIR"  || error_handled "You must define MONGO_DIR $commons_msg"
 
   return 0
@@ -136,9 +148,9 @@ commons_mongo_check_connection () {
   fi
 
   [[ $DEBUG && $DEBUG == true ]] && \
-    echo -en "(commons_mongo_check_connection) Try connection with $MONGO_CLIENT $mongo_auth $MONGO_EXTRA_OPTIONS $opts.\n"
+    echo -en "(commons_mongo_check_connection) Try connection with $MONGO_CLIENT $opts $MONGO_EXTRA_OPTIONS $mongo_auth.\n"
 
-  eval $MONGO_CLIENT $mongo_auth $MONGO_EXTRA_OPTIONS $opts $2>&1 <<EOF
+  eval $MONGO_CLIENT $opts $MONGO_EXTRA_OPTIONS $mongo_auth $2>&1 <<EOF
 exit
 EOF
 
