@@ -5,13 +5,13 @@
 # License: GPL 2.0
 
 AC_PREREQ([2.69])
-AC_INIT([database-release-manager], [0.2.1], [geaaru@gmail.com])
+AC_INIT([database-release-manager], [0.2.3], [geaaru@gmail.com])
 
 AM_INIT_AUTOMAKE
 
 DBRM_MAJOR_VERSION=0
-DBRM_MINOR_VERSION=1
-DBRM_EXTRA_VERSION=0
+DBRM_MINOR_VERSION=2
+DBRM_EXTRA_VERSION=3
 
 DBRM_VERSION=$DBRM_MAJOR_VERSION.$DBRM_MINOR_VERSION.$DBRM_EXTRA_VERSION
 
