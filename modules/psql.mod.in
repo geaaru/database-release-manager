@@ -93,7 +93,7 @@ psql_shell () {
 
   commons_psql_check_vars || error_handled ""
 
-  psql_set_auth_var "$POSTGRESQL_DB" "$POSTGRESQL_USER" "$POSTGRESQL_PWD" "$POSTGRESQL_HOST" "${POSTGRESQL_SCHEMA}"
+  psql_set_auth_var "$POSTGRESQL_DB" "$POSTGRESQL_USER" "$POSTGRESQL_PWD" "$POSTGRESQL_HOST" "${POSTGRESQL_SCHEMA}" "${POSTGRESQL_LOCAL}"
 
   commons_psql_check_connection || error_handled "psql client was unable to connect to DB with supplied credentials."
 
@@ -124,7 +124,7 @@ psql_test_connection () {
 
   commons_psql_check_vars || error_handled ""
 
-  psql_set_auth_var "$POSTGRESQL_DB" "$POSTGRESQL_USER" "$POSTGRESQL_PWD" "$POSTGRESQL_HOST" "${POSTGRESQL_SCHEMA}"
+  psql_set_auth_var "$POSTGRESQL_DB" "$POSTGRESQL_USER" "$POSTGRESQL_PWD" "$POSTGRESQL_HOST" "${POSTGRESQL_SCHEMA}" "${POSTGRESQL_LOCAL}"
 
   commons_psql_check_connection || error_handled "psql client was unable to connect to DB with supplied credentials."
 
@@ -162,7 +162,7 @@ psql_dump () {
 
   commons_psql_check_vars || error_handled ""
 
-  psql_set_auth_var "$POSTGRESQL_DB" "$POSTGRESQL_USER" "$POSTGRESQL_PWD" "$POSTGRESQL_HOST" ""
+  psql_set_auth_var "$POSTGRESQL_DB" "$POSTGRESQL_USER" "$POSTGRESQL_PWD" "$POSTGRESQL_HOST" "" "${POSTGRESQL_LOCAL}"
 
   commons_psql_check_connection || error_handled "psql client was unable to connect to DB with supplied credentials."
 
@@ -205,7 +205,7 @@ psql_show () {
 
   commons_psql_check_vars || error_handled ""
 
-  psql_set_auth_var "$POSTGRESQL_DB" "$POSTGRESQL_USER" "$POSTGRESQL_PWD" "$POSTGRESQL_HOST" "${POSTGRESQL_SCHEMA}"
+  psql_set_auth_var "$POSTGRESQL_DB" "$POSTGRESQL_USER" "$POSTGRESQL_PWD" "$POSTGRESQL_HOST" "${POSTGRESQL_SCHEMA}" "${POSTGRESQL_LOCAL}"
 
   commons_psql_check_connection || error_handled "psql client was unable to connect to DB with supplied credentials."
 
@@ -249,7 +249,7 @@ psql_compile () {
 
   commons_psql_check_vars || error_handled ""
 
-  psql_set_auth_var "$POSTGRESQL_DB" "$POSTGRESQL_USER" "$POSTGRESQL_PWD" "$POSTGRESQL_HOST" "${POSTGRESQL_SCHEMA}"
+  psql_set_auth_var "$POSTGRESQL_DB" "$POSTGRESQL_USER" "$POSTGRESQL_PWD" "$POSTGRESQL_HOST" "${POSTGRESQL_SCHEMA}" "${POSTGRESQL_LOCAL}"
 
   commons_psql_check_connection || error_handled "psql client was unable to connect to DB with supplied credentials."
 
@@ -351,6 +351,7 @@ _psql_check_status () {
 #   * --conn-options [option]
 #                         Permit to configure extra connection parameters. This option could be used
 #                         more of one time.
+#   * --local             Set POSTGRESQL_LOCAL to 1. To skip user, password and database setup.
 #   * -h                  Show help message
 # SOURCE
 _psql_connections_args () {
@@ -358,7 +359,7 @@ _psql_connections_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_psql_connections_args args: $@)\n"
 
   local short_options="U:P:hH:D:t:S:"
-  local long_options="database: timezone: conn-options: ignore-timezone help"
+  local long_options="database: timezone: conn-options: ignore-timezone local help"
 
   $(set -- $(getopt -u -q -o "$short_options" -l "$long_options" -- "$@")) || \
     error_handled "Invalid parameters"
@@ -385,6 +386,9 @@ _psql_connections_args () {
         ;;
       --ignore-timezone)
         POSTGRESQL_IGNORE_TMZ=1
+        ;;
+      --local)
+        POSTGRESQL_LOCAL=1
         ;;
       --conn-options)
         if [ $POSTGRESQL_EXTRAS_ENABLE -eq 0 ] ; then
@@ -429,7 +433,7 @@ _psql_dump_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_psql_dump_args args: $@)\n"
 
   local conn_s_options="U:P:hH:D:t:S:"
-  local conn_l_options="database: timezone: conn-options: ignore-timezone help"
+  local conn_l_options="database: timezone: conn-options: ignore-timezone local help"
   local short_options="${conn_s_options}"
   local long_options="${conn_l_options} to:"
 
@@ -447,7 +451,7 @@ _psql_dump_args () {
       -U|-P|-D|-H|-S|--database|--timezone|--conn-options)
         shift
       ;;
-      --ignore-timezone)
+      --ignore-timezone|--local)
         ;;
       --to)
         POSTGRESQL_DUMPFILE="$2"
@@ -483,7 +487,7 @@ _psql_show_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_psql_show_args args: $@)\n"
 
   local conn_s_options="U:P:hH:D:t:S:"
-  local conn_l_options="database: timezone: conn-options: ignore-timezone help"
+  local conn_l_options="database: timezone: conn-options: ignore-timezone local help"
   local short_options="${conn_s_options}"
   local long_options="${conn_l_options} all tables help:"
 
@@ -506,7 +510,7 @@ _psql_show_args () {
       -U|-P|-D|-H|-S|--database|--timezone|--conn-options)
         shift
       ;;
-      --ignore-timezone)
+      --ignore-timezone|--local)
         ;;
       --help|-h)
         _psql_show_help
@@ -548,7 +552,7 @@ _psql_compile_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_psql_compile_args args: $@)\n"
 
   local conn_s_options="U:P:hH:D:t:S:"
-  local conn_l_options="database: timezone: conn-options: ignore-timezone help"
+  local conn_l_options="database: timezone: conn-options: ignore-timezone local help"
   local short_options="${conn_s_options}"
   local long_options="${conn_l_options} file: help:"
 
@@ -571,7 +575,7 @@ _psql_compile_args () {
       -U|-P|-D|-H|-S|--database|--timezone|--conn-options)
         shift
       ;;
-      --ignore-timezone)
+      --ignore-timezone|--local)
         ;;
       --help|-h)
         _psql_compile_help
@@ -614,6 +618,7 @@ _psql_connection_help () {
 [--timezone tmz]         Override POSTGRESQL_TMZ variable for set timezone on connection session.
 [--conn-options opts]    Override POSTGRESQL_EXTRA_OPTIONS variable for enable extra connection options.
 [--ignore-timezone]      Set POSTGRESQL_IGNORE_TMZ variable to 1 for disable initial timezone settings.
+[--local]                Set POSTGRESQL_LOCAL to 1. To skip user, password and database setup.
 "
 
   return 0

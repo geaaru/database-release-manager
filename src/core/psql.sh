@@ -13,6 +13,7 @@ psql_set_auth_var () {
   local pwd=$3
   local host=$4
   local schema=$5
+  local local=$6
   local v_host=""
   local v_schema=""
 
@@ -24,10 +25,20 @@ psql_set_auth_var () {
     v_schema="-v schema=${schema}"
   fi
 
-  export PGPASSWORD="$pwd"
-  # TODO: handle ~/.pgpass file
+  psql_auth="$v_host $v_schema"
 
-  psql_auth="$v_host $v_schema -U $user -w $db"
+  if [ -n "$user" ] ; then
+    psql_auth="${psql_auth} -U $user"
+  fi
+
+  if [ -n "${pwd}" ] ; then
+    export PGPASSWORD="$pwd"
+    # TODO: handle ~/.pgpass file
+  fi
+
+  if [ -n "${db}" ] ; then
+    psql_auth="${psql_auth} -w $db"
+  fi
 
   [[ $DEBUG && $DEBUG == true ]] && echo "Use '$psql_auth'"
 

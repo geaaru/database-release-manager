@@ -116,10 +116,13 @@ commons_psql_check_vars () {
 
   local commons_msg='variable on configuration file, through arguments or on current profile.'
 
-  check_var "POSTGRESQL_USER" || error_handled "You must define POSTGRESQL_USER $commons_msg"
-  check_var "POSTGRESQL_PWD"  || error_handled "You must define POSTGRESQL_PWD $commons_msg"
-  check_var "POSTGRESQL_DB"   || error_handled "You must define POSTGRESQL_DB $commons_msg"
-  check_var "POSTGRESQL_DIR"  || error_handled "You must define POSTGRESQL_DIR $commons_msg"
+  if [ "${POSTGRESQL_LOCAL}" != "1" ] ; then
+    check_var "POSTGRESQL_USER" || error_handled "You must define POSTGRESQL_USER $commons_msg"
+    check_var "POSTGRESQL_PWD"  || error_handled "You must define POSTGRESQL_PWD $commons_msg"
+    check_var "POSTGRESQL_DB"   || error_handled "You must define POSTGRESQL_DB $commons_msg"
+  else
+    check_var "POSTGRESQL_DIR"  || error_handled "You must define POSTGRESQL_DIR $commons_msg"
+  fi
 
   return 0
 }
