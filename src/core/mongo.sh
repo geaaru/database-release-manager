@@ -99,7 +99,7 @@ mongo_file () {
   [[ $DEBUG && $DEBUG == true ]] && \
     echo -en "(mongo_file) Try compile file $f with options $opts $MONGO_EXTRA_OPTIONS $mongo_auth.\n"
 
-  v=$(eval $MONGO_CLIENT $opts $MONGO_EXTRA_OPTIONS $mongo_auth $f 2>&1)
+  v=$($MONGO_CLIENT $opts $MONGO_EXTRA_OPTIONS $mongo_auth $f 2>&1)
   result=$?
 
   [[ $DEBUG && $DEBUG == true ]] && \
@@ -129,7 +129,7 @@ mongo_import_file () {
   [[ $DEBUG && $DEBUG == true ]] && \
     echo -en "(mongoimport_file) Try import file $f: $MONGO_IMPORT $MONGOIMPORT_EXTRA_OPTIONS $mongoimport_auth --file $f.\n"
 
-  v=$(eval $MONGO_IMPORT $MONGOIMPORT_EXTRA_OPTIONS $mongoimport_auth --file $f 2>&1)
+  v=$($MONGO_IMPORT $MONGOIMPORT_EXTRA_OPTIONS $mongoimport_auth --file $f 2>&1)
   result=$?
 
   [[ $DEBUG && $DEBUG == true ]] && \
@@ -166,7 +166,7 @@ mongo_file_initrc () {
   commands="$(cat $f)"
 
   [[ $DEBUG && $DEBUG == true ]] && \
-    echo -en "(mongo_file) Try compile file $f with options $opts $MONGO_EXTRA_OPTIONS $mongo_auth.\n"
+    echo -en "(mongo_file_initrc) Try compile file $f with options $opts $MONGO_EXTRA_OPTIONS $mongo_auth.\n"
 
   if [ -n "${init_commands}" ] ; then
     v=$($MONGO_CLIENT $opts $MONGO_EXTRA_OPTIONS $mongo_auth 2>&1 <<EOF
@@ -184,7 +184,7 @@ EOF
   result=$?
 
   [[ $DEBUG && $DEBUG == true ]] && \
-    echo -en "(mongo_file) Compile $f => $v ($result).\n"
+    echo -en "(mongo_file_initrc) Compile $f => $v ($result).\n"
 
   eval "$var=\$v"
 
