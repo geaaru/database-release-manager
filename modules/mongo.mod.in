@@ -83,7 +83,8 @@ mongo_shell () {
 
   commons_mongo_check_vars || error_handled ""
 
-  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}" "${MONGO_URI}"
+  forshell="1"
+  mongo_set_auth_var "$MONGO_DB" "$MONGO_USER" "$MONGO_PWD" "$MONGO_HOST" "${MONGO_AUTHDB}" "${MONGO_URI}" "${forshell}"
 
   commons_mongo_check_connection || \
     error_handled "mongo client was unable to connect to DB with supplied credentials."
