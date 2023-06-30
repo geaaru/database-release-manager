@@ -1017,13 +1017,14 @@ _mongo_compile_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_mongo_compile_args args: $@)\n"
 
   local short_options="U:P:hH:D:t:S:"
-  local long_options="database: authdb: conn-options:  help"
+  local long_options="database: authdb: conn-options: help"
 
   # mongo__mongo_compile_help
   _mongo_compile_help () {
     echo -en "[--file file]            Compile a particular file. (Use ABS Path or relative path from current dir.)\n"
     echo -en "[--indexes]              Compile all indexes not already present.\n"
-    echo -en "[--index INAME]          Compila a particular index.\n"
+    echo -en "[--index INAME]          Compile a particular index.\n"
+    echo -en "[--noinitrc]             Compile file without to run initrc commands.\n"
     echo -en "                         This option could be used multiple time.\n"
     echo -en "                         INAME contains name of the collection where drop all\n"
     echo -en "                         indexes of a specific collection or name of the collection \n"
@@ -1033,7 +1034,7 @@ _mongo_compile_args () {
   }
   # mongo__mongo_compile_help_end
 
-  long_options="$long_options file: indexes index:"
+  long_options="$long_options file: indexes index: noinitrc"
 
   $(set -- $(getopt -u -q -o "$short_options" -l "$long_options" -- "$@")) || \
     error_handled "Invalid parameters"
@@ -1047,6 +1048,7 @@ _mongo_compile_args () {
   MONGO_COMPILE_KEY_INDEX=0
   MONGO_COMPILE_KEYS=""
   MONGO_COMPILE_ALL_INDEXES=0
+  MONGO_INITRC=1
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -1061,6 +1063,9 @@ _mongo_compile_args () {
         ;;
       --indexes)
         MONGO_COMPILE_ALL_INDEXES=1
+        ;;
+      --noinitrc)
+        MONGO_INITRC=0
         ;;
       --index)
         MONGO_COMPILE_KEYS[$MONGO_COMPILE_KEY_INDEX]="$2"
@@ -1102,8 +1107,7 @@ _mongo_compile () {
   # Compile single file
   if [ -n "${MONGO_COMPILE_FILE}" ] ; then
 
-    # TODO: Check when use MONGO_INITRC
-    commons_mongo_compile_file "$MONGO_COMPILE_FILE" "File $MONGO_COMPILE_FILE" "1" || \
+    commons_mongo_compile_file "$MONGO_COMPILE_FILE" "File $MONGO_COMPILE_FILE" "${MONGO_INITRC}" || \
       error_handled "Error on compile file $MONGO_COMPILE_FILE."
 
   fi
