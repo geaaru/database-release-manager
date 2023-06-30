@@ -14,6 +14,7 @@ mongo_set_auth_var () {
   local host=$4
   local auth_db=$5
   local uri=$6
+  local forshell=${7:-"0"}
 
   # TODO: check if use --host and --port instead of host:port/db
 
@@ -27,7 +28,12 @@ mongo_set_auth_var () {
     mongo_auth="${host}/${db} --username=$user --password=${pwd} ${mongo_auth}"
   else
     if [ -n "${uri}" ] ; then
-      mongo_auth="\"${uri}\" ${mongo_auth}"
+      if [ "$forshell" = "1" ] ; then
+        mongo_auth="\"${uri}\" ${mongo_auth}"
+      else
+        mongo_auth="${uri} ${mongo_auth}"
+      fi
+
     else
       echo "Missing configuration options"
       return 1
@@ -61,7 +67,7 @@ mongo_set_import_auth_var () {
     mongoimport_auth="--host ${host} --db ${db} --username=$user --password=${pwd} ${mongoimport_auth}"
   else
     if [ -n "${uri}" ] ; then
-      mongoimport_auth="${uri} ${mongoimport_auth}"
+      mongoimport_auth="\"${uri}\" ${mongoimport_auth}"
     else
       echo "Missing configuration options"
       return 1
@@ -162,11 +168,19 @@ mongo_file_initrc () {
   [[ $DEBUG && $DEBUG == true ]] && \
     echo -en "(mongo_file) Try compile file $f with options $opts $MONGO_EXTRA_OPTIONS $mongo_auth.\n"
 
-  v=$($MONGO_CLIENT $opts $MONGO_EXTRA_OPTIONS $mongo_auth 2>&1 <<EOF
+  if [ -n "${init_commands}" ] ; then
+    v=$($MONGO_CLIENT $opts $MONGO_EXTRA_OPTIONS $mongo_auth 2>&1 <<EOF
 $init_commands
 $commands
 EOF
 )
+  else
+    v=$($MONGO_CLIENT $opts $MONGO_EXTRA_OPTIONS $mongo_auth 2>&1 <<EOF
+$init_commands
+$commands
+EOF
+)
+  fi
   result=$?
 
   [[ $DEBUG && $DEBUG == true ]] && \
