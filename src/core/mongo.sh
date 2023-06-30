@@ -160,7 +160,9 @@ mongo_file_initrc () {
   fi
 
   if [ -n "$initrc" ] ; then
-    init_commands="$(cat $initrc)"
+    if [ -e $initrc ] ; then
+      init_commands="$(cat $initrc)"
+    fi
   fi
 
   commands="$(cat $f)"
