@@ -1310,6 +1310,8 @@ commons_oracle_compile_all_from_dir () {
   local exc=0
 
   _logfile_write "(oracle) Start compilation $msg_head: $msg" || return 1
+  
+  [[ $DEBUG && $DEBUG == true ]] && echo -en "ORACLE_COMPILE_FILES_EXCLUDED: $ORACLE_COMPILE_FILES_EXCLUDED\n"
 
   for i in $directory/*.sql ; do
 
@@ -1323,16 +1325,35 @@ commons_oracle_compile_all_from_dir () {
 
       for e in $ORACLE_COMPILE_FILES_EXCLUDED ; do
 
-        ex_f=`basename $e`
-        ex_f="${ex_f/.sql/}"
+        is_regex=$(echo $e | grep "\*" | wc -l)
 
-        if [ "$ex_f" == "$f" ] ; then
-          exc=1
+        if [ $is_regex -eq 1 ]; then
 
-          _logfile_write "(oracle) Exclude file $fb for user request."
+            if [[ "$f" =~ ${e} ]] ; then
 
-          break
+              exc=1
+
+              _logfile_write "(oracle) Exclude file $fb for user request." || return 1
+
+              break
+
+            fi
+
+        else
+
+            ex_f=`basename $e`
+            ex_f="${ex_f/.sql/}"
+
+            if [ "$ex_f" == "$f" ] ; then
+              exc=1
+
+              _logfile_write "(oracle) Exclude file $fb for user request." || return 1
+
+              break
+            fi
+        
         fi
+
 
       done # end for exclueded
 
