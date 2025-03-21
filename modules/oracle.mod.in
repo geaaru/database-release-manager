@@ -40,8 +40,8 @@ oracle_long_help () {
    echo -en "\tshow_help               Show command list.\n"
    echo -en "\tversion                 Show module version.\n"
    echo -en "\ttest_connection         Test connection versus database.\n"
-   echo -en "\tdownload                Download packages/procedures/triggers/views/etc.\n"
-   echo -en "\tcompile                 Compile packages/procedures/triggers/views/etc.\n"
+   echo -en "\tdownload                Download packages/procedures/triggers/views/tables/etc.\n"
+   echo -en "\tcompile                 Compile packages/procedures/triggers/views/tables/etc.\n"
    echo -en "\tshell                   Enter on sqlplus shell of current configuration.\n"
    echo -en "\tquery                   Execute directly a query on current database.\n"
    echo -en "\tinitenv                 Create default directories if not present.\n"
@@ -65,8 +65,8 @@ oracle_show_help () {
    echo -en "\tshow_help               Show command list.\n"
    echo -en "\tversion                 Show module version.\n"
    echo -en "\ttest_connection         Test connection versus database.\n"
-   echo -en "\tdownload                Download packages/procedures/triggers/views/etc.\n"
-   echo -en "\tcompile                 Compile packages/procedures/triggers/views/etc.\n"
+   echo -en "\tdownload                Download packages/procedures/triggers/views/tables/etc.\n"
+   echo -en "\tcompile                 Compile packages/procedures/triggers/views/tables/etc.\n"
    echo -en "\tshell                   Enter on sqlplus shell of current configuration.\n"
    echo -en "\tquery                   Execute directly a query on current database.\n"
    echo -en "\tinitenv                 Create default directories if not present.\n"
@@ -173,6 +173,7 @@ oracle_initenv () {
     synonims
     jobs
     schedulers
+    tables
   "
 
   # Shift first tow input param
@@ -614,13 +615,16 @@ _oracle_connections_args () {
 #   * --all-functions     Download all functions.
 #   * --all-jobs          Download all jobs.
 #   * --all-schedules     Download all schedules.
-#   * --all               Download all packages, triggers, view, packages, functions.
+#   * --all-tables        Download all tables.
+#   * --all-tables4start  Download all tables in one file for start new schema.
+#   * --all               Download all packages, triggers, view, packages, functions, tables.
 #   * --package [p]       Download package p.
 #   * --trigger [t]       Download trigger t.
 #   * --function [f]      Download function f.
 #   * --view [v]          Download view v.
 #   * --job [j]           Download job j.
 #   * --schedule [s]      Download schedule s.
+#   * --table [b]         Download tables b.
 # SEE ALSO
 #   _oracle_connections_args
 # SOURCE
@@ -629,7 +633,7 @@ _oracle_download_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_download_args args: $@)\n"
 
   local short_options="S:U:P:hD:t:"
-  local long_options="all-packages all-triggers all-functions all-views all-jobs all-schedules all package: trigger: function: view: job: schedule:"
+  local long_options="all-packages all-triggers all-functions all-views all-jobs all-schedules all-tables all-tables4start all package: trigger: function: view: job: schedule: table:"
   long_options="$long_options help"
 
   $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
@@ -652,6 +656,8 @@ _oracle_download_args () {
   ORACLE_DOWNLOAD_ALL_SCHEDULES=0
   ORACLE_DOWNLOAD_ALL_TESTS=0
   ORACLE_DOWNLOAD_ALL_PROCEDURES=0
+  ORACLE_DOWNLOAD_ALL_TABLES=0
+  ORACLE_DOWNLOAD_ALL_TABLES4START=0
   ORACLE_DOWNLOAD_PACKAGE=""
   ORACLE_DOWNLOAD_TRIGGER=""
   ORACLE_DOWNLOAD_FUNCTION=""
@@ -660,6 +666,7 @@ _oracle_download_args () {
   ORACLE_DOWNLOAD_SCHEDULE=""
   ORACLE_DOWNLOAD_TEST=""
   ORACLE_DOWNLOAD_PROCEDURE=""
+  ORACLE_DOWNLOAD_TABLE=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -692,6 +699,13 @@ _oracle_download_args () {
         ;;
       --all-procedures)
         ORACLE_DOWNLOAD_ALL_PROCEDURES=1
+        ;;
+      --all-tables)
+        ORACLE_DOWNLOAD_ALL_TABLES=1
+        ;;
+      --all-tables4start)
+        ORACLE_DOWNLOAD_ALL_TABLES=1
+        ORACLE_DOWNLOAD_ALL_TABLES4START=1
         ;;
       --all)
         ORACLE_DOWNLOAD_ALL=1
@@ -728,6 +742,10 @@ _oracle_download_args () {
         ORACLE_DOWNLOAD_PROCEDURE="$2"
         shift
         ;;
+      --table)
+        ORACLE_DOWNLOAD_TABLE="$2"
+        shift
+        ;;
 
       -h|--help)
         _oracle_download_help
@@ -762,6 +780,8 @@ _oracle_download_help () {
   echo -en "[--all-schedules]       Download all schedules.\n"
   echo -en "[--all-tests]           Download all tests.\n"
   echo -en "[--all-procedures]      Download all procedures.\n"
+  echo -en "[--all-tables]          Download all tables.\n"
+  echo -en "[--all-tables4start]    Download all tables in one file for start new schema.\n"
   echo -en "[--all]                 Download all.\n"
   echo -en "[--package name]        Download a particular package.\n"
   echo -en "[--trigger name]        Download a particular trigger.\n"
@@ -771,6 +791,7 @@ _oracle_download_help () {
   echo -en "[--schedule name]       Download a particular schedule.\n"
   echo -en "[--test name]           Download a particular test.\n"
   echo -en "[--procedure name]      Download a particular procedure.\n"
+  echo -en "[--table name]          Download a particular table.\n"
 
   return 0
 }
@@ -1199,6 +1220,7 @@ _oracle_compile () {
 #   commons_oracle_download_all_jobs
 #   commons_oracle_download_all_schedules
 #   commons_oracle_download_all_tests
+#   commons_oracle_download_all_tables
 #   commons_oracle_download_package
 #   commons_oracle_download_trigger
 #   commons_oracle_download_function
@@ -1206,6 +1228,7 @@ _oracle_compile () {
 #   commons_oracle_download_job
 #   commons_oracle_download_schedule
 #   commons_oracle_download_test
+#   commons_oracle_download_table
 # SOURCE
 _oracle_download () {
 
@@ -1226,6 +1249,8 @@ _oracle_download () {
     commons_oracle_download_all_tests || error_handled "Error on download all tests."
 
     commons_oracle_download_all_procedures || error_handled "Error on download all procedures."
+
+    commons_oracle_download_all_tables || error_handled "Error on download all tables."
 
   else
 
@@ -1350,6 +1375,25 @@ _oracle_download () {
       if [ ! -z "$ORACLE_DOWNLOAD_PROCEDURE" ] ; then
 
         commons_oracle_download_procedure "$ORACLE_DOWNLOAD_PROCEDURE" || error_handled "Error on download procedure $ORACLE_DOWNLOAD_PROCEDURE ."
+
+      fi
+
+    fi
+
+    if [ $ORACLE_DOWNLOAD_ALL_TABLES -eq 1 ] ; then
+      
+      ORACLE_DOWNLOAD_TABLES4START=0
+      if [ $ORACLE_DOWNLOAD_ALL_TABLES4START -eq 1 ] ; then
+        ORACLE_DOWNLOAD_TABLES4START=1
+      fi
+      
+      commons_oracle_download_all_tables $ORACLE_DOWNLOAD_TABLES4START || error_handled "Error on download all tables."
+
+    else
+
+      if [ ! -z "$ORACLE_DOWNLOAD_TABLE" ] ; then
+
+        commons_oracle_download_table "$ORACLE_DOWNLOAD_TABLE" || error_handled "Error on download procedure $ORACLE_DOWNLOAD_TABLE ."
 
       fi
 

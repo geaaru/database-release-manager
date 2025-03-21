@@ -145,6 +145,136 @@ commons_oracle_shell () {
   return $?
 }
 # commons_oracle_commons_oracle_shell_end
+#
+# commons_oracle_commons_oracle_download_all_tables
+commons_oracle_download_all_tables() {
+
+  local export_single_file=${1}
+  local tablesdir=${ORACLE_DIR}/tables
+  local export_tables_sql=${tablesdir}/export_tables.sql
+
+  _logfile_write "Start download of all tables." || return 1
+
+  commons_oracle_download_create_export_tables ${export_single_file}
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_tables_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of all tables." || return 1
+
+  return $ans
+}
+# commons_oracle_commons_oracle_download_all_tables_end
+#
+# commons_oracle_commons_oracle_download_create_export_tables
+commons_oracle_download_create_export_tables() {
+  
+  local export_single_file=${1}
+  local tablesdir=${ORACLE_DIR}/tables
+  local export_tables_sql=${tablesdir}/export_tables.sql
+  local export_tables_file=${tablesdir}/export_tables_gen.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+
+  if [[ ! -e ${export_tables_file} || ! -e ${export_tables_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_tables_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_tables_sql} file." || return 1
+
+    # Create export_tables.sql file
+    _logfile_write "sed -e 's:TABLES_DIR:'${tablesdir}/':g' \
+      \"$_oracle_scripts/export_tables_gen.sql.in\" > \"${export_tables_file}\""
+    sed -e 's:TABLES_DIR:'${tablesdir}'/:g' -e 's:EXECONEFILE:'${export_single_file}':g' "$_oracle_scripts/export_tables_gen.sql.in" > "${export_tables_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_tables_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_tables_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_tables_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+# commons_oracle_commons_oracle_download_create_export_tables_end
+
+# commons_oracle_commons_oracle_download_table
+commons_oracle_download_table() {
+
+  local tablename=${1/.sql/}
+  local tablesdir=${ORACLE_DIR}/tables
+  local export_table_sql=${tablesdir}/export_table_${tablename}.sql
+
+  _logfile_write "Start download of the table ${tablename}." || return 1
+
+  commons_oracle_download_create_export_table $tablename
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_table_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of the table ${tablename}." || return 1
+
+  return $ans
+}
+# commons_oracle_commons_oracle_download_table_end
+
+# commons_oracle_commons_oracle_download_create_export_table
+commons_oracle_download_create_export_table() {
+
+  local tablename=${1/.sql/}
+
+  local tablesdir=${ORACLE_DIR}/tables
+  local export_table_sql=${tablesdir}/export_table_${tablename}.sql
+  local export_table_file=${tablesdir}/export_tables_gen_${tablename}.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+  if [[ ! -e ${export_table_file} || ! -e ${export_table_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_table_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_table_sql} file." || return 1
+
+    # Create export_table_${tablename}.sql file
+    _logfile_write "sed -e 's:TABLES_DIR:'${tablesdir}/':g' \
+      \"$_oracle_scripts/export_table_gen.sql.in\" > \"${export_table_file}\""
+    sed -e 's:TABLES_DIR:'${tablesdir}'/:g' "$_oracle_scripts/export_table_gen.sql.in" > "${export_table_file}"
+
+    # Replace TBL_NAME string
+    _logfile_write "sed -i -e 's:TBL_NAME:'${tablename}':g' \"${export_table_file}\""
+    sed -i -e 's:TBL_NAME:'${tablename}':g' "${export_table_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_table_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_table_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_table_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+# commons_oracle_commons_oracle_download_create_export_table_end
 
 # commons_oracle_commons_oracle_download_all_packages
 commons_oracle_download_all_packages() {

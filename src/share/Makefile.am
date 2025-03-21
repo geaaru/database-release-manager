@@ -19,7 +19,10 @@ EXTRA_DIST = \
 				 oracle/export_test_gen.sql.in \
 				 oracle/export_tests_gen.sql.in \
 				 oracle/export_procedure_gen.sql.in \
-				 oracle/export_procedures_gen.sql.in
+				 oracle/export_procedures_gen.sql.in \
+				 oracle/export_table_gen.sql.in \
+				 oracle/export_tables_gen.sql.in
+
 
 
 DISTCLEANFILES =
@@ -34,12 +37,15 @@ dist_oracle_DATA = \
 						 oracle/export_triggers_gen.sql.in \
 						 oracle/export_view_gen.sql.in \
 						 oracle/export_views_gen.sql.in \
-				 		 oracle/export_job_gen.sql.in \
+						 oracle/export_job_gen.sql.in \
 						 oracle/export_jobs_gen.sql.in \
 						 oracle/export_schedule_gen.sql.in \
 						 oracle/export_schedules_gen.sql.in \
 						 oracle/export_test_gen.sql.in \
 						 oracle/export_tests_gen.sql.in \
 						 oracle/export_procedure_gen.sql.in \
-						 oracle/export_procedures_gen.sql.in
+						 oracle/export_procedures_gen.sql.in \
+						 oracle/export_table_gen.sql.in \
+						 oracle/export_tables_gen.sql.in
+
 
