@@ -246,14 +246,18 @@ commons_mongo_get_indexes_list () {
     "(commons_mongo_get_indexes_list) args: collection '${single_collection}', filter = '${filter_keyname}', ignore_id_='${ignore_id_}'\n"
 
   if [ -z "${single_collection}" ] ; then
-    cmd="
-db.getCollectionNames().forEach(function(n){
-  print( JSON.stringify(db[n].getIndexSpecs()));
+    cmd="db.getCollectionNames().forEach(function(n){
+  idata=db[n].getIndexSpecs();
+  idata.forEach(function(i) { i.ns=n });
+  print( JSON.stringify(idata) );
 })"
 
   else
 
-    cmd="JSON.stringify(db['${single_collection}'].getIndexSpecs())"
+    cmd="idata=db['${single_collection}'].getIndexSpecs()
+idata.forEach(function(i) { i.ns='${single_collection}' });
+print( JSON.stringify(idata) );
+"
 
   fi
 
@@ -425,7 +429,7 @@ db.getCollectionNames().forEach(function(n) {
         local shardedNodes=""
 
         storageSize=$(echo $row | jq -r -M .storageSize)
-        sharded=$(echo $row | jq -r -M .sharded)
+        sharded=$(echo $row | jq -r -M '.sharded // false')
 
         count=$(echo $row | jq -r -M .count)
         nindexes=$(echo $row | jq -r -M .nindexes)
