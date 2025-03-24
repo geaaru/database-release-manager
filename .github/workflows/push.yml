@@ -8,10 +8,10 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+          #sudo pip install --upgrade pip
       - name: Install deps
         run: |
           sudo apt-get install -y autotools-dev autogen shtool sqlite3
-          sudo pip install --upgrade pip
           sudo pip install sphinx --upgrade
           sudo pip install recommonmark sphinx-bootstrap-theme --upgrade
 
