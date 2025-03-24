@@ -174,6 +174,7 @@ oracle_initenv () {
     jobs
     schedulers
     tables
+    sequences
   "
 
   # Shift first tow input param
@@ -616,6 +617,7 @@ _oracle_connections_args () {
 #   * --all-jobs          Download all jobs.
 #   * --all-schedules     Download all schedules.
 #   * --all-tables        Download all tables.
+#   * --all-sequences     Download all sequences.
 #   * --all-tables4start  Download all tables in one file for start new schema.
 #   * --all               Download all packages, triggers, view, packages, functions, tables.
 #   * --package [p]       Download package p.
@@ -625,6 +627,7 @@ _oracle_connections_args () {
 #   * --job [j]           Download job j.
 #   * --schedule [s]      Download schedule s.
 #   * --table [b]         Download tables b.
+#   * --sequence [q]      Download sequence q.
 # SEE ALSO
 #   _oracle_connections_args
 # SOURCE
@@ -632,8 +635,8 @@ _oracle_download_args () {
 
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_download_args args: $@)\n"
 
-  local short_options="S:U:P:hD:t:"
-  local long_options="all-packages all-triggers all-functions all-views all-jobs all-schedules all-tables all-tables4start all package: trigger: function: view: job: schedule: table:"
+  local short_options="S:U:P:hD:t:b:q:"
+  local long_options="all-packages all-triggers all-functions all-views all-jobs all-schedules all-tables sll-tables4start all-sequences all-sequences4start all package: trigger: function: view: job: schedule: table: sequence:"
   long_options="$long_options help"
 
   $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
@@ -658,6 +661,8 @@ _oracle_download_args () {
   ORACLE_DOWNLOAD_ALL_PROCEDURES=0
   ORACLE_DOWNLOAD_ALL_TABLES=0
   ORACLE_DOWNLOAD_ALL_TABLES4START=0
+  ORACLE_DOWNLOAD_ALL_SEQUENCES=0
+  ORACLE_DOWNLOAD_ALL_SEQUENCE4START=0
   ORACLE_DOWNLOAD_PACKAGE=""
   ORACLE_DOWNLOAD_TRIGGER=""
   ORACLE_DOWNLOAD_FUNCTION=""
@@ -667,6 +672,7 @@ _oracle_download_args () {
   ORACLE_DOWNLOAD_TEST=""
   ORACLE_DOWNLOAD_PROCEDURE=""
   ORACLE_DOWNLOAD_TABLE=""
+  ORACLE_DOWNLOAD_SEQUENCE=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -707,6 +713,13 @@ _oracle_download_args () {
         ORACLE_DOWNLOAD_ALL_TABLES=1
         ORACLE_DOWNLOAD_ALL_TABLES4START=1
         ;;
+      --all-sequences)
+        ORACLE_DOWNLOAD_ALL_SEQUENCES=1
+        ;;
+      --all-sequences4start)
+        ORACLE_DOWNLOAD_ALL_SEQUENCES=1
+        ORACLE_DOWNLOAD_ALL_SEQUENCE4START=1
+        ;;
       --all)
         ORACLE_DOWNLOAD_ALL=1
         ;;
@@ -746,6 +759,10 @@ _oracle_download_args () {
         ORACLE_DOWNLOAD_TABLE="$2"
         shift
         ;;
+      --sequence)
+        ORACLE_DOWNLOAD_SEQUENCE="$2"
+        shift
+        ;;
 
       -h|--help)
         _oracle_download_help
@@ -782,6 +799,8 @@ _oracle_download_help () {
   echo -en "[--all-procedures]      Download all procedures.\n"
   echo -en "[--all-tables]          Download all tables.\n"
   echo -en "[--all-tables4start]    Download all tables in one file for start new schema.\n"
+  echo -en "[--all-sequences]       Download all sequences.\n"
+  echo -en "[--all-sequences4start] Download all sequences in one file for start new schema.\n"
   echo -en "[--all]                 Download all.\n"
   echo -en "[--package name]        Download a particular package.\n"
   echo -en "[--trigger name]        Download a particular trigger.\n"
@@ -792,6 +811,7 @@ _oracle_download_help () {
   echo -en "[--test name]           Download a particular test.\n"
   echo -en "[--procedure name]      Download a particular procedure.\n"
   echo -en "[--table name]          Download a particular table.\n"
+  echo -en "[--sequence name]       Download a particular sequence.\n"
 
   return 0
 }
@@ -1394,6 +1414,25 @@ _oracle_download () {
       if [ ! -z "$ORACLE_DOWNLOAD_TABLE" ] ; then
 
         commons_oracle_download_table "$ORACLE_DOWNLOAD_TABLE" || error_handled "Error on download procedure $ORACLE_DOWNLOAD_TABLE ."
+
+      fi
+
+    fi
+
+    if [ $ORACLE_DOWNLOAD_ALL_SEQUENCES -eq 1 ] ; then
+
+      ORACLE_DOWNLOAD_SEQUENCE4START=0
+      if [ $ORACLE_DOWNLOAD_ALL_SEQUENCE4START -eq 1 ] ; then
+        ORACLE_DOWNLOAD_SEQUENCE4START=1
+      fi
+      
+      commons_oracle_download_all_sequences $ORACLE_DOWNLOAD_SEQUENCE4START $|| error_handled "Error on download all sequences."
+
+    else
+
+      if [ ! -z "$ORACLE_DOWNLOAD_SEQUENCE" ] ; then
+
+        commons_oracle_download_sequence "$ORACLE_DOWNLOAD_SEQUENCE" || error_handled "Error on download procedure $ORACLE_DOWNLOAD_SEQUENCE ."
 
       fi
 

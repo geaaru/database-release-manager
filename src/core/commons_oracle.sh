@@ -276,6 +276,136 @@ commons_oracle_download_create_export_table() {
 }
 # commons_oracle_commons_oracle_download_create_export_table_end
 
+# commons_oracle_commons_oracle_download_all_sequences
+commons_oracle_download_all_sequences() {
+
+  local export_single_file=${1}
+  local sequencesdir=${ORACLE_DIR}/sequences
+  local export_sequences_sql=${sequencesdir}/export_sequences.sql
+
+  _logfile_write "Start download of all sequences." || return 1
+
+  commons_oracle_download_create_export_sequences ${export_single_file}
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_sequences_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of all sequences." || return 1
+
+  return $ans
+}
+# commons_oracle_commons_oracle_download_all_sequences_end
+#
+# commons_oracle_commons_oracle_download_create_export_sequences
+commons_oracle_download_create_export_sequences() {
+  
+  local export_single_file=${1}
+  local sequencesdir=${ORACLE_DIR}/sequences
+  local export_sequences_sql=${sequencesdir}/export_sequences.sql
+  local export_sequences_file=${sequencesdir}/export_sequences_gen.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+
+  if [[ ! -e ${export_sequences_file} || ! -e ${export_sequences_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_sequences_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_sequences_sql} file." || return 1
+
+    # Create export_sequences.sql file
+    _logfile_write "sed -e 's:SEQS_DIR:'${sequencesdir}/':g' \
+      \"$_oracle_scripts/export_sequences_gen.sql.in\" > \"${export_sequences_file}\""
+    sed -e 's:SEQS_DIR:'${sequencesdir}'/:g' -e 's:EXECONEFILE:'${export_single_file}':g' "$_oracle_scripts/export_sequences_gen.sql.in" > "${export_sequences_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_sequences_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_sequences_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_sequences_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+# commons_oracle_commons_oracle_download_create_export_sequences_end
+
+# commons_oracle_commons_oracle_download_sequence
+commons_oracle_download_sequence() {
+
+  local sequencename=${1/.sql/}
+  local sequencesdir=${ORACLE_DIR}/sequences
+  local export_sequence_sql=${sequencesdir}/export_sequence_${sequencename}.sql
+
+  _logfile_write "Start download of the sequence ${sequencename}." || return 1
+
+  commons_oracle_download_create_export_sequence $sequencename
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_sequence_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of the sequence ${sequencename}." || return 1
+
+  return $ans
+}
+# commons_oracle_commons_oracle_download_sequence_end
+
+# commons_oracle_commons_oracle_download_create_export_sequence
+commons_oracle_download_create_export_sequence() {
+
+  local sequencename=${1/.sql/}
+
+  local sequencesdir=${ORACLE_DIR}/sequences
+  local export_sequence_sql=${sequencesdir}/export_sequence_${sequencename}.sql
+  local export_sequence_file=${sequencesdir}/export_sequences_gen_${sequencename}.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+  if [[ ! -e ${export_sequence_file} || ! -e ${export_sequence_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_sequence_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_sequence_sql} file." || return 1
+
+    # Create export_sequence_${sequencename}.sql file
+    _logfile_write "sed -e 's:SEQS_DIR:'${sequencesdir}/':g' \
+      \"$_oracle_scripts/export_sequence_gen.sql.in\" > \"${export_sequence_file}\""
+    sed -e 's:SEQS_DIR:'${sequencesdir}'/:g' "$_oracle_scripts/export_sequence_gen.sql.in" > "${export_sequence_file}"
+
+    # Replace TBL_NAME string
+    _logfile_write "sed -i -e 's:SEQ_NAME:'${sequencename}':g' \"${export_sequence_file}\""
+    sed -i -e 's:SEQ_NAME:'${sequencename}':g' "${export_sequence_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_sequence_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_sequence_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_sequence_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+# commons_oracle_commons_oracle_download_create_export_sequence_end
+
 # commons_oracle_commons_oracle_download_all_packages
 commons_oracle_download_all_packages() {
 
