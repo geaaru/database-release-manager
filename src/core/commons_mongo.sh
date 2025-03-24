@@ -247,14 +247,14 @@ commons_mongo_get_indexes_list () {
 
   if [ -z "${single_collection}" ] ; then
     cmd="db.getCollectionNames().forEach(function(n){
-  idata=db[n].getIndexSpecs();
+  var idata=db[n].getIndexSpecs();
   idata.forEach(function(i) { i.ns=n });
   print( JSON.stringify(idata) );
 })"
 
   else
 
-    cmd="idata=db['${single_collection}'].getIndexSpecs()
+    cmd="var idata=db['${single_collection}'].getIndexSpecs()
 idata.forEach(function(i) { i.ns='${single_collection}' });
 print( JSON.stringify(idata) );
 "
