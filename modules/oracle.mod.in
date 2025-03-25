@@ -665,6 +665,8 @@ _oracle_download_args () {
   ORACLE_DOWNLOAD_ALL_SEQUENCE4START=0
   ORACLE_DOWNLOAD_ALL_FOREIGNS=0
   ORACLE_DOWNLOAD_ALL_FOREIGN4START=0
+  ORACLE_DOWNLOAD_ALL_TYPES=0
+  ORACLE_DOWNLOAD_ALL_TYPE4START=0
   ORACLE_DOWNLOAD_PACKAGE=""
   ORACLE_DOWNLOAD_TRIGGER=""
   ORACLE_DOWNLOAD_FUNCTION=""
@@ -676,6 +678,7 @@ _oracle_download_args () {
   ORACLE_DOWNLOAD_TABLE=""
   ORACLE_DOWNLOAD_SEQUENCE=""
   ORACLE_DOWNLOAD_FOREIGN=""
+  ORACLE_DOWNLOAD_TYPE=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -730,6 +733,13 @@ _oracle_download_args () {
         ORACLE_DOWNLOAD_ALL_FOREIGNS=1
         ORACLE_DOWNLOAD_ALL_FOREIGN4START=1
         ;;
+      --all-types)
+        ORACLE_DOWNLOAD_ALL_TYPES=1
+        ;;
+      --all-types4start)
+        ORACLE_DOWNLOAD_ALL_TYPES=1
+        ORACLE_DOWNLOAD_ALL_TYPE4START=1
+        ;;
       --all)
         ORACLE_DOWNLOAD_ALL=1
         ;;
@@ -777,6 +787,10 @@ _oracle_download_args () {
         ORACLE_DOWNLOAD_FOREIGN="$2"
         shift
         ;;
+      --type)
+        ORACLE_DOWNLOAD_TYPE="$2"
+        shift
+        ;;
 
       -h|--help)
         _oracle_download_help
@@ -817,6 +831,8 @@ _oracle_download_help () {
   echo -en "[--all-sequences4start] Download all sequences in one file for start new schema.\n"
   echo -en "[--all-foreigns]        Download all foreigns.\n"
   echo -en "[--all-foreigns4start]  Download all foreigns in one file for start new schema.\n"
+  echo -en "[--all-types]           Download all types.\n"
+  echo -en "[--all-types4start]     Download all types in one file for start new schema.\n"
   echo -en "[--all]                 Download all.\n"
   echo -en "[--package name]        Download a particular package.\n"
   echo -en "[--trigger name]        Download a particular trigger.\n"
@@ -829,6 +845,7 @@ _oracle_download_help () {
   echo -en "[--table name]          Download a particular table.\n"
   echo -en "[--sequence name]       Download a particular sequence.\n"
   echo -en "[--foreign name]        Download a particular foreign.\n"
+  echo -en "[--type name]           Download a particular type.\n"
 
   return 0
 }
@@ -1293,6 +1310,8 @@ _oracle_download () {
 
     commons_oracle_download_all_foreign || error_handled "Error on download all foreigns."
 
+    commons_oracle_download_all_type || error_handled "Error on download all types."
+
   else
 
     # Check for all-packages or single package
@@ -1473,6 +1492,25 @@ _oracle_download () {
       if [ ! -z "$ORACLE_DOWNLOAD_FOREIGN" ] ; then
 
         commons_oracle_download_foreign "$ORACLE_DOWNLOAD_FOREIGN" || error_handled "Error on download procedure $ORACLE_DOWNLOAD_FOREIGN ."
+
+      fi
+
+    fi
+
+    if [ $ORACLE_DOWNLOAD_ALL_TYPES -eq 1 ] ; then
+
+      ORACLE_DOWNLOAD_TYPE4START=0
+      if [ $ORACLE_DOWNLOAD_ALL_TYPE4START -eq 1 ] ; then
+        ORACLE_DOWNLOAD_TYPE4START=1
+      fi
+      
+      commons_oracle_download_all_types $ORACLE_DOWNLOAD_TYPE4START $|| error_handled "Error on download all types."
+
+    else
+
+      if [ ! -z "$ORACLE_DOWNLOAD_TYPE" ] ; then
+
+        commons_oracle_download_type "$ORACLE_DOWNLOAD_TYPE" || error_handled "Error on download procedure $ORACLE_DOWNLOAD_TYPE ."
 
       fi
 

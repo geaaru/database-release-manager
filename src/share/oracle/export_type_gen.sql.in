@@ -1,0 +1,69 @@
+SET LONG 600000
+SET PAGESIZE 0
+SET LINESIZE 300
+SET LONGC 300
+SET TRIMSPOOL ON
+SET TERM OFF
+SET FEEDBACK OFF
+set SERVEROUTPUT on
+
+spool TYPES_DIRexport_type_TP_NAME.sql
+select 'SET LONG 600000' from dual;
+select 'SET PAGESIZE 0' from dual;
+select 'SET LINESIZE 300' from dual;
+select 'SET LONGC 300' from dual;
+select 'SET TRIMSPOOL ON' from dual; 
+select 'SET TERM OFF' from dual;
+select 'SET FEEDBACK OFF' from dual;
+select 'set SERVEROUTPUT on' from dual;
+DECLARE
+   res VARCHAR2(500);
+   typesdir VARCHAR2(500) := 'TYPES_DIR';
+   typename VARCHAR2(500) := 'TP_NAME';
+BEGIN
+    FOR t_name IN (
+
+        select UT.TYPE_NAME
+        from USER_TYPES UT
+        where 1=1
+        AND UT.TYPE_NAME = UPPER(typename)
+
+    ) LOOP
+      SELECT CASE WHEN SUBSTR(LOWER(t_name.TYPE_NAME),1 ,2) = 'tp'
+                  THEN 'spool '||typesdir||'tp'||InitCap(REPLACE(LOWER(t_name.TYPE_NAME), 'tp', ''))||'.sql'
+                  ELSE 'spool '||typesdir||LOWER(t_name.TYPE_NAME)||'.sql'
+             END into res
+      FROM dual;   
+      dbms_output.put_line (res); 
+      dbms_output.put_line ('BEGIN'); 
+      select 'DBMS_METADATA.SET_TRANSFORM_PARAM(DBMS_METADATA.SESSION_TRANSFORM,''DEFAULT'',true);' into res from dual;
+      dbms_output.put_line (res); 
+      select 'DBMS_METADATA.SET_TRANSFORM_PARAM(DBMS_METADATA.SESSION_TRANSFORM,''SEGMENT_ATTRIBUTES'',true);' into res from dual;
+      dbms_output.put_line (res); 
+      dbms_output.put_line ('END;'); 
+      dbms_output.put_line ('/'); 
+      select  'select REPLACE(REPLACE(TP, '' "''||OWNER||''"."'', '' "''), ''EDITIONABLE '', '''') AS TP '||
+        'from '||
+        '('||
+        '    select  TRIM(dbms_metadata.GET_DDL(''TYPE'',UT.TYPE_NAME)) AS TP, '||
+        '    (select username from user_users) AS OWNER '||
+        '    from USER_TYPES UT '||
+        '    where 1=1 '||
+        '    AND UT.TYPE_NAME = UPPER('''||t_name.TYPE_NAME||''')'||
+        '    ORDER BY UT.TYPE_NAME '||
+        ') TMP_TP;' into res from dual;
+      dbms_output.put_line (res); 
+      select 'select ''/'' from dual;' into res from dual;
+      dbms_output.put_line (res); 
+      select 'spool off;' into res from dual;
+      dbms_output.put_line (res); 
+      select ' ' into res from dual;
+      dbms_output.put_line (res); 
+   END LOOP;
+END;
+/
+select 'exit' from dual;
+spool off;
+exit
+/
+

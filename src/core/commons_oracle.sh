@@ -536,6 +536,136 @@ commons_oracle_download_create_export_foreign() {
 }
 # commons_oracle_commons_oracle_download_create_export_foreign_end
 
+# commons_oracle_commons_oracle_download_all_types
+commons_oracle_download_all_types() {
+
+  local export_single_file=${1}
+  local typesdir=${ORACLE_DIR}/types
+  local export_types_sql=${typesdir}/export_types.sql
+
+  _logfile_write "Start download of all types." || return 1
+
+  commons_oracle_download_create_export_types ${export_single_file}
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_types_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of all types." || return 1
+
+  return $ans
+}
+# commons_oracle_commons_oracle_download_all_types_end
+
+# commons_oracle_commons_oracle_download_create_export_types
+commons_oracle_download_create_export_types() {
+  
+  local export_single_file=${1}
+  local typesdir=${ORACLE_DIR}/types
+  local export_types_sql=${typesdir}/export_types.sql
+  local export_types_file=${typesdir}/export_types_gen.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+
+  if [[ ! -e ${export_types_file} || ! -e ${export_types_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_types_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_types_sql} file." || return 1
+
+    # Create export_types.sql file
+    _logfile_write "sed -e 's:TYPES_DIR:'${typesdir}/':g' \
+      \"$_oracle_scripts/export_types_gen.sql.in\" > \"${export_types_file}\""
+    sed -e 's:TYPES_DIR:'${typesdir}'/:g' -e 's:EXECONEFILE:'${export_single_file}':g' "$_oracle_scripts/export_types_gen.sql.in" > "${export_types_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_types_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_types_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_types_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+# commons_oracle_commons_oracle_download_create_export_types_end
+
+# commons_oracle_commons_oracle_download_type
+commons_oracle_download_type() {
+
+  local typename=${1/.sql/}
+  local typesdir=${ORACLE_DIR}/types
+  local export_type_sql=${typesdir}/export_type_${typename}.sql
+
+  _logfile_write "Start download of the type ${typename}." || return 1
+
+  commons_oracle_download_create_export_type $typename
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_type_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of the type ${typename}." || return 1
+
+  return $ans
+}
+# commons_oracle_commons_oracle_download_type_end
+
+# commons_oracle_commons_oracle_download_create_export_type
+commons_oracle_download_create_export_type() {
+
+  local typename=${1/.sql/}
+
+  local typesdir=${ORACLE_DIR}/types
+  local export_type_sql=${typesdir}/export_type_${typename}.sql
+  local export_type_file=${typesdir}/export_types_gen_${typename}.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+  if [[ ! -e ${export_type_file} || ! -e ${export_type_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_type_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_type_sql} file." || return 1
+
+    # Create export_type_${typename}.sql file
+    _logfile_write "sed -e 's:TYPES_DIR:'${typesdir}/':g' \
+      \"$_oracle_scripts/export_type_gen.sql.in\" > \"${export_type_file}\""
+    sed -e 's:TYPES_DIR:'${typesdir}'/:g' "$_oracle_scripts/export_type_gen.sql.in" > "${export_type_file}"
+
+    # Replace TBL_NAME string
+    _logfile_write "sed -i -e 's:TP_NAME:'${typename}':g' \"${export_type_file}\""
+    sed -i -e 's:TP_NAME:'${typename}':g' "${export_type_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_type_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_type_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_type_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+# commons_oracle_commons_oracle_download_create_export_type_end
+
 # commons_oracle_commons_oracle_download_all_packages
 commons_oracle_download_all_packages() {
 
