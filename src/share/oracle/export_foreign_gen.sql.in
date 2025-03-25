@@ -1,0 +1,77 @@
+SET LONG 600000
+SET PAGESIZE 0
+SET LINESIZE 300
+SET LONGC 300
+SET TRIMSPOOL ON
+SET TERM OFF
+SET FEEDBACK OFF
+set SERVEROUTPUT on
+
+spool FKS_DIRexport_foreign_FK_NAME.sql
+select 'SET LONG 600000' from dual;
+select 'SET PAGESIZE 0' from dual;
+select 'SET LINESIZE 300' from dual;
+select 'SET LONGC 300' from dual;
+select 'SET TRIMSPOOL ON' from dual; 
+select 'SET TERM OFF' from dual;
+select 'SET FEEDBACK OFF' from dual;
+select 'set SERVEROUTPUT on' from dual;
+DECLARE
+   res VARCHAR2(500);
+   foreignsdir VARCHAR2(500) := 'FKS_DIR';
+   foreignname VARCHAR2(500) := 'FK_NAME';
+BEGIN
+    FOR t_name IN (
+
+        select UC.constraint_name
+        from user_constraints UC
+        where 1=1
+        AND UC.CONSTRAINT_TYPE NOT IN ('C', 'P', 'U')
+        AND UC.CONSTRAINT_NAME = UPPER(foreignname)
+        ORDER BY UC.constraint_name
+
+    ) LOOP
+      SELECT CASE WHEN SUBSTR(LOWER(t_name.CONSTRAINT_NAME),1 ,2) = 'fk'
+                  THEN 'spool '||foreignsdir||'fk'||InitCap(REPLACE(LOWER(t_name.CONSTRAINT_NAME), 'fk', ''))||'.sql'
+                  ELSE 'spool '||foreignsdir||LOWER(t_name.CONSTRAINT_NAME)||'.sql'
+             END into res
+      FROM dual;   
+      dbms_output.put_line (res); 
+      dbms_output.put_line ('BEGIN'); 
+      select 'DBMS_METADATA.SET_TRANSFORM_PARAM(DBMS_METADATA.SESSION_TRANSFORM,''CONSTRAINTS'',true);' into res from dual;
+      dbms_output.put_line (res); 
+      select 'DBMS_METADATA.SET_TRANSFORM_PARAM(DBMS_METADATA.SESSION_TRANSFORM,''STORAGE'',false);' into res from dual;
+      dbms_output.put_line (res); 
+      select 'DBMS_METADATA.SET_TRANSFORM_PARAM(DBMS_METADATA.SESSION_TRANSFORM,''REF_CONSTRAINTS'',true);' into res from dual;
+      dbms_output.put_line (res); 
+      select 'DBMS_METADATA.SET_TRANSFORM_PARAM(DBMS_METADATA.SESSION_TRANSFORM,''SQLTERMINATOR'',true);' into res from dual;
+      dbms_output.put_line (res); 
+      select 'DBMS_METADATA.SET_TRANSFORM_PARAM(DBMS_METADATA.SESSION_TRANSFORM,''SEGMENT_ATTRIBUTES'',false);' into res from dual;
+      dbms_output.put_line (res); 
+      dbms_output.put_line ('END;'); 
+      dbms_output.put_line ('/'); 
+      select  'select REPLACE(REPLACE(FK, '' "''||OWNER||''"."'', '' "''), ''EDITIONABLE '', '''') AS FK '||
+                'from '||
+                '('||
+                '    select  TRIM(dbms_metadata.GET_DDL(''REF_CONSTRAINT'',UC.CONSTRAINT_NAME)) AS FK, '||
+                '    (select username from user_users) AS OWNER '||
+                '    from USER_CONSTRAINTS UC '||
+                '    where 1=1 '||
+                '    AND UC.CONSTRAINT_NAME = UPPER('''||t_name.constraint_name||''')'||
+                '    ORDER BY UC.CONSTRAINT_NAME '||
+                ') TMP_FK;' into res from dual;
+      dbms_output.put_line (res); 
+      select 'select ''/'' from dual;' into res from dual;
+      dbms_output.put_line (res); 
+      select 'spool off;' into res from dual;
+      dbms_output.put_line (res); 
+      select ' ' into res from dual;
+      dbms_output.put_line (res); 
+   END LOOP;
+END;
+/
+select 'exit' from dual;
+spool off;
+exit
+/
+

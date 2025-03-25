@@ -636,7 +636,7 @@ _oracle_download_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_download_args args: $@)\n"
 
   local short_options="S:U:P:hD:t:b:q:"
-  local long_options="all-packages all-triggers all-functions all-views all-jobs all-schedules all-tables sll-tables4start all-sequences all-sequences4start all package: trigger: function: view: job: schedule: table: sequence:"
+  local long_options="all-packages all-triggers all-functions all-views all-jobs all-schedules all-tables sll-tables4start all-sequences all-sequences4start all-foreigns all-foreigns4start all package: trigger: function: view: job: schedule: table: sequence: foreign:"
   long_options="$long_options help"
 
   $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
@@ -663,6 +663,8 @@ _oracle_download_args () {
   ORACLE_DOWNLOAD_ALL_TABLES4START=0
   ORACLE_DOWNLOAD_ALL_SEQUENCES=0
   ORACLE_DOWNLOAD_ALL_SEQUENCE4START=0
+  ORACLE_DOWNLOAD_ALL_FOREIGNS=0
+  ORACLE_DOWNLOAD_ALL_FOREIGN4START=0
   ORACLE_DOWNLOAD_PACKAGE=""
   ORACLE_DOWNLOAD_TRIGGER=""
   ORACLE_DOWNLOAD_FUNCTION=""
@@ -673,6 +675,7 @@ _oracle_download_args () {
   ORACLE_DOWNLOAD_PROCEDURE=""
   ORACLE_DOWNLOAD_TABLE=""
   ORACLE_DOWNLOAD_SEQUENCE=""
+  ORACLE_DOWNLOAD_FOREIGN=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -720,6 +723,13 @@ _oracle_download_args () {
         ORACLE_DOWNLOAD_ALL_SEQUENCES=1
         ORACLE_DOWNLOAD_ALL_SEQUENCE4START=1
         ;;
+      --all-foreigns)
+        ORACLE_DOWNLOAD_ALL_FOREIGNS=1
+        ;;
+      --all-foreigns4start)
+        ORACLE_DOWNLOAD_ALL_FOREIGNS=1
+        ORACLE_DOWNLOAD_ALL_FOREIGN4START=1
+        ;;
       --all)
         ORACLE_DOWNLOAD_ALL=1
         ;;
@@ -763,6 +773,10 @@ _oracle_download_args () {
         ORACLE_DOWNLOAD_SEQUENCE="$2"
         shift
         ;;
+      --foreign)
+        ORACLE_DOWNLOAD_FOREIGN="$2"
+        shift
+        ;;
 
       -h|--help)
         _oracle_download_help
@@ -801,6 +815,8 @@ _oracle_download_help () {
   echo -en "[--all-tables4start]    Download all tables in one file for start new schema.\n"
   echo -en "[--all-sequences]       Download all sequences.\n"
   echo -en "[--all-sequences4start] Download all sequences in one file for start new schema.\n"
+  echo -en "[--all-foreigns]        Download all foreigns.\n"
+  echo -en "[--all-foreigns4start]  Download all foreigns in one file for start new schema.\n"
   echo -en "[--all]                 Download all.\n"
   echo -en "[--package name]        Download a particular package.\n"
   echo -en "[--trigger name]        Download a particular trigger.\n"
@@ -812,6 +828,7 @@ _oracle_download_help () {
   echo -en "[--procedure name]      Download a particular procedure.\n"
   echo -en "[--table name]          Download a particular table.\n"
   echo -en "[--sequence name]       Download a particular sequence.\n"
+  echo -en "[--foreign name]        Download a particular foreign.\n"
 
   return 0
 }
@@ -1272,6 +1289,10 @@ _oracle_download () {
 
     commons_oracle_download_all_tables || error_handled "Error on download all tables."
 
+    commons_oracle_download_all_sequences || error_handled "Error on download all sequences."
+
+    commons_oracle_download_all_foreign || error_handled "Error on download all foreigns."
+
   else
 
     # Check for all-packages or single package
@@ -1433,6 +1454,25 @@ _oracle_download () {
       if [ ! -z "$ORACLE_DOWNLOAD_SEQUENCE" ] ; then
 
         commons_oracle_download_sequence "$ORACLE_DOWNLOAD_SEQUENCE" || error_handled "Error on download procedure $ORACLE_DOWNLOAD_SEQUENCE ."
+
+      fi
+
+    fi
+
+    if [ $ORACLE_DOWNLOAD_ALL_FOREIGNS -eq 1 ] ; then
+
+      ORACLE_DOWNLOAD_FOREIGN4START=0
+      if [ $ORACLE_DOWNLOAD_ALL_FOREIGN4START -eq 1 ] ; then
+        ORACLE_DOWNLOAD_FOREIGN4START=1
+      fi
+      
+      commons_oracle_download_all_foreigns $ORACLE_DOWNLOAD_FOREIGN4START $|| error_handled "Error on download all foreigns."
+
+    else
+
+      if [ ! -z "$ORACLE_DOWNLOAD_FOREIGN" ] ; then
+
+        commons_oracle_download_foreign "$ORACLE_DOWNLOAD_FOREIGN" || error_handled "Error on download procedure $ORACLE_DOWNLOAD_FOREIGN ."
 
       fi
 

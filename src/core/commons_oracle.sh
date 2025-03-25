@@ -406,6 +406,136 @@ commons_oracle_download_create_export_sequence() {
 }
 # commons_oracle_commons_oracle_download_create_export_sequence_end
 
+# commons_oracle_commons_oracle_download_all_foreigns
+commons_oracle_download_all_foreigns() {
+
+  local export_single_file=${1}
+  local foreignsdir=${ORACLE_DIR}/foreigns
+  local export_foreigns_sql=${foreignsdir}/export_foreigns.sql
+
+  _logfile_write "Start download of all foreigns." || return 1
+
+  commons_oracle_download_create_export_foreigns ${export_single_file}
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_foreigns_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of all foreigns." || return 1
+
+  return $ans
+}
+# commons_oracle_commons_oracle_download_all_foreigns_end
+
+# commons_oracle_commons_oracle_download_create_export_foreigns
+commons_oracle_download_create_export_foreigns() {
+  
+  local export_single_file=${1}
+  local foreignsdir=${ORACLE_DIR}/foreigns
+  local export_foreigns_sql=${foreignsdir}/export_foreigns.sql
+  local export_foreigns_file=${foreignsdir}/export_foreigns_gen.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+
+  if [[ ! -e ${export_foreigns_file} || ! -e ${export_foreigns_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_foreigns_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_foreigns_sql} file." || return 1
+
+    # Create export_foreigns.sql file
+    _logfile_write "sed -e 's:FKS_DIR:'${foreignsdir}/':g' \
+      \"$_oracle_scripts/export_foreigns_gen.sql.in\" > \"${export_foreigns_file}\""
+    sed -e 's:FKS_DIR:'${foreignsdir}'/:g' -e 's:EXECONEFILE:'${export_single_file}':g' "$_oracle_scripts/export_foreigns_gen.sql.in" > "${export_foreigns_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_foreigns_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_foreigns_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_foreigns_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+# commons_oracle_commons_oracle_download_create_export_foreigns_end
+
+# commons_oracle_commons_oracle_download_foreign
+commons_oracle_download_foreign() {
+
+  local foreignname=${1/.sql/}
+  local foreignsdir=${ORACLE_DIR}/foreigns
+  local export_foreign_sql=${foreignsdir}/export_foreign_${foreignname}.sql
+
+  _logfile_write "Start download of the foreign ${foreignname}." || return 1
+
+  commons_oracle_download_create_export_foreign $foreignname
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_foreign_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of the foreign ${foreignname}." || return 1
+
+  return $ans
+}
+# commons_oracle_commons_oracle_download_foreign_end
+
+# commons_oracle_commons_oracle_download_create_export_foreign
+commons_oracle_download_create_export_foreign() {
+
+  local foreignname=${1/.sql/}
+
+  local foreignsdir=${ORACLE_DIR}/foreigns
+  local export_foreign_sql=${foreignsdir}/export_foreign_${foreignname}.sql
+  local export_foreign_file=${foreignsdir}/export_foreigns_gen_${foreignname}.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+  if [[ ! -e ${export_foreign_file} || ! -e ${export_foreign_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_foreign_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_foreign_sql} file." || return 1
+
+    # Create export_foreign_${foreignname}.sql file
+    _logfile_write "sed -e 's:FKS_DIR:'${foreignsdir}/':g' \
+      \"$_oracle_scripts/export_foreign_gen.sql.in\" > \"${export_foreign_file}\""
+    sed -e 's:FKS_DIR:'${foreignsdir}'/:g' "$_oracle_scripts/export_foreign_gen.sql.in" > "${export_foreign_file}"
+
+    # Replace TBL_NAME string
+    _logfile_write "sed -i -e 's:FK_NAME:'${foreignname}':g' \"${export_foreign_file}\""
+    sed -i -e 's:FK_NAME:'${foreignname}':g' "${export_foreign_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_foreign_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_foreign_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_foreign_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+# commons_oracle_commons_oracle_download_create_export_foreign_end
+
 # commons_oracle_commons_oracle_download_all_packages
 commons_oracle_download_all_packages() {
 

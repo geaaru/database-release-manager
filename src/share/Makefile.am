@@ -23,7 +23,9 @@ EXTRA_DIST = \
 				 oracle/export_table_gen.sql.in \
 				 oracle/export_tables_gen.sql.in \
 				 oracle/export_sequence_gen.sql.in \
-				 oracle/export_sequences_gen.sql.in
+				 oracle/export_sequences_gen.sql.in \
+				 oracle/export_foreign_gen.sql.in \
+				 oracle/export_foreigns_gen.sql.in
 
 
 
@@ -50,7 +52,9 @@ dist_oracle_DATA = \
 						 oracle/export_table_gen.sql.in \
 						 oracle/export_tables_gen.sql.in \
 						 oracle/export_sequence_gen.sql.in \
-						 oracle/export_sequences_gen.sql.in
+						 oracle/export_sequences_gen.sql.in \
+						 oracle/export_foreign_gen.sql.in \
+						 oracle/export_foreigns_gen.sql.in
 
 
 
