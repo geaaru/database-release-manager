@@ -58,15 +58,12 @@ BEGIN
         'from '||
         '('||
         '    select  TRIM(dbms_metadata.GET_DDL(''TABLE'',UO.object_name)) AS TBL, '||
-        '            UT.TABLESPACE_NAME, '||
         '    (select username from user_users) AS OWNER '||
         '    from user_objects UO '||
         '    where UO.object_type = ''TABLE'' '||
         '    AND UO.object_name = UPPER('''||t_name.object_name||''')'||
         '    ORDER BY UO.object_name '||
         ') TMP_TBL;' into res from dual;
-      dbms_output.put_line (res); 
-      select 'select ''/'' from dual;' into res from dual;
       dbms_output.put_line (res); 
       select 'spool off;' into res from dual;
       dbms_output.put_line (res); 

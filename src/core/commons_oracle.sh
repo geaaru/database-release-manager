@@ -181,6 +181,9 @@ commons_oracle_download_create_export_tables() {
   local expire_time_sec="7200"
   local ans=0
 
+  if [[ ${export_single_file} -eq 1 ]]; then
+    export_tables_file=${tablesdir}/export_tables_gen_single.sql
+  fi
 
   if [[ ! -e ${export_tables_file} || ! -e ${export_tables_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_tables_file) ))" -gt ${expire_time_sec} ]] ; then
 
@@ -311,6 +314,9 @@ commons_oracle_download_create_export_sequences() {
   local expire_time_sec="7200"
   local ans=0
 
+  if [[ ${export_single_file} -eq 1 ]]; then
+    export_sequences_file=${sequencesdir}/export_sequences_gen_single.sql
+  fi
 
   if [[ ! -e ${export_sequences_file} || ! -e ${export_sequences_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_sequences_file) ))" -gt ${expire_time_sec} ]] ; then
 
@@ -441,6 +447,9 @@ commons_oracle_download_create_export_foreigns() {
   local expire_time_sec="7200"
   local ans=0
 
+  if [[ ${export_single_file} -eq 1 ]]; then
+    export_foreigns_file=${foreignsdir}/export_foreigns_gen_single.sql
+  fi
 
   if [[ ! -e ${export_foreigns_file} || ! -e ${export_foreigns_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_foreigns_file) ))" -gt ${expire_time_sec} ]] ; then
 
@@ -571,6 +580,9 @@ commons_oracle_download_create_export_types() {
   local expire_time_sec="7200"
   local ans=0
 
+  if [[ ${export_single_file} -eq 1 ]]; then
+    export_types_file=${typesdir}/export_types_gen_single.sql
+  fi
 
   if [[ ! -e ${export_types_file} || ! -e ${export_types_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_types_file) ))" -gt ${expire_time_sec} ]] ; then
 

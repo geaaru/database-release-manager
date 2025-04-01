@@ -40,11 +40,11 @@ BEGIN
       dbms_output.put_line ('BEGIN'); 
       select 'DBMS_METADATA.SET_TRANSFORM_PARAM(DBMS_METADATA.SESSION_TRANSFORM,''DEFAULT'',true);' into res from dual;
       dbms_output.put_line (res); 
-      select 'DBMS_METADATA.SET_TRANSFORM_PARAM(DBMS_METADATA.SESSION_TRANSFORM,''SEGMENT_ATTRIBUTES'',true);' into res from dual;
+      select 'DBMS_METADATA.SET_TRANSFORM_PARAM(DBMS_METADATA.SESSION_TRANSFORM,''SQLTERMINATOR'',true);' into res from dual;
       dbms_output.put_line (res); 
       dbms_output.put_line ('END;'); 
       dbms_output.put_line ('/'); 
-      select  'select REPLACE(REPLACE(SEQ, '' "''||OWNER||''"."'', '' "''), ''EDITIONABLE '', '''') AS SEQ '||
+      select  'select REPLACE(REPLACE(REPLACE(SEQ, '' "''||OWNER||''"."'', '' "''), ''EDITIONABLE '', ''''), ''  NOPARTITION'', '''') AS SEQ '||
         'from '||
         '('||
         '    select  TRIM(dbms_metadata.GET_DDL(''SEQUENCE'',US.SEQUENCE_NAME)) AS SEQ, '||
@@ -54,8 +54,6 @@ BEGIN
         '    AND US.SEQUENCE_NAME = UPPER('''||t_name.object_name||''')'||
         '    ORDER BY US.SEQUENCE_NAME '||
         ') TMP_SEQ;' into res from dual;
-      dbms_output.put_line (res); 
-      select 'select ''/'' from dual;' into res from dual;
       dbms_output.put_line (res); 
       select 'spool off;' into res from dual;
       dbms_output.put_line (res); 

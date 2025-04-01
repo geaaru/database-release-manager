@@ -85,8 +85,6 @@ BEGIN
         '    ORDER BY UO.object_name '||
         ') TMP_TBL;' into res from dual;
       dbms_output.put_line (res); 
-      select 'select ''/'' from dual;' into res from dual;
-      dbms_output.put_line (res); 
       IF exec_one_file = 0 THEN
         select 'spool off;' into res from dual;
         dbms_output.put_line (res); 

@@ -61,8 +61,6 @@ BEGIN
                 '    ORDER BY UC.CONSTRAINT_NAME '||
                 ') TMP_FK;' into res from dual;
       dbms_output.put_line (res); 
-      select 'select ''/'' from dual;' into res from dual;
-      dbms_output.put_line (res); 
       select 'spool off;' into res from dual;
       dbms_output.put_line (res); 
       select ' ' into res from dual;
