@@ -40,8 +40,8 @@ oracle_long_help () {
    echo -en "\tshow_help               Show command list.\n"
    echo -en "\tversion                 Show module version.\n"
    echo -en "\ttest_connection         Test connection versus database.\n"
-   echo -en "\tdownload                Download packages/procedures/triggers/views/tables/etc.\n"
-   echo -en "\tcompile                 Compile packages/procedures/triggers/views/tables/etc.\n"
+   echo -en "\tdownload                Download packages/procedures/triggers/views/tables/indexes/etc.\n"
+   echo -en "\tcompile                 Compile packages/procedures/triggers/views/tables/indexes/etc.\n"
    echo -en "\tshell                   Enter on sqlplus shell of current configuration.\n"
    echo -en "\tquery                   Execute directly a query on current database.\n"
    echo -en "\tinitenv                 Create default directories if not present.\n"
@@ -65,8 +65,8 @@ oracle_show_help () {
    echo -en "\tshow_help               Show command list.\n"
    echo -en "\tversion                 Show module version.\n"
    echo -en "\ttest_connection         Test connection versus database.\n"
-   echo -en "\tdownload                Download packages/procedures/triggers/views/tables/etc.\n"
-   echo -en "\tcompile                 Compile packages/procedures/triggers/views/tables/etc.\n"
+   echo -en "\tdownload                Download packages/procedures/triggers/views/tables/indexes/etc.\n"
+   echo -en "\tcompile                 Compile packages/procedures/triggers/views/tables/indexes/etc.\n"
    echo -en "\tshell                   Enter on sqlplus shell of current configuration.\n"
    echo -en "\tquery                   Execute directly a query on current database.\n"
    echo -en "\tinitenv                 Create default directories if not present.\n"
@@ -209,6 +209,7 @@ oracle_show () {
     echo -en "[--indexes]             List of indexes.\n"
     echo -en "[--index]               Show detail of a specific index. Could be used multiple time.\n"
     echo -en "[--invalid]             Filter invalid indexes.\n"
+    echo -en "[--idxnocons]           Filter indexes not related to a constraint.\n"
     echo -en "[--tablespace [value]]  Filter for table space name (Use REGEXP_LIKE).\n"
     echo -en "[--filter [value]]      Define filter for table name (Use REGEXP_LIKE).\n"
     echo -en "\n"
@@ -236,7 +237,8 @@ oracle_show () {
     ORACLE_SHOW_INDEX=""
     ORACLE_SHOW_INDEX_NUM=0
     ORACLE_SHOW_FILTER=""
-    ORACLE_SHOW_INVALID=1
+    ORACLE_SHOW_INVALID=0
+    ORACLE_SHOW_INDEX_NO_CONS=0
     ORACLE_SHOW_TABLESPACE=""
 
     [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_show_args [$#]: $@)\n"
@@ -264,6 +266,10 @@ oracle_show () {
           ;;
         --invalid)
           ORACLE_SHOW_INVALID=1
+          ;;
+        --idxnocons)
+          ORACLE_SHOW_INDEXES=1
+          ORACLE_SHOW_INDEX_NO_CONS=1
           ;;
         -h|--help)
           _oracle_show_help
@@ -636,7 +642,7 @@ _oracle_download_args () {
   [[ $DEBUG && $DEBUG == true ]] && echo -en "(_oracle_download_args args: $@)\n"
 
   local short_options="S:U:P:hD:t:b:q:"
-  local long_options="all-packages all-triggers all-functions all-views all-jobs all-schedules all-tables sll-tables4start all-sequences all-sequences4start all-foreigns all-foreigns4start all package: trigger: function: view: job: schedule: table: sequence: foreign:"
+  local long_options="all-packages all-triggers all-functions all-views all-jobs all-schedules all-tables sll-tables4start all-sequences all-sequences4start all-foreigns all-foreigns4start all-indexes all-indexes4start all package: trigger: function: view: job: schedule: table: sequence: foreign: indexes:"
   long_options="$long_options help"
 
   $(set -- $(getopt -u -q -a -o "$short_options" -l "$long_options" -- "$@")) || error_handled "Invalid parameters"
@@ -667,6 +673,9 @@ _oracle_download_args () {
   ORACLE_DOWNLOAD_ALL_FOREIGN4START=0
   ORACLE_DOWNLOAD_ALL_TYPES=0
   ORACLE_DOWNLOAD_ALL_TYPE4START=0
+  ORACLE_DOWNLOAD_ALL_INDEXES=0
+  ORACLE_DOWNLOAD_ALL_INDEX4START=0
+  ORACLE_DOWNLOAD_ALL_INDEXES_NOCONS=0
   ORACLE_DOWNLOAD_PACKAGE=""
   ORACLE_DOWNLOAD_TRIGGER=""
   ORACLE_DOWNLOAD_FUNCTION=""
@@ -679,6 +688,7 @@ _oracle_download_args () {
   ORACLE_DOWNLOAD_SEQUENCE=""
   ORACLE_DOWNLOAD_FOREIGN=""
   ORACLE_DOWNLOAD_TYPE=""
+  ORACLE_DOWNLOAD_INDEX=""
 
   while [ $# -gt 0 ] ; do
     case "$1" in
@@ -740,6 +750,17 @@ _oracle_download_args () {
         ORACLE_DOWNLOAD_ALL_TYPES=1
         ORACLE_DOWNLOAD_ALL_TYPE4START=1
         ;;
+      --all-indexes)
+        ORACLE_DOWNLOAD_ALL_INDEXES=1
+        ;;
+      --all-indexes4start)
+        ORACLE_DOWNLOAD_ALL_INDEXES=1
+        ORACLE_DOWNLOAD_ALL_INDEX4START=1
+        ;;
+      --indexnocons)
+        ORACLE_DOWNLOAD_ALL_INDEXES=1
+        ORACLE_DOWNLOAD_ALL_INDEXES_NOCONS=1
+        ;;
       --all)
         ORACLE_DOWNLOAD_ALL=1
         ;;
@@ -791,6 +812,10 @@ _oracle_download_args () {
         ORACLE_DOWNLOAD_TYPE="$2"
         shift
         ;;
+      --index)
+        ORACLE_DOWNLOAD_INDEX="$2"
+        shift
+        ;;
 
       -h|--help)
         _oracle_download_help
@@ -833,6 +858,9 @@ _oracle_download_help () {
   echo -en "[--all-foreigns4start]  Download all foreigns in one file for start new schema.\n"
   echo -en "[--all-types]           Download all types.\n"
   echo -en "[--all-types4start]     Download all types in one file for start new schema.\n"
+  echo -en "[--all-indexes]         Download all indexes.\n"
+  echo -en "[--all-indexes4start]   Download all indexes in one file for start new schema.\n"
+  echo -en "[--indexnocons]         Download all indexes not related to constraint (used in combination with *indexes parameter).\n"
   echo -en "[--all]                 Download all.\n"
   echo -en "[--package name]        Download a particular package.\n"
   echo -en "[--trigger name]        Download a particular trigger.\n"
@@ -846,6 +874,7 @@ _oracle_download_help () {
   echo -en "[--sequence name]       Download a particular sequence.\n"
   echo -en "[--foreign name]        Download a particular foreign.\n"
   echo -en "[--type name]           Download a particular type.\n"
+  echo -en "[--index name]          Download a particular index.\n"
 
   return 0
 }
@@ -1312,6 +1341,8 @@ _oracle_download () {
 
     commons_oracle_download_all_type || error_handled "Error on download all types."
 
+    commons_oracle_download_all_indexes || error_handled "Error on download all indexes."
+
   else
 
     # Check for all-packages or single package
@@ -1453,7 +1484,7 @@ _oracle_download () {
 
       if [ ! -z "$ORACLE_DOWNLOAD_TABLE" ] ; then
 
-        commons_oracle_download_table "$ORACLE_DOWNLOAD_TABLE" || error_handled "Error on download procedure $ORACLE_DOWNLOAD_TABLE ."
+        commons_oracle_download_table "$ORACLE_DOWNLOAD_TABLE" || error_handled "Error on download table $ORACLE_DOWNLOAD_TABLE ."
 
       fi
 
@@ -1491,7 +1522,7 @@ _oracle_download () {
 
       if [ ! -z "$ORACLE_DOWNLOAD_FOREIGN" ] ; then
 
-        commons_oracle_download_foreign "$ORACLE_DOWNLOAD_FOREIGN" || error_handled "Error on download procedure $ORACLE_DOWNLOAD_FOREIGN ."
+        commons_oracle_download_foreign "$ORACLE_DOWNLOAD_FOREIGN" || error_handled "Error on download foreign $ORACLE_DOWNLOAD_FOREIGN ."
 
       fi
 
@@ -1510,7 +1541,32 @@ _oracle_download () {
 
       if [ ! -z "$ORACLE_DOWNLOAD_TYPE" ] ; then
 
-        commons_oracle_download_type "$ORACLE_DOWNLOAD_TYPE" || error_handled "Error on download procedure $ORACLE_DOWNLOAD_TYPE ."
+        commons_oracle_download_type "$ORACLE_DOWNLOAD_TYPE" || error_handled "Error on download type $ORACLE_DOWNLOAD_TYPE ."
+
+      fi
+
+    fi
+
+    ORACLE_DOWNLOAD_INDEX_NOCONS=0
+    if [ $ORACLE_DOWNLOAD_ALL_INDEXES_NOCONS -eq 1 ] ; then
+      ORACLE_DOWNLOAD_INDEX_NOCONS=1
+    fi
+
+    if [ $ORACLE_DOWNLOAD_ALL_INDEXES -eq 1 ] ; then
+
+      ORACLE_DOWNLOAD_INDEX4START=0
+      if [ $ORACLE_DOWNLOAD_ALL_INDEX4START -eq 1 ] ; then
+        ORACLE_DOWNLOAD_INDEX4START=1
+      fi
+
+      
+      commons_oracle_download_all_indexes $ORACLE_DOWNLOAD_INDEX4START $ORACLE_DOWNLOAD_INDEX_NOCONS || error_handled "Error on download all indexes."
+
+    else
+
+      if [ ! -z "$ORACLE_DOWNLOAD_INDEX" ] ; then
+
+        commons_oracle_download_index "$ORACLE_DOWNLOAD_INDEX" $ORACLE_DOWNLOAD_INDEX_NOCONS || error_handled "Error on download index $ORACLE_DOWNLOAD_INDEX ."
 
       fi
 
@@ -1809,8 +1865,12 @@ _oracle_show_indexes () {
     filter="AND REGEXP_LIKE(AI.table_name, '${ORACLE_SHOW_FILTER}') "
   fi
 
-  if [ -n "${ORACLE_SHOW_INVALID}" ] ; then
+  if [ "${ORACLE_SHOW_INVALID}" -eq 1 ] ; then
     filter="${filter} AND AI.STATUS <> 'VALID' "
+  fi
+
+  if [ "${ORACLE_SHOW_INDEX_NO_CONS}" -eq 1 ] ; then
+    filter="${filter} AND AC.CONSTRAINT_NAME IS NULL "
   fi
 
   if [ -n "${ORACLE_SHOW_TABLESPACE}" ] ; then

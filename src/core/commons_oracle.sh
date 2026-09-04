@@ -678,6 +678,150 @@ commons_oracle_download_create_export_type() {
 }
 # commons_oracle_commons_oracle_download_create_export_type_end
 
+# commons_oracle_commons_oracle_download_all_indexes
+commons_oracle_download_all_indexes() {
+
+  local export_single_file=${1}
+  local export_index_nocons=${2:-0}
+  local indexesdir=${ORACLE_DIR}/indexes
+  local export_indexes_sql=${indexesdir}/export_indexes.sql
+
+  _logfile_write "Start download of all indexes." || return 1
+
+  commons_oracle_download_create_export_indexes ${export_single_file} ${export_index_nocons}
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_indexes_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of all indexes." || return 1
+
+  return $ans
+}
+# commons_oracle_commons_oracle_download_all_indexes_end
+
+# commons_oracle_commons_oracle_download_create_export_indexes
+commons_oracle_download_create_export_indexes() {
+  
+  local export_single_file=${1}
+  local export_index_nocons=${2:-0}
+  local indexesdir=${ORACLE_DIR}/indexes
+  local indexesdir=${ORACLE_DIR}/indexes
+  local export_indexes_sql=${indexesdir}/export_indexes.sql
+  local export_indexes_file=${indexesdir}/export_indexes_gen.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+  if [[ ${export_single_file} -eq 1 ]]; then
+    export_indexes_file=${indexesdir}/export_indexes_gen_single.sql
+  fi
+
+  if [[ ! -e ${export_indexes_file} || ! -e ${export_indexes_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_indexes_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_indexes_sql} file." || return 1
+
+    # Create export_indexes.sql file
+    _logfile_write "sed -e 's:IXS_DIR:'${indexesdir}/':g' \
+      's:EXECONEFILE:'${export_single_file}':g' \
+      's:FILTERNOCONST:'${export_index_nocons}':g' \
+      \"$_oracle_scripts/export_indexes_gen.sql.in\" > \"${export_indexes_file}\""
+    sed -e 's:IXS_DIR:'${indexesdir}'/:g' -e 's:EXECONEFILE:'${export_single_file}':g' -e 's:FILTERNOCONST:'${export_index_nocons}':g' "$_oracle_scripts/export_indexes_gen.sql.in" > "${export_indexes_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_indexes_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_indexes_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_indexes_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+# commons_oracle_commons_oracle_download_create_export_indexes_end
+
+# commons_oracle_commons_oracle_download_index
+commons_oracle_download_index() {
+
+  local indexname=${1/.sql/}
+  local export_index_nocons=${2:-0}
+  local indexesdir=${ORACLE_DIR}/indexes
+  local export_index_sql=${indexesdir}/export_index_${indexname}.sql
+
+  _logfile_write "Start download of the index ${indexname}." || return 1
+
+  commons_oracle_download_create_export_index $indexname ${export_index_nocons}
+
+  SQLPLUS_OUTPUT=""
+
+  sqlplus_file "SQLPLUS_OUTPUT" "${export_index_sql}"
+  ans=$?
+
+  _logfile_write "$SQLPLUS_OUTPUT" || return 1
+
+  _logfile_write "End download of the index ${indexname}." || return 1
+
+  return $ans
+}
+# commons_oracle_commons_oracle_download_index_end
+
+# commons_oracle_commons_oracle_download_create_export_index
+commons_oracle_download_create_export_index() {
+
+  local indexname=${1/.sql/}
+  local export_index_nocons=${2:-0}
+
+  local indexesdir=${ORACLE_DIR}/indexes
+  local export_index_sql=${indexesdir}/export_index_${indexname}.sql
+  local export_index_file=${indexesdir}/export_index_gen_${indexname}.sql
+
+  local expire_time_sec="7200"
+  local ans=0
+
+  if [[ ! -e ${export_index_file} || ! -e ${export_index_sql} || "$(( $(date +"%s") - $(stat -c "%Y" $export_index_file) ))" -gt ${expire_time_sec} ]] ; then
+
+    _logfile_write "Start creation of the ${export_index_sql} file." || return 1
+
+    # Create export_index_${indexname}.sql file
+    _logfile_write "sed -e 's:IDX_DIR:'${indexesdir}/':g' \
+      \"$_oracle_scripts/export_index_gen.sql.in\" > \"${export_index_file}\""
+    sed -e 's:IDX_DIR:'${indexesdir}'/:g' "$_oracle_scripts/export_index_gen.sql.in" > "${export_index_file}"
+
+    # Replace IDX_NAME string and INDEX_NO_CONS
+    _logfile_write "sed -i -e 's:IDX_NAME:'${indexname}':g' \
+      's:FILTERNOCONST:'${export_index_nocons}':g' \
+      \"${export_index_file}\""
+    sed -i -e 's:IDX_NAME:'${indexname}':g' -e 's:FILTERNOCONST:'${export_index_nocons}':g' "${export_index_file}"
+
+    SQLPLUS_OUTPUT=""
+
+    #echo "export_index_nocons = ${export_index_nocons}"
+
+    sqlplus_file "SQLPLUS_OUTPUT" "${export_index_file}"
+    ans=$?
+
+    _logfile_write "End creation of the ${export_index_sql} file." || return 1
+
+  else
+
+    _logfile_write "${export_index_file} is updated." || return 1
+
+  fi
+
+  return $ans
+
+}
+# commons_oracle_commons_oracle_download_create_export_index_end
+
 # commons_oracle_commons_oracle_download_all_packages
 commons_oracle_download_all_packages() {
 
@@ -1980,6 +2124,7 @@ commons_oracle_show_indexes () {
           FROM ALL_CONS_COLUMNS
           WHERE TABLE_NAME = AI.TABLE_NAME
           AND CONSTRAINT_NAME = AC.CONSTRAINT_NAME
+          AND OWNER = AI.OWNER
           ) AS COLUMNS,
           CASE WHEN AI.COMPRESSION = 'DISABLED' THEN 'N' ELSE 'Y' END AS COMPRESSION,
           AI.TABLESPACE_NAME,
@@ -1991,13 +2136,14 @@ commons_oracle_show_indexes () {
           AI.SAMPLE_SIZE,
           AI.LAST_ANALYZED,
           AI.INDEXING
-    FROM ALL_INDEXES  AI,
-         ALL_CONSTRAINTS AC
+    FROM ALL_INDEXES  AI LEFT JOIN ALL_CONSTRAINTS AC
+        ON AC.INDEX_NAME = AI.INDEX_NAME
     WHERE AI.OWNER = '${ORACLE_USER}'
-    AND AC.INDEX_NAME = AI.INDEX_NAME ${filter}
+    AND AI.TABLE_NAME NOT LIKE 'SYS_EXPORT_%' ${filter}
     ORDER BY AI.TABLE_NAME, AI.INDEX_NAME
   ) TMP
 "
+  _logfile_write "filter --> ${filter}" || return 1
 
   local sqlopts="set echo off heading off feedback off pages 50000 lines 5000"
   sqlplus_cmd_4var "ORACLE_ANS" "${cmd}" "" "" "${sqlopts}" "1" || return 1
