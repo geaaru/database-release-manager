@@ -8,7 +8,7 @@
 name="ssl"
 ssl_authors="Geaaru"
 ssl_creation_date="Mar 29, 2015"
-ssl_version="0.1.1"
+ssl_version="0.2.0"
 
 #****f* ssl/ssl_version
 # FUNCTION
