@@ -160,9 +160,9 @@ ssl_upgrade () {
 
   if [ $? -eq 0 ] ; then
 
-    if [ ${mod_ver} == "0.1.1" ] ; then
+    if [ ${mod_ver} == "0.2.0" ] ; then
 
-      _sqlite_compile -c "$DRM_DB" -f ${MODULES_DIR}/extensions-scripts/ssl_upgrade_0.1.1.sql || \
+      _sqlite_compile -c "$DRM_DB" -f ${MODULES_DIR}/extensions-scripts/ssl_upgrade_0.2.0.sql || \
         error_generate "Error on initialize ssl extension."
 
     fi
